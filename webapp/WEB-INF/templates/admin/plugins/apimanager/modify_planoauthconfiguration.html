@@ -1,0 +1,16 @@
+<#include "manageplans_tabs.html" />
+<@tabs2 tab="planoauthconfiguration" />
+
+
+<@box>
+	<@boxHeader title='#i18n{apimanager.modify_planoauthconfiguration.title}' />
+	<@boxBody>
+    <@tform class="form-horizontal" method="post" name="planoauthconfiguration" action="jsp/admin/plugins/apimanager/ManagePlanOauthConfigurations.jsp" >
+			<@messages errors=errors />
+			<@input type="hidden" id="id" name="id" value="${planoauthconfiguration.id}"/>
+			<@input type="hidden" value="${token}" name="token" />
+			
+        <@actionButtons button1Name="action_modifyPlanOauthConfiguration" button2Name="view_managePlanOauthConfiguration"/>
+    </@tform>
+	</@boxBody>
+</@box>

@@ -1,0 +1,25 @@
+<#include "managesubscriptions_tabs.html" />
+<@tabs2 tab="subscription" />
+
+
+<@box>
+	<@boxHeader title='#i18n{apimanager.modify_subscription.title}' />
+	<@boxBody>
+    <@tform class="form-horizontal" method="post" name="subscription" action="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp" >
+			<@messages errors=errors />
+			<@input type="hidden" id="id" name="id" value="${subscription.id}"/>
+			<@input type="hidden" value="${token}" name="token" />
+			
+			<@formGroup labelFor='id_client' labelKey='#i18n{apimanager.subscription.labelIdClient}' mandatory=true>
+				<@input type='text' id='id_client' name='id_client'  value=subscription.idClient!'' tabIndex='0' />
+			</@formGroup>
+			<@formGroup labelFor='id_plan' labelKey='#i18n{apimanager.subscription.labelIdPlan}' mandatory=true>
+				<@input type='text' id='id_plan' name='id_plan'  value=subscription.idPlan!'' tabIndex='1' />
+			</@formGroup>
+			<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.subscription.labelTraceEnabled}' mandatory=true>
+				<@checkBox id="trace_enabled" name="trace_enabled"  value="1" checked=subscription.traceEnabled!false tabIndex='2' />
+			</@formGroup>
+        <@actionButtons button1Name="action_modifySubscription" button2Name="view_manageSubscription"/>
+    </@tform>
+	</@boxBody>
+</@box>

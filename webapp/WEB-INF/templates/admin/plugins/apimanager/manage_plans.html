@@ -1,0 +1,132 @@
+<#include "manageplans_tabs.html" />
+<@tabs2 tab="plan" />
+
+<@box>
+	<@boxHeader title='#i18n{apimanager.manage_plans.title}' boxTools=true>
+		<@tform class='form-inline pull-right' name='manage_plan' action='jsp/admin/plugins/apimanager/ManagePlans.jsp'>
+			<@button type='submit' name='view_createPlan' buttonIcon='plus' title='#i18n{apimanager.manage_plans.buttonAdd}' />
+		</@tform>
+	</@boxHeader>
+	<@boxBody>    
+    <@messages infos=infos />
+    <@paginationAdmin paginator=paginator combo=1 />
+    <div class="clearfix"></div>
+    
+    <@offcanvas id='search_plan' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
+    <@tform id='plan_search_form' name='plan_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManagePlans.jsp' >
+		<@messages errors=errors />
+    		
+	    			<@formGroup labelFor='filter_name' labelKey='#i18n{apimanager.manage_plans.columnName}'>
+				    		<@input type='text' id='filter_name' name='filter_name'  maxlength=50  placeHolder='#i18n{apimanager.manage_plans.columnName}' value=mapFilterCriteria["name"]!'' tabIndex='1' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_description' labelKey='#i18n{apimanager.manage_plans.columnDescription}'>
+				    		<@input type='text' id='filter_description' name='filter_description'   placeHolder='#i18n{apimanager.manage_plans.columnDescription}' value=mapFilterCriteria["description"]!'' tabIndex='2' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_version' labelKey='#i18n{apimanager.manage_plans.columnVersion}'>
+				    		<@input type='text' id='filter_version' name='filter_version'  maxlength=50  placeHolder='#i18n{apimanager.manage_plans.columnVersion}' value=mapFilterCriteria["version"]!'' tabIndex='3' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_id_rate_limiting' labelKey='#i18n{apimanager.manage_plans.columnIdRateLimiting}'>
+				    		<@input type='number' id='filter_id_rate_limiting' name='filter_id_rate_limiting' placeHolder='#i18n{apimanager.manage_plans.columnIdRateLimiting}' value=mapFilterCriteria["id_rate_limiting"]!'' tabIndex='4' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_id_client_http_configuration' labelKey='#i18n{apimanager.manage_plans.columnIdClientHttpConfiguration}'>
+				    		<@input type='number' id='filter_id_client_http_configuration' name='filter_id_client_http_configuration' placeHolder='#i18n{apimanager.manage_plans.columnIdClientHttpConfiguration}' value=mapFilterCriteria["id_client_http_configuration"]!'' tabIndex='5' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_request_timeout' labelKey='#i18n{apimanager.manage_plans.columnRequestTimeout}'>
+				    		<@input type='number' id='filter_request_timeout' name='filter_request_timeout' placeHolder='#i18n{apimanager.manage_plans.columnRequestTimeout}' value=mapFilterCriteria["request_timeout"]!'' tabIndex='6' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_load_balancing_strategy' labelKey='#i18n{apimanager.manage_plans.columnLoadBalancingStrategy}'>
+				    		<@input type='text' id='filter_load_balancing_strategy' name='filter_load_balancing_strategy'   placeHolder='#i18n{apimanager.manage_plans.columnLoadBalancingStrategy}' value=mapFilterCriteria["load_balancing_strategy"]!'' tabIndex='7' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_id_oauth_configuration' labelKey='#i18n{apimanager.manage_plans.columnIdOauthConfiguration}'>
+				    		<@input type='number' id='filter_id_oauth_configuration' name='filter_id_oauth_configuration' placeHolder='#i18n{apimanager.manage_plans.columnIdOauthConfiguration}' value=mapFilterCriteria["id_oauth_configuration"]!'' tabIndex='8' />
+				    </@formGroup>
+					<@formGroup labelFor='filter_active' >										
+						<@checkBox id='filter_active' name='filter_active' value='1' labelKey='#i18n{apimanager.manage_plans.columnActive}' tabIndex='9' />
+			    	</@formGroup>
+					<@formGroup labelFor='filter_oauth_enabled' >										
+						<@checkBox id='filter_oauth_enabled' name='filter_oauth_enabled' value='1' labelKey='#i18n{apimanager.manage_plans.columnOauthEnabled}' tabIndex='10' />
+			    	</@formGroup>
+					<@formGroup labelFor='filter_trace_enabled' >										
+						<@checkBox id='filter_trace_enabled' name='filter_trace_enabled' value='1' labelKey='#i18n{apimanager.manage_plans.columnTraceEnabled}' tabIndex='11' />
+			    	</@formGroup>
+			
+		<@button type='submit' title='Search' buttonIcon='search'/>							
+    </@tform>
+    </@offcanvas>
+    
+
+    <#list mapFilterCriteria?keys as key> 
+    	<#if mapFilterCriteria[key]!="">
+	    	<span class="badge bg-primary px-2" > 
+	 			${key} <a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
+			</span>
+		</#if> 
+	</#list>
+
+	
+    <div class="clearfix"></div>
+    <@table>
+        <tr>
+             <th>#i18n{apimanager.manage_plans.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnIdRateLimiting}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_rate_limiting'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnIdClientHttpConfiguration}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_client_http_configuration'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnRequestTimeout}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=request_timeout'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnLoadBalancingStrategy}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=load_balancing_strategy'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnOauthEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=oauth_enabled'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnIdOauthConfiguration}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_oauth_configuration'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
+            <th>#i18n{portal.util.labelActions}</th>
+        </tr>
+        <@tableHeadBodySeparator />
+        <#list plan_list as plan >
+        <tr>
+            <td>
+				${plan.name!''}
+			</td>
+            <td>
+				${plan.description!''}
+			</td>
+            <td>
+				${plan.active?c!''}
+			</td>
+            <td>
+				${plan.version!''}
+			</td>
+            <td>
+				${plan.idRateLimiting!''}
+			</td>
+            <td>
+				${plan.idClientHttpConfiguration!''}
+			</td>
+            <td>
+				${plan.requestTimeout!''}
+			</td>
+            <td>
+				${plan.loadBalancingStrategy!''}
+			</td>
+            <td>
+				${plan.oauthEnabled?c!''}
+			</td>
+            <td>
+				${plan.idOauthConfiguration!''}
+			</td>
+            <td>
+				${plan.traceEnabled?c!''}
+			</td>
+        	<td>
+				<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=modifyPlan&id=${plan.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+						
+				<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?action=confirmRemovePlan&id=${plan.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+
+	        </td>
+        </tr>
+        </#list>
+    </@table>
+
+    <@paginationAdmin paginator=paginator />
+
+  </@boxBody>
+</@box>

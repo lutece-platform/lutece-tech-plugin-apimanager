@@ -21,6 +21,38 @@
 
     <!-- Admin features parameters -->
     <admin-features>
+        <admin-feature>
+            <feature-id>APIMANAGER_CLIENT_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageClients.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageClients.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageClients.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_SUBSCRIPTION_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageSubscriptions.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageSubscriptions.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageSubscriptions.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_PLAN_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManagePlans.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManagePlans.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManagePlans.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_API_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageApis.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageApis.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageApis.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
     </admin-features>
 
     <!-- XPages parameters -->

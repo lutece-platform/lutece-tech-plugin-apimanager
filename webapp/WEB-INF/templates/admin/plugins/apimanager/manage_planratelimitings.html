@@ -1,0 +1,97 @@
+<#include "manageplans_tabs.html" />
+<@tabs2 tab="planratelimiting" />
+
+<@box>
+	<@boxHeader title='#i18n{apimanager.manage_planratelimitings.title}' boxTools=true>
+		<@tform class='form-inline pull-right' name='manage_planratelimiting' action='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp'>
+			<@button type='submit' name='view_createPlanRateLimiting' buttonIcon='plus' title='#i18n{apimanager.manage_planratelimitings.buttonAdd}' />
+		</@tform>
+	</@boxHeader>
+	<@boxBody>    
+    <@messages infos=infos />
+    <@paginationAdmin paginator=paginator combo=1 />
+    <div class="clearfix"></div>
+    
+    <@offcanvas id='search_planratelimiting' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
+    <@tform id='planratelimiting_search_form' name='planratelimiting_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp' >
+		<@messages errors=errors />
+    		
+	    			<@formGroup labelFor='filter_max_requests' labelKey='#i18n{apimanager.manage_planratelimitings.columnMaxRequests}'>
+				    		<@input type='number' id='filter_max_requests' name='filter_max_requests' placeHolder='#i18n{apimanager.manage_planratelimitings.columnMaxRequests}' value=mapFilterCriteria["max_requests"]!'' tabIndex='1' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_window' labelKey='#i18n{apimanager.manage_planratelimitings.columnWindow}'>
+				    		<@input type='number' id='filter_window' name='filter_window' placeHolder='#i18n{apimanager.manage_planratelimitings.columnWindow}' value=mapFilterCriteria["window"]!'' tabIndex='2' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_criteria' labelKey='#i18n{apimanager.manage_planratelimitings.columnCriteria}'>
+				    		<@input type='text' id='filter_criteria' name='filter_criteria'  maxlength=50  placeHolder='#i18n{apimanager.manage_planratelimitings.columnCriteria}' value=mapFilterCriteria["criteria"]!'' tabIndex='3' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_implementation' labelKey='#i18n{apimanager.manage_planratelimitings.columnImplementation}'>
+				    		<@input type='text' id='filter_implementation' name='filter_implementation'  maxlength=50  placeHolder='#i18n{apimanager.manage_planratelimitings.columnImplementation}' value=mapFilterCriteria["implementation"]!'' tabIndex='4' />
+				    </@formGroup>
+	    			<@formGroup labelFor='filter_backend' labelKey='#i18n{apimanager.manage_planratelimitings.columnBackend}'>
+				    		<@input type='text' id='filter_backend' name='filter_backend'  maxlength=50  placeHolder='#i18n{apimanager.manage_planratelimitings.columnBackend}' value=mapFilterCriteria["backend"]!'' tabIndex='5' />
+				    </@formGroup>
+					<@formGroup labelFor='filter_decrement' >										
+						<@checkBox id='filter_decrement' name='filter_decrement' value='1' labelKey='#i18n{apimanager.manage_planratelimitings.columnDecrement}' tabIndex='6' />
+			    	</@formGroup>
+			
+		<@button type='submit' title='Search' buttonIcon='search'/>							
+    </@tform>
+    </@offcanvas>
+    
+
+    <#list mapFilterCriteria?keys as key> 
+    	<#if mapFilterCriteria[key]!="">
+	    	<span class="badge bg-primary px-2" > 
+	 			${key} <a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
+			</span>
+		</#if> 
+	</#list>
+
+	
+    <div class="clearfix"></div>
+    <@table>
+        <tr>
+             <th>#i18n{apimanager.manage_planratelimitings.columnMaxRequests}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?orderBy=max_requests'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_planratelimitings.columnWindow}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?orderBy=window'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_planratelimitings.columnDecrement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?orderBy=decrement'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_planratelimitings.columnCriteria}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?orderBy=criteria'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_planratelimitings.columnImplementation}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?orderBy=implementation'><i class='fas fa-sort'></i></a></th>
+             <th>#i18n{apimanager.manage_planratelimitings.columnBackend}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?orderBy=backend'><i class='fas fa-sort'></i></a></th>
+            <th>#i18n{portal.util.labelActions}</th>
+        </tr>
+        <@tableHeadBodySeparator />
+        <#list planratelimiting_list as planratelimiting >
+        <tr>
+            <td>
+				${planratelimiting.maxRequests!''}
+			</td>
+            <td>
+				${planratelimiting.window!''}
+			</td>
+            <td>
+				${planratelimiting.decrement?c!''}
+			</td>
+            <td>
+				${planratelimiting.criteria!''}
+			</td>
+            <td>
+				${planratelimiting.implementation!''}
+			</td>
+            <td>
+				${planratelimiting.backend!''}
+			</td>
+        	<td>
+				<@aButton href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?view=modifyPlanRateLimiting&id=${planratelimiting.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+						
+				<@aButton href='jsp/admin/plugins/apimanager/ManagePlanRateLimitings.jsp?action=confirmRemovePlanRateLimiting&id=${planratelimiting.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+
+	        </td>
+        </tr>
+        </#list>
+    </@table>
+
+    <@paginationAdmin paginator=paginator />
+
+  </@boxBody>
+</@box>

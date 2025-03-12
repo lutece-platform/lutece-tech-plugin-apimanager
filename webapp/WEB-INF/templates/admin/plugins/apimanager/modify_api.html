@@ -1,0 +1,28 @@
+<#include "manageapis_tabs.html" />
+<@tabs2 tab="api" />
+
+
+<@box>
+	<@boxHeader title='#i18n{apimanager.modify_api.title}' />
+	<@boxBody>
+    <@tform class="form-horizontal" method="post" name="api" action="jsp/admin/plugins/apimanager/ManageApis.jsp" params='enctype="multipart/form-data"' >
+			<@messages errors=errors />
+			<@input type="hidden" id="uuid" name="uuid" value="${api.uuid}"/>
+			<@input type="hidden" value="${token}" name="token" />
+			
+			<@formGroup labelFor='name' labelKey='#i18n{apimanager.api.labelName}' mandatory=true>
+				<@input type='text' id='name' name='name'  maxlength=255 value=api.name!'' tabIndex='0' />
+			</@formGroup>
+			<@formGroup labelFor='description' labelKey='#i18n{apimanager.api.labelDescription}' mandatory=true>
+				<@input type='text' id='description' name='description'  value=api.description!'' tabIndex='1' />
+			</@formGroup>
+			<@formGroup labelFor='path' labelKey='#i18n{apimanager.api.labelPath}' mandatory=true>
+				<@input type='text' id='path' name='path'  maxlength=255 value=api.path!'' tabIndex='2' />
+			</@formGroup>
+			<@formGroup labelFor='openapi' labelKey='#i18n{apimanager.api.labelOpenapi}' mandatory=true>
+				<@input type='file' id='openapi' name='openapi' tabIndex='3' params='accept=".json"' />
+			</@formGroup>
+        <@actionButtons button1Name="action_modifyApi" button2Name="view_manageApi"/>
+    </@tform>
+	</@boxBody>
+</@box>
