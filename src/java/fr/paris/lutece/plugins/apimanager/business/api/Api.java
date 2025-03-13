@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.api;
 
+import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Map;
@@ -40,7 +42,7 @@ import java.util.Map;
 /**
  * This is the business class for the object Api
  */ 
-public class Api implements Serializable
+public class Api extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 

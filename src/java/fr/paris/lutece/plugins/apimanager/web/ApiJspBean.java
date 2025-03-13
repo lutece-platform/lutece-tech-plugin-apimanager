@@ -38,6 +38,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -89,6 +90,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     private static final String PARAMETER_NAME = "name";
     private static final String PARAMETER_DESCRIPTION = "description";
     private static final String PARAMETER_PATH = "path";
+    private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_APIS = "apimanager.manage_apis.pageTitle";
@@ -117,6 +119,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     private static final String ACTION_MODIFY_API = "modifyApi";
     private static final String ACTION_REMOVE_API = "removeApi";
     private static final String ACTION_CONFIRM_REMOVE_API = "confirmRemoveApi";
+    private static final String ACTION_DOWNLOAD_OPENAPI = "downloadOpenapi";
 
     // Infos
     private static final String INFO_API_CREATED = "apimanager.info.api.created";
@@ -132,7 +135,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     private HashMap<String,String> _mapFilterCriteria = new HashMap<>();
     private String _optionOrderBy;
 
-    private final ObjectMapper objectMapper = new ObjectMapper( );
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper( ).enable(SerializationFeature.INDENT_OUTPUT);
 
     /**
      * Build the Manage View
@@ -170,7 +173,12 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         }
        	
        	Map<String, Object> model = getPaginatedListModel( request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS );
-             
+
+        final String subscriptionMode = request.getParameter(PARAMETER_SUBSCRIPTION_MODE);
+        if(subscriptionMode != null) {
+            model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean(subscriptionMode) );
+        }
+
         addSearchParameters(model,_mapFilterCriteria); //allow the persistence of search values in inputs search bar inputs
                      
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model );
@@ -348,15 +356,27 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         return redirectView( request, VIEW_MANAGE_APIS );
     }
 
+    @Action( ACTION_DOWNLOAD_OPENAPI )
+    public void doDownloadOpenapi( HttpServletRequest request ) throws JsonProcessingException {
+        final String uuid = request.getParameter( PARAMETER_ID_API );
+        if(uuid == null){
+            redirectView( request, VIEW_MANAGE_APIS );
+        }
+
+        final Api api = ApiHome.findByPrimaryKey(uuid).orElseThrow(( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ));
+        this.download(JSON_MAPPER.writeValueAsBytes(api.getOpenapi()), api.getName().replace(" ", "-") + "_openapi.json", "application/json");
+    }
+
+
     @Override
     protected void populate(Object bean, HttpServletRequest request, Locale locale) {
         super.populate( bean, request, locale );
 
         if (request instanceof MultipartHttpServletRequest) {
             final FileItem openapiFile = ((MultipartHttpServletRequest)request).getFile(PARAMETER_OPENAPI);
-            if (openapiFile != null) {
+            if (openapiFile != null && openapiFile.getSize() > 0) {
                 try {
-                    _api.setOpenapi(objectMapper.readValue(openapiFile.getString(), new TypeReference<Map<String, Object>>() {
+                    _api.setOpenapi(JSON_MAPPER.readValue(openapiFile.getString(), new TypeReference<Map<String, Object>>() {
                     }));
                 } catch (final JsonProcessingException e) {
                     throw new AppException("Error while parsing the openapi file", e);

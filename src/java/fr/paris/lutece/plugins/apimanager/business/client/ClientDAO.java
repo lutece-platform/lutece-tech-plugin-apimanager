@@ -94,6 +94,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
             
             daoUtil.executeUpdate( );
             client.setUuid( uuid );
+			this.insertTags(uuid, client.getTags(), plugin);
         }
         
     }
@@ -112,7 +113,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 	
 	        if ( daoUtil.next( ) )
 	        {
-	            client = loadFromDaoUtil( daoUtil );
+	            client = loadFromDaoUtil( daoUtil, plugin );
 	        }
 	
 	        return Optional.ofNullable( client );
@@ -129,6 +130,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
         {
 	        daoUtil.setString( 1 , nKey );
 	        daoUtil.executeUpdate( );
+			this.deleteTags( nKey, plugin );
         }
     }
 
@@ -150,6 +152,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 	        daoUtil.setString( nIndex , client.getUuid() );
 	
 	        daoUtil.executeUpdate( );
+			this.deleteAndInsertTags(client.getUuid(), client.getTags(), plugin);
         }
     }
 
@@ -166,7 +169,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 	
 	        while ( daoUtil.next(  ) )
 	        {
-				clientList.add( loadFromDaoUtil( daoUtil ) );
+				clientList.add( loadFromDaoUtil( daoUtil, plugin ) );
 	        }
 	
 	        return clientList;
@@ -255,7 +258,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 	        	daoUtil.executeQuery(  );
 	        	while ( daoUtil.next(  ) )
 		        {
-		            clientList.add( loadFromDaoUtil( daoUtil ) );
+		            clientList.add( loadFromDaoUtil( daoUtil, plugin ) );
 		        }
 	        }
 	    }
@@ -264,18 +267,20 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 	}
 
 
-	private Client loadFromDaoUtil (DAOUtil daoUtil) {
+	private Client loadFromDaoUtil (DAOUtil daoUtil, Plugin plugin) {
 		
 		Client client = new Client(  );
 		int nIndex = 1;
-		
-		client.setUuid( daoUtil.getString( nIndex++ ) );
+
+		final String uuid = daoUtil.getString(nIndex++);
+		client.setUuid( uuid );
 		client.setName( daoUtil.getString( nIndex++ ) );
 		client.setClientId( daoUtil.getString( nIndex++ ) );
 		client.setClientSecret( daoUtil.getString( nIndex++ ) );
 		client.setCodeApp( daoUtil.getString( nIndex++ ) );
 		client.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
-		
+		client.setTags(this.selectTags(uuid, plugin));
+
 		return client;
 	}
 }

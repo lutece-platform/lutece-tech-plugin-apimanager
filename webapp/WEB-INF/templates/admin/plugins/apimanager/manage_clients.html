@@ -74,7 +74,9 @@
 			</td>
         	<td>
 				<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=modifyClient&uuid=${client.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-						
+
+				<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription&uuid_client=${client.uuid}' title='#i18n{apimanager.manage_subscriptions.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
+
 				<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?action=confirmRemoveClient&uuid=${client.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 
 	        </td>

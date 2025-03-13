@@ -39,38 +39,49 @@
 		</#if> 
 	</#list>
 
-	
-    <div class="clearfix"></div>
-    <@table>
-        <tr>
-             <th>#i18n{apimanager.manage_apis.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_apis.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_apis.columnPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=path'><i class='fas fa-sort'></i></a></th>
-            <th>#i18n{portal.util.labelActions}</th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <#list api_list as api >
-        <tr>
-            <td>
-				${api.name!''}
-			</td>
-            <td>
-				${api.description!''}
-			</td>
-            <td>
-				${api.path!''}
-			</td>
-        	<td>
-				<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-						
-				<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveApi&uuid=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+	<div id="api-result-container">
+		<div class="clearfix"></div>
+		<@table>
+			<tr>
+				 <th>#i18n{apimanager.manage_apis.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_apis.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_apis.columnPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=path'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{portal.util.labelActions}</th>
+			</tr>
+			<@tableHeadBodySeparator />
+			<#list api_list as api >
+			<tr>
+				<td>
+					${api.name!''}
+				</td>
+				<td>
+					${api.description!''}
+				</td>
+				<td>
+					${api.path!''}
+				</td>
+				<td>
+					<#if subscriptionMode!false>
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_subscriptions.selectPlan}" size="auto" bodyClass="p-3" btnIcon="arrow-right" btnTitleShow=false />
+					<#else>
+						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-	        </td>
-        </tr>
-        </#list>
-    </@table>
+						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=downloadOpenapi&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.downloadOpenapi}' buttonIcon='download' hideTitle=['all']  />
 
-    <@paginationAdmin paginator=paginator />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageInstances=&filter_uuid_api=${api.uuid}" targetElement="#instance-result-container" id="list-instance-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewInstances}" size="auto" bodyClass="p-3" btnIcon="eye" btnTitleShow=false />
 
+						<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=createInstance&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_instances.buttonAdd}' buttonIcon='cloud' hideTitle=['all']  />
+
+						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=createPlan&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_plans.buttonAdd}' buttonIcon='list' hideTitle=['all']  />
+
+						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveApi&uuid=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+					</#if>
+				</td>
+			</tr>
+			</#list>
+		</@table>
+
+		<@paginationAdmin paginator=paginator />
+	</div>
   </@boxBody>
 </@box>

@@ -35,6 +35,8 @@
  
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -79,6 +81,7 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
 
     // Parameters
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
+    private static final String PARAMETER_ID_CLIENT = "uuid_client";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS = "apimanager.manage_subscriptions.pageTitle";
@@ -204,6 +207,10 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
     public String getCreateSubscription( HttpServletRequest request )
     {
         _subscription = ( _subscription != null ) ? _subscription : new Subscription(  );
+        final Client client = new Client();
+        client.setUuid( request.getParameter( PARAMETER_ID_CLIENT ) );
+        _subscription.setClient( client );
+        _subscription.setPlan( new Plan() );
 
         Map<String, Object> model = getModel(  );
         model.put( MARK_SUBSCRIPTION, _subscription );

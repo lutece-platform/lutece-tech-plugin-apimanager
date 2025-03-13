@@ -51,54 +51,54 @@
 		</#if> 
 	</#list>
 
-	
-    <div class="clearfix"></div>
-    <@table>
-        <tr>
-             <th>#i18n{apimanager.manage_instances.columnHost}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=host'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_instances.columnPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=port'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_instances.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_instances.columnEnvironnement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_instances.columnHealthPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_path'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_instances.columnHealthPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_port'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_instances.columnHealthFreq}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_freq'><i class='fas fa-sort'></i></a></th>
-            <th>#i18n{portal.util.labelActions}</th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <#list instance_list as instance >
-        <tr>
-            <td>
-				${instance.host!''}
-			</td>
-            <td>
-				${instance.port!''}
-			</td>
-            <td>
-				${instance.name!''}
-			</td>
-            <td>
-				${instance.environnement!''}
-			</td>
-            <td>
-				${instance.healthPath!''}
-			</td>
-            <td>
-				${instance.healthPort!''}
-			</td>
-            <td>
-				${instance.healthFreq!''}
-			</td>
-        	<td>
-				<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-						
-				<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+	<div id="instance-result-container">
+		<div class="clearfix"></div>
+		<@table>
+			<tr>
+				 <th>#i18n{apimanager.manage_instances.columnHost}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=host'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_instances.columnPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=port'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_instances.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_instances.columnEnvironnement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_instances.columnHealthPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_path'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_instances.columnHealthPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_port'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_instances.columnHealthFreq}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_freq'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{portal.util.labelActions}</th>
+			</tr>
+			<@tableHeadBodySeparator />
+			<#list instance_list as instance >
+			<tr>
+				<td>
+					${instance.host!''}
+				</td>
+				<td>
+					${instance.port!''}
+				</td>
+				<td>
+					${instance.name!''}
+				</td>
+				<td>
+					${instance.environnement!''}
+				</td>
+				<td>
+					${instance.healthPath!''}
+				</td>
+				<td>
+					${instance.healthPort!''}
+				</td>
+				<td>
+					${instance.healthFreq!''}
+				</td>
+				<td>
+					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-	        </td>
-        </tr>
-        </#list>
-    </@table>
+					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 
-    <@paginationAdmin paginator=paginator />
+				</td>
+			</tr>
+			</#list>
+		</@table>
 
+		<@paginationAdmin paginator=paginator />
+	</div>
   </@boxBody>
 </@box>

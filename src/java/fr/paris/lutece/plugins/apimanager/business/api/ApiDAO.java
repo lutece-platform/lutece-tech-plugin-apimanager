@@ -98,6 +98,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             
             daoUtil.executeUpdate( );
             api.setUuid( uuid );
+			this.insertTags( uuid, api.getTags(), plugin );
         } catch (JsonProcessingException e) {
             throw new AppException(e.getMessage(), e);
         }
@@ -117,7 +118,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 	
 	        if ( daoUtil.next( ) )
 	        {
-	            api = loadFromDaoUtil( daoUtil );
+	            api = loadFromDaoUtil( daoUtil, plugin );
 	        }
 	
 	        return Optional.ofNullable( api );
@@ -136,6 +137,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
         {
 	        daoUtil.setString( 1 , nKey );
 	        daoUtil.executeUpdate( );
+			this.deleteTags(nKey, plugin);
         }
     }
 
@@ -156,6 +158,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 	        daoUtil.setString( nIndex , api.getUuid( ) );
 	
 	        daoUtil.executeUpdate( );
+			this.deleteAndInsertTags(api.getUuid(), api.getTags(), plugin);
         } catch (JsonProcessingException e) {
 			throw new AppException(e.getMessage(), e);
 		}
@@ -174,9 +177,9 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 	
 	        while ( daoUtil.next(  ) )
 	        {
-				apiList.add( loadFromDaoUtil( daoUtil ) );
+				apiList.add( loadFromDaoUtil( daoUtil, plugin ) );
 	        }
-	
+
 	        return apiList;
         } catch (JsonProcessingException e) {
 			throw new AppException(e.getMessage(), e);
@@ -265,7 +268,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 	        	daoUtil.executeQuery(  );
 	        	while ( daoUtil.next(  ) )
 		        {
-		            apiList.add( loadFromDaoUtil( daoUtil ) );
+		            apiList.add( loadFromDaoUtil( daoUtil, plugin ) );
 		        }
 	        } catch (JsonProcessingException e) {
 				throw new AppException(e.getMessage(), e);
@@ -276,12 +279,13 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 	}
 
 
-	private Api loadFromDaoUtil (DAOUtil daoUtil) throws JsonProcessingException {
+	private Api loadFromDaoUtil (DAOUtil daoUtil, Plugin plugin) throws JsonProcessingException {
 		
 		Api api = new Api(  );
 		int nIndex = 1;
-		
-		api.setUuid( daoUtil.getString( nIndex++ ) );
+
+		final String uuid = daoUtil.getString(nIndex++);
+		api.setUuid( uuid );
 		api.setName( daoUtil.getString( nIndex++ ) );
 		api.setDescription( daoUtil.getString( nIndex++ ) );
 		api.setPath( daoUtil.getString( nIndex++ ) );
@@ -289,6 +293,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 		if(StringUtils.isNotEmpty(jsonMap)) {
 			api.setOpenapi( objectMapper.readValue(jsonMap, new TypeReference<Map<String, Object>>() { }));
 		}
+		api.setTags(this.selectTags(uuid, plugin));
 
 		return api;
 	}

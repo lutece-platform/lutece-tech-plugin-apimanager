@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.instance;
 
+import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 
 import javax.validation.constraints.Size;
@@ -40,7 +41,7 @@ import java.io.Serializable;
 /**
  * This is the business class for the object Instance
  */ 
-public class Instance implements Serializable
+public class Instance extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 

@@ -73,7 +73,9 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
      */
 	public PlanDAO() {
 
-		initMapSql(Plan.class); //Maps with name and type of each databases column associated to the business class attributes 
+		initMapSql(Plan.class); //Maps with name and type of each databases column associated to the business class attributes
+		_mapSql.remove("api");
+		_mapSql.put("uuid_api", "String");
 	}
 
     /**

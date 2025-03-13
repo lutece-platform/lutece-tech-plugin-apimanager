@@ -33,13 +33,15 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.client;
 
+import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 /**
  * This is the business class for the object Client
  */ 
-public class Client implements Serializable
+public class Client extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 

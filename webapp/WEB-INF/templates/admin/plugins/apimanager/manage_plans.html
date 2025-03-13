@@ -63,70 +63,70 @@
 		</#if> 
 	</#list>
 
-	
-    <div class="clearfix"></div>
-    <@table>
-        <tr>
-             <th>#i18n{apimanager.manage_plans.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnIdRateLimiting}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_rate_limiting'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnIdClientHttpConfiguration}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_client_http_configuration'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnRequestTimeout}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=request_timeout'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnLoadBalancingStrategy}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=load_balancing_strategy'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnOauthEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=oauth_enabled'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnIdOauthConfiguration}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_oauth_configuration'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
-            <th>#i18n{portal.util.labelActions}</th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <#list plan_list as plan >
-        <tr>
-            <td>
-				${plan.name!''}
-			</td>
-            <td>
-				${plan.description!''}
-			</td>
-            <td>
-				${plan.active?c!''}
-			</td>
-            <td>
-				${plan.version!''}
-			</td>
-            <td>
-				${plan.idRateLimiting!''}
-			</td>
-            <td>
-				${plan.idClientHttpConfiguration!''}
-			</td>
-            <td>
-				${plan.requestTimeout!''}
-			</td>
-            <td>
-				${plan.loadBalancingStrategy!''}
-			</td>
-            <td>
-				${plan.oauthEnabled?c!''}
-			</td>
-            <td>
-				${plan.idOauthConfiguration!''}
-			</td>
-            <td>
-				${plan.traceEnabled?c!''}
-			</td>
-        	<td>
-				<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=modifyPlan&id=${plan.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-						
-				<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?action=confirmRemovePlan&id=${plan.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+	<div id="plan-result-container">
+		<div class="clearfix"></div>
+		<@table>
+			<tr>
+				 <th>#i18n{apimanager.manage_plans.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnIdRateLimiting}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_rate_limiting'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnIdClientHttpConfiguration}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_client_http_configuration'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnRequestTimeout}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=request_timeout'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnLoadBalancingStrategy}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=load_balancing_strategy'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnOauthEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=oauth_enabled'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnIdOauthConfiguration}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=id_oauth_configuration'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{portal.util.labelActions}</th>
+			</tr>
+			<@tableHeadBodySeparator />
+			<#list plan_list as plan >
+			<tr>
+				<td>
+					${plan.name!''}
+				</td>
+				<td>
+					${plan.description!''}
+				</td>
+				<td>
+					${plan.active?c!''}
+				</td>
+				<td>
+					${plan.version!''}
+				</td>
+				<td>
+					${plan.idRateLimiting!''}
+				</td>
+				<td>
+					${plan.idClientHttpConfiguration!''}
+				</td>
+				<td>
+					${plan.requestTimeout!''}
+				</td>
+				<td>
+					${plan.loadBalancingStrategy!''}
+				</td>
+				<td>
+					${plan.oauthEnabled?c!''}
+				</td>
+				<td>
+					${plan.idOauthConfiguration!''}
+				</td>
+				<td>
+					${plan.traceEnabled?c!''}
+				</td>
+				<td>
+					<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=modifyPlan&id=${plan.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-	        </td>
-        </tr>
-        </#list>
-    </@table>
+					<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?action=confirmRemovePlan&id=${plan.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 
-    <@paginationAdmin paginator=paginator />
+				</td>
+			</tr>
+			</#list>
+		</@table>
 
+		<@paginationAdmin paginator=paginator />
+	</div>
   </@boxBody>
 </@box>

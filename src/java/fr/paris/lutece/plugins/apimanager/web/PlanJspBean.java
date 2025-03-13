@@ -35,6 +35,7 @@
  
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -79,6 +80,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
 
     // Parameters
     private static final String PARAMETER_ID_PLAN = "uuid";
+    private static final String PARAMETER_ID_API = "uuid_api";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -204,6 +206,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     public String getCreatePlan( HttpServletRequest request )
     {
         _plan = ( _plan != null ) ? _plan : new Plan(  );
+        final Api api = new Api();
+        api.setUuid(request.getParameter(PARAMETER_ID_API));
+        _plan.setApi(api);
 
         Map<String, Object> model = getModel(  );
         model.put( MARK_PLAN, _plan );

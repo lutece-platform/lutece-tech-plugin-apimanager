@@ -8,10 +8,12 @@
         <@input type="hidden" value="${token}" name="token" />
 
 			<@formGroup labelFor='uuid_client' labelKey='#i18n{apimanager.subscription.labelIdClient}' mandatory=true>
-					<@input type='text' id='uuid_client' name='uuid_client'  value=subscription.idClient!'' tabIndex='0' />
+					<@input type='text' id='uuid_client' name='uuid_client'  value=subscription.client.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
 			</@formGroup>
 			<@formGroup labelFor='uuid_plan' labelKey='#i18n{apimanager.subscription.labelIdPlan}' mandatory=true>
-					<@input type='text' id='uuid_plan' name='uuid_plan'  value=subscription.idPlan!'' tabIndex='1' />
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageApis=&subscriptionMode=true" targetElement="#api-result-container" id="list-api" title=tags btnTitle="#i18n{apimanager.manage_subscriptions.selectPlan}" size="auto" bodyClass="p-3" btnIcon="arrow-right" />
+
+					<@input type='text' id='uuid_plan' name='uuid_plan' tabIndex='1' readonly=true class='form-control-plaintext' />
 			</@formGroup>
 			<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.subscription.labelTraceEnabled}' mandatory=true>
 		          	<@checkBox id="trace_enabled" name="trace_enabled"  value="1" checked=subscription.traceEnabled!false tabIndex='2' />
@@ -21,3 +23,11 @@
     </@tform>
 	</@boxBody>
 </@box>
+
+<script type="text/javascript">
+	$(function() {
+		$('.form-control-plaintext').each(function() {
+			$(this).removeClass('form-control');
+		});
+	});
+</script>

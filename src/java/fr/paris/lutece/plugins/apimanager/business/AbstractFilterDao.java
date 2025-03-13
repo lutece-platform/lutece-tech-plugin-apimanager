@@ -35,13 +35,20 @@ package fr.paris.lutece.plugins.apimanager.business;
 
 
 import java.lang.reflect.Method;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.sql.DAOUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 
@@ -62,7 +69,12 @@ public abstract class AbstractFilterDao {
 	private final static String SQL_AND = " AND ";
 	private final static String SQL_ASC =" ASC ";
 	private final static String SQL_DESC =" DESC ";
-	
+
+	private final static String SQL_QUERY_INSERT_TAG = "INSERT INTO apimanager_tag ( uuid, uuid_ref, value ) VALUES ";
+	private final static String SQL_QUERY_INSERT_VALUES_PLACEHOLDER = " ( '${uuid}', '${uuid_ref}', '${value}' )";
+	private final static String SQL_QUERY_DELETE_UUID_REF_TAGS = "DELETE FROM apimanager_tag WHERE uuid_ref = ?";
+	private final static String SQL_QUERY_SELECT_UUID_REF_TAG_VALUES = "SELECT value FROM apimanager_tag WHERE uuid_ref = ?";
+
 	//types only allowed for research
 	protected final static String TYPE_DATE = "Date";
 	protected final static String TYPE_STRING = "String";
@@ -244,6 +256,70 @@ public abstract class AbstractFilterDao {
 				}
 	        }
 	}
-	
+
+    /**
+     * Insert new tag records in the table
+     * @param uuidref the uuid_ref
+     * @param tags the tag list
+     * @param plugin the plugin
+     */
+    protected void insertTags(final String uuidref, final List<String> tags, final Plugin plugin) {
+        if (StringUtils.isEmpty(uuidref) || CollectionUtils.isEmpty(tags)) {
+            return;
+        }
+
+        final String sql = SQL_QUERY_INSERT_TAG +
+                           tags.stream().map(tag -> SQL_QUERY_INSERT_VALUES_PLACEHOLDER.replace("${uuid", UUID.randomUUID().toString())
+                                                                                       .replace("${uuid_ref}", uuidref)
+                                                                                       .replace("${tag}", tag)).collect(Collectors.joining(","));
+        try (DAOUtil daoUtil = new DAOUtil(sql, Statement.NO_GENERATED_KEYS, plugin)) {
+            daoUtil.executeUpdate();
+        }
+    }
+
+    /**
+     * Select tags with uuid_ref
+     * @param uuidRef the uuid_ref
+     * @param plugin the plugin
+     * @return a list of tags
+     */
+    protected List<String> selectTags(final String uuidRef, final Plugin plugin) {
+        final List<String> tagList = new ArrayList<>(  );
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_UUID_REF_TAG_VALUES, plugin ) )
+        {
+            daoUtil.setString(1, uuidRef);
+            daoUtil.executeQuery( );
+            while ( daoUtil.next(  ) )
+            {
+                tagList.add( daoUtil.getString(1) );
+            }
+        }
+		return tagList;
+    }
+
+    /**
+     * Delete tags with uuid_ref
+     * @param uuidRef the uuid_ref
+     * @param plugin the plugin
+     */
+    protected void deleteTags(final String uuidRef, final Plugin plugin) {
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_UUID_REF_TAGS, plugin ) )
+        {
+            daoUtil.setString(1, uuidRef);
+            daoUtil.executeUpdate();
+        }
+    }
+
+    /**
+     * Delete existing tags and insert new ones
+     * @param uuidRef the uuid_ref
+     * @param tags the tag list
+     * @param plugin the plugin
+     */
+    protected void deleteAndInsertTags(final String uuidRef, final List<String> tags, final Plugin plugin)
+    {
+        this.deleteTags(uuidRef, plugin);
+        this.insertTags(uuidRef, tags, plugin);
+    }
 }
  
