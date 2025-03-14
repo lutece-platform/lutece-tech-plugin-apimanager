@@ -55,8 +55,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPlanRateLimitingDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_rate_limiting ( uuid, max_requests, time_window, decrement, criteria, implementation, backend ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_plan_rate_limiting";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_rate_limiting ( uuid, max_requests, time_window, decrement, criteria, implementation, backend ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_rate_limiting WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_rate_limiting SET max_requests = ?, time_window = ?, decrement = ?, criteria = ?, implementation = ?, backend = ? WHERE uuid = ?";
    
@@ -183,7 +185,7 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     {
         List<String> planRateLimitingList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

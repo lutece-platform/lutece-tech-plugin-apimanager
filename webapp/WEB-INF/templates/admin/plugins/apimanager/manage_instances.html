@@ -37,7 +37,10 @@
 	    			<@formGroup labelFor='filter_health_freq' labelKey='#i18n{apimanager.manage_instances.columnHealthFreq}'>
 				    		<@input type='number' id='filter_health_freq' name='filter_health_freq' placeHolder='#i18n{apimanager.manage_instances.columnHealthFreq}' value=mapFilterCriteria["health_freq"]!'' tabIndex='7' />
 				    </@formGroup>
-			
+	    			<@formGroup labelFor='filter_tag' labelKey='#i18n{apimanager.global.labelTags}'>
+				    		<@input type='text' id='filter_tag' name='filter_tag'  maxlength=50  placeHolder='#i18n{apimanager.global.labelTags}' value=mapFilterCriteria["tag"]!'' tabIndex='4' />
+				    </@formGroup>
+
 		<@button type='submit' title='Search' buttonIcon='search'/>							
     </@tform>
     </@offcanvas>
@@ -62,6 +65,7 @@
 				 <th>#i18n{apimanager.manage_instances.columnHealthPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_path'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnHealthPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_port'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnHealthFreq}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_freq'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.global.labelTags}</th>
 				<th>#i18n{portal.util.labelActions}</th>
 			</tr>
 			<@tableHeadBodySeparator />
@@ -87,6 +91,11 @@
 				</td>
 				<td>
 					${instance.healthFreq!''}
+				</td>
+				<td>
+					<#list instance.tags as tag>
+						<span class="badge bg-primary px-2 me-1" id="tag-${instance?index}-${tag?index}">${tag}</span>
+					</#list>
 				</td>
 				<td>
 					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />

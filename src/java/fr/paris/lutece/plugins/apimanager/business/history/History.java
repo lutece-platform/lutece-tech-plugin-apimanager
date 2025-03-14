@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.apimanager.business.history;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Timestamp;
 import javax.validation.constraints.NotNull;
 /**
  * This is the business class for the object History
@@ -50,7 +51,7 @@ public class History implements Serializable
     private String _strUuidRef;
 
     @NotNull( message = "#i18n{portal.validation.message.notEmpty}" )
-    private Date _dateDate;
+    private Timestamp _dateDate;
     
     private HistoryTypeEnum _type;
     
@@ -95,7 +96,7 @@ public class History implements Serializable
      * Returns the Date
      * @return The Date
      */
-    public Date getDate( )
+    public Timestamp getDate( )
     {
         return _dateDate;
     }
@@ -104,7 +105,7 @@ public class History implements Serializable
      * Sets the Date
      * @param dateDate The Date
      */ 
-    public void setDate( Date dateDate )
+    public void setDate( Timestamp dateDate )
     {
         _dateDate = dateDate;
     }

@@ -35,6 +35,8 @@
  
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -47,6 +49,7 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -79,6 +82,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
 
     // Parameters
     private static final String PARAMETER_ID_CLIENT = "uuid";
+    private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CLIENTS = "apimanager.manage_clients.pageTitle";
@@ -223,7 +227,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     public String doCreateClient( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _client, request, getLocale( ) );
-        
+        _client.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_CLIENT ) )
         {
@@ -237,6 +241,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
         }
 
         ClientHome.create( _client );
+        HistoryHome.create(buildNewHistory(_client.getUuid(), HistoryTypeEnum.CREATE));
         addInfo( INFO_CLIENT_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -275,6 +280,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
         
         
         ClientHome.remove( uuid );
+        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
         addInfo( INFO_CLIENT_REMOVED, getLocale(  ) );
         resetListId( );
 
@@ -320,8 +326,8 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     public String doModifyClient( HttpServletRequest request ) throws AccessDeniedException
     {   
         populate( _client, request, getLocale( ) );
-		
-		
+        _client.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
+
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_CLIENT ) )
         {
             throw new AccessDeniedException ( "Invalid security token" );
@@ -334,6 +340,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
         }
 
         ClientHome.update( _client );
+        HistoryHome.create(buildNewHistory(_client.getUuid(), HistoryTypeEnum.UPDATE));
         addInfo( INFO_CLIENT_UPDATED, getLocale(  ) );
         resetListId( );
 

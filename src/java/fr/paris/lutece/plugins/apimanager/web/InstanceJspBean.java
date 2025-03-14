@@ -36,6 +36,8 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -48,6 +50,7 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -81,6 +84,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     // Parameters
     private static final String PARAMETER_ID_INSTANCE = "uuid";
     private static final String PARAMETER_ID_API = "uuid_api";
+    private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_INSTANCES = "apimanager.manage_instances.pageTitle";
@@ -228,6 +232,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     public String doCreateInstance( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _instance, request, getLocale( ) );
+        _instance.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_INSTANCE ) )
         {
@@ -241,6 +246,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         }
 
         InstanceHome.create( _instance );
+        HistoryHome.create(buildNewHistory(_instance.getUuid(), HistoryTypeEnum.CREATE));
         addInfo( INFO_INSTANCE_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -279,6 +285,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         
         
         InstanceHome.remove( uuid );
+        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
         addInfo( INFO_INSTANCE_REMOVED, getLocale(  ) );
         resetListId( );
 
@@ -323,8 +330,8 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     public String doModifyInstance( HttpServletRequest request ) throws AccessDeniedException
     {   
         populate( _instance, request, getLocale( ) );
-		
-		
+        _instance.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
+
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_INSTANCE ) )
         {
             throw new AccessDeniedException ( "Invalid security token" );
@@ -337,6 +344,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         }
 
         InstanceHome.update( _instance );
+        HistoryHome.create(buildNewHistory(_instance.getUuid(), HistoryTypeEnum.UPDATE));
         addInfo( INFO_INSTANCE_UPDATED, getLocale(  ) );
         resetListId( );
 

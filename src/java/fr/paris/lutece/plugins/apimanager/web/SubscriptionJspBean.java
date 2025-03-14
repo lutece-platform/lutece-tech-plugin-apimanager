@@ -36,6 +36,8 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -244,6 +246,8 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         }
 
         SubscriptionHome.create( _subscription );
+        HistoryHome.create(buildNewHistory(_subscription.getUuid(), HistoryTypeEnum.CREATE));
+
         addInfo( INFO_SUBSCRIPTION_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -282,6 +286,8 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         
         
         SubscriptionHome.remove( uuid );
+        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
+
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale(  ) );
         resetListId( );
 
@@ -340,6 +346,8 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         }
 
         SubscriptionHome.update( _subscription );
+        HistoryHome.create(buildNewHistory(_subscription.getUuid(), HistoryTypeEnum.UPDATE));
+
         addInfo( INFO_SUBSCRIPTION_UPDATED, getLocale(  ) );
         resetListId( );
 

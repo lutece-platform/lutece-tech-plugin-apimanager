@@ -39,6 +39,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -52,6 +54,7 @@ import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -91,6 +94,8 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     private static final String PARAMETER_DESCRIPTION = "description";
     private static final String PARAMETER_PATH = "path";
     private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
+    private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
+
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_APIS = "apimanager.manage_apis.pageTitle";
@@ -243,7 +248,6 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     public String doCreateApi( MultipartHttpServletRequest request) throws AccessDeniedException
     {
         populate( _api, request, getLocale( ) );
-
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_API ) )
         {
             throw new AccessDeniedException ( "Invalid security token" );
@@ -256,6 +260,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         }
 
         ApiHome.create( _api );
+        HistoryHome.create(buildNewHistory(_api.getUuid(), HistoryTypeEnum.CREATE));
         addInfo( INFO_API_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -293,6 +298,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         String uuid = request.getParameter( PARAMETER_ID_API );
 
         ApiHome.remove( uuid );
+        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
         addInfo( INFO_API_REMOVED, getLocale(  ) );
         resetListId( );
 
@@ -350,6 +356,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         }
 
         ApiHome.update( _api );
+        HistoryHome.create(buildNewHistory(_api.getUuid(), HistoryTypeEnum.UPDATE));
         addInfo( INFO_API_UPDATED, getLocale(  ) );
         resetListId( );
 
@@ -383,6 +390,6 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
                 }
             }
         }
-
+        _api.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
     }
 }

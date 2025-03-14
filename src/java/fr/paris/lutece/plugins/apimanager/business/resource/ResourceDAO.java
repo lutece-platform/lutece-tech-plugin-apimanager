@@ -56,8 +56,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb ) VALUES ( ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_resource";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_resource WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ? WHERE uuid = ?";
    
@@ -178,7 +180,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     {
         List<String> resourceList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

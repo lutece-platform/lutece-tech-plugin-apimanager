@@ -22,9 +22,21 @@ DROP TABLE IF EXISTS apimanager_history;
 CREATE TABLE apimanager_history (
 uuid varchar(50),
 uuid_ref varchar(50),
-date date,
+date timestamp(3),
 type varchar(50) default '',
 user varchar(50) default '',
+PRIMARY KEY (uuid)
+);
+
+--
+-- Structure for table apimanager_tag
+--
+
+DROP TABLE IF EXISTS apimanager_tag;
+CREATE TABLE apimanager_tag (
+uuid varchar(50),
+uuid_ref varchar(50),
+value varchar(50),
 PRIMARY KEY (uuid)
 );
 

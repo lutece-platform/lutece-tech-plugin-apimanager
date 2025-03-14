@@ -34,12 +34,17 @@
  
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.history.History;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -66,8 +71,8 @@ public abstract class AbstractJspBean <S, T> extends MVCAdminJspBean
 
     //Search
     private static final String FILTER_ATTRIBUTES_PREFIX = "filter_";
-    private static final String SORT_ATTRIBUTES_ASC = " ASC ";
-    private static final String SORT_ATTRIBUTES_DESC = " DESC ";
+    protected static final String SORT_ATTRIBUTES_ASC = " ASC ";
+    protected static final String SORT_ATTRIBUTES_DESC = " DESC ";
     
     //Variables
     private String _strCurrentPageIndex;
@@ -170,5 +175,14 @@ public abstract class AbstractJspBean <S, T> extends MVCAdminJspBean
 
     	 return _strSortMode;
     	 
+     }
+
+     protected History buildNewHistory(final String uuidRef, final HistoryTypeEnum type) {
+         final History history = new History();
+         history.setUuidRef(uuidRef);
+         history.setType(type);
+         history.setDate(Timestamp.from(Instant.now()));
+         history.setUser(getUser().getEmail());
+         return history;
      }
 }

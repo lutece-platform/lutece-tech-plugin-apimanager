@@ -53,6 +53,14 @@
             <feature-url>jsp/admin/plugins/apimanager/ManageApis.jsp</feature-url>
             <feature-icon-url></feature-icon-url>
         </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_HISTORY_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageHistory.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageHistory.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageHistory.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
     </admin-features>
 
     <!-- XPages parameters -->

@@ -55,8 +55,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IPlanHeaderMatchingDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_header_matching ( uuid, name, value, type ) VALUES ( ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_plan_header_matching";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_header_matching ( uuid, name, value, type ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_header_matching WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_header_matching SET name = ?, value = ?, type = ? WHERE uuid = ?";
    
@@ -177,7 +179,7 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
     {
         List<String> planHeaderMatchingList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

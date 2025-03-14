@@ -1,0 +1,40 @@
+
+<@box>
+	<@boxBody>
+    <@messages infos=infos />
+    <@paginationAdmin paginator=paginator combo=1 />
+
+	<div id="history-result-container">
+		<div class="clearfix"></div>
+		<@table>
+			<tr>
+				<th>#i18n{apimanager.manage_history.columnDate}</th>
+				<th>#i18n{apimanager.manage_history.columnType}</th>
+				<th>#i18n{apimanager.manage_history.columnUser}</th>
+			</tr>
+			<@tableHeadBodySeparator />
+			<#list history_list as history >
+			<tr>
+				<td>
+					${history.date?string["dd/MM/yyyy HH:mm:ss"]!''}
+				</td>
+				<td>
+					<#if history.type.name() == "CREATE">
+						<span class="badge bg-success"> ${history.type.name()!} </span>
+					<#elseif history.type.name() == "UPDATE">
+						<span class="badge bg-warning"> ${history.type.name()!} </span>
+					<#elseif history.type.name() == "DELETE">
+						<span class="badge bg-danger"> ${history.type.name()!} </span>
+					</#if>
+				</td>
+				<td>
+					${history.user!''}
+				</td>
+			</tr>
+			</#list>
+		</@table>
+
+		<@paginationAdmin paginator=paginator />
+	</div>
+  </@boxBody>
+</@box>

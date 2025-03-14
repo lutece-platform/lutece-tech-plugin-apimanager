@@ -55,8 +55,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanOauthConfigurationDAO extends AbstractFilterDao implements IPlanOauthConfigurationDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_oauth_configuration ( uuid, jwt_issuer, jwt_validity ) VALUES ( ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_plan_oauth_configuration";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_oauth_configuration ( uuid, jwt_issuer, jwt_validity ) VALUES ( ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_oauth_configuration WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_oauth_configuration SET jwt_issuer = ?, jwt_validity = ? WHERE uuid = ?";
    
@@ -176,7 +178,7 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
     {
         List<String> planOauthConfigurationList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

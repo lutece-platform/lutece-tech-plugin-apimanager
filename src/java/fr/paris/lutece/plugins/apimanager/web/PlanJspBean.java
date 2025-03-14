@@ -36,6 +36,8 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -242,6 +244,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         }
 
         PlanHome.create( _plan );
+        HistoryHome.create(buildNewHistory(_plan.getUuid(), HistoryTypeEnum.CREATE));
         addInfo( INFO_PLAN_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -280,6 +283,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         
         
         PlanHome.remove( uuid );
+        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
         addInfo( INFO_PLAN_REMOVED, getLocale(  ) );
         resetListId( );
 
@@ -338,6 +342,8 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         }
 
         PlanHome.update( _plan );
+        HistoryHome.create(buildNewHistory(_plan.getUuid(), HistoryTypeEnum.UPDATE));
+
         addInfo( INFO_PLAN_UPDATED, getLocale(  ) );
         resetListId( );
 

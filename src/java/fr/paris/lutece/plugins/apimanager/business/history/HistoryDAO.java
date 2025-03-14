@@ -56,8 +56,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_history ( uuid, uuid_ref, date, type, user ) VALUES ( ?, ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_history";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_history ( uuid, uuid_ref, date, type, user ) VALUES ( ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_history WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_history SET uuid_ref = ?, date = ?, type = ?, user = ? WHERE uuid = ?";
    
@@ -88,7 +90,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
 			final String uuid = UUID.randomUUID().toString();
 			daoUtil.setString( nIndex++, uuid );
 			daoUtil.setString( nIndex++, history.getUuidRef( ) );
-            daoUtil.setDate( nIndex++ , history.getDate( ) );
+            daoUtil.setTimestamp( nIndex++ , history.getDate( ) );
             daoUtil.setString( nIndex++ , history.getType( ).name() );
             daoUtil.setString( nIndex++ , history.getUser( ) );
 
@@ -143,7 +145,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
 	        int nIndex = 1;
 
             	daoUtil.setString( nIndex++, history.getUuidRef( ) );
-            	daoUtil.setDate( nIndex++ , history.getDate( ) );
+            	daoUtil.setTimestamp( nIndex++ , history.getDate( ) );
             	daoUtil.setString( nIndex++ , history.getType( ).name() );
             	daoUtil.setString( nIndex++ , history.getUser( ) );
 	        daoUtil.setString( nIndex , history.getUuid( ) );
@@ -180,7 +182,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     {
         List<String> historyList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
@@ -270,7 +272,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
 		
 		history.setUuid( daoUtil.getString( nIndex++ ) );
         history.setUuidRef( daoUtil.getString( nIndex++ ) );
-		history.setDate( daoUtil.getDate( nIndex++ ) );
+		history.setDate( daoUtil.getTimestamp( nIndex++ ) );
 		final String typeStr = daoUtil.getString(nIndex++);
 		history.setType(typeStr != null ? HistoryTypeEnum.valueOf(typeStr) : null);
 		history.setUser( daoUtil.getString( nIndex ) );

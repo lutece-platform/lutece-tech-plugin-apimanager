@@ -56,7 +56,9 @@ import org.apache.commons.lang3.StringUtils;
 public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 {
     // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_client ( uuid, name, client_id, client_secret, code_app, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+	private static final String TABLE_NAME = "apimanager_client";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_client ( uuid, name, client_id, client_secret, code_app, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_client WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_client SET name = ?, client_id = ?, client_secret = ?, code_app = ?, trace_enabled = ? WHERE uuid = ?";
    
@@ -184,7 +186,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
     {
         List<String> clientList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

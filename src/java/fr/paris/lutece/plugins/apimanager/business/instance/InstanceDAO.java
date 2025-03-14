@@ -56,8 +56,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_instance";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET uuid_api = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
    
@@ -192,7 +194,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     {
         List<String> instanceList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

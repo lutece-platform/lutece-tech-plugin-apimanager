@@ -39,6 +39,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.ReferenceList;
@@ -60,6 +61,8 @@ import org.apache.commons.lang3.StringUtils;
 public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 {
     // Constants
+	private static final String TABLE_NAME = "apimanager_api";
+
     private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, openapi ) VALUES ( ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_api WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, openapi = ? WHERE uuid = ?";
@@ -194,7 +197,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     {
         List<String> apiList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

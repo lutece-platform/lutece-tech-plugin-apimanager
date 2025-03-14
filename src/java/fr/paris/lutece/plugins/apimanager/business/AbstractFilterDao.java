@@ -45,6 +45,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 
+import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -69,6 +70,9 @@ public abstract class AbstractFilterDao {
 	private final static String SQL_AND = " AND ";
 	private final static String SQL_ASC =" ASC ";
 	private final static String SQL_DESC =" DESC ";
+	private final static String SQL_EXISTS = " EXISTS( ${query} ) ";
+	private final static String SQL_SELECT = " SELECT ";
+	private final static String SQL_FROM = " FROM ";
 
 	private final static String SQL_QUERY_INSERT_TAG = "INSERT INTO apimanager_tag ( uuid, uuid_ref, value ) VALUES ";
 	private final static String SQL_QUERY_INSERT_VALUES_PLACEHOLDER = " ( '${uuid}', '${uuid_ref}', '${value}' )";
@@ -84,7 +88,13 @@ public abstract class AbstractFilterDao {
 	//List of constraints
 	private final static List<String> _listPrefixToRemove = Arrays.asList(PREFIX_GET,PREFIX_IS);
 	protected final static List<String> _listTypeAllowedForSearch = Arrays.asList(TYPE_DATE,TYPE_STRING,TYPE_BOOLEAN,TYPE_INT);
-	
+
+	private final static String FILTER_TAG = "tag";
+	private final static String TAG_TABLE = "apimanager_tag";
+	private final static String UUID_COLUMN = "uuid";
+	private final static String UUID_REF_COLUMN = "uuid_ref";
+	private final static String VALUE_COLUMN = "value";
+
 	
 	 /**
      *  Preparation of filterStatement
@@ -94,32 +104,32 @@ public abstract class AbstractFilterDao {
 	 * @return a string with the WHERE part and the ORDER BY part of the sql statement
      */
 	
-	protected String prepareSelectStatement(String SQL_QUERY_SELECTALL_ID,Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode) {
+	protected String prepareSelectStatement(String SQL_QUERY_SELECTALL_ID,String tableName,Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode) {
 		
 		
 		StringBuilder builder = new StringBuilder();
 
         builder.append(SQL_QUERY_SELECTALL_ID);
-        builder.append(addWhereClauses(mapFilterCriteria));
+        builder.append(addWhereClauses(mapFilterCriteria, tableName));
         builder.append(addOrderByClause(strColumnToOrder,strSortMode));
 		
 		
-		return  builder.toString();	
+		return  builder.toString();
 		
 	}
 
-	 /**
+	/**
      *  add Where clause to the filterStatement
      *  @param mapFilterCriteria contains name and value of each where clause
      *  @return the where part of the filterStatement
      */
 	
-	protected String addWhereClauses(Map<String, String> mapFilterCriteria) {
+	protected String addWhereClauses(Map<String, String> mapFilterCriteria, String tableName) {
 		
 		StringBuilder WhereClauses = new StringBuilder();
 		
 		if(!mapFilterIsEmpty(mapFilterCriteria)) {
-			
+
 			WhereClauses.append(SQL_WHERE);
 			
 			for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
@@ -136,7 +146,17 @@ public abstract class AbstractFilterDao {
 					}
 				}
 			}
-			
+			final String tagFilter = mapFilterCriteria.get(FILTER_TAG);
+			if(StringUtils.isNotBlank(tagFilter)) {
+				WhereClauses.append(SQL_AND);
+
+                final String existsInnerQuery = SQL_SELECT + TAG_TABLE + "." + UUID_COLUMN +
+                                                SQL_FROM + TAG_TABLE +
+                                                SQL_WHERE + SQL_AND + tableName + "." + UUID_COLUMN + "=" + TAG_TABLE + "." + UUID_REF_COLUMN +
+                                                SQL_AND + TAG_TABLE + "." + VALUE_COLUMN + "='" + tagFilter + "'";
+
+				WhereClauses.append(SQL_EXISTS.replace("${query}", existsInnerQuery));
+			}
 		}
 		
 		return WhereClauses.toString();
@@ -269,9 +289,9 @@ public abstract class AbstractFilterDao {
         }
 
         final String sql = SQL_QUERY_INSERT_TAG +
-                           tags.stream().map(tag -> SQL_QUERY_INSERT_VALUES_PLACEHOLDER.replace("${uuid", UUID.randomUUID().toString())
+                           tags.stream().map(tag -> SQL_QUERY_INSERT_VALUES_PLACEHOLDER.replace("${uuid}", UUID.randomUUID().toString())
                                                                                        .replace("${uuid_ref}", uuidref)
-                                                                                       .replace("${tag}", tag)).collect(Collectors.joining(","));
+                                                                                       .replace("${value}", tag)).collect(Collectors.joining(","));
         try (DAOUtil daoUtil = new DAOUtil(sql, Statement.NO_GENERATED_KEYS, plugin)) {
             daoUtil.executeUpdate();
         }

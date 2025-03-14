@@ -57,8 +57,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class SubscriptionDAO extends AbstractFilterDao implements ISubscriptionDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, trace_enabled ) VALUES ( ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_subscription";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, trace_enabled ) VALUES ( ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, trace_enabled = ? WHERE uuid = ?";
 
@@ -179,7 +181,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     {
         List<String> subscriptionList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

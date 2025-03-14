@@ -56,8 +56,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, uuid_header_matching, oauth_enabled, uuid_oauth_configuration, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_plan";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, uuid_header_matching, oauth_enabled, uuid_oauth_configuration, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET uuid_api = ?, name = ?, description = ?, active = ?, version = ?, uuid_rate_limiting = ?, uuid_client_http_configuration = ?, request_timeout = ?, load_balancing_strategy = ?, uuid_header_matching = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, trace_enabled = ? WHERE uuid = ?";
    
@@ -200,7 +202,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     {
         List<String> planList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {

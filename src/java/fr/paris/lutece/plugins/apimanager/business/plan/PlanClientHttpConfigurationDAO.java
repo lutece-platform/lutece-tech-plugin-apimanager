@@ -55,8 +55,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao implements IPlanClientHttpConfigurationDAO
 {
-    // Constants
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_client_http_configuration ( uuid, connection_ttl, connect_timeout, read_timeout, request_timeout, codec_max_chunk_size, codec_initial_buffer_size, codec_max_header_size, codec_max_initial_line_length ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+	// Constants
+	private static final String TABLE_NAME = "apimanager_plan_client_http_configuration";
+
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_client_http_configuration ( uuid, connection_ttl, connect_timeout, read_timeout, request_timeout, codec_max_chunk_size, codec_initial_buffer_size, codec_max_header_size, codec_max_initial_line_length ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_client_http_configuration WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_client_http_configuration SET connection_ttl = ?, connect_timeout = ?, read_timeout = ?, request_timeout = ?, codec_max_chunk_size = ?, codec_initial_buffer_size = ?, codec_max_header_size = ?, codec_max_initial_line_length = ? WHERE uuid = ?";
    
@@ -187,7 +189,7 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
     {
         List<String> planClientHttpConfigurationList = new ArrayList<>( );
         
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, mapFilterCriteria, strColumnToOrder, strSortMode);  
+        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
         
         try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
