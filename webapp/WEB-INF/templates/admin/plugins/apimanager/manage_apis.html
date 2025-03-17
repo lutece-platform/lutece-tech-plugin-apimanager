@@ -76,11 +76,13 @@
 				</td>
 				<td>
 					<#if subscriptionMode!false>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_subscriptions.selectPlan}" size="auto" bodyClass="p-3" btnIcon="arrow-right" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}&subscriptionMode=true" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="arrow-right" btnTitleShow=false />
 					<#else>
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=downloadOpenapi&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.downloadOpenapi}' buttonIcon='download' hideTitle=['all']  />
+
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveApi&uuid=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 					</#if>

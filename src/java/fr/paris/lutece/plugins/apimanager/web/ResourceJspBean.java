@@ -37,6 +37,8 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -81,6 +83,8 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
 
     // Parameters
     private static final String PARAMETER_ID_RESOURCE = "uuid";
+    private static final String PARAMETER_ID_PLAN = "uuid_plan";
+    private static final String PARAMETER_VERB_NAME = "verb_name";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_RESOURCES = "apimanager.manage_resources.pageTitle";
@@ -90,6 +94,7 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
     // Markers
     private static final String MARK_RESOURCE_LIST = "resource_list";
     private static final String MARK_RESOURCE = "resource";
+    private static final String MARK_VERB_LIST = "verb_list";
 
     private static final String JSP_MANAGE_RESOURCES = "jsp/admin/plugins/apimanager/ManageResources.jsp";
 
@@ -206,9 +211,13 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
     public String getCreateResource( HttpServletRequest request )
     {
         _resource = ( _resource != null ) ? _resource : new Resource(  );
+        final Plan plan = new Plan();
+        plan.setUuid( request.getParameter( PARAMETER_ID_PLAN ) );
+        _resource.setPlan( plan );
 
         Map<String, Object> model = getModel(  );
         model.put( MARK_RESOURCE, _resource );
+        model.put(MARK_VERB_LIST, ResourceVerbEnum.values());
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_RESOURCE, TEMPLATE_CREATE_RESOURCE, model );
@@ -225,7 +234,7 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
     public String doCreateResource( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _resource, request, getLocale( ) );
-        
+        _resource.setVerb(ResourceVerbEnum.valueOf( request.getParameter( PARAMETER_VERB_NAME ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_RESOURCE ) )
         {

@@ -88,7 +88,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         {
             int nIndex = 1;
 			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex, uuid);
+			daoUtil.setString( nIndex++, uuid);
 			daoUtil.setString( nIndex++ , resource.getPlan() != null ? resource.getPlan().getUuid() : null );
             daoUtil.setString( nIndex++ , resource.getPath( ) );
             daoUtil.setString( nIndex++ , resource.getVerb().name());

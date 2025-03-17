@@ -57,6 +57,7 @@
              <th>#i18n{apimanager.global.labelTags}</th>
              <th>#i18n{apimanager.manage_clients.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
             <th>#i18n{portal.util.labelActions}</th>
+			<th>#i18n{apimanager.manage_clients.columnSubscriptions}</th>
         </tr>
         <@tableHeadBodySeparator />
         <#list client_list as client >
@@ -84,13 +85,15 @@
         	<td>
 				<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=modifyClient&uuid=${client.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-				<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription&uuid_client=${client.uuid}' title='#i18n{apimanager.manage_subscriptions.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
-
 				<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${client.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${client?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
 
 				<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?action=confirmRemoveClient&uuid=${client.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-
 	        </td>
+			<td>
+				<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageSubscriptions=&filter_uuid_client=${client.uuid}" targetElement="#subscription-result-container" id="list-subscription-${client?index}" title=tags btnTitle="#i18n{apimanager.manage_clients.viewSubscriptions}" size="auto" bodyClass="p-3" btnIcon="eye" btnTitleShow=false />
+
+				<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription&uuid_client=${client.uuid}' title='#i18n{apimanager.manage_subscriptions.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
+			</td>
         </tr>
         </#list>
     </@table>

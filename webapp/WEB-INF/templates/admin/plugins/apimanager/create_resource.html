@@ -9,17 +9,29 @@
         <@input type="hidden" id="id" name="id"/>
         <@input type="hidden" value="${token}" name="token" />
 
-			<@formGroup labelFor='id_plan' labelKey='#i18n{apimanager.resource.labelIdPlan}' mandatory=true>
-					<@input type='text' id='id_plan' name='id_plan'  value=resource.idPlan!'' tabIndex='0' />
+			<@formGroup labelFor='uuid_plan' labelKey='#i18n{apimanager.resource.labelIdPlan}' mandatory=true>
+					<@input type='text' id='uuid_plan' name='uuid_plan'  value=resource.plan.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
 			</@formGroup>
 			<@formGroup labelFor='path' labelKey='#i18n{apimanager.resource.labelPath}' mandatory=true>
 					<@input type='text' id='path' name='path'  maxlength=255 value=resource.path!'' tabIndex='1' />
 			</@formGroup>
-			<@formGroup labelFor='verb' labelKey='#i18n{apimanager.resource.labelVerb}' mandatory=true>
-					<@input type='text' id='verb' name='verb'  maxlength=50 value=resource.verb!'' tabIndex='2' />
+			<@formGroup labelFor='verb_name' labelKey='#i18n{apimanager.resource.labelVerb}' mandatory=true>
+					<select id="verb_name" name="verb_name" class="form-control">
+						<#list verb_list as verb>
+							<option value="${verb.name()}">${verb.name()}</option>
+						</#list>
+					</select>
 			</@formGroup>
 				
 		<@actionButtons button1Name="action_createResource" button2Name="view_manageResource"/>
     </@tform>
 	</@boxBody>
 </@box>
+
+<script type="text/javascript">
+	$(function() {
+		$('.form-control-plaintext').each(function() {
+			$(this).removeClass('form-control');
+		});
+	});
+</script>

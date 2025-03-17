@@ -39,38 +39,36 @@
 		</#if> 
 	</#list>
 
-	
-    <div class="clearfix"></div>
-    <@table>
-        <tr>
-             <th>#i18n{apimanager.manage_resources.columnIdPlan}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=id_plan'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_resources.columnPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=path'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_resources.columnVerb}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=verb'><i class='fas fa-sort'></i></a></th>
-            <th>#i18n{portal.util.labelActions}</th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <#list resource_list as resource >
-        <tr>
-            <td>
-				${resource.idPlan!''}
-			</td>
-            <td>
-				${resource.path!''}
-			</td>
-            <td>
-				${resource.verb!''}
-			</td>
-        	<td>
-				<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?view=modifyResource&id=${resource.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-						
-				<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?action=confirmRemoveResource&id=${resource.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+	<div id="resource-result-container">
+		<div class="clearfix"></div>
+		<@table>
+			<tr>
+				 <th>#i18n{apimanager.manage_resources.columnPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=path'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_resources.columnVerb}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=verb'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{portal.util.labelActions}</th>
+			</tr>
+			<@tableHeadBodySeparator />
+			<#list resource_list as resource >
+			<tr>
+				<td>
+					${resource.path!''}
+				</td>
+				<td>
+					${resource.verb!''}
+				</td>
+				<td>
+					<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?view=modifyResource&uuid=${resource.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-	        </td>
-        </tr>
-        </#list>
-    </@table>
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${resource.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${resource?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
 
-    <@paginationAdmin paginator=paginator />
+					<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?action=confirmRemoveResource&uuid=${resource.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 
+				</td>
+			</tr>
+			</#list>
+		</@table>
+
+		<@paginationAdmin paginator=paginator />
+	</div>
   </@boxBody>
 </@box>

@@ -13,39 +13,115 @@
 				<@input type='text' id='uuid_api' name='uuid_api' maxlength=255 value=plan.api.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
 			</@formGroup>
 			<@formGroup labelFor='name' labelKey='#i18n{apimanager.plan.labelName}' mandatory=true>
-					<@input type='text' id='name' name='name'  maxlength=50 value=plan.name!'' tabIndex='0' />
+					<@input type='text' id='name' name='name'  maxlength=50  tabIndex='0' />
 			</@formGroup>
 			<@formGroup labelFor='description' labelKey='#i18n{apimanager.plan.labelDescription}' mandatory=true>
-					<@input type='text' id='description' name='description'  value=plan.description!'' tabIndex='1' />
+					<@input type='text' id='description' name='description'  tabIndex='1' />
 			</@formGroup>
 			<@formGroup labelFor='active' labelKey='#i18n{apimanager.plan.labelActive}' mandatory=true>
-		          	<@checkBox id="active" name="active"  value="1" checked=plan.active!false tabIndex='2' />
+		          	<@checkBox id="active" name="active"  value="1"  tabIndex='2' />
 			</@formGroup>
 			<@formGroup labelFor='version' labelKey='#i18n{apimanager.plan.labelVersion}' mandatory=true>
-					<@input type='text' id='version' name='version'  maxlength=50 value=plan.version!'' tabIndex='3' />
-			</@formGroup>
-			<@formGroup labelFor='id_rate_limiting' labelKey='#i18n{apimanager.plan.labelIdRateLimiting}' mandatory=true>
-					<@input type='text' id='id_rate_limiting' name='id_rate_limiting'  value=plan.idRateLimiting!'' tabIndex='4' />
-			</@formGroup>
-			<@formGroup labelFor='id_client_http_configuration' labelKey='#i18n{apimanager.plan.labelIdClientHttpConfiguration}' mandatory=true>
-					<@input type='text' id='id_client_http_configuration' name='id_client_http_configuration'  value=plan.idClientHttpConfiguration!'' tabIndex='5' />
+					<@input type='text' id='version' name='version'  maxlength=50  tabIndex='3' />
 			</@formGroup>
 			<@formGroup labelFor='request_timeout' labelKey='#i18n{apimanager.plan.labelRequestTimeout}' mandatory=true>
-					<@input type='text' id='request_timeout' name='request_timeout'  value=plan.requestTimeout!'' tabIndex='6' />
+					<@input type='text' id='request_timeout' name='request_timeout'  tabIndex='6' />
 			</@formGroup>
 			<@formGroup labelFor='load_balancing_strategy' labelKey='#i18n{apimanager.plan.labelLoadBalancingStrategy}' mandatory=true>
-					<@input type='text' id='load_balancing_strategy' name='load_balancing_strategy'  value=plan.loadBalancingStrategy!'' tabIndex='7' />
-			</@formGroup>
-			<@formGroup labelFor='oauth_enabled' labelKey='#i18n{apimanager.plan.labelOauthEnabled}' mandatory=true>
-		          	<@checkBox id="oauth_enabled" name="oauth_enabled"  value="1" checked=plan.oauthEnabled!false tabIndex='8' />
-			</@formGroup>
-			<@formGroup labelFor='id_oauth_configuration' labelKey='#i18n{apimanager.plan.labelIdOauthConfiguration}' mandatory=true>
-					<@input type='text' id='id_oauth_configuration' name='id_oauth_configuration'  value=plan.idOauthConfiguration!'' tabIndex='9' />
+					<@input type='text' id='load_balancing_strategy' name='load_balancing_strategy'  tabIndex='7' />
 			</@formGroup>
 			<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.plan.labelTraceEnabled}' mandatory=true>
-		          	<@checkBox id="trace_enabled" name="trace_enabled"  value="1" checked=plan.traceEnabled!false tabIndex='10' />
+					<@checkBox id="trace_enabled" name="trace_enabled"  value="1"  tabIndex='10' />
 			</@formGroup>
-				
+
+			<!-- RATE LIMITING -->
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-hand-stop"></i> Rate Limiting</h2>
+				<div class="row gx-2">
+					<@formGroup class='col' labelFor='rate_limiting_max_requests' labelKey='#i18n{apimanager.planratelimiting.labelMaxRequests}' mandatory=true>
+							<@input type='text' id='rate_limiting_max_requests' name='rate_limiting_max_requests'  tabIndex='0' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='rate_limiting_time_window' labelKey='#i18n{apimanager.planratelimiting.labelWindow}' mandatory=true>
+							<@input type='text' id='rate_limiting_time_window' name='rate_limiting_time_window'  tabIndex='1' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='rate_limiting_decrement' labelKey='#i18n{apimanager.planratelimiting.labelDecrement}' mandatory=true>
+							<@checkBox id="rate_limiting_decrement" name="rate_limiting_decrement"  value="1"  tabIndex='2' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='rate_limiting_criteria' labelKey='#i18n{apimanager.planratelimiting.labelCriteria}' mandatory=true>
+							<@input type='text' id='rate_limiting_criteria' name='rate_limiting_criteria'  maxlength=50  tabIndex='3' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='rate_limiting_implementation' labelKey='#i18n{apimanager.planratelimiting.labelImplementation}' mandatory=true>
+							<@input type='text' id='rate_limiting_implementation' name='rate_limiting_implementation'  maxlength=50   tabIndex='4' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='rate_limiting_backend' labelKey='#i18n{apimanager.planratelimiting.labelBackend}' mandatory=true>
+							<@input type='text' id='rate_limiting_backend' name='rate_limiting_backend'  maxlength=50  tabIndex='5' />
+					</@formGroup>
+				</div>
+			</div>
+
+			<!-- CLIENT HTTP CONFIGURATION -->
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-server"></i> Client Http</h2>
+				<div class="row gx-2">
+					<@formGroup class='col' labelFor='client_http_connection_ttl' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelConnectionTtl}' mandatory=true>
+							<@input type='text' id='client_http_connection_ttl' name='client_http_connection_ttl'  tabIndex='0' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_connect_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelConnectTimeout}' mandatory=true>
+							<@input type='text' id='client_http_connect_timeout' name='client_http_connect_timeout'   tabIndex='1' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_read_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelReadTimeout}' mandatory=true>
+							<@input type='text' id='client_http_read_timeout' name='client_http_read_timeout'  tabIndex='2' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_request_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelRequestTimeout}' mandatory=true>
+							<@input type='text' id='client_http_request_timeout' name='client_http_request_timeout'   tabIndex='3' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_codec_max_chunk_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxChunkSize}' mandatory=true>
+							<@input type='text' id='client_http_codec_max_chunk_size' name='client_http_codec_max_chunk_size'  tabIndex='4' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_codec_initial_buffer_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecInitialBufferSize}' mandatory=true>
+							<@input type='text' id='client_http_codec_initial_buffer_size' name='client_http_codec_initial_buffer_size'  tabIndex='5' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_codec_max_header_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxHeaderSize}' mandatory=true>
+							<@input type='text' id='client_http_codec_max_header_size' name='client_http_codec_max_header_size'  tabIndex='6' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='client_http_codec_max_initial_line_length' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxInitialLineLength}' mandatory=true>
+							<@input type='text' id='client_http_codec_max_initial_line_length' name='client_http_codec_max_initial_line_length'  tabIndex='7' />
+					</@formGroup>
+				</div>
+			</div>
+
+			<!-- HEADER MATCHING -->
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-checkbox"></i> Header Matching</h2>
+				<div class="row gx-2">
+					<@formGroup class='col' labelFor='header_matching_name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true>
+							<@input type='text' id='header_matching_name' name='header_matching_name'  maxlength=50  tabIndex='0' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='header_matching_value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' mandatory=true>
+							<@input type='text' id='header_matching_value' name='header_matching_value'  maxlength=255  tabIndex='1' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='header_matching_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true>
+							<@input type='text' id='header_matching_type' name='header_matching_type'  maxlength=50   tabIndex='2' />
+					</@formGroup>
+				</div>
+			</div>
+
+			<!-- OAUTH2 -->
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-id-badge"></i> Oauth2</h2>
+				<div class="row gx-2">
+					<@formGroup class='col' labelFor='oauth_configuration_jwt_issuer' labelKey='#i18n{apimanager.planoauthconfiguration.labelJwtIssuer}' mandatory=true>
+						<@input type='text' id='oauth_configuration_jwt_issuer' name='oauth_configuration_jwt_issuer'  maxlength=50  tabIndex='2' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='oauth_configuration_jwt_validity' labelKey='#i18n{apimanager.planoauthconfiguration.labelJwtValidity}' mandatory=true>
+						<@input type='text' id='oauth_configuration_jwt_validity' name='oauth_configuration_jwt_validity'  maxlength=50 tabIndex='2' />
+					</@formGroup>
+					<@formGroup class='col' labelFor='oauth_enabled' labelKey='#i18n{apimanager.plan.labelOauthEnabled}' mandatory=true>
+						<@checkBox id="oauth_enabled" name="oauth_enabled"  tabIndex='8' />
+					</@formGroup>
+				</div>
+			</div>
+
 		<@actionButtons button1Name="action_createPlan" button2Name="view_managePlan"/>
     </@tform>
 	</@boxBody>

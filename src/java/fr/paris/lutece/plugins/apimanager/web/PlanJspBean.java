@@ -38,15 +38,21 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanClientHttpConfiguration;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanRateLimiting;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
@@ -54,10 +60,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,6 +92,11 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     // Parameters
     private static final String PARAMETER_ID_PLAN = "uuid";
     private static final String PARAMETER_ID_API = "uuid_api";
+    private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
+    private static final String PARAMETER_RATE_LIMITING_PREFIX = "rate_limiting_";
+    private static final String PARAMETER_CLIENT_HTTP_PREFIX = "client_http_";
+    private static final String PARAMETER_HEADER_MATCHING_PREFIX = "header_matching_";
+    private static final String PARAMETER_OAUTH_CONFIGURATION_PREFIX = "oauth_configuration_";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -162,7 +176,12 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         }
        	
        	Map<String, Object> model = getPaginatedListModel( request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS );
-             
+
+        final String subscriptionMode = request.getParameter(PARAMETER_SUBSCRIPTION_MODE);
+        if(subscriptionMode != null) {
+            model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean(subscriptionMode) );
+        }
+
         addSearchParameters(model,_mapFilterCriteria); //allow the persistence of search values in inputs search bar inputs
                      
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_PLANS, TEMPLATE_MANAGE_PLANS, model );
@@ -229,7 +248,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     @Action( ACTION_CREATE_PLAN )
     public String doCreatePlan( HttpServletRequest request ) throws AccessDeniedException
     {
-        populate( _plan, request, getLocale( ) );
+        populateAll( request, getLocale( ) );
         
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_PLAN ) )
@@ -248,7 +267,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         addInfo( INFO_PLAN_CREATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_PLANS );
+        // TODO Info msg ?
+        return redirect(request, "ManageApis.jsp");
+//        return redirectView( request, VIEW_MANAGE_PLANS );
     }
 
     /**
@@ -287,7 +308,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         addInfo( INFO_PLAN_REMOVED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_PLANS );
+        // TODO Info msg ?
+        return redirect(request, "ManageApis.jsp");
+//        return redirectView( request, VIEW_MANAGE_PLANS );
     }
 
     /**
@@ -326,9 +349,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
      */
     @Action( ACTION_MODIFY_PLAN )
     public String doModifyPlan( HttpServletRequest request ) throws AccessDeniedException
-    {   
-        populate( _plan, request, getLocale( ) );
-		
+    {
+        populateAll( request, getLocale( ) );
+
 		
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_PLAN ) )
         {
@@ -347,6 +370,44 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         addInfo( INFO_PLAN_UPDATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_PLANS );
+        // TODO Info msg ?
+        return redirect(request, "ManageApis.jsp");
+//        return redirectView( request, VIEW_MANAGE_PLANS );
+    }
+
+    private void populateAll(final HttpServletRequest request, final Locale locale) {
+        populate( _plan, request, locale );
+
+        final PlanRateLimiting planRateLimiting = new PlanRateLimiting();
+        final Map<String, String[]> rateLimitingParams =
+                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_RATE_LIMITING_PREFIX)).collect(
+                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_RATE_LIMITING_PREFIX, ""), Map.Entry::getValue));
+        final MultipartHttpServletRequest rateLimitingRequest = new MultipartHttpServletRequest(request, Map.of(), rateLimitingParams);
+        populate( planRateLimiting, rateLimitingRequest, locale);
+        _plan.setRateLimiting( planRateLimiting );
+
+        final PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration();
+        final Map<String, String[]> clientHttpParams =
+                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_CLIENT_HTTP_PREFIX)).collect(
+                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_CLIENT_HTTP_PREFIX, ""), Map.Entry::getValue));
+        final MultipartHttpServletRequest clientHttpRequest = new MultipartHttpServletRequest(request, Map.of(), clientHttpParams);
+        populate(planClientHttpConfiguration, clientHttpRequest, locale);
+        _plan.setClientHttpConfiguration( planClientHttpConfiguration );
+
+        final PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching();
+        final Map<String, String[]> headerMatchingParams =
+                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_HEADER_MATCHING_PREFIX)).collect(
+                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_HEADER_MATCHING_PREFIX, ""), Map.Entry::getValue));
+        final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest(request, Map.of(), headerMatchingParams);
+        populate(planHeaderMatching, headerMatchingRequest, locale);
+        _plan.setHeaderMatching( planHeaderMatching );
+
+        final PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration();
+        final Map<String, String[]> oauthConfigurationParams =
+                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_OAUTH_CONFIGURATION_PREFIX)).collect(
+                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_OAUTH_CONFIGURATION_PREFIX, ""), Map.Entry::getValue));
+        final MultipartHttpServletRequest oauthConfigurationRequest = new MultipartHttpServletRequest(request, Map.of(), oauthConfigurationParams);
+        populate(planOauthConfiguration, oauthConfigurationRequest, locale);
+        _plan.setOauthConfiguration( planOauthConfiguration );
     }
 }

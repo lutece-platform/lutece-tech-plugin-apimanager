@@ -7,3 +7,4 @@
 <%= strContent %>
 
 <%@ include file="../../AdminFooter.jsp" %>
+<link href="css/admin/plugins/apimanager/apimanager.css" rel="stylesheet">

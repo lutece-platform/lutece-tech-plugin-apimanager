@@ -39,6 +39,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
+import org.checkerframework.checker.nullness.Opt;
 
 
 import java.util.List;
@@ -68,6 +69,10 @@ public final class PlanHome
      */
     public static Plan create( Plan plan )
     {
+        PlanRateLimitingHome.create(plan.getRateLimiting());
+        PlanClientHttpConfigurationHome.create(plan.getClientHttpConfiguration());
+        PlanHeaderMatchingHome.create(plan.getHeaderMatching());
+        PlanOauthConfigurationHome.create(plan.getOauthConfiguration());
         _dao.insert( plan, _plugin );
 
         return plan;
@@ -80,6 +85,10 @@ public final class PlanHome
      */
     public static Plan update( Plan plan )
     {
+        PlanRateLimitingHome.update(plan.getRateLimiting());
+        PlanClientHttpConfigurationHome.update(plan.getClientHttpConfiguration());
+        PlanHeaderMatchingHome.update(plan.getHeaderMatching());
+        PlanOauthConfigurationHome.update(plan.getOauthConfiguration());
         _dao.store( plan, _plugin );
 
         return plan;
@@ -91,7 +100,13 @@ public final class PlanHome
      */
     public static void remove( String nKey )
     {
-        _dao.delete( nKey, _plugin );
+        findByPrimaryKey(nKey).ifPresent( plan -> {
+            _dao.delete(nKey, _plugin);
+            Optional.ofNullable(plan.getRateLimiting()).ifPresent(rl -> PlanRateLimitingHome.remove(rl.getUuid()));
+            Optional.ofNullable(plan.getClientHttpConfiguration()).ifPresent(chc -> PlanClientHttpConfigurationHome.remove(chc.getUuid()));
+            Optional.ofNullable(plan.getHeaderMatching()).ifPresent(hm -> PlanHeaderMatchingHome.remove(hm.getUuid()));
+            Optional.ofNullable(plan.getOauthConfiguration()).ifPresent(oac -> PlanOauthConfigurationHome.remove(oac.getUuid()));
+        });
     }
 
     /**

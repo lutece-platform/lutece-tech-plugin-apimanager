@@ -60,7 +60,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 	// Constants
 	private static final String TABLE_NAME = "apimanager_subscription";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, trace_enabled ) VALUES ( ?, ?, ? ) ";
+	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, trace_enabled ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, trace_enabled = ? WHERE uuid = ?";
 
@@ -76,7 +76,9 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
      */
 	public SubscriptionDAO() {
 
-		initMapSql(Subscription.class); //Maps with name and type of each databases column associated to the business class attributes 
+		initMapSql(Subscription.class); //Maps with name and type of each databases column associated to the business class attributes
+		_mapSql.remove("client");
+		_mapSql.put("uuid_client", "String");
 	}
 
     /**

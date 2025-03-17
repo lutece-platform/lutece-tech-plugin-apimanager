@@ -84,6 +84,8 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
     // Parameters
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
     private static final String PARAMETER_ID_CLIENT = "uuid_client";
+    private static final String PARAMETER_ID_PLAN = "uuid_plan";
+
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS = "apimanager.manage_subscriptions.pageTitle";
@@ -231,8 +233,9 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
     @Action( ACTION_CREATE_SUBSCRIPTION )
     public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
     {
-        populate( _subscription, request, getLocale( ) );
-        
+        populate( _subscription, request, getLocale());
+        _subscription.getPlan().setUuid( request.getParameter( PARAMETER_ID_PLAN ) );
+
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_SUBSCRIPTION ) )
         {
