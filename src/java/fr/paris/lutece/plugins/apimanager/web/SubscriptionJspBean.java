@@ -66,16 +66,15 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 
+import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+
 /**
  * This class provides the user interface to manage Subscription features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageSubscriptions.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = "APIMANAGER_SUBSCRIPTION_MANAGEMENT" )
+@Controller( controllerJsp = "ManageSubscriptions.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
 public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
 {
 
-	// Rights
-	public static final String RIGHT_MANAGESUBSCRIPTIONS = "APIMANAGER_SUBSCRIPTION_MANAGEMENT";
-		
     // Templates
     private static final String TEMPLATE_MANAGE_SUBSCRIPTIONS = "/admin/plugins/apimanager/manage_subscriptions.html";
     private static final String TEMPLATE_CREATE_SUBSCRIPTION = "/admin/plugins/apimanager/create_subscription.html";
@@ -251,10 +250,9 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         SubscriptionHome.create( _subscription );
         HistoryHome.create(buildNewHistory(_subscription.getUuid(), HistoryTypeEnum.CREATE));
 
-        addInfo( INFO_SUBSCRIPTION_CREATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
+        return redirect(request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_CREATED);
     }
 
     /**
@@ -294,7 +292,7 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
+        return redirect(request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED);
     }
 
     /**
@@ -351,9 +349,8 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         SubscriptionHome.update( _subscription );
         HistoryHome.create(buildNewHistory(_subscription.getUuid(), HistoryTypeEnum.UPDATE));
 
-        addInfo( INFO_SUBSCRIPTION_UPDATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
+        return redirect(request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_UPDATED);
     }
 }

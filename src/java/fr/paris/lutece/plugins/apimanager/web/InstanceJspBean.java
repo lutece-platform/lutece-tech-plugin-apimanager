@@ -66,16 +66,14 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 
+import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+
 /**
  * This class provides the user interface to manage Instance features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageInstances.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = "APIMANAGER_API_MANAGEMENT" )
+@Controller( controllerJsp = "ManageInstances.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
 public class InstanceJspBean extends AbstractJspBean <String, Instance>
 {
-
-	// Rights
-	public static final String RIGHT_MANAGEAPIS = "APIMANAGER_API_MANAGEMENT";
-		
     // Templates
     private static final String TEMPLATE_MANAGE_INSTANCES = "/admin/plugins/apimanager/manage_instances.html";
     private static final String TEMPLATE_CREATE_INSTANCE = "/admin/plugins/apimanager/create_instance.html";
@@ -247,10 +245,9 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
 
         InstanceHome.create( _instance );
         HistoryHome.create(buildNewHistory(_instance.getUuid(), HistoryTypeEnum.CREATE));
-        addInfo( INFO_INSTANCE_CREATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_INSTANCES );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_CREATED);
     }
 
     /**
@@ -286,10 +283,9 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         
         InstanceHome.remove( uuid );
         HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
-        addInfo( INFO_INSTANCE_REMOVED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_INSTANCES );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_REMOVED);
     }
 
     /**
@@ -345,9 +341,8 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
 
         InstanceHome.update( _instance );
         HistoryHome.create(buildNewHistory(_instance.getUuid(), HistoryTypeEnum.UPDATE));
-        addInfo( INFO_INSTANCE_UPDATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_INSTANCES );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_UPDATED);
     }
 }

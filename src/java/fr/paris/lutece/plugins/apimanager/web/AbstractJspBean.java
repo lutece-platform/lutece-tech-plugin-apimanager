@@ -35,9 +35,11 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.history.History;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
@@ -45,21 +47,31 @@ import fr.paris.lutece.util.url.UrlItem;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractJspBean <S, T> extends MVCAdminJspBean
 {
-    
+    // Views
+    private static final String VIEW_MANAGE_HISTORY = "manageHistory";
+
     // Properties
     protected static final String PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE = "apimanager.listItems.itemsPerPage";
     private static final int PROPERTY_DEFAULT_ITEM_PER_PAGE = 50;
-    
+
+    // Properties for page titles
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_HISTORY = "apimanager.manage_history.pageTitle";
+
+    // Templates
+    private static final String TEMPLATE_MANAGE_HISTORY = "/admin/plugins/apimanager/manage_history.html";
+
     // Parameters
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     protected static final String PARAMETER_SEARCH_ORDER_BY = "orderBy";
@@ -68,11 +80,13 @@ public abstract class AbstractJspBean <S, T> extends MVCAdminJspBean
     // Markers
     private static final String MARK_PAGINATOR = "paginator";
     private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
+    private static final String MARK_HISTORY_LIST = "history_list";
+
 
     //Search
     private static final String FILTER_ATTRIBUTES_PREFIX = "filter_";
-    protected static final String SORT_ATTRIBUTES_ASC = " ASC ";
-    protected static final String SORT_ATTRIBUTES_DESC = " DESC ";
+    private static final String SORT_ATTRIBUTES_ASC = " ASC ";
+    private static final String SORT_ATTRIBUTES_DESC = " DESC ";
     
     //Variables
     private String _strCurrentPageIndex;
@@ -176,6 +190,16 @@ public abstract class AbstractJspBean <S, T> extends MVCAdminJspBean
     	 return _strSortMode;
     	 
      }
+
+    @View(value = VIEW_MANAGE_HISTORY )
+    public String getManageHistory( HttpServletRequest request) {
+        final Map<String, String> mapFilterCriteria = getFilterCriteriaFromRequest(request);
+        final List<String> listIdHistory = HistoryHome.getIdHistorysList(mapFilterCriteria, "date" , SORT_ATTRIBUTES_DESC);
+
+        Map<String, Object> model = getModel(  );
+        model.put( MARK_HISTORY_LIST, HistoryHome.getHistorysListByIds(listIdHistory).stream().sorted(Comparator.comparingInt(notif -> listIdHistory.indexOf(notif.getUuid()))).collect(Collectors.toList()));
+        return getPage(PROPERTY_PAGE_TITLE_MANAGE_HISTORY, TEMPLATE_MANAGE_HISTORY, model);
+    }
 
      protected History buildNewHistory(final String uuidRef, final HistoryTypeEnum type) {
          final History history = new History();

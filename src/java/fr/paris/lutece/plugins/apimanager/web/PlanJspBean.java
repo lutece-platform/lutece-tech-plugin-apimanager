@@ -74,16 +74,15 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 
+import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+
 /**
  * This class provides the user interface to manage Plan features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManagePlans.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = "APIMANAGER_PLAN_MANAGEMENT" )
+@Controller( controllerJsp = "ManagePlans.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
 public class PlanJspBean extends AbstractJspBean <String, Plan>
 {
 
-	// Rights
-	public static final String RIGHT_MANAGEPLANS = "APIMANAGER_PLAN_MANAGEMENT";
-		
     // Templates
     private static final String TEMPLATE_MANAGE_PLANS = "/admin/plugins/apimanager/manage_plans.html";
     private static final String TEMPLATE_CREATE_PLAN = "/admin/plugins/apimanager/create_plan.html";
@@ -264,12 +263,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
 
         PlanHome.create( _plan );
         HistoryHome.create(buildNewHistory(_plan.getUuid(), HistoryTypeEnum.CREATE));
-        addInfo( INFO_PLAN_CREATED, getLocale(  ) );
         resetListId( );
 
-        // TODO Info msg ?
-        return redirect(request, "ManageApis.jsp");
-//        return redirectView( request, VIEW_MANAGE_PLANS );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED);
     }
 
     /**
@@ -305,12 +301,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         
         PlanHome.remove( uuid );
         HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
-        addInfo( INFO_PLAN_REMOVED, getLocale(  ) );
         resetListId( );
 
-        // TODO Info msg ?
-        return redirect(request, "ManageApis.jsp");
-//        return redirectView( request, VIEW_MANAGE_PLANS );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_REMOVED);
     }
 
     /**
@@ -367,12 +360,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         PlanHome.update( _plan );
         HistoryHome.create(buildNewHistory(_plan.getUuid(), HistoryTypeEnum.UPDATE));
 
-        addInfo( INFO_PLAN_UPDATED, getLocale(  ) );
         resetListId( );
 
-        // TODO Info msg ?
-        return redirect(request, "ManageApis.jsp");
-//        return redirectView( request, VIEW_MANAGE_PLANS );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_UPDATED);
     }
 
     private void populateAll(final HttpServletRequest request, final Locale locale) {

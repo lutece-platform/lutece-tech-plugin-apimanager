@@ -1,6 +1,3 @@
-<#include "manageapis_tabs.html" />
-<@tabs2 tab="instance" />
-
 <@box>
 	<@boxHeader title='#i18n{apimanager.manage_instances.title}' boxTools=true>
 		<@tform class='form-inline pull-right' name='manage_instance' action='jsp/admin/plugins/apimanager/ManageInstances.jsp'>
@@ -100,7 +97,7 @@
 				<td>
 					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${instance.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageHistory=&filter_uuid_ref=${instance.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 

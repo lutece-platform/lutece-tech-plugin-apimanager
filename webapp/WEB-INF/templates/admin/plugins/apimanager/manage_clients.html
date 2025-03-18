@@ -20,9 +20,6 @@
 	    			<@formGroup labelFor='filter_client_id' labelKey='#i18n{apimanager.manage_clients.columnClientId}'>
 				    		<@input type='text' id='filter_client_id' name='filter_client_id'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnClientId}' value=mapFilterCriteria["client_id"]!'' tabIndex='2' />
 				    </@formGroup>
-	    			<@formGroup labelFor='filter_client_secret' labelKey='#i18n{apimanager.manage_clients.columnClientSecret}'>
-				    		<@input type='text' id='filter_client_secret' name='filter_client_secret'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnClientSecret}' value=mapFilterCriteria["client_secret"]!'' tabIndex='3' />
-				    </@formGroup>
 	    			<@formGroup labelFor='filter_code_app' labelKey='#i18n{apimanager.manage_clients.columnCodeApp}'>
 				    		<@input type='text' id='filter_code_app' name='filter_code_app'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnCodeApp}' value=mapFilterCriteria["code_app"]!'' tabIndex='4' />
 				    </@formGroup>
@@ -52,7 +49,6 @@
         <tr>
              <th>#i18n{apimanager.manage_clients.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
              <th>#i18n{apimanager.manage_clients.columnClientId}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=client_id'><i class='fas fa-sort'></i></a></th>
-             <th>#i18n{apimanager.manage_clients.columnClientSecret}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=client_secret'><i class='fas fa-sort'></i></a></th>
              <th>#i18n{apimanager.manage_clients.columnCodeApp}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=code_app'><i class='fas fa-sort'></i></a></th>
              <th>#i18n{apimanager.global.labelTags}</th>
              <th>#i18n{apimanager.manage_clients.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
@@ -68,9 +64,6 @@
             <td>
 				${client.clientId!''}
 			</td>
-            <td>
-				${client.clientSecret!''}
-			</td>
 			<td>
 				${client.codeApp!''}
 			</td>
@@ -85,12 +78,12 @@
         	<td>
 				<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=modifyClient&uuid=${client.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-				<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${client.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${client?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
+				<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageClients.jsp?view_manageHistory=&filter_uuid_ref=${client.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${client?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 				<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?action=confirmRemoveClient&uuid=${client.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 	        </td>
 			<td>
-				<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageSubscriptions=&filter_uuid_client=${client.uuid}" targetElement="#subscription-result-container" id="list-subscription-${client?index}" title=tags btnTitle="#i18n{apimanager.manage_clients.viewSubscriptions}" size="auto" bodyClass="p-3" btnIcon="eye" btnTitleShow=false />
+				<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageSubscriptions=&filter_uuid_client=${client.uuid}" targetElement="#subscription-result-container" id="list-subscription-${client?index}" title=tags btnTitle="#i18n{apimanager.manage_clients.viewSubscriptions}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
 
 				<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription&uuid_client=${client.uuid}' title='#i18n{apimanager.manage_subscriptions.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
 			</td>

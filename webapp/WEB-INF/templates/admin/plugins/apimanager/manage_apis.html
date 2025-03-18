@@ -1,6 +1,3 @@
-<#include "manageapis_tabs.html" />
-<@tabs2 tab="api" />
-
 <@box>
 	<@boxHeader title='#i18n{apimanager.manage_apis.title}' boxTools=true>
 		<@tform class='form-inline pull-right' name='manage_api' action='jsp/admin/plugins/apimanager/ManageApis.jsp'>
@@ -76,13 +73,13 @@
 				</td>
 				<td>
 					<#if subscriptionMode!false>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}&subscriptionMode=true" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="arrow-right" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}&filter_active=1&subscriptionMode=true" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="arrow-right" hideTitle=['all'] />
 					<#else>
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=downloadOpenapi&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.downloadOpenapi}' buttonIcon='download' hideTitle=['all']  />
 
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveApi&uuid=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 					</#if>
@@ -90,11 +87,11 @@
 				<#if subscriptionMode!false>
 				<#else>
 					<td>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageInstances=&filter_uuid_api=${api.uuid}" targetElement="#instance-result-container" id="list-instance-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewInstances}" size="auto" bodyClass="p-3" btnIcon="eye" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageInstances=&filter_uuid_api=${api.uuid}" targetElement="#instance-result-container" id="list-instance-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewInstances}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
 						<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=createInstance&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_instances.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
 					</td>
 					<td>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="eye" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=createPlan&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_plans.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
 					</td>
 				</#if>

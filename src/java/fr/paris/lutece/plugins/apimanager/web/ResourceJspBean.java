@@ -66,16 +66,15 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 
+import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+
 /**
  * This class provides the user interface to manage Resource features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageResources.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = "APIMANAGER_PLAN_MANAGEMENT" )
+@Controller( controllerJsp = "ManageResources.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
 public class ResourceJspBean extends AbstractJspBean <String, Resource>
 {
 
-	// Rights
-	public static final String RIGHT_MANAGEPLANS = "APIMANAGER_PLAN_MANAGEMENT";
-		
     // Templates
     private static final String TEMPLATE_MANAGE_RESOURCES = "/admin/plugins/apimanager/manage_resources.html";
     private static final String TEMPLATE_CREATE_RESOURCE = "/admin/plugins/apimanager/create_resource.html";
@@ -250,10 +249,9 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
         ResourceHome.create( _resource );
         HistoryHome.create(buildNewHistory(_resource.getUuid(), HistoryTypeEnum.CREATE));
 
-        addInfo( INFO_RESOURCE_CREATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_RESOURCES );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_RESOURCE_CREATED);
     }
 
     /**
@@ -290,10 +288,9 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
         ResourceHome.remove( uuid );
         HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
 
-        addInfo( INFO_RESOURCE_REMOVED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_RESOURCES );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_RESOURCE_REMOVED);
     }
 
     /**
@@ -350,9 +347,8 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
         ResourceHome.update( _resource );
         HistoryHome.create(buildNewHistory(_resource.getUuid(), HistoryTypeEnum.UPDATE));
 
-        addInfo( INFO_RESOURCE_UPDATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_RESOURCES );
+        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_RESOURCE_UPDATED);
     }
 }

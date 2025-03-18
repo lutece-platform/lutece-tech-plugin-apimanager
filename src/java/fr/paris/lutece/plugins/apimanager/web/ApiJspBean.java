@@ -41,6 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -71,17 +73,14 @@ import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Api features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageApis.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = "APIMANAGER_API_MANAGEMENT" )
+@Controller( controllerJsp = "ManageApis.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
 public class ApiJspBean extends AbstractJspBean <String, Api>
 {
-
-	// Rights
-	public static final String RIGHT_MANAGEAPIS = "APIMANAGER_API_MANAGEMENT";
-		
     // Templates
     private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/manage_apis.html";
     private static final String TEMPLATE_CREATE_API = "/admin/plugins/apimanager/create_api.html";
@@ -95,6 +94,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     private static final String PARAMETER_PATH = "path";
     private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
+    private static final String PARAMETER_INFO_MSG = "infoMsg";
 
 
     // Properties for page titles
@@ -150,6 +150,12 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     @View( value = VIEW_MANAGE_APIS, defaultView = true )
     public String getManageApis( HttpServletRequest request )
     {
+        final String infoMsg = request.getParameter(PARAMETER_INFO_MSG);
+        if(infoMsg != null) {
+            addInfo(infoMsg, getLocale());
+            return redirectView( request, VIEW_MANAGE_APIS );
+        }
+
         _api = null;
         
         // new search only if in pagination mode
@@ -185,9 +191,8 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         }
 
         addSearchParameters(model,_mapFilterCriteria); //allow the persistence of search values in inputs search bar inputs
-                     
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model );
 
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model );
     }
 
 	/**
@@ -247,7 +252,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     @Action( ACTION_CREATE_API )
     public String doCreateApi( MultipartHttpServletRequest request) throws AccessDeniedException
     {
-        populate( _api, request, getLocale( ) );
+        populateApi( _api, request, getLocale( ) );
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_API ) )
         {
             throw new AccessDeniedException ( "Invalid security token" );
@@ -342,7 +347,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     @Action( ACTION_MODIFY_API )
     public String doModifyApi( MultipartHttpServletRequest request ) throws AccessDeniedException
     {   
-        populate( _api, request, getLocale( ) );
+        populateApi( _api, request, getLocale( ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_API ) )
         {
@@ -375,8 +380,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     }
 
 
-    @Override
-    protected void populate(Object bean, HttpServletRequest request, Locale locale) {
+    protected void populateApi(Object bean, HttpServletRequest request, Locale locale) {
         super.populate( bean, request, locale );
 
         if (request instanceof MultipartHttpServletRequest) {

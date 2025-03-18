@@ -1,6 +1,3 @@
-<#include "manageplans_tabs.html" />
-<@tabs2 tab="resource" />
-
 <@box>
 	<@boxHeader title='#i18n{apimanager.manage_resources.title}' boxTools=true>
 		<@tform class='form-inline pull-right' name='manage_resource' action='jsp/admin/plugins/apimanager/ManageResources.jsp'>
@@ -59,7 +56,7 @@
 				<td>
 					<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?view=modifyResource&uuid=${resource.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${resource.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${resource?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageResources.jsp?view_manageHistory=&filter_uuid_ref=${resource.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${resource?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 					<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?action=confirmRemoveResource&uuid=${resource.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 

@@ -41,27 +41,31 @@
 		<div class="clearfix"></div>
 		<@table>
 			<tr>
-				 <th>#i18n{apimanager.manage_subscriptions.columnIdClient}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=uuid_client'><i class='fas fa-sort'></i></a></th>
-				 <th>#i18n{apimanager.manage_subscriptions.columnIdPlan}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=uuid_plan'><i class='fas fa-sort'></i></a></th>
-				 <th>#i18n{apimanager.manage_subscriptions.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{apimanager.manage_plans.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{portal.util.labelActions}</th>
 			</tr>
 			<@tableHeadBodySeparator />
 			<#list subscription_list as subscription >
 			<tr>
 				<td>
-					${subscription.client.uuid!''}
+					${subscription.plan.name!''}
 				</td>
 				<td>
-					${subscription.plan.uuid!''}
+					${subscription.plan.description!''}
 				</td>
 				<td>
-					${subscription.traceEnabled?c!''}
+					${subscription.plan.active?c!''}
+				</td>
+				<td>
+					${subscription.plan.version!''}
 				</td>
 				<td>
 					<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=modifySubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${subscription.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${subscription?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageHistory=&filter_uuid_ref=${subscription.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${subscription?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 					<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 

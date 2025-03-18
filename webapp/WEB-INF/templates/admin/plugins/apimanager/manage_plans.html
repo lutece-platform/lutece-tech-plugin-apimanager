@@ -1,6 +1,3 @@
-<#include "manageplans_tabs.html" />
-<@tabs2 tab="plan" />
-
 <@box>
 	<@boxHeader title='#i18n{apimanager.manage_plans.title}' boxTools=true>
 		<@tform class='form-inline pull-right' name='manage_plan' action='jsp/admin/plugins/apimanager/ManagePlans.jsp'>
@@ -84,7 +81,7 @@
 					<#else>
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=modifyPlan&uuid=${plan.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageHistory.jsp?view_manageHistory=&filter_uuid_ref=${plan.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${plan?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_manageHistory=&filter_uuid_ref=${plan.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${plan?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?action=confirmRemovePlan&uuid=${plan.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 					</#if>
@@ -92,7 +89,7 @@
 				<#if subscriptionMode!false>
 				<#else>
 					<td>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageResources.jsp?view_manageResources=&filter_uuid_plan=${plan.uuid}" targetElement="#resource-result-container" id="list-resource-${plan?index}" title=tags btnTitle="#i18n{apimanager.manage_plans.viewResources}" size="auto" bodyClass="p-3" btnIcon="eye" btnTitleShow=false />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageResources.jsp?view_manageResources=&filter_uuid_plan=${plan.uuid}" targetElement="#resource-result-container" id="list-resource-${plan?index}" title=tags btnTitle="#i18n{apimanager.manage_plans.viewResources}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
 						<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?view=createResource&uuid_plan=${plan.uuid}' title='#i18n{apimanager.manage_resources.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
 					</td>
 				</#if>

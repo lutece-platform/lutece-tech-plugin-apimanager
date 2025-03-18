@@ -65,16 +65,14 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 
+import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGECLIENTS;
+
 /**
  * This class provides the user interface to manage Client features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageClients.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = "APIMANAGER_CLIENT_MANAGEMENT" )
+@Controller( controllerJsp = "ManageClients.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGECLIENTS )
 public class ClientJspBean extends AbstractJspBean <String, Client>
 {
-
-	// Rights
-	public static final String RIGHT_MANAGECLIENTS = "APIMANAGER_CLIENT_MANAGEMENT";
-		
     // Templates
     private static final String TEMPLATE_MANAGE_CLIENTS = "/admin/plugins/apimanager/manage_clients.html";
     private static final String TEMPLATE_CREATE_CLIENT = "/admin/plugins/apimanager/create_client.html";
@@ -83,6 +81,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     // Parameters
     private static final String PARAMETER_ID_CLIENT = "uuid";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
+    private static final String PARAMETER_INFO_MSG = "infoMsg";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CLIENTS = "apimanager.manage_clients.pageTitle";
@@ -134,6 +133,11 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     @View( value = VIEW_MANAGE_CLIENTS, defaultView = true )
     public String getManageClients( HttpServletRequest request )
     {
+        final String infoMsg = request.getParameter(PARAMETER_INFO_MSG);
+        if(infoMsg != null) {
+            addInfo(infoMsg, getLocale());
+            return redirectView( request, VIEW_MANAGE_CLIENTS );
+        }
         _client = null;
         
         // new search only if in pagination mode
