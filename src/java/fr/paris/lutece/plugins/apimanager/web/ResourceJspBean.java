@@ -38,7 +38,9 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -64,9 +66,8 @@ import org.apache.commons.lang3.StringUtils;
 
 
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 
-import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Resource features ( manage, create, modify, remove )
@@ -149,14 +150,14 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
         		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
         		String strSortMode = getSortMode(); 
         		
-        		_listIdResources = ResourceHome.getIdResourcesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+        		_listIdResources = ResourceService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
                	
 	       	}
 	       	else
 	       	{
 	       		// reload the filter criteria and search
 	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdResources = ResourceHome.getIdResourcesList( _mapFilterCriteria, null ,null);
+	       		_listIdResources = ResourceService.getInstance().getIdEntitiesList( _mapFilterCriteria );
 	       	}
         	
         	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -179,7 +180,7 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
 	@Override
 	List<Resource> getItemsFromIds( List<String> listIds )
 	{
-		List<Resource> listResource = ResourceHome.getResourcesListByIds( listIds );
+		List<Resource> listResource = ResourceService.getInstance().getEntitiesListByIds( listIds );
 		
 		// keep original order
         return listResource.stream()
@@ -246,8 +247,7 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
             return redirectView( request, VIEW_CREATE_RESOURCE );
         }
 
-        ResourceHome.create( _resource );
-        HistoryHome.create(buildNewHistory(_resource.getUuid(), HistoryTypeEnum.CREATE));
+        ResourceService.getInstance().create( _resource, getUser().getEmail() );
 
         resetListId( );
 
@@ -283,10 +283,9 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
     public String doRemoveResource( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_RESOURCE );
-        
-        
-        ResourceHome.remove( uuid );
-        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
+
+
+        ResourceService.getInstance().delete( uuid, getUser().getEmail() );
 
         resetListId( );
 
@@ -308,7 +307,7 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
         }
         if ( _resource == null || !uuid.equals( _resource.getUuid( ) ) )
         {
-            Optional<Resource> optResource = ResourceHome.findByPrimaryKey( uuid );
+            Optional<Resource> optResource = ResourceHome.findByPrimaryKey(uuid);
             _resource = optResource.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
         }
 
@@ -344,8 +343,7 @@ public class ResourceJspBean extends AbstractJspBean <String, Resource>
             return redirect( request, VIEW_MODIFY_RESOURCE, Map.of(PARAMETER_ID_RESOURCE, _resource.getUuid( )) );
         }
 
-        ResourceHome.update( _resource );
-        HistoryHome.create(buildNewHistory(_resource.getUuid(), HistoryTypeEnum.UPDATE));
+        ResourceService.getInstance().update( _resource, getUser().getEmail() );
 
         resetListId( );
 

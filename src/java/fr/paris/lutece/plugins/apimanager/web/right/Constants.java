@@ -1,4 +1,4 @@
-package fr.paris.lutece.plugins.apimanager.right;
+package fr.paris.lutece.plugins.apimanager.web.right;
 
 public class Constants {
     public static final String RIGHT_MANAGEAPIS = "APIMANAGER_API_MANAGEMENT";

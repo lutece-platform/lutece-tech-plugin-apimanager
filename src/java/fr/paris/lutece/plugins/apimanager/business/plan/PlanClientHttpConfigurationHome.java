@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -51,7 +52,7 @@ import java.util.Optional;
 public final class PlanClientHttpConfigurationHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanClientHttpConfigurationDAO _dao = SpringContextService.getBean( "apimanager.planClientHttpConfigurationDAO" );
+    private static IPlanClientHttpConfigurationDAO _dao = SpringContextService.getBean("apimanager.planClientHttpConfigurationDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -110,7 +111,7 @@ public final class PlanClientHttpConfigurationHome
      */
     public static List<PlanClientHttpConfiguration> getPlanClientHttpConfigurationsList( )
     {
-        return _dao.selectPlanClientHttpConfigurationsList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -122,7 +123,7 @@ public final class PlanClientHttpConfigurationHome
      */
     public static List<String> getIdPlanClientHttpConfigurationsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdPlanClientHttpConfigurationsList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -131,7 +132,7 @@ public final class PlanClientHttpConfigurationHome
      */
     public static ReferenceList getPlanClientHttpConfigurationsReferenceList( )
     {
-        return _dao.selectPlanClientHttpConfigurationsReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -142,7 +143,7 @@ public final class PlanClientHttpConfigurationHome
      */
     public static List<PlanClientHttpConfiguration> getPlanClientHttpConfigurationsListByIds( List<String> listIds )
     {
-        return _dao.selectPlanClientHttpConfigurationsListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

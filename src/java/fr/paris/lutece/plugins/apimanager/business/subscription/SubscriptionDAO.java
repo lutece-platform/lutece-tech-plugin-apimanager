@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -159,7 +160,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
      * {@inheritDoc }
      */
     @Override
-    public List<Subscription> selectSubscriptionsList( Plugin plugin )
+    public List<Subscription> selectEntitiesList( Plugin plugin )
     {
         List<Subscription> subscriptionList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -179,7 +180,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdSubscriptionsList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> subscriptionList = new ArrayList<>( );
         
@@ -212,7 +213,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectSubscriptionsReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList subscriptionList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -232,7 +233,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
      * {@inheritDoc }
      */
 	@Override
-	public List<Subscription> selectSubscriptionsListByIds( Plugin plugin, List<String> listIds ) {
+	public List<Subscription> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<Subscription> subscriptionList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );
@@ -267,15 +268,15 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
 
 	private Subscription loadFromDaoUtil (DAOUtil daoUtil) {
-		
+
 		Subscription subscription = new Subscription(  );
 		int nIndex = 1;
-		
+
 		subscription.setUuid( daoUtil.getString( nIndex++ ) );
         subscription.setClient(ClientHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse(null));
 		subscription.setPlan(PlanHome.findByPrimaryKey(daoUtil.getString( nIndex++ )).orElse(null));
 		subscription.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
-		
+
 		return subscription;
 	}
 }

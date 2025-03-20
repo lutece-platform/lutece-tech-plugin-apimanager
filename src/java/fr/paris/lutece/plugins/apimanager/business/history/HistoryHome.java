@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.history;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -51,7 +52,7 @@ import java.util.Optional;
 public final class HistoryHome
 {
     // Static variable pointed at the DAO instance
-    private static IHistoryDAO _dao = SpringContextService.getBean( "apimanager.historyDAO" );
+    private static IHistoryDAO _dao = SpringContextService.getBean("apimanager.historyDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -110,7 +111,7 @@ public final class HistoryHome
      */
     public static List<History> getHistorysList( )
     {
-        return _dao.selectHistorysList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -122,7 +123,7 @@ public final class HistoryHome
      */
     public static List<String> getIdHistorysList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdHistorysList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -131,7 +132,7 @@ public final class HistoryHome
      */
     public static ReferenceList getHistorysReferenceList( )
     {
-        return _dao.selectHistorysReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -142,7 +143,7 @@ public final class HistoryHome
      */
     public static List<History> getHistorysListByIds( List<String> listIds )
     {
-        return _dao.selectHistorysListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

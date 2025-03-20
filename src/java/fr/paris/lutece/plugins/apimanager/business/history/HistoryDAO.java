@@ -37,6 +37,7 @@ package fr.paris.lutece.plugins.apimanager.business.history;
 
 import com.mchange.v2.uid.UidUtils;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -158,7 +159,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
      * {@inheritDoc }
      */
     @Override
-    public List<History> selectHistorysList( Plugin plugin )
+    public List<History> selectEntitiesList( Plugin plugin )
     {
         List<History> historyList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -178,7 +179,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdHistorysList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> historyList = new ArrayList<>( );
         
@@ -211,7 +212,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectHistorysReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList historyList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -231,7 +232,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
      * {@inheritDoc }
      */
 	@Override
-	public List<History> selectHistorysListByIds( Plugin plugin, List<String> listIds ) {
+	public List<History> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<History> historyList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

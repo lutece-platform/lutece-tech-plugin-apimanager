@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -162,7 +163,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Client> selectClientsList( Plugin plugin )
+    public List<Client> selectEntitiesList( Plugin plugin )
     {
         List<Client> clientList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -182,7 +183,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdClientsList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> clientList = new ArrayList<>( );
         
@@ -215,7 +216,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectClientsReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList clientList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -235,7 +236,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
      * {@inheritDoc }
      */
 	@Override
-	public List<Client> selectClientsListByIds( Plugin plugin, List<String> listIds ) {
+	public List<Client> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<Client> clientList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

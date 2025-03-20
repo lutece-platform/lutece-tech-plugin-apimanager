@@ -34,6 +34,7 @@
  
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
@@ -43,69 +44,6 @@ import java.util.Optional;
 /**
  * IPlanDAO Interface
  */
-public interface IPlanDAO
+public interface IPlanDAO extends IDAO<Plan>
 {
-    /**
-     * Insert a new record in the table.
-     * @param plan instance of the Plan object to insert
-     * @param plugin the Plugin
-     */
-    void insert( Plan plan, Plugin plugin );
-
-    /**
-     * Update the record in the table
-     * @param plan the reference of the Plan
-     * @param plugin the Plugin
-     */
-    void store( Plan plan, Plugin plugin );
-
-    /**
-     * Delete a record from the table
-     * @param nKey The identifier of the Plan to delete
-     * @param plugin the Plugin
-     */
-    void delete( String nKey, Plugin plugin );
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Finders
-
-    /**
-     * Load the data from the table
-     * @param nKey The identifier of the plan
-     * @param plugin the Plugin
-     * @return The instance of the plan
-     */
-    Optional<Plan> load( String nKey, Plugin plugin );
-
-    /**
-     * Load the data of all the plan objects and returns them as a list
-     * @param plugin the Plugin
-     * @return The list which contains the data of all the plan objects
-     */
-    List<Plan> selectPlansList( Plugin plugin );
-    
-       /**
-     * Load the id of all the plan objects and returns them as a list
-     * @param plugin the Plugin
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
-     * @return The list which contains the id of all the project objects fitting with the seach criteria.
-     */
-    List<String> selectIdPlansList( Plugin plugin, Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode );
-    
-    /**
-     * Load the data of all the plan objects and returns them as a referenceList
-     * @param plugin the Plugin
-     * @return The referenceList which contains the data of all the plan objects
-     */
-    ReferenceList selectPlansReferenceList( Plugin plugin );
-    
-    /**
-     * Load the data of all the avant objects and returns them as a list
-     * @param plugin the Plugin
-     * @param listIds liste of ids
-     * @return The list which contains the data of all the avant objects
-     */
-	List<Plan> selectPlansListByIds( Plugin _plugin, List<String> listIds );
 }

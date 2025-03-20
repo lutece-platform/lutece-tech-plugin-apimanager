@@ -34,6 +34,7 @@
  
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
@@ -43,69 +44,6 @@ import java.util.Optional;
 /**
  * IPlanRateLimitingDAO Interface
  */
-public interface IPlanRateLimitingDAO
+public interface IPlanRateLimitingDAO extends IDAO<PlanRateLimiting>
 {
-    /**
-     * Insert a new record in the table.
-     * @param planRateLimiting instance of the PlanRateLimiting object to insert
-     * @param plugin the Plugin
-     */
-    void insert( PlanRateLimiting planRateLimiting, Plugin plugin );
-
-    /**
-     * Update the record in the table
-     * @param planRateLimiting the reference of the PlanRateLimiting
-     * @param plugin the Plugin
-     */
-    void store( PlanRateLimiting planRateLimiting, Plugin plugin );
-
-    /**
-     * Delete a record from the table
-     * @param nKey The identifier of the PlanRateLimiting to delete
-     * @param plugin the Plugin
-     */
-    void delete( String nKey, Plugin plugin );
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Finders
-
-    /**
-     * Load the data from the table
-     * @param nKey The identifier of the planRateLimiting
-     * @param plugin the Plugin
-     * @return The instance of the planRateLimiting
-     */
-    Optional<PlanRateLimiting> load( String nKey, Plugin plugin );
-
-    /**
-     * Load the data of all the planRateLimiting objects and returns them as a list
-     * @param plugin the Plugin
-     * @return The list which contains the data of all the planRateLimiting objects
-     */
-    List<PlanRateLimiting> selectPlanRateLimitingsList( Plugin plugin );
-    
-       /**
-     * Load the id of all the planRateLimiting objects and returns them as a list
-     * @param plugin the Plugin
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
-     * @return The list which contains the id of all the project objects fitting with the seach criteria.
-     */
-    List<String> selectIdPlanRateLimitingsList( Plugin plugin, Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode );
-    
-    /**
-     * Load the data of all the planRateLimiting objects and returns them as a referenceList
-     * @param plugin the Plugin
-     * @return The referenceList which contains the data of all the planRateLimiting objects
-     */
-    ReferenceList selectPlanRateLimitingsReferenceList( Plugin plugin );
-    
-    /**
-     * Load the data of all the avant objects and returns them as a list
-     * @param plugin the Plugin
-     * @param listIds liste of ids
-     * @return The list which contains the data of all the avant objects
-     */
-	List<PlanRateLimiting> selectPlanRateLimitingsListByIds( Plugin _plugin, List<String> listIds );
 }

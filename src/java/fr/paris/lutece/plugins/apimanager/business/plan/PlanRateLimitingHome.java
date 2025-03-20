@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -51,7 +52,7 @@ import java.util.Optional;
 public final class PlanRateLimitingHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanRateLimitingDAO _dao = SpringContextService.getBean( "apimanager.planRateLimitingDAO" );
+    private static IPlanRateLimitingDAO _dao = SpringContextService.getBean("apimanager.planRateLimitingDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -110,7 +111,7 @@ public final class PlanRateLimitingHome
      */
     public static List<PlanRateLimiting> getPlanRateLimitingsList( )
     {
-        return _dao.selectPlanRateLimitingsList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -122,7 +123,7 @@ public final class PlanRateLimitingHome
      */
     public static List<String> getIdPlanRateLimitingsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdPlanRateLimitingsList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -131,7 +132,7 @@ public final class PlanRateLimitingHome
      */
     public static ReferenceList getPlanRateLimitingsReferenceList( )
     {
-        return _dao.selectPlanRateLimitingsReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -142,7 +143,7 @@ public final class PlanRateLimitingHome
      */
     public static List<PlanRateLimiting> getPlanRateLimitingsListByIds( List<String> listIds )
     {
-        return _dao.selectPlanRateLimitingsListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

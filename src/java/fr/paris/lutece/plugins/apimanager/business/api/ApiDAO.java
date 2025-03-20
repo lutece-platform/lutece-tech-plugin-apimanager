@@ -39,7 +39,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.ReferenceList;
@@ -171,7 +171,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Api> selectApisList( Plugin plugin )
+    public List<Api> selectEntitiesList(Plugin plugin)
     {
         List<Api> apiList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -193,7 +193,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdApisList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList(Plugin plugin, Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode)
     {
         List<String> apiList = new ArrayList<>( );
         
@@ -226,7 +226,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectApisReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList(Plugin plugin)
     {
         ReferenceList apiList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -246,7 +246,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
      * {@inheritDoc }
      */
 	@Override
-	public List<Api> selectApisListByIds( Plugin plugin, List<String> listIds ) {
+	public List<Api> selectEntitiesListByIds(Plugin plugin, List<String> listIds) {
 		List<Api> apiList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );
@@ -280,7 +280,6 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 		return apiList;
 		
 	}
-
 
 	private Api loadFromDaoUtil (DAOUtil daoUtil, Plugin plugin) throws JsonProcessingException {
 		

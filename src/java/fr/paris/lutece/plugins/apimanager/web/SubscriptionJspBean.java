@@ -39,6 +39,8 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -64,9 +66,8 @@ import org.apache.commons.lang3.StringUtils;
 
 
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
-import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 
-import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Subscription features ( manage, create, modify, remove )
@@ -149,14 +150,14 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
         		String strSortMode = getSortMode(); 
         		
-        		_listIdSubscriptions = SubscriptionHome.getIdSubscriptionsList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+        		_listIdSubscriptions = SubscriptionService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
                	
 	       	}
 	       	else
 	       	{
 	       		// reload the filter criteria and search
 	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdSubscriptions = SubscriptionHome.getIdSubscriptionsList( _mapFilterCriteria, null ,null);
+	       		_listIdSubscriptions = SubscriptionService.getInstance().getIdEntitiesList( _mapFilterCriteria );
 	       	}
         	
         	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -179,7 +180,7 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
 	@Override
 	List<Subscription> getItemsFromIds( List<String> listIds )
 	{
-		List<Subscription> listSubscription = SubscriptionHome.getSubscriptionsListByIds( listIds );
+		List<Subscription> listSubscription = SubscriptionService.getInstance().getEntitiesListByIds( listIds );
 		
 		// keep original order
         return listSubscription.stream()
@@ -247,8 +248,7 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
             return redirectView( request, VIEW_CREATE_SUBSCRIPTION );
         }
 
-        SubscriptionHome.create( _subscription );
-        HistoryHome.create(buildNewHistory(_subscription.getUuid(), HistoryTypeEnum.CREATE));
+        SubscriptionService.getInstance().create( _subscription, getUser().getEmail() );
 
         resetListId( );
 
@@ -284,10 +284,9 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
     public String doRemoveSubscription( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
-        
-        
-        SubscriptionHome.remove( uuid );
-        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
+
+
+        SubscriptionService.getInstance().delete( uuid, getUser().getEmail() );
 
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale(  ) );
         resetListId( );
@@ -310,7 +309,7 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
         }
         if ( _subscription == null || !uuid.equals( _subscription.getUuid( ) ) )
         {
-            Optional<Subscription> optSubscription = SubscriptionHome.findByPrimaryKey( uuid );
+            Optional<Subscription> optSubscription = SubscriptionHome.findByPrimaryKey(uuid);
             _subscription = optSubscription.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
         }
 
@@ -346,8 +345,7 @@ public class SubscriptionJspBean extends AbstractJspBean <String, Subscription>
             return redirect( request, VIEW_MODIFY_SUBSCRIPTION, Map.of(PARAMETER_ID_SUBSCRIPTION, _subscription.getUuid( ) ));
         }
 
-        SubscriptionHome.update( _subscription );
-        HistoryHome.create(buildNewHistory(_subscription.getUuid(), HistoryTypeEnum.UPDATE));
+        SubscriptionService.getInstance().update( _subscription, getUser().getEmail() );
 
         resetListId( );
 

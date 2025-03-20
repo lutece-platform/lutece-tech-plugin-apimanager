@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.instance;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
@@ -170,7 +171,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Instance> selectInstancesList( Plugin plugin )
+    public List<Instance> selectEntitiesList( Plugin plugin )
     {
         List<Instance> instanceList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -190,7 +191,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdInstancesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> instanceList = new ArrayList<>( );
         
@@ -223,7 +224,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectInstancesReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList instanceList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -243,7 +244,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc }
      */
 	@Override
-	public List<Instance> selectInstancesListByIds( Plugin plugin, List<String> listIds ) {
+	public List<Instance> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<Instance> instanceList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

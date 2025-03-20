@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
@@ -178,7 +179,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Plan> selectPlansList( Plugin plugin )
+    public List<Plan> selectEntitiesList( Plugin plugin )
     {
         List<Plan> planList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -198,7 +199,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdPlansList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planList = new ArrayList<>( );
         
@@ -231,7 +232,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectPlansReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList planList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -251,7 +252,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
      * {@inheritDoc }
      */
 	@Override
-	public List<Plan> selectPlansListByIds( Plugin plugin, List<String> listIds ) {
+	public List<Plan> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<Plan> planList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

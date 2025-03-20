@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -154,7 +155,7 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
      * {@inheritDoc }
      */
     @Override
-    public List<PlanOauthConfiguration> selectPlanOauthConfigurationsList( Plugin plugin )
+    public List<PlanOauthConfiguration> selectEntitiesList( Plugin plugin )
     {
         List<PlanOauthConfiguration> planOauthConfigurationList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -174,7 +175,7 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdPlanOauthConfigurationsList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planOauthConfigurationList = new ArrayList<>( );
         
@@ -207,7 +208,7 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectPlanOauthConfigurationsReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList planOauthConfigurationList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -227,7 +228,7 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
      * {@inheritDoc }
      */
 	@Override
-	public List<PlanOauthConfiguration> selectPlanOauthConfigurationsListByIds( Plugin plugin, List<String> listIds ) {
+	public List<PlanOauthConfiguration> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<PlanOauthConfiguration> planOauthConfigurationList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

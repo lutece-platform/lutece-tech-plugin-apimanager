@@ -34,6 +34,7 @@
  
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
@@ -43,69 +44,6 @@ import java.util.Optional;
 /**
  * ISubscriptionDAO Interface
  */
-public interface ISubscriptionDAO
+public interface ISubscriptionDAO extends IDAO<Subscription>
 {
-    /**
-     * Insert a new record in the table.
-     * @param subscription instance of the Subscription object to insert
-     * @param plugin the Plugin
-     */
-    void insert( Subscription subscription, Plugin plugin );
-
-    /**
-     * Update the record in the table
-     * @param subscription the reference of the Subscription
-     * @param plugin the Plugin
-     */
-    void store( Subscription subscription, Plugin plugin );
-
-    /**
-     * Delete a record from the table
-     * @param nKey The identifier of the Subscription to delete
-     * @param plugin the Plugin
-     */
-    void delete( String nKey, Plugin plugin );
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Finders
-
-    /**
-     * Load the data from the table
-     * @param nKey The identifier of the subscription
-     * @param plugin the Plugin
-     * @return The instance of the subscription
-     */
-    Optional<Subscription> load( String nKey, Plugin plugin );
-
-    /**
-     * Load the data of all the subscription objects and returns them as a list
-     * @param plugin the Plugin
-     * @return The list which contains the data of all the subscription objects
-     */
-    List<Subscription> selectSubscriptionsList( Plugin plugin );
-    
-       /**
-     * Load the id of all the subscription objects and returns them as a list
-     * @param plugin the Plugin
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
-     * @return The list which contains the id of all the project objects fitting with the seach criteria.
-     */
-    List<String> selectIdSubscriptionsList( Plugin plugin, Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode );
-    
-    /**
-     * Load the data of all the subscription objects and returns them as a referenceList
-     * @param plugin the Plugin
-     * @return The referenceList which contains the data of all the subscription objects
-     */
-    ReferenceList selectSubscriptionsReferenceList( Plugin plugin );
-    
-    /**
-     * Load the data of all the avant objects and returns them as a list
-     * @param plugin the Plugin
-     * @param listIds liste of ids
-     * @return The list which contains the data of all the avant objects
-     */
-	List<Subscription> selectSubscriptionsListByIds( Plugin _plugin, List<String> listIds );
 }

@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -51,7 +52,7 @@ import java.util.Optional;
 public final class PlanHeaderMatchingHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanHeaderMatchingDAO _dao = SpringContextService.getBean( "apimanager.planHeaderMatchingDAO" );
+    private static IPlanHeaderMatchingDAO _dao = SpringContextService.getBean("apimanager.planHeaderMatchingDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -110,7 +111,7 @@ public final class PlanHeaderMatchingHome
      */
     public static List<PlanHeaderMatching> getPlanHeaderMatchingsList( )
     {
-        return _dao.selectPlanHeaderMatchingsList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -122,7 +123,7 @@ public final class PlanHeaderMatchingHome
      */
     public static List<String> getIdPlanHeaderMatchingsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdPlanHeaderMatchingsList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -131,7 +132,7 @@ public final class PlanHeaderMatchingHome
      */
     public static ReferenceList getPlanHeaderMatchingsReferenceList( )
     {
-        return _dao.selectPlanHeaderMatchingsReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -142,7 +143,7 @@ public final class PlanHeaderMatchingHome
      */
     public static List<PlanHeaderMatching> getPlanHeaderMatchingsListByIds( List<String> listIds )
     {
-        return _dao.selectPlanHeaderMatchingsListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

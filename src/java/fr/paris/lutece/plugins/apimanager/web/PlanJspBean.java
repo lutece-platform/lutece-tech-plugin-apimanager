@@ -40,13 +40,14 @@ import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanClientHttpConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanRateLimiting;
+import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
@@ -64,17 +65,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.lang3.StringUtils;
 
 
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 
-import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Plan features ( manage, create, modify, remove )
@@ -160,14 +158,14 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
         		String strSortMode = getSortMode(); 
         		
-        		_listIdPlans = PlanHome.getIdPlansList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+        		_listIdPlans = PlanService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
                	
 	       	}
 	       	else
 	       	{
 	       		// reload the filter criteria and search
 	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdPlans = PlanHome.getIdPlansList( _mapFilterCriteria, null ,null);
+	       		_listIdPlans = PlanService.getInstance().getIdEntitiesList( _mapFilterCriteria );
 	       	}
         	
         	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -195,7 +193,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
 	@Override
 	List<Plan> getItemsFromIds( List<String> listIds )
 	{
-		List<Plan> listPlan = PlanHome.getPlansListByIds( listIds );
+		List<Plan> listPlan = PlanService.getInstance().getEntitiesListByIds( listIds );
 		
 		// keep original order
         return listPlan.stream()
@@ -261,8 +259,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
             return redirectView( request, VIEW_CREATE_PLAN );
         }
 
-        PlanHome.create( _plan );
-        HistoryHome.create(buildNewHistory(_plan.getUuid(), HistoryTypeEnum.CREATE));
+        PlanService.getInstance().create( _plan, getUser().getEmail() );
         resetListId( );
 
         return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED);
@@ -297,10 +294,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     public String doRemovePlan( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_PLAN );
-        
-        
-        PlanHome.remove( uuid );
-        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
+
+
+        PlanService.getInstance().delete( uuid, getUser().getEmail() );
         resetListId( );
 
         return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_REMOVED);
@@ -321,7 +317,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         }
         if ( _plan == null || !uuid.equals( _plan.getUuid( ) ) )
         {
-            Optional<Plan> optPlan = PlanHome.findByPrimaryKey( uuid );
+            Optional<Plan> optPlan = PlanHome.findByPrimaryKey(uuid);
             _plan = optPlan.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
         }
 
@@ -357,8 +353,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
             return redirect( request, VIEW_MODIFY_PLAN, Map.of( PARAMETER_ID_PLAN, _plan.getUuid( ) ) );
         }
 
-        PlanHome.update( _plan );
-        HistoryHome.create(buildNewHistory(_plan.getUuid(), HistoryTypeEnum.UPDATE));
+        PlanService.getInstance().update( _plan, getUser().getEmail() );
 
         resetListId( );
 

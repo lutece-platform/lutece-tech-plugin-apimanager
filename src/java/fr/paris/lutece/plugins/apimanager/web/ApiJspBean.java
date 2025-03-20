@@ -39,10 +39,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
-import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.service.ApiService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -72,8 +72,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
-import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
-import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Api features ( manage, create, modify, remove )
@@ -169,14 +168,14 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
         		String strSortMode = getSortMode(); 
         		
-        		_listIdApis = ApiHome.getIdApisList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+        		_listIdApis = ApiService.getInstance().getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
                	
 	       	}
 	       	else
 	       	{
 	       		// reload the filter criteria and search
 	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdApis = ApiHome.getIdApisList( _mapFilterCriteria, null ,null);
+	       		_listIdApis = ApiService.getInstance().getIdEntitiesList( _mapFilterCriteria );
 	       	}
         	
         	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -203,7 +202,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
 	@Override
 	List<Api> getItemsFromIds( List<String> listIds )
 	{
-		List<Api> listApi = ApiHome.getApisListByIds( listIds );
+		List<Api> listApi = ApiService.getInstance().getEntitiesListByIds( listIds );
 		
 		// keep original order
         return listApi.stream()
@@ -264,8 +263,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
             return redirectView( request, VIEW_CREATE_API );
         }
 
-        ApiHome.create( _api );
-        HistoryHome.create(buildNewHistory(_api.getUuid(), HistoryTypeEnum.CREATE));
+        ApiService.getInstance().create( _api, getUser().getEmail() );
         addInfo( INFO_API_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -302,8 +300,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
     {
         String uuid = request.getParameter( PARAMETER_ID_API );
 
-        ApiHome.remove( uuid );
-        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
+        ApiService.getInstance().delete( uuid, getUser().getEmail() );
         addInfo( INFO_API_REMOVED, getLocale(  ) );
         resetListId( );
 
@@ -325,7 +322,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
         }
         if ( _api == null || !uuid.equals( _api.getUuid( ) ) )
         {
-            Optional<Api> optApi = ApiHome.findByPrimaryKey( uuid );
+            Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
             _api = optApi.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
         }
 
@@ -360,8 +357,7 @@ public class ApiJspBean extends AbstractJspBean <String, Api>
             return redirect( request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid( )) );
         }
 
-        ApiHome.update( _api );
-        HistoryHome.create(buildNewHistory(_api.getUuid(), HistoryTypeEnum.UPDATE));
+        ApiService.getInstance().update( _api, getUser().getEmail() );
         addInfo( INFO_API_UPDATED, getLocale(  ) );
         resetListId( );
 

@@ -34,6 +34,7 @@
  
 package fr.paris.lutece.plugins.apimanager.business.instance;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
@@ -43,69 +44,6 @@ import java.util.Optional;
 /**
  * IInstanceDAO Interface
  */
-public interface IInstanceDAO
+public interface IInstanceDAO extends IDAO<Instance>
 {
-    /**
-     * Insert a new record in the table.
-     * @param instance instance of the Instance object to insert
-     * @param plugin the Plugin
-     */
-    void insert( Instance instance, Plugin plugin );
-
-    /**
-     * Update the record in the table
-     * @param instance the reference of the Instance
-     * @param plugin the Plugin
-     */
-    void store( Instance instance, Plugin plugin );
-
-    /**
-     * Delete a record from the table
-     * @param nKey The identifier of the Instance to delete
-     * @param plugin the Plugin
-     */
-    void delete( String nKey, Plugin plugin );
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Finders
-
-    /**
-     * Load the data from the table
-     * @param nKey The identifier of the instance
-     * @param plugin the Plugin
-     * @return The instance of the instance
-     */
-    Optional<Instance> load( String nKey, Plugin plugin );
-
-    /**
-     * Load the data of all the instance objects and returns them as a list
-     * @param plugin the Plugin
-     * @return The list which contains the data of all the instance objects
-     */
-    List<Instance> selectInstancesList( Plugin plugin );
-    
-       /**
-     * Load the id of all the instance objects and returns them as a list
-     * @param plugin the Plugin
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
-     * @return The list which contains the id of all the project objects fitting with the seach criteria.
-     */
-    List<String> selectIdInstancesList( Plugin plugin, Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode );
-    
-    /**
-     * Load the data of all the instance objects and returns them as a referenceList
-     * @param plugin the Plugin
-     * @return The referenceList which contains the data of all the instance objects
-     */
-    ReferenceList selectInstancesReferenceList( Plugin plugin );
-    
-    /**
-     * Load the data of all the avant objects and returns them as a list
-     * @param plugin the Plugin
-     * @param listIds liste of ids
-     * @return The list which contains the data of all the avant objects
-     */
-	List<Instance> selectInstancesListByIds( Plugin _plugin, List<String> listIds );
 }

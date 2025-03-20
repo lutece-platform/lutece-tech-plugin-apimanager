@@ -197,16 +197,7 @@ public abstract class AbstractJspBean <S, T> extends MVCAdminJspBean
         final List<String> listIdHistory = HistoryHome.getIdHistorysList(mapFilterCriteria, "date" , SORT_ATTRIBUTES_DESC);
 
         Map<String, Object> model = getModel(  );
-        model.put( MARK_HISTORY_LIST, HistoryHome.getHistorysListByIds(listIdHistory).stream().sorted(Comparator.comparingInt(notif -> listIdHistory.indexOf(notif.getUuid()))).collect(Collectors.toList()));
+        model.put( MARK_HISTORY_LIST, HistoryHome.getHistorysListByIds(listIdHistory).stream().sorted(Comparator.comparingInt(history -> listIdHistory.indexOf(history.getUuid()))).collect(Collectors.toList()));
         return getPage(PROPERTY_PAGE_TITLE_MANAGE_HISTORY, TEMPLATE_MANAGE_HISTORY, model);
     }
-
-     protected History buildNewHistory(final String uuidRef, final HistoryTypeEnum type) {
-         final History history = new History();
-         history.setUuidRef(uuidRef);
-         history.setType(type);
-         history.setDate(Timestamp.from(Instant.now()));
-         history.setUser(getUser().getEmail());
-         return history;
-     }
 }

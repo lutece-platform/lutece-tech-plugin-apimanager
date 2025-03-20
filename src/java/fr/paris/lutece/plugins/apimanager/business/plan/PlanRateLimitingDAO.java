@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -161,7 +162,7 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
      * {@inheritDoc }
      */
     @Override
-    public List<PlanRateLimiting> selectPlanRateLimitingsList( Plugin plugin )
+    public List<PlanRateLimiting> selectEntitiesList( Plugin plugin )
     {
         List<PlanRateLimiting> planRateLimitingList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -181,7 +182,7 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdPlanRateLimitingsList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planRateLimitingList = new ArrayList<>( );
         
@@ -214,7 +215,7 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectPlanRateLimitingsReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList planRateLimitingList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -234,7 +235,7 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
      * {@inheritDoc }
      */
 	@Override
-	public List<PlanRateLimiting> selectPlanRateLimitingsListByIds( Plugin plugin, List<String> listIds ) {
+	public List<PlanRateLimiting> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<PlanRateLimiting> planRateLimitingList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

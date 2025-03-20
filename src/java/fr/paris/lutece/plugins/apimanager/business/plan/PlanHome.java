@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -52,7 +53,7 @@ import java.util.Optional;
 public final class PlanHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanDAO _dao = SpringContextService.getBean( "apimanager.planDAO" );
+    private static IPlanDAO _dao = SpringContextService.getBean("apimanager.planDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -69,10 +70,6 @@ public final class PlanHome
      */
     public static Plan create( Plan plan )
     {
-        PlanRateLimitingHome.create(plan.getRateLimiting());
-        PlanClientHttpConfigurationHome.create(plan.getClientHttpConfiguration());
-        PlanHeaderMatchingHome.create(plan.getHeaderMatching());
-        PlanOauthConfigurationHome.create(plan.getOauthConfiguration());
         _dao.insert( plan, _plugin );
 
         return plan;
@@ -85,10 +82,6 @@ public final class PlanHome
      */
     public static Plan update( Plan plan )
     {
-        PlanRateLimitingHome.update(plan.getRateLimiting());
-        PlanClientHttpConfigurationHome.update(plan.getClientHttpConfiguration());
-        PlanHeaderMatchingHome.update(plan.getHeaderMatching());
-        PlanOauthConfigurationHome.update(plan.getOauthConfiguration());
         _dao.store( plan, _plugin );
 
         return plan;
@@ -100,13 +93,7 @@ public final class PlanHome
      */
     public static void remove( String nKey )
     {
-        findByPrimaryKey(nKey).ifPresent( plan -> {
-            _dao.delete(nKey, _plugin);
-            Optional.ofNullable(plan.getRateLimiting()).ifPresent(rl -> PlanRateLimitingHome.remove(rl.getUuid()));
-            Optional.ofNullable(plan.getClientHttpConfiguration()).ifPresent(chc -> PlanClientHttpConfigurationHome.remove(chc.getUuid()));
-            Optional.ofNullable(plan.getHeaderMatching()).ifPresent(hm -> PlanHeaderMatchingHome.remove(hm.getUuid()));
-            Optional.ofNullable(plan.getOauthConfiguration()).ifPresent(oac -> PlanOauthConfigurationHome.remove(oac.getUuid()));
-        });
+        _dao.delete(nKey, _plugin);
     }
 
     /**
@@ -125,7 +112,7 @@ public final class PlanHome
      */
     public static List<Plan> getPlansList( )
     {
-        return _dao.selectPlansList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -137,7 +124,7 @@ public final class PlanHome
      */
     public static List<String> getIdPlansList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdPlansList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -146,7 +133,7 @@ public final class PlanHome
      */
     public static ReferenceList getPlansReferenceList( )
     {
-        return _dao.selectPlansReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -157,7 +144,7 @@ public final class PlanHome
      */
     public static List<Plan> getPlansListByIds( List<String> listIds )
     {
-        return _dao.selectPlansListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

@@ -38,6 +38,8 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.service.InstanceService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -64,9 +66,8 @@ import org.apache.commons.lang3.StringUtils;
 
 
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
-import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 
-import static fr.paris.lutece.plugins.apimanager.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Instance features ( manage, create, modify, remove )
@@ -147,14 +148,14 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
         		String strSortMode = getSortMode(); 
         		
-        		_listIdInstances = InstanceHome.getIdInstancesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+        		_listIdInstances = InstanceService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
                	
 	       	}
 	       	else
 	       	{
 	       		// reload the filter criteria and search
 	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdInstances = InstanceHome.getIdInstancesList( _mapFilterCriteria, null ,null);
+	       		_listIdInstances = InstanceService.getInstance().getIdEntitiesList( _mapFilterCriteria );
 	       	}
         	
         	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -177,7 +178,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
 	@Override
 	List<Instance> getItemsFromIds( List<String> listIds )
 	{
-		List<Instance> listInstance = InstanceHome.getInstancesListByIds( listIds );
+		List<Instance> listInstance = InstanceService.getInstance().getEntitiesListByIds( listIds );
 		
 		// keep original order
         return listInstance.stream()
@@ -243,8 +244,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
             return redirectView( request, VIEW_CREATE_INSTANCE );
         }
 
-        InstanceHome.create( _instance );
-        HistoryHome.create(buildNewHistory(_instance.getUuid(), HistoryTypeEnum.CREATE));
+        InstanceService.getInstance().create( _instance, getUser().getEmail() );
         resetListId( );
 
         return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_CREATED);
@@ -279,10 +279,9 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     public String doRemoveInstance( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        
-        
-        InstanceHome.remove( uuid );
-        HistoryHome.create(buildNewHistory(uuid, HistoryTypeEnum.DELETE));
+
+
+        InstanceService.getInstance().delete( uuid, getUser().getEmail() );
         resetListId( );
 
         return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_REMOVED);
@@ -303,7 +302,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         }
         if ( _instance == null || !uuid.equals( _instance.getUuid( ) ) )
         {
-            Optional<Instance> optInstance = InstanceHome.findByPrimaryKey( uuid );
+            Optional<Instance> optInstance = InstanceHome.findByPrimaryKey(uuid);
             _instance = optInstance.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
         }
 
@@ -339,8 +338,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
             return redirect( request, VIEW_MODIFY_INSTANCE, Map.of(PARAMETER_ID_INSTANCE, _instance.getUuid( )) );
         }
 
-        InstanceHome.update( _instance );
-        HistoryHome.create(buildNewHistory(_instance.getUuid(), HistoryTypeEnum.UPDATE));
+        InstanceService.getInstance().update( _instance, getUser().getEmail() );
         resetListId( );
 
         return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_UPDATED);

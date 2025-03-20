@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.subscription;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -51,7 +52,7 @@ import java.util.Optional;
 public final class SubscriptionHome
 {
     // Static variable pointed at the DAO instance
-    private static ISubscriptionDAO _dao = SpringContextService.getBean( "apimanager.subscriptionDAO" );
+    private static ISubscriptionDAO _dao = SpringContextService.getBean("apimanager.subscriptionDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -110,7 +111,7 @@ public final class SubscriptionHome
      */
     public static List<Subscription> getSubscriptionsList( )
     {
-        return _dao.selectSubscriptionsList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -122,7 +123,7 @@ public final class SubscriptionHome
      */
     public static List<String> getIdSubscriptionsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdSubscriptionsList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -131,7 +132,7 @@ public final class SubscriptionHome
      */
     public static ReferenceList getSubscriptionsReferenceList( )
     {
-        return _dao.selectSubscriptionsReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -142,7 +143,7 @@ public final class SubscriptionHome
      */
     public static List<Subscription> getSubscriptionsListByIds( List<String> listIds )
     {
-        return _dao.selectSubscriptionsListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

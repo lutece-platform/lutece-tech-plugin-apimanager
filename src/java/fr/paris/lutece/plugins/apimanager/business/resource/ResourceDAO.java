@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
@@ -156,7 +157,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Resource> selectResourcesList( Plugin plugin )
+    public List<Resource> selectEntitiesList( Plugin plugin )
     {
         List<Resource> resourceList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -176,7 +177,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdResourcesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> resourceList = new ArrayList<>( );
         
@@ -209,7 +210,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectResourcesReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList resourceList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -229,7 +230,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
      * {@inheritDoc }
      */
 	@Override
-	public List<Resource> selectResourcesListByIds( Plugin plugin, List<String> listIds ) {
+	public List<Resource> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<Resource> resourceList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );

@@ -35,6 +35,7 @@
 
  package fr.paris.lutece.plugins.apimanager.business.client;
 
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -51,7 +52,7 @@ import java.util.Optional;
 public final class ClientHome
 {
     // Static variable pointed at the DAO instance
-    private static IClientDAO _dao = SpringContextService.getBean( "apimanager.clientDAO" );
+    private static IClientDAO _dao = SpringContextService.getBean("apimanager.clientDAO");
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
@@ -110,7 +111,7 @@ public final class ClientHome
      */
     public static List<Client> getClientsList( )
     {
-        return _dao.selectClientsList( _plugin );
+        return _dao.selectEntitiesList( _plugin );
     }
     
         /**
@@ -122,7 +123,7 @@ public final class ClientHome
      */
     public static List<String> getIdClientsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdClientsList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
     }
     
     /**
@@ -131,7 +132,7 @@ public final class ClientHome
      */
     public static ReferenceList getClientsReferenceList( )
     {
-        return _dao.selectClientsReferenceList( _plugin );
+        return _dao.selectEntitiesReferenceList( _plugin );
     }
     
 	
@@ -142,7 +143,7 @@ public final class ClientHome
      */
     public static List<Client> getClientsListByIds( List<String> listIds )
     {
-        return _dao.selectClientsListByIds( _plugin, listIds );
+        return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
 }

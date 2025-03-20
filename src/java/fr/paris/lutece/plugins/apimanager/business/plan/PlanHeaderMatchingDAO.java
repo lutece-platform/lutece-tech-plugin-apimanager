@@ -36,6 +36,7 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -155,7 +156,7 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
      * {@inheritDoc }
      */
     @Override
-    public List<PlanHeaderMatching> selectPlanHeaderMatchingsList( Plugin plugin )
+    public List<PlanHeaderMatching> selectEntitiesList( Plugin plugin )
     {
         List<PlanHeaderMatching> planHeaderMatchingList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -175,7 +176,7 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdPlanHeaderMatchingsList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planHeaderMatchingList = new ArrayList<>( );
         
@@ -208,7 +209,7 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
      * {@inheritDoc }
      */
     @Override
-    public ReferenceList selectPlanHeaderMatchingsReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
         ReferenceList planHeaderMatchingList = new ReferenceList();
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
@@ -228,7 +229,7 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
      * {@inheritDoc }
      */
 	@Override
-	public List<PlanHeaderMatching> selectPlanHeaderMatchingsListByIds( Plugin plugin, List<String> listIds ) {
+	public List<PlanHeaderMatching> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
 		List<PlanHeaderMatching> planHeaderMatchingList = new ArrayList<>(  );
 		
 		StringBuilder builder = new StringBuilder( );
