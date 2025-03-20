@@ -31,7 +31,7 @@
  *
  * License 1.0
  */
- 
+
 package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;

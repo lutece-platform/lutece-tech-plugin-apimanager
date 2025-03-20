@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -56,27 +55,27 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao implements IPlanClientHttpConfigurationDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_plan_client_http_configuration";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_plan_client_http_configuration";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_client_http_configuration ( uuid, connection_ttl, connect_timeout, read_timeout, request_timeout, codec_max_chunk_size, codec_initial_buffer_size, codec_max_header_size, codec_max_initial_line_length ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_client_http_configuration ( uuid, connection_ttl, connect_timeout, read_timeout, request_timeout, codec_max_chunk_size, codec_initial_buffer_size, codec_max_header_size, codec_max_initial_line_length ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_client_http_configuration WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_client_http_configuration SET connection_ttl = ?, connect_timeout = ?, read_timeout = ?, request_timeout = ?, codec_max_chunk_size = ?, codec_initial_buffer_size = ?, codec_max_header_size = ?, codec_max_initial_line_length = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, connection_ttl, connect_timeout, read_timeout, request_timeout, codec_max_chunk_size, codec_initial_buffer_size, codec_max_header_size, codec_max_initial_line_length FROM apimanager_plan_client_http_configuration";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, connection_ttl, connect_timeout, read_timeout, request_timeout, codec_max_chunk_size, codec_initial_buffer_size, codec_max_header_size, codec_max_initial_line_length FROM apimanager_plan_client_http_configuration";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan_client_http_configuration";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public PlanClientHttpConfigurationDAO() {
+    public PlanClientHttpConfigurationDAO( )
+    {
 
-		initMapSql(PlanClientHttpConfiguration.class); //Maps with name and type of each databases column associated to the business class attributes 
-	}
+        initMapSql( PlanClientHttpConfiguration.class ); // Maps with name and type of each databases column associated to the business class attributes
+    }
 
     /**
      * {@inheritDoc }
@@ -84,24 +83,24 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
     @Override
     public void insert( PlanClientHttpConfiguration planClientHttpConfiguration, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid );
-			daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getConnectionTtl( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getConnectTimeout( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getReadTimeout( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getRequestTimeout( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecMaxChunkSize( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecInitialBufferSize( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
-            daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
-            
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectionTtl( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectTimeout( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getReadTimeout( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getRequestTimeout( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxChunkSize( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecInitialBufferSize( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
+
             daoUtil.executeUpdate( );
-			planClientHttpConfiguration.setUuid( uuid );
+            planClientHttpConfiguration.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -110,18 +109,18 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
     @Override
     public Optional<PlanClientHttpConfiguration> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        PlanClientHttpConfiguration planClientHttpConfiguration = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            planClientHttpConfiguration = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( planClientHttpConfiguration );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            PlanClientHttpConfiguration planClientHttpConfiguration = null;
+
+            if ( daoUtil.next( ) )
+            {
+                planClientHttpConfiguration = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( planClientHttpConfiguration );
         }
     }
 
@@ -131,10 +130,10 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -144,21 +143,21 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
     @Override
     public void store( PlanClientHttpConfiguration planClientHttpConfiguration, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
-	        
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getConnectionTtl( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getConnectTimeout( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getReadTimeout( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getRequestTimeout( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecMaxChunkSize( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecInitialBufferSize( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
-            	daoUtil.setInt( nIndex++ , planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
-	        daoUtil.setString( nIndex , planClientHttpConfiguration.getUuid( ));
-	
-	        daoUtil.executeUpdate( );
+            int nIndex = 1;
+
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectionTtl( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectTimeout( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getReadTimeout( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getRequestTimeout( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxChunkSize( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecInitialBufferSize( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
+            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
+            daoUtil.setString( nIndex, planClientHttpConfiguration.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -168,126 +167,130 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
     @Override
     public List<PlanClientHttpConfiguration> selectEntitiesList( Plugin plugin )
     {
-        List<PlanClientHttpConfiguration> planClientHttpConfigurationList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<PlanClientHttpConfiguration> planClientHttpConfigurationList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				planClientHttpConfigurationList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return planClientHttpConfigurationList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planClientHttpConfigurationList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return planClientHttpConfigurationList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planClientHttpConfigurationList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planClientHttpConfigurationList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return planClientHttpConfigurationList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planClientHttpConfigurationList.add( daoUtil.getString( 1 ) );
+            }
+
+            return planClientHttpConfigurationList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList planClientHttpConfigurationList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList planClientHttpConfigurationList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planClientHttpConfigurationList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return planClientHttpConfigurationList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planClientHttpConfigurationList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return planClientHttpConfigurationList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<PlanClientHttpConfiguration> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<PlanClientHttpConfiguration> planClientHttpConfigurationList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<PlanClientHttpConfiguration> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<PlanClientHttpConfiguration> planClientHttpConfigurationList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            planClientHttpConfigurationList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return planClientHttpConfigurationList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private PlanClientHttpConfiguration loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration(  );
-		int nIndex = 1;
-		
-		planClientHttpConfiguration.setUuid( daoUtil.getString( nIndex++ ) );
-		planClientHttpConfiguration.setConnectionTtl( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setConnectTimeout( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setReadTimeout( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setCodecMaxChunkSize( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setCodecInitialBufferSize( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setCodecMaxHeaderSize( daoUtil.getInt( nIndex++ ) );
-		planClientHttpConfiguration.setCodecMaxInitialLineLength( daoUtil.getInt( nIndex ) );
-		
-		return planClientHttpConfiguration;
-	}
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    planClientHttpConfigurationList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return planClientHttpConfigurationList;
+
+    }
+
+    private PlanClientHttpConfiguration loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration( );
+        int nIndex = 1;
+
+        planClientHttpConfiguration.setUuid( daoUtil.getString( nIndex++ ) );
+        planClientHttpConfiguration.setConnectionTtl( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setConnectTimeout( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setReadTimeout( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setCodecMaxChunkSize( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setCodecInitialBufferSize( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setCodecMaxHeaderSize( daoUtil.getInt( nIndex++ ) );
+        planClientHttpConfiguration.setCodecMaxInitialLineLength( daoUtil.getInt( nIndex ) );
+
+        return planClientHttpConfiguration;
+    }
 }

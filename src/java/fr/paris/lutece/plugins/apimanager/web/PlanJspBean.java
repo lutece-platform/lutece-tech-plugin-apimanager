@@ -31,8 +31,7 @@
  *
  * License 1.0
  */
- 	
- 
+
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
@@ -69,7 +68,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
-
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
@@ -78,7 +76,7 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
  * This class provides the user interface to manage Plan features ( manage, create, modify, remove )
  */
 @Controller( controllerJsp = "ManagePlans.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
-public class PlanJspBean extends AbstractJspBean <String, Plan>
+public class PlanJspBean extends AbstractJspBean<String, Plan>
 {
 
     // Templates
@@ -127,108 +125,112 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     private static final String INFO_PLAN_CREATED = "apimanager.info.plan.created";
     private static final String INFO_PLAN_UPDATED = "apimanager.info.plan.updated";
     private static final String INFO_PLAN_REMOVED = "apimanager.info.plan.removed";
-    
+
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    
+
     // Session variable to store working values
     private Plan _plan;
     private List<String> _listIdPlans;
-    private HashMap<String,String> _mapFilterCriteria = new HashMap<>();
+    private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
-    
+
     /**
      * Build the Manage View
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The page
      */
     @View( value = VIEW_MANAGE_PLANS, defaultView = true )
     public String getManagePlans( HttpServletRequest request )
     {
         _plan = null;
-        
+
         // new search only if in pagination mode
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null )
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
-        	// if sorting request : new search with the existing filter criteria, ordered 
-        	// example of order by parameter : orderby=name
-        	if ( StringUtils.isNotBlank( (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY) ) )
-        	{
-        		
-        		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
-        		String strSortMode = getSortMode(); 
-        		
-        		_listIdPlans = PlanService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
-               	
-	       	}
-	       	else
-	       	{
-	       		// reload the filter criteria and search
-	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdPlans = PlanService.getInstance().getIdEntitiesList( _mapFilterCriteria );
-	       	}
-        	
-        	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
-        	resetCurrentPageIndexOfPaginator();
-        }
-       	
-       	Map<String, Object> model = getPaginatedListModel( request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS );
+            // if sorting request : new search with the existing filter criteria, ordered
+            // example of order by parameter : orderby=name
+            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
+            {
 
-        final String subscriptionMode = request.getParameter(PARAMETER_SUBSCRIPTION_MODE);
-        if(subscriptionMode != null) {
-            model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean(subscriptionMode) );
+                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
+                String strSortMode = getSortMode( );
+
+                _listIdPlans = PlanService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+
+            }
+            else
+            {
+                // reload the filter criteria and search
+                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+                _listIdPlans = PlanService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+            }
+
+            // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
+            resetCurrentPageIndexOfPaginator( );
         }
 
-        addSearchParameters(model,_mapFilterCriteria); //allow the persistence of search values in inputs search bar inputs
-                     
+        Map<String, Object> model = getPaginatedListModel( request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS );
+
+        final String subscriptionMode = request.getParameter( PARAMETER_SUBSCRIPTION_MODE );
+        if ( subscriptionMode != null )
+        {
+            model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean( subscriptionMode ) );
+        }
+
+        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_PLANS, TEMPLATE_MANAGE_PLANS, model );
 
     }
 
-	/**
+    /**
      * Get Items from Ids list
+     * 
      * @param listIds
      * @return the populated list of items corresponding to the id List
      */
-	@Override
-	List<Plan> getItemsFromIds( List<String> listIds )
-	{
-		List<Plan> listPlan = PlanService.getInstance().getEntitiesListByIds( listIds );
-		
-		// keep original order
-        return listPlan.stream()
-                 .sorted(Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid())))
-                 .collect(Collectors.toList());
-	}
-	
-	@Override
-	int getPluginDefaultNumberOfItemPerPage( ) {
-		return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
-	}
-    
+    @Override
+    List<Plan> getItemsFromIds( List<String> listIds )
+    {
+        List<Plan> listPlan = PlanService.getInstance( ).getEntitiesListByIds( listIds );
+
+        // keep original order
+        return listPlan.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    int getPluginDefaultNumberOfItemPerPage( )
+    {
+        return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
+    }
+
     /**
-    * reset the _listIdPlans list
-    */
+     * reset the _listIdPlans list
+     */
     public void resetListId( )
     {
-    	_listIdPlans = new ArrayList<>( );
+        _listIdPlans = new ArrayList<>( );
     }
 
     /**
      * Returns the form to create a plan
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the html code of the plan form
      */
     @View( VIEW_CREATE_PLAN )
     public String getCreatePlan( HttpServletRequest request )
     {
-        _plan = ( _plan != null ) ? _plan : new Plan(  );
-        final Api api = new Api();
-        api.setUuid(request.getParameter(PARAMETER_ID_API));
-        _plan.setApi(api);
+        _plan = ( _plan != null ) ? _plan : new Plan( );
+        final Api api = new Api( );
+        api.setUuid( request.getParameter( PARAMETER_ID_API ) );
+        _plan.setApi( api );
 
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_PLAN ) );
 
@@ -238,7 +240,8 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     /**
      * Process the data capture form of a new plan
      *
-     * @param request The Http Request
+     * @param request
+     *            The Http Request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
@@ -246,11 +249,10 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     public String doCreatePlan( HttpServletRequest request ) throws AccessDeniedException
     {
         populateAll( request, getLocale( ) );
-        
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_PLAN ) )
         {
-            throw new AccessDeniedException ( "Invalid security token" );
+            throw new AccessDeniedException( "Invalid security token" );
         }
 
         // Check constraints
@@ -259,17 +261,17 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
             return redirectView( request, VIEW_CREATE_PLAN );
         }
 
-        PlanService.getInstance().create( _plan, getUser().getEmail() );
+        PlanService.getInstance( ).create( _plan, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED);
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED );
     }
 
     /**
-     * Manages the removal form of a plan whose identifier is in the http
-     * request
+     * Manages the removal form of a plan whose identifier is in the http request
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the html code to confirm
      */
     @Action( ACTION_CONFIRM_REMOVE_PLAN )
@@ -279,7 +281,7 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
         UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_PLAN ) );
         url.addParameter( PARAMETER_ID_PLAN, uuid );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_PLAN, url.getUrl(  ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_PLAN, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
         return redirect( request, strMessageUrl );
     }
@@ -287,7 +289,8 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     /**
      * Handles the removal form of a plan
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the jsp URL to display the form to manage plans
      */
     @Action( ACTION_REMOVE_PLAN )
@@ -295,34 +298,34 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     {
         String uuid = request.getParameter( PARAMETER_ID_PLAN );
 
-
-        PlanService.getInstance().delete( uuid, getUser().getEmail() );
+        PlanService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_REMOVED);
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_REMOVED );
     }
 
     /**
      * Returns the form to update info about a plan
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The HTML form to update info
      */
     @View( VIEW_MODIFY_PLAN )
     public String getModifyPlan( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_PLAN );
-        if(uuid == null){
-            return redirect(request, VIEW_MANAGE_PLANS);
+        if ( uuid == null )
+        {
+            return redirect( request, VIEW_MANAGE_PLANS );
         }
         if ( _plan == null || !uuid.equals( _plan.getUuid( ) ) )
         {
-            Optional<Plan> optPlan = PlanHome.findByPrimaryKey(uuid);
-            _plan = optPlan.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
+            Optional<Plan> optPlan = PlanHome.findByPrimaryKey( uuid );
+            _plan = optPlan.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         }
 
-
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_PLAN ) );
 
@@ -332,7 +335,8 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     /**
      * Process the change form of a plan
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
@@ -341,10 +345,9 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
     {
         populateAll( request, getLocale( ) );
 
-		
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_PLAN ) )
         {
-            throw new AccessDeniedException ( "Invalid security token" );
+            throw new AccessDeniedException( "Invalid security token" );
         }
 
         // Check constraints
@@ -353,46 +356,47 @@ public class PlanJspBean extends AbstractJspBean <String, Plan>
             return redirect( request, VIEW_MODIFY_PLAN, Map.of( PARAMETER_ID_PLAN, _plan.getUuid( ) ) );
         }
 
-        PlanService.getInstance().update( _plan, getUser().getEmail() );
+        PlanService.getInstance( ).update( _plan, getUser( ).getEmail( ) );
 
         resetListId( );
 
-        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_UPDATED);
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_UPDATED );
     }
 
-    private void populateAll(final HttpServletRequest request, final Locale locale) {
+    private void populateAll( final HttpServletRequest request, final Locale locale )
+    {
         populate( _plan, request, locale );
 
-        final PlanRateLimiting planRateLimiting = new PlanRateLimiting();
-        final Map<String, String[]> rateLimitingParams =
-                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_RATE_LIMITING_PREFIX)).collect(
-                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_RATE_LIMITING_PREFIX, ""), Map.Entry::getValue));
-        final MultipartHttpServletRequest rateLimitingRequest = new MultipartHttpServletRequest(request, Map.of(), rateLimitingParams);
-        populate( planRateLimiting, rateLimitingRequest, locale);
+        final PlanRateLimiting planRateLimiting = new PlanRateLimiting( );
+        final Map<String, String [ ]> rateLimitingParams = request.getParameterMap( ).entrySet( ).stream( )
+                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_RATE_LIMITING_PREFIX ) )
+                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_RATE_LIMITING_PREFIX, "" ), Map.Entry::getValue ) );
+        final MultipartHttpServletRequest rateLimitingRequest = new MultipartHttpServletRequest( request, Map.of( ), rateLimitingParams );
+        populate( planRateLimiting, rateLimitingRequest, locale );
         _plan.setRateLimiting( planRateLimiting );
 
-        final PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration();
-        final Map<String, String[]> clientHttpParams =
-                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_CLIENT_HTTP_PREFIX)).collect(
-                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_CLIENT_HTTP_PREFIX, ""), Map.Entry::getValue));
-        final MultipartHttpServletRequest clientHttpRequest = new MultipartHttpServletRequest(request, Map.of(), clientHttpParams);
-        populate(planClientHttpConfiguration, clientHttpRequest, locale);
+        final PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration( );
+        final Map<String, String [ ]> clientHttpParams = request.getParameterMap( ).entrySet( ).stream( )
+                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_CLIENT_HTTP_PREFIX ) )
+                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_CLIENT_HTTP_PREFIX, "" ), Map.Entry::getValue ) );
+        final MultipartHttpServletRequest clientHttpRequest = new MultipartHttpServletRequest( request, Map.of( ), clientHttpParams );
+        populate( planClientHttpConfiguration, clientHttpRequest, locale );
         _plan.setClientHttpConfiguration( planClientHttpConfiguration );
 
-        final PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching();
-        final Map<String, String[]> headerMatchingParams =
-                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_HEADER_MATCHING_PREFIX)).collect(
-                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_HEADER_MATCHING_PREFIX, ""), Map.Entry::getValue));
-        final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest(request, Map.of(), headerMatchingParams);
-        populate(planHeaderMatching, headerMatchingRequest, locale);
+        final PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching( );
+        final Map<String, String [ ]> headerMatchingParams = request.getParameterMap( ).entrySet( ).stream( )
+                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_HEADER_MATCHING_PREFIX ) )
+                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_HEADER_MATCHING_PREFIX, "" ), Map.Entry::getValue ) );
+        final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest( request, Map.of( ), headerMatchingParams );
+        populate( planHeaderMatching, headerMatchingRequest, locale );
         _plan.setHeaderMatching( planHeaderMatching );
 
-        final PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration();
-        final Map<String, String[]> oauthConfigurationParams =
-                request.getParameterMap().entrySet().stream().filter(entry -> entry.getKey().startsWith(PARAMETER_OAUTH_CONFIGURATION_PREFIX)).collect(
-                        Collectors.toMap(entry -> entry.getKey().replace(PARAMETER_OAUTH_CONFIGURATION_PREFIX, ""), Map.Entry::getValue));
-        final MultipartHttpServletRequest oauthConfigurationRequest = new MultipartHttpServletRequest(request, Map.of(), oauthConfigurationParams);
-        populate(planOauthConfiguration, oauthConfigurationRequest, locale);
+        final PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration( );
+        final Map<String, String [ ]> oauthConfigurationParams = request.getParameterMap( ).entrySet( ).stream( )
+                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_OAUTH_CONFIGURATION_PREFIX ) )
+                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_OAUTH_CONFIGURATION_PREFIX, "" ), Map.Entry::getValue ) );
+        final MultipartHttpServletRequest oauthConfigurationRequest = new MultipartHttpServletRequest( request, Map.of( ), oauthConfigurationParams );
+        populate( planOauthConfiguration, oauthConfigurationRequest, locale );
         _plan.setOauthConfiguration( planOauthConfiguration );
     }
 }

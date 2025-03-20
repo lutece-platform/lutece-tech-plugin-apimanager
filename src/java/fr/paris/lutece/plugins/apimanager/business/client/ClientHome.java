@@ -32,15 +32,13 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.client;
+package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +50,22 @@ import java.util.Optional;
 public final class ClientHome
 {
     // Static variable pointed at the DAO instance
-    private static IClientDAO _dao = SpringContextService.getBean("apimanager.clientDAO");
+    private static IClientDAO _dao = SpringContextService.getBean( "apimanager.clientDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private ClientHome(  )
+    private ClientHome( )
     {
     }
 
     /**
      * Create an instance of the client class
-     * @param client The instance of the Client which contains the informations to store
-     * @return The  instance of client which has been created with its primary key.
+     * 
+     * @param client
+     *            The instance of the Client which contains the informations to store
+     * @return The instance of client which has been created with its primary key.
      */
     public static Client create( Client client )
     {
@@ -76,8 +76,10 @@ public final class ClientHome
 
     /**
      * Update of the client which is specified in parameter
-     * @param client The instance of the Client which contains the data to store
-     * @return The instance of the  client which has been updated
+     * 
+     * @param client
+     *            The instance of the Client which contains the data to store
+     * @return The instance of the client which has been updated
      */
     public static Client update( Client client )
     {
@@ -88,7 +90,9 @@ public final class ClientHome
 
     /**
      * Remove the client whose identifier is specified in parameter
-     * @param nKey The client Id
+     * 
+     * @param nKey
+     *            The client Id
      */
     public static void remove( String nKey )
     {
@@ -97,7 +101,9 @@ public final class ClientHome
 
     /**
      * Returns an instance of a client whose identifier is specified in parameter
-     * @param nKey The client primary key
+     * 
+     * @param nKey
+     *            The client primary key
      * @return an instance of Client
      */
     public static Optional<Client> findByPrimaryKey( String nKey )
@@ -107,38 +113,45 @@ public final class ClientHome
 
     /**
      * Load the data of all the client objects and returns them as a list
+     * 
      * @return the list which contains the data of all the client objects
      */
     public static List<Client> getClientsList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the client objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdClientsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdClientsList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the client objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the client objects
      */
     public static ReferenceList getClientsReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<Client> getClientsListByIds( List<String> listIds )
@@ -147,4 +160,3 @@ public final class ClientHome
     }
 
 }
-

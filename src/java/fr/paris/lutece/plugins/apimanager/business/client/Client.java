@@ -38,33 +38,35 @@ import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+
 /**
  * This is the business class for the object Client
- */ 
+ */
 public class Client extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
-    
+
     @NotEmpty( message = "#i18n{apimanager.validation.client.Name.notEmpty}" )
-    @Size( max = 50 , message = "#i18n{apimanager.validation.client.Name.size}" ) 
+    @Size( max = 50, message = "#i18n{apimanager.validation.client.Name.size}" )
     private String _strName;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.client.ClientId.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.client.ClientId.size}" )
     private String _strClientId;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.client.ClientSecret.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.client.ClientSecret.size}" )
     private String _strClientSecret;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.client.CodeApp.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.client.CodeApp.size}" )
     private String _strCodeApp;
-    
+
     private boolean _bTraceEnabled;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -74,15 +76,18 @@ public class Client extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
     }
-    
+
     /**
      * Returns the Name
+     * 
      * @return The Name
      */
     public String getName( )
@@ -92,16 +97,18 @@ public class Client extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Name
-     * @param strName The Name
-     */ 
+     * 
+     * @param strName
+     *            The Name
+     */
     public void setName( String strName )
     {
         _strName = strName;
     }
-    
-    
+
     /**
      * Returns the ClientId
+     * 
      * @return The ClientId
      */
     public String getClientId( )
@@ -111,16 +118,18 @@ public class Client extends AbstractTagBean implements Serializable
 
     /**
      * Sets the ClientId
-     * @param strClientId The ClientId
-     */ 
+     * 
+     * @param strClientId
+     *            The ClientId
+     */
     public void setClientId( String strClientId )
     {
         _strClientId = strClientId;
     }
-    
-    
+
     /**
      * Returns the ClientSecret
+     * 
      * @return The ClientSecret
      */
     public String getClientSecret( )
@@ -130,16 +139,18 @@ public class Client extends AbstractTagBean implements Serializable
 
     /**
      * Sets the ClientSecret
-     * @param strClientSecret The ClientSecret
-     */ 
+     * 
+     * @param strClientSecret
+     *            The ClientSecret
+     */
     public void setClientSecret( String strClientSecret )
     {
         _strClientSecret = strClientSecret;
     }
-    
-    
+
     /**
      * Returns the CodeApp
+     * 
      * @return The CodeApp
      */
     public String getCodeApp( )
@@ -149,16 +160,18 @@ public class Client extends AbstractTagBean implements Serializable
 
     /**
      * Sets the CodeApp
-     * @param strCodeApp The CodeApp
-     */ 
+     * 
+     * @param strCodeApp
+     *            The CodeApp
+     */
     public void setCodeApp( String strCodeApp )
     {
         _strCodeApp = strCodeApp;
     }
-    
-    
+
     /**
      * Returns the TraceEnabled
+     * 
      * @return The TraceEnabled
      */
     public boolean getTraceEnabled( )
@@ -168,11 +181,13 @@ public class Client extends AbstractTagBean implements Serializable
 
     /**
      * Sets the TraceEnabled
-     * @param bTraceEnabled The TraceEnabled
-     */ 
+     * 
+     * @param bTraceEnabled
+     *            The TraceEnabled
+     */
     public void setTraceEnabled( boolean bTraceEnabled )
     {
         _bTraceEnabled = bTraceEnabled;
     }
-    
+
 }

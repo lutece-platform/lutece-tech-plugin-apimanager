@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -56,27 +55,27 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IPlanHeaderMatchingDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_plan_header_matching";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_plan_header_matching";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_header_matching ( uuid, name, value, type ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_header_matching ( uuid, name, value, type ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_header_matching WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_header_matching SET name = ?, value = ?, type = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, value, type FROM apimanager_plan_header_matching";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, value, type FROM apimanager_plan_header_matching";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan_header_matching";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public PlanHeaderMatchingDAO() {
+    public PlanHeaderMatchingDAO( )
+    {
 
-		initMapSql(PlanHeaderMatching.class); //Maps with name and type of each databases column associated to the business class attributes 
-	}
+        initMapSql( PlanHeaderMatching.class ); // Maps with name and type of each databases column associated to the business class attributes
+    }
 
     /**
      * {@inheritDoc }
@@ -84,19 +83,19 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
     @Override
     public void insert( PlanHeaderMatching planHeaderMatching, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid );
-			daoUtil.setString( nIndex++ , planHeaderMatching.getName( ) );
-            daoUtil.setString( nIndex++ , planHeaderMatching.getValue( ) );
-            daoUtil.setString( nIndex++ , planHeaderMatching.getType( ) );
-            
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, planHeaderMatching.getName( ) );
+            daoUtil.setString( nIndex++, planHeaderMatching.getValue( ) );
+            daoUtil.setString( nIndex++, planHeaderMatching.getType( ) );
+
             daoUtil.executeUpdate( );
-			planHeaderMatching.setUuid(uuid);
+            planHeaderMatching.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -105,18 +104,18 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
     @Override
     public Optional<PlanHeaderMatching> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        PlanHeaderMatching planHeaderMatching = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            planHeaderMatching = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( planHeaderMatching );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            PlanHeaderMatching planHeaderMatching = null;
+
+            if ( daoUtil.next( ) )
+            {
+                planHeaderMatching = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( planHeaderMatching );
         }
     }
 
@@ -126,10 +125,10 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -139,16 +138,16 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
     @Override
     public void store( PlanHeaderMatching planHeaderMatching, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
-	        
-            	daoUtil.setString( nIndex++ , planHeaderMatching.getName( ) );
-            	daoUtil.setString( nIndex++ , planHeaderMatching.getValue( ) );
-            	daoUtil.setString( nIndex++ , planHeaderMatching.getType( ) );
-	        daoUtil.setString( nIndex , planHeaderMatching.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
+            int nIndex = 1;
+
+            daoUtil.setString( nIndex++, planHeaderMatching.getName( ) );
+            daoUtil.setString( nIndex++, planHeaderMatching.getValue( ) );
+            daoUtil.setString( nIndex++, planHeaderMatching.getType( ) );
+            daoUtil.setString( nIndex, planHeaderMatching.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -158,121 +157,125 @@ public final class PlanHeaderMatchingDAO extends AbstractFilterDao implements IP
     @Override
     public List<PlanHeaderMatching> selectEntitiesList( Plugin plugin )
     {
-        List<PlanHeaderMatching> planHeaderMatchingList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<PlanHeaderMatching> planHeaderMatchingList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				planHeaderMatchingList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return planHeaderMatchingList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planHeaderMatchingList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return planHeaderMatchingList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planHeaderMatchingList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planHeaderMatchingList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return planHeaderMatchingList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planHeaderMatchingList.add( daoUtil.getString( 1 ) );
+            }
+
+            return planHeaderMatchingList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList planHeaderMatchingList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList planHeaderMatchingList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planHeaderMatchingList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return planHeaderMatchingList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planHeaderMatchingList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return planHeaderMatchingList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<PlanHeaderMatching> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<PlanHeaderMatching> planHeaderMatchingList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<PlanHeaderMatching> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<PlanHeaderMatching> planHeaderMatchingList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            planHeaderMatchingList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return planHeaderMatchingList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private PlanHeaderMatching loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching(  );
-		int nIndex = 1;
-		
-		planHeaderMatching.setUuid( daoUtil.getString( nIndex++ ) );
-		planHeaderMatching.setName( daoUtil.getString( nIndex++ ) );
-		planHeaderMatching.setValue( daoUtil.getString( nIndex++ ) );
-		planHeaderMatching.setType( daoUtil.getString( nIndex ) );
-		
-		return planHeaderMatching;
-	}
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    planHeaderMatchingList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return planHeaderMatchingList;
+
+    }
+
+    private PlanHeaderMatching loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching( );
+        int nIndex = 1;
+
+        planHeaderMatching.setUuid( daoUtil.getString( nIndex++ ) );
+        planHeaderMatching.setName( daoUtil.getString( nIndex++ ) );
+        planHeaderMatching.setValue( daoUtil.getString( nIndex++ ) );
+        planHeaderMatching.setType( daoUtil.getString( nIndex ) );
+
+        return planHeaderMatching;
+    }
 }

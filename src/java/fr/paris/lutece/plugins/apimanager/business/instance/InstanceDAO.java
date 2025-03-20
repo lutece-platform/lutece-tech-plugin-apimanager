@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.instance;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -57,29 +56,29 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_instance";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_instance";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET uuid_api = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_instance";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public InstanceDAO() {
+    public InstanceDAO( )
+    {
 
-		initMapSql(Instance.class); //Maps with name and type of each databases column associated to the business class attributes
-		_mapSql.remove("api");
-		_mapSql.put("uuid_api", "String");
-	}
+        initMapSql( Instance.class ); // Maps with name and type of each databases column associated to the business class attributes
+        _mapSql.remove( "api" );
+        _mapSql.put( "uuid_api", "String" );
+    }
 
     /**
      * {@inheritDoc }
@@ -87,25 +86,25 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     @Override
     public void insert( Instance instance, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid );
-			daoUtil.setString( nIndex++, instance.getApi() != null ? instance.getApi().getUuid( ) : null );
-			daoUtil.setString( nIndex++ , instance.getHost( ) );
-            daoUtil.setString( nIndex++ , instance.getPort( ) );
-            daoUtil.setString( nIndex++ , instance.getName( ) );
-            daoUtil.setString( nIndex++ , instance.getEnvironnement( ) );
-            daoUtil.setString( nIndex++ , instance.getHealthPath( ) );
-            daoUtil.setString( nIndex++ , instance.getHealthPort( ) );
-            daoUtil.setInt( nIndex++ , instance.getHealthFreq( ) );
-            
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, instance.getApi( ) != null ? instance.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, instance.getHost( ) );
+            daoUtil.setString( nIndex++, instance.getPort( ) );
+            daoUtil.setString( nIndex++, instance.getName( ) );
+            daoUtil.setString( nIndex++, instance.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, instance.getHealthPath( ) );
+            daoUtil.setString( nIndex++, instance.getHealthPort( ) );
+            daoUtil.setInt( nIndex++, instance.getHealthFreq( ) );
+
             daoUtil.executeUpdate( );
-			instance.setUuid( uuid );
-			this.insertTags(uuid, instance.getTags(), plugin);
+            instance.setUuid( uuid );
+            this.insertTags( uuid, instance.getTags( ), plugin );
         }
-        
+
     }
 
     /**
@@ -114,18 +113,18 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     @Override
     public Optional<Instance> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        Instance instance = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            instance = loadFromDaoUtil( daoUtil, plugin );
-	        }
-	
-	        return Optional.ofNullable( instance );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            Instance instance = null;
+
+            if ( daoUtil.next( ) )
+            {
+                instance = loadFromDaoUtil( daoUtil, plugin );
+            }
+
+            return Optional.ofNullable( instance );
         }
     }
 
@@ -135,11 +134,11 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
-			this.deleteTags( nKey, plugin );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
+            this.deleteTags( nKey, plugin );
         }
     }
 
@@ -149,21 +148,21 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     @Override
     public void store( Instance instance, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
-				daoUtil.setString( nIndex++, instance.getApi() != null ? instance.getApi().getUuid( ) : null );
-				daoUtil.setString( nIndex++ , instance.getHost( ) );
-            	daoUtil.setString( nIndex++ , instance.getPort( ) );
-            	daoUtil.setString( nIndex++ , instance.getName( ) );
-            	daoUtil.setString( nIndex++ , instance.getEnvironnement( ) );
-            	daoUtil.setString( nIndex++ , instance.getHealthPath( ) );
-            	daoUtil.setString( nIndex++ , instance.getHealthPort( ) );
-            	daoUtil.setInt( nIndex++ , instance.getHealthFreq( ) );
-	        daoUtil.setString( nIndex , instance.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
-			this.deleteAndInsertTags(instance.getUuid(), instance.getTags(), plugin);
+            int nIndex = 1;
+            daoUtil.setString( nIndex++, instance.getApi( ) != null ? instance.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, instance.getHost( ) );
+            daoUtil.setString( nIndex++, instance.getPort( ) );
+            daoUtil.setString( nIndex++, instance.getName( ) );
+            daoUtil.setString( nIndex++, instance.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, instance.getHealthPath( ) );
+            daoUtil.setString( nIndex++, instance.getHealthPort( ) );
+            daoUtil.setInt( nIndex++, instance.getHealthFreq( ) );
+            daoUtil.setString( nIndex, instance.getUuid( ) );
+
+            daoUtil.executeUpdate( );
+            this.deleteAndInsertTags( instance.getUuid( ), instance.getTags( ), plugin );
         }
     }
 
@@ -173,128 +172,132 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     @Override
     public List<Instance> selectEntitiesList( Plugin plugin )
     {
-        List<Instance> instanceList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<Instance> instanceList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				instanceList.add( loadFromDaoUtil( daoUtil, plugin ) );
-	        }
-	
-	        return instanceList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                instanceList.add( loadFromDaoUtil( daoUtil, plugin ) );
+            }
+
+            return instanceList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> instanceList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            instanceList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return instanceList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                instanceList.add( daoUtil.getString( 1 ) );
+            }
+
+            return instanceList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList instanceList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList instanceList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            instanceList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return instanceList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                instanceList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return instanceList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<Instance> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<Instance> instanceList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<Instance> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<Instance> instanceList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            instanceList.add( loadFromDaoUtil( daoUtil, plugin ) );
-		        }
-	        }
-	    }
-		return instanceList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private Instance loadFromDaoUtil (DAOUtil daoUtil, Plugin plugin) {
-		
-		Instance instance = new Instance(  );
-		int nIndex = 1;
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
 
-		final String uuid = daoUtil.getString(nIndex++);
-		instance.setUuid( uuid );
-		instance.setApi(ApiHome.findByPrimaryKey(daoUtil.getString(nIndex++)).orElse( null ));
-		instance.setHost( daoUtil.getString( nIndex++ ) );
-		instance.setPort( daoUtil.getString( nIndex++ ) );
-		instance.setName( daoUtil.getString( nIndex++ ) );
-		instance.setEnvironnement( daoUtil.getString( nIndex++ ) );
-		instance.setHealthPath( daoUtil.getString( nIndex++ ) );
-		instance.setHealthPort( daoUtil.getString( nIndex++ ) );
-		instance.setHealthFreq( daoUtil.getInt( nIndex ) );
-		instance.setTags(this.selectTags(uuid, plugin));
-		
-		return instance;
-	}
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    instanceList.add( loadFromDaoUtil( daoUtil, plugin ) );
+                }
+            }
+        }
+        return instanceList;
+
+    }
+
+    private Instance loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin )
+    {
+
+        Instance instance = new Instance( );
+        int nIndex = 1;
+
+        final String uuid = daoUtil.getString( nIndex++ );
+        instance.setUuid( uuid );
+        instance.setApi( ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        instance.setHost( daoUtil.getString( nIndex++ ) );
+        instance.setPort( daoUtil.getString( nIndex++ ) );
+        instance.setName( daoUtil.getString( nIndex++ ) );
+        instance.setEnvironnement( daoUtil.getString( nIndex++ ) );
+        instance.setHealthPath( daoUtil.getString( nIndex++ ) );
+        instance.setHealthPort( daoUtil.getString( nIndex++ ) );
+        instance.setHealthFreq( daoUtil.getInt( nIndex ) );
+        instance.setTags( this.selectTags( uuid, plugin ) );
+
+        return instance;
+    }
 }

@@ -35,27 +35,29 @@ package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+
 /**
  * This is the business class for the object PlanHeaderMatching
- */ 
+ */
 public class PlanHeaderMatching implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.planheadermatching.Name.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.planheadermatching.Name.size}" )
     private String _strName;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.planheadermatching.Value.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.planheadermatching.Value.size}" )
     private String _strValue;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.planheadermatching.Type.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.planheadermatching.Type.size}" )
     private String _strType;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -65,15 +67,18 @@ public class PlanHeaderMatching implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
     }
-    
+
     /**
      * Returns the Name
+     * 
      * @return The Name
      */
     public String getName( )
@@ -83,16 +88,18 @@ public class PlanHeaderMatching implements Serializable
 
     /**
      * Sets the Name
-     * @param strName The Name
-     */ 
+     * 
+     * @param strName
+     *            The Name
+     */
     public void setName( String strName )
     {
         _strName = strName;
     }
-    
-    
+
     /**
      * Returns the Value
+     * 
      * @return The Value
      */
     public String getValue( )
@@ -102,16 +109,18 @@ public class PlanHeaderMatching implements Serializable
 
     /**
      * Sets the Value
-     * @param strValue The Value
-     */ 
+     * 
+     * @param strValue
+     *            The Value
+     */
     public void setValue( String strValue )
     {
         _strValue = strValue;
     }
-    
-    
+
     /**
      * Returns the Type
+     * 
      * @return The Type
      */
     public String getType( )
@@ -121,11 +130,13 @@ public class PlanHeaderMatching implements Serializable
 
     /**
      * Sets the Type
-     * @param strType The Type
-     */ 
+     * 
+     * @param strType
+     *            The Type
+     */
     public void setType( String strType )
     {
         _strType = strType;
     }
-    
+
 }

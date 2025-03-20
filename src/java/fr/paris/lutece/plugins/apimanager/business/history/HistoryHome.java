@@ -32,15 +32,13 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.history;
+package fr.paris.lutece.plugins.apimanager.business.history;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +50,22 @@ import java.util.Optional;
 public final class HistoryHome
 {
     // Static variable pointed at the DAO instance
-    private static IHistoryDAO _dao = SpringContextService.getBean("apimanager.historyDAO");
+    private static IHistoryDAO _dao = SpringContextService.getBean( "apimanager.historyDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private HistoryHome(  )
+    private HistoryHome( )
     {
     }
 
     /**
      * Create an instance of the history class
-     * @param history The instance of the History which contains the informations to store
-     * @return The  instance of history which has been created with its primary key.
+     * 
+     * @param history
+     *            The instance of the History which contains the informations to store
+     * @return The instance of history which has been created with its primary key.
      */
     public static History create( History history )
     {
@@ -76,8 +76,10 @@ public final class HistoryHome
 
     /**
      * Update of the history which is specified in parameter
-     * @param history The instance of the History which contains the data to store
-     * @return The instance of the  history which has been updated
+     * 
+     * @param history
+     *            The instance of the History which contains the data to store
+     * @return The instance of the history which has been updated
      */
     public static History update( History history )
     {
@@ -88,7 +90,9 @@ public final class HistoryHome
 
     /**
      * Remove the history whose identifier is specified in parameter
-     * @param nKey The history Id
+     * 
+     * @param nKey
+     *            The history Id
      */
     public static void remove( String nKey )
     {
@@ -97,7 +101,9 @@ public final class HistoryHome
 
     /**
      * Returns an instance of a history whose identifier is specified in parameter
-     * @param nKey The history primary key
+     * 
+     * @param nKey
+     *            The history primary key
      * @return an instance of History
      */
     public static Optional<History> findByPrimaryKey( String nKey )
@@ -107,38 +113,45 @@ public final class HistoryHome
 
     /**
      * Load the data of all the history objects and returns them as a list
+     * 
      * @return the list which contains the data of all the history objects
      */
     public static List<History> getHistorysList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the history objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdHistorysList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdHistorysList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the history objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the history objects
      */
     public static ReferenceList getHistorysReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<History> getHistorysListByIds( List<String> listIds )
@@ -147,4 +160,3 @@ public final class HistoryHome
     }
 
 }
-

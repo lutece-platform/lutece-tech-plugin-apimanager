@@ -38,40 +38,42 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+
 /**
  * This is the business class for the object Instance
- */ 
+ */
 public class Instance extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
 
     private Api _api;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.instance.Host.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.instance.Host.size}" )
     private String _strHost;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.instance.Port.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.instance.Port.size}" )
     private String _strPort;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.instance.Name.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.instance.Name.size}" )
     private String _strName;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.instance.Environnement.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.instance.Environnement.size}" )
     private String _strEnvironnement;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.instance.HealthPath.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.instance.HealthPath.size}" )
     private String _strHealthPath;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.instance.HealthPort.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.instance.HealthPort.size}" )
     private String _strHealthPort;
-    
+
     private int _nHealthFreq;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -81,8 +83,10 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
@@ -90,22 +94,28 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Returns the Api
+     * 
      * @return The Api
      */
-    public Api getApi() {
+    public Api getApi( )
+    {
         return _api;
     }
 
     /**
      * Sets the Api
-     * @param api The Api
+     * 
+     * @param api
+     *            The Api
      */
-    public void setApi(final Api api) {
+    public void setApi( final Api api )
+    {
         _api = api;
     }
 
     /**
      * Returns the Host
+     * 
      * @return The Host
      */
     public String getHost( )
@@ -115,16 +125,18 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Host
-     * @param strHost The Host
-     */ 
+     * 
+     * @param strHost
+     *            The Host
+     */
     public void setHost( String strHost )
     {
         _strHost = strHost;
     }
-    
-    
+
     /**
      * Returns the Port
+     * 
      * @return The Port
      */
     public String getPort( )
@@ -134,16 +146,18 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Port
-     * @param strPort The Port
-     */ 
+     * 
+     * @param strPort
+     *            The Port
+     */
     public void setPort( String strPort )
     {
         _strPort = strPort;
     }
-    
-    
+
     /**
      * Returns the Name
+     * 
      * @return The Name
      */
     public String getName( )
@@ -153,16 +167,18 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Name
-     * @param strName The Name
-     */ 
+     * 
+     * @param strName
+     *            The Name
+     */
     public void setName( String strName )
     {
         _strName = strName;
     }
-    
-    
+
     /**
      * Returns the Environnement
+     * 
      * @return The Environnement
      */
     public String getEnvironnement( )
@@ -172,16 +188,18 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Environnement
-     * @param strEnvironnement The Environnement
-     */ 
+     * 
+     * @param strEnvironnement
+     *            The Environnement
+     */
     public void setEnvironnement( String strEnvironnement )
     {
         _strEnvironnement = strEnvironnement;
     }
-    
-    
+
     /**
      * Returns the HealthPath
+     * 
      * @return The HealthPath
      */
     public String getHealthPath( )
@@ -191,16 +209,18 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the HealthPath
-     * @param strHealthPath The HealthPath
-     */ 
+     * 
+     * @param strHealthPath
+     *            The HealthPath
+     */
     public void setHealthPath( String strHealthPath )
     {
         _strHealthPath = strHealthPath;
     }
-    
-    
+
     /**
      * Returns the HealthPort
+     * 
      * @return The HealthPort
      */
     public String getHealthPort( )
@@ -210,16 +230,18 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the HealthPort
-     * @param strHealthPort The HealthPort
-     */ 
+     * 
+     * @param strHealthPort
+     *            The HealthPort
+     */
     public void setHealthPort( String strHealthPort )
     {
         _strHealthPort = strHealthPort;
     }
-    
-    
+
     /**
      * Returns the HealthFreq
+     * 
      * @return The HealthFreq
      */
     public int getHealthFreq( )
@@ -229,11 +251,13 @@ public class Instance extends AbstractTagBean implements Serializable
 
     /**
      * Sets the HealthFreq
-     * @param nHealthFreq The HealthFreq
-     */ 
+     * 
+     * @param nHealthFreq
+     *            The HealthFreq
+     */
     public void setHealthFreq( int nHealthFreq )
     {
         _nHealthFreq = nHealthFreq;
     }
-    
+
 }

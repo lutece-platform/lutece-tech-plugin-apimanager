@@ -32,8 +32,7 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.plan;
+package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -41,7 +40,6 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
 import org.checkerframework.checker.nullness.Opt;
-
 
 import java.util.List;
 import java.util.Map;
@@ -53,20 +51,22 @@ import java.util.Optional;
 public final class PlanHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanDAO _dao = SpringContextService.getBean("apimanager.planDAO");
+    private static IPlanDAO _dao = SpringContextService.getBean( "apimanager.planDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private PlanHome(  )
+    private PlanHome( )
     {
     }
 
     /**
      * Create an instance of the plan class
-     * @param plan The instance of the Plan which contains the informations to store
-     * @return The  instance of plan which has been created with its primary key.
+     * 
+     * @param plan
+     *            The instance of the Plan which contains the informations to store
+     * @return The instance of plan which has been created with its primary key.
      */
     public static Plan create( Plan plan )
     {
@@ -77,8 +77,10 @@ public final class PlanHome
 
     /**
      * Update of the plan which is specified in parameter
-     * @param plan The instance of the Plan which contains the data to store
-     * @return The instance of the  plan which has been updated
+     * 
+     * @param plan
+     *            The instance of the Plan which contains the data to store
+     * @return The instance of the plan which has been updated
      */
     public static Plan update( Plan plan )
     {
@@ -89,16 +91,20 @@ public final class PlanHome
 
     /**
      * Remove the plan whose identifier is specified in parameter
-     * @param nKey The plan Id
+     * 
+     * @param nKey
+     *            The plan Id
      */
     public static void remove( String nKey )
     {
-        _dao.delete(nKey, _plugin);
+        _dao.delete( nKey, _plugin );
     }
 
     /**
      * Returns an instance of a plan whose identifier is specified in parameter
-     * @param nKey The plan primary key
+     * 
+     * @param nKey
+     *            The plan primary key
      * @return an instance of Plan
      */
     public static Optional<Plan> findByPrimaryKey( String nKey )
@@ -108,38 +114,45 @@ public final class PlanHome
 
     /**
      * Load the data of all the plan objects and returns them as a list
+     * 
      * @return the list which contains the data of all the plan objects
      */
     public static List<Plan> getPlansList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the plan objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdPlansList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdPlansList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the plan objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the plan objects
      */
     public static ReferenceList getPlansReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<Plan> getPlansListByIds( List<String> listIds )
@@ -148,4 +161,3 @@ public final class PlanHome
     }
 
 }
-

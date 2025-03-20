@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -56,27 +55,27 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanOauthConfigurationDAO extends AbstractFilterDao implements IPlanOauthConfigurationDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_plan_oauth_configuration";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_plan_oauth_configuration";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_oauth_configuration ( uuid, jwt_issuer, jwt_validity ) VALUES ( ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_oauth_configuration ( uuid, jwt_issuer, jwt_validity ) VALUES ( ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_oauth_configuration WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_oauth_configuration SET jwt_issuer = ?, jwt_validity = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, jwt_issuer, jwt_validity FROM apimanager_plan_oauth_configuration";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, jwt_issuer, jwt_validity FROM apimanager_plan_oauth_configuration";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan_oauth_configuration";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public PlanOauthConfigurationDAO() {
+    public PlanOauthConfigurationDAO( )
+    {
 
-		initMapSql(PlanOauthConfiguration.class); //Maps with name and type of each databases column associated to the business class attributes 
-	}
+        initMapSql( PlanOauthConfiguration.class ); // Maps with name and type of each databases column associated to the business class attributes
+    }
 
     /**
      * {@inheritDoc }
@@ -84,16 +83,16 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
     @Override
     public void insert( PlanOauthConfiguration planOauthConfiguration, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid );
-			daoUtil.setString( nIndex++, planOauthConfiguration.getJwtIssuer() );
-			daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity() );
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, planOauthConfiguration.getJwtIssuer( ) );
+            daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity( ) );
 
             daoUtil.executeUpdate( );
-			planOauthConfiguration.setUuid( uuid );
+            planOauthConfiguration.setUuid( uuid );
         }
 
     }
@@ -104,18 +103,18 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
     @Override
     public Optional<PlanOauthConfiguration> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        PlanOauthConfiguration planOauthConfiguration = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            planOauthConfiguration = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( planOauthConfiguration );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            PlanOauthConfiguration planOauthConfiguration = null;
+
+            if ( daoUtil.next( ) )
+            {
+                planOauthConfiguration = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( planOauthConfiguration );
         }
     }
 
@@ -125,10 +124,10 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -138,16 +137,15 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
     @Override
     public void store( PlanOauthConfiguration planOauthConfiguration, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
+            int nIndex = 1;
 
-			daoUtil.setString( nIndex++, planOauthConfiguration.getJwtIssuer() );
-			daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity() );
-			daoUtil.setString( nIndex , planOauthConfiguration.getUuid( ) );
+            daoUtil.setString( nIndex++, planOauthConfiguration.getJwtIssuer( ) );
+            daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity( ) );
+            daoUtil.setString( nIndex, planOauthConfiguration.getUuid( ) );
 
-
-	        daoUtil.executeUpdate( );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -157,120 +155,124 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
     @Override
     public List<PlanOauthConfiguration> selectEntitiesList( Plugin plugin )
     {
-        List<PlanOauthConfiguration> planOauthConfigurationList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<PlanOauthConfiguration> planOauthConfigurationList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				planOauthConfigurationList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return planOauthConfigurationList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planOauthConfigurationList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return planOauthConfigurationList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planOauthConfigurationList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planOauthConfigurationList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return planOauthConfigurationList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planOauthConfigurationList.add( daoUtil.getString( 1 ) );
+            }
+
+            return planOauthConfigurationList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList planOauthConfigurationList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList planOauthConfigurationList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planOauthConfigurationList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return planOauthConfigurationList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planOauthConfigurationList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return planOauthConfigurationList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<PlanOauthConfiguration> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<PlanOauthConfiguration> planOauthConfigurationList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<PlanOauthConfiguration> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<PlanOauthConfiguration> planOauthConfigurationList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            planOauthConfigurationList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return planOauthConfigurationList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private PlanOauthConfiguration loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration(  );
-		int nIndex = 1;
-		
-		planOauthConfiguration.setUuid( daoUtil.getString( nIndex++ ) );
-		planOauthConfiguration.setJwtIssuer( daoUtil.getString( nIndex++ ) );
-		planOauthConfiguration.setJwtValidity( daoUtil.getInt( nIndex++ ) );
-		
-		return planOauthConfiguration;
-	}
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    planOauthConfigurationList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return planOauthConfigurationList;
+
+    }
+
+    private PlanOauthConfiguration loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration( );
+        int nIndex = 1;
+
+        planOauthConfiguration.setUuid( daoUtil.getString( nIndex++ ) );
+        planOauthConfiguration.setJwtIssuer( daoUtil.getString( nIndex++ ) );
+        planOauthConfiguration.setJwtValidity( daoUtil.getInt( nIndex++ ) );
+
+        return planOauthConfiguration;
+    }
 }

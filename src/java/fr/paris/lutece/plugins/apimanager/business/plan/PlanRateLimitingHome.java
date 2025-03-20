@@ -32,15 +32,13 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.plan;
+package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +50,22 @@ import java.util.Optional;
 public final class PlanRateLimitingHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanRateLimitingDAO _dao = SpringContextService.getBean("apimanager.planRateLimitingDAO");
+    private static IPlanRateLimitingDAO _dao = SpringContextService.getBean( "apimanager.planRateLimitingDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private PlanRateLimitingHome(  )
+    private PlanRateLimitingHome( )
     {
     }
 
     /**
      * Create an instance of the planRateLimiting class
-     * @param planRateLimiting The instance of the PlanRateLimiting which contains the informations to store
-     * @return The  instance of planRateLimiting which has been created with its primary key.
+     * 
+     * @param planRateLimiting
+     *            The instance of the PlanRateLimiting which contains the informations to store
+     * @return The instance of planRateLimiting which has been created with its primary key.
      */
     public static PlanRateLimiting create( PlanRateLimiting planRateLimiting )
     {
@@ -76,8 +76,10 @@ public final class PlanRateLimitingHome
 
     /**
      * Update of the planRateLimiting which is specified in parameter
-     * @param planRateLimiting The instance of the PlanRateLimiting which contains the data to store
-     * @return The instance of the  planRateLimiting which has been updated
+     * 
+     * @param planRateLimiting
+     *            The instance of the PlanRateLimiting which contains the data to store
+     * @return The instance of the planRateLimiting which has been updated
      */
     public static PlanRateLimiting update( PlanRateLimiting planRateLimiting )
     {
@@ -88,7 +90,9 @@ public final class PlanRateLimitingHome
 
     /**
      * Remove the planRateLimiting whose identifier is specified in parameter
-     * @param nKey The planRateLimiting Id
+     * 
+     * @param nKey
+     *            The planRateLimiting Id
      */
     public static void remove( String nKey )
     {
@@ -97,7 +101,9 @@ public final class PlanRateLimitingHome
 
     /**
      * Returns an instance of a planRateLimiting whose identifier is specified in parameter
-     * @param nKey The planRateLimiting primary key
+     * 
+     * @param nKey
+     *            The planRateLimiting primary key
      * @return an instance of PlanRateLimiting
      */
     public static Optional<PlanRateLimiting> findByPrimaryKey( String nKey )
@@ -107,38 +113,45 @@ public final class PlanRateLimitingHome
 
     /**
      * Load the data of all the planRateLimiting objects and returns them as a list
+     * 
      * @return the list which contains the data of all the planRateLimiting objects
      */
     public static List<PlanRateLimiting> getPlanRateLimitingsList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the planRateLimiting objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdPlanRateLimitingsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdPlanRateLimitingsList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the planRateLimiting objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the planRateLimiting objects
      */
     public static ReferenceList getPlanRateLimitingsReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<PlanRateLimiting> getPlanRateLimitingsListByIds( List<String> listIds )
@@ -147,4 +160,3 @@ public final class PlanRateLimitingHome
     }
 
 }
-

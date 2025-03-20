@@ -32,15 +32,13 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.subscription;
+package fr.paris.lutece.plugins.apimanager.business.subscription;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +50,22 @@ import java.util.Optional;
 public final class SubscriptionHome
 {
     // Static variable pointed at the DAO instance
-    private static ISubscriptionDAO _dao = SpringContextService.getBean("apimanager.subscriptionDAO");
+    private static ISubscriptionDAO _dao = SpringContextService.getBean( "apimanager.subscriptionDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private SubscriptionHome(  )
+    private SubscriptionHome( )
     {
     }
 
     /**
      * Create an instance of the subscription class
-     * @param subscription The instance of the Subscription which contains the informations to store
-     * @return The  instance of subscription which has been created with its primary key.
+     * 
+     * @param subscription
+     *            The instance of the Subscription which contains the informations to store
+     * @return The instance of subscription which has been created with its primary key.
      */
     public static Subscription create( Subscription subscription )
     {
@@ -76,8 +76,10 @@ public final class SubscriptionHome
 
     /**
      * Update of the subscription which is specified in parameter
-     * @param subscription The instance of the Subscription which contains the data to store
-     * @return The instance of the  subscription which has been updated
+     * 
+     * @param subscription
+     *            The instance of the Subscription which contains the data to store
+     * @return The instance of the subscription which has been updated
      */
     public static Subscription update( Subscription subscription )
     {
@@ -88,7 +90,9 @@ public final class SubscriptionHome
 
     /**
      * Remove the subscription whose identifier is specified in parameter
-     * @param nKey The subscription Id
+     * 
+     * @param nKey
+     *            The subscription Id
      */
     public static void remove( String nKey )
     {
@@ -97,7 +101,9 @@ public final class SubscriptionHome
 
     /**
      * Returns an instance of a subscription whose identifier is specified in parameter
-     * @param nKey The subscription primary key
+     * 
+     * @param nKey
+     *            The subscription primary key
      * @return an instance of Subscription
      */
     public static Optional<Subscription> findByPrimaryKey( String nKey )
@@ -107,38 +113,45 @@ public final class SubscriptionHome
 
     /**
      * Load the data of all the subscription objects and returns them as a list
+     * 
      * @return the list which contains the data of all the subscription objects
      */
     public static List<Subscription> getSubscriptionsList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the subscription objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdSubscriptionsList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdSubscriptionsList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the subscription objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the subscription objects
      */
     public static ReferenceList getSubscriptionsReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<Subscription> getSubscriptionsListByIds( List<String> listIds )
@@ -147,4 +160,3 @@ public final class SubscriptionHome
     }
 
 }
-

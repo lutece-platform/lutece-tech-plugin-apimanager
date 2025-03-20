@@ -31,8 +31,7 @@
  *
  * License 1.0
  */
- 	
- 
+
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
@@ -64,7 +63,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
-
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
@@ -73,7 +71,7 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
  * This class provides the user interface to manage Instance features ( manage, create, modify, remove )
  */
 @Controller( controllerJsp = "ManageInstances.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
-public class InstanceJspBean extends AbstractJspBean <String, Instance>
+public class InstanceJspBean extends AbstractJspBean<String, Instance>
 {
     // Templates
     private static final String TEMPLATE_MANAGE_INSTANCES = "/admin/plugins/apimanager/manage_instances.html";
@@ -117,103 +115,106 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     private static final String INFO_INSTANCE_CREATED = "apimanager.info.instance.created";
     private static final String INFO_INSTANCE_UPDATED = "apimanager.info.instance.updated";
     private static final String INFO_INSTANCE_REMOVED = "apimanager.info.instance.removed";
-    
+
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    
+
     // Session variable to store working values
     private Instance _instance;
     private List<String> _listIdInstances;
-    private HashMap<String,String> _mapFilterCriteria = new HashMap<>();
+    private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
-    
+
     /**
      * Build the Manage View
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The page
      */
     @View( value = VIEW_MANAGE_INSTANCES, defaultView = true )
     public String getManageInstances( HttpServletRequest request )
     {
         _instance = null;
-        
+
         // new search only if in pagination mode
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null )
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
-        	// if sorting request : new search with the existing filter criteria, ordered 
-        	// example of order by parameter : orderby=name
-        	if ( StringUtils.isNotBlank( (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY) ) )
-        	{
-        		
-        		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
-        		String strSortMode = getSortMode(); 
-        		
-        		_listIdInstances = InstanceService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
-               	
-	       	}
-	       	else
-	       	{
-	       		// reload the filter criteria and search
-	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdInstances = InstanceService.getInstance().getIdEntitiesList( _mapFilterCriteria );
-	       	}
-        	
-        	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
-        	resetCurrentPageIndexOfPaginator();
+            // if sorting request : new search with the existing filter criteria, ordered
+            // example of order by parameter : orderby=name
+            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
+            {
+
+                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
+                String strSortMode = getSortMode( );
+
+                _listIdInstances = InstanceService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+
+            }
+            else
+            {
+                // reload the filter criteria and search
+                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+                _listIdInstances = InstanceService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+            }
+
+            // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
+            resetCurrentPageIndexOfPaginator( );
         }
-       	
-       	Map<String, Object> model = getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES );
-             
-        addSearchParameters(model,_mapFilterCriteria); //allow the persistence of search values in inputs search bar inputs
-                     
+
+        Map<String, Object> model = getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES );
+
+        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_INSTANCES, TEMPLATE_MANAGE_INSTANCES, model );
 
     }
 
-	/**
+    /**
      * Get Items from Ids list
+     * 
      * @param listIds
      * @return the populated list of items corresponding to the id List
      */
-	@Override
-	List<Instance> getItemsFromIds( List<String> listIds )
-	{
-		List<Instance> listInstance = InstanceService.getInstance().getEntitiesListByIds( listIds );
-		
-		// keep original order
-        return listInstance.stream()
-                 .sorted(Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid())))
-                 .collect(Collectors.toList());
-	}
-	
-	@Override
-	int getPluginDefaultNumberOfItemPerPage( ) {
-		return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
-	}
-    
+    @Override
+    List<Instance> getItemsFromIds( List<String> listIds )
+    {
+        List<Instance> listInstance = InstanceService.getInstance( ).getEntitiesListByIds( listIds );
+
+        // keep original order
+        return listInstance.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    int getPluginDefaultNumberOfItemPerPage( )
+    {
+        return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
+    }
+
     /**
-    * reset the _listIdInstances list
-    */
+     * reset the _listIdInstances list
+     */
     public void resetListId( )
     {
-    	_listIdInstances = new ArrayList<>( );
+        _listIdInstances = new ArrayList<>( );
     }
 
     /**
      * Returns the form to create a instance
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the html code of the instance form
      */
     @View( VIEW_CREATE_INSTANCE )
     public String getCreateInstance( HttpServletRequest request )
     {
-        _instance = ( _instance != null ) ? _instance : new Instance(  );
-        final Api api = new Api();
+        _instance = ( _instance != null ) ? _instance : new Instance( );
+        final Api api = new Api( );
         api.setUuid( request.getParameter( PARAMETER_ID_API ) );
         _instance.setApi( api );
 
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_INSTANCE ) );
 
@@ -223,7 +224,8 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     /**
      * Process the data capture form of a new instance
      *
-     * @param request The Http Request
+     * @param request
+     *            The Http Request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
@@ -231,11 +233,12 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     public String doCreateInstance( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _instance, request, getLocale( ) );
-        _instance.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
+        _instance.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
+                .collect( Collectors.toList( ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_INSTANCE ) )
         {
-            throw new AccessDeniedException ( "Invalid security token" );
+            throw new AccessDeniedException( "Invalid security token" );
         }
 
         // Check constraints
@@ -244,17 +247,17 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
             return redirectView( request, VIEW_CREATE_INSTANCE );
         }
 
-        InstanceService.getInstance().create( _instance, getUser().getEmail() );
+        InstanceService.getInstance( ).create( _instance, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_CREATED);
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_CREATED );
     }
 
     /**
-     * Manages the removal form of a instance whose identifier is in the http
-     * request
+     * Manages the removal form of a instance whose identifier is in the http request
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the html code to confirm
      */
     @Action( ACTION_CONFIRM_REMOVE_INSTANCE )
@@ -264,7 +267,7 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
         UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_INSTANCE ) );
         url.addParameter( PARAMETER_ID_INSTANCE, uuid );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_INSTANCE, url.getUrl(  ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_INSTANCE, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
         return redirect( request, strMessageUrl );
     }
@@ -272,7 +275,8 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     /**
      * Handles the removal form of a instance
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the jsp URL to display the form to manage instances
      */
     @Action( ACTION_REMOVE_INSTANCE )
@@ -280,34 +284,34 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     {
         String uuid = request.getParameter( PARAMETER_ID_INSTANCE );
 
-
-        InstanceService.getInstance().delete( uuid, getUser().getEmail() );
+        InstanceService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_REMOVED);
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_REMOVED );
     }
 
     /**
      * Returns the form to update info about a instance
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The HTML form to update info
      */
     @View( VIEW_MODIFY_INSTANCE )
     public String getModifyInstance( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        if(uuid == null) {
+        if ( uuid == null )
+        {
             return redirect( request, VIEW_MANAGE_INSTANCES );
         }
         if ( _instance == null || !uuid.equals( _instance.getUuid( ) ) )
         {
-            Optional<Instance> optInstance = InstanceHome.findByPrimaryKey(uuid);
-            _instance = optInstance.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
+            Optional<Instance> optInstance = InstanceHome.findByPrimaryKey( uuid );
+            _instance = optInstance.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         }
 
-
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_INSTANCE ) );
 
@@ -317,30 +321,32 @@ public class InstanceJspBean extends AbstractJspBean <String, Instance>
     /**
      * Process the change form of a instance
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
     @Action( ACTION_MODIFY_INSTANCE )
     public String doModifyInstance( HttpServletRequest request ) throws AccessDeniedException
-    {   
+    {
         populate( _instance, request, getLocale( ) );
-        _instance.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
+        _instance.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
+                .collect( Collectors.toList( ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_INSTANCE ) )
         {
-            throw new AccessDeniedException ( "Invalid security token" );
+            throw new AccessDeniedException( "Invalid security token" );
         }
 
         // Check constraints
         if ( !validateBean( _instance, VALIDATION_ATTRIBUTES_PREFIX ) )
         {
-            return redirect( request, VIEW_MODIFY_INSTANCE, Map.of(PARAMETER_ID_INSTANCE, _instance.getUuid( )) );
+            return redirect( request, VIEW_MODIFY_INSTANCE, Map.of( PARAMETER_ID_INSTANCE, _instance.getUuid( ) ) );
         }
 
-        InstanceService.getInstance().update( _instance, getUser().getEmail() );
+        InstanceService.getInstance( ).update( _instance, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect(request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_UPDATED);
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_UPDATED );
     }
 }

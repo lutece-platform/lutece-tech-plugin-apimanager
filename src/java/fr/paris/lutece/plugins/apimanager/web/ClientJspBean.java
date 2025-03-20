@@ -31,8 +31,7 @@
  *
  * License 1.0
  */
- 	
- 
+
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
@@ -63,7 +62,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
-
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGECLIENTS;
@@ -72,7 +70,7 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
  * This class provides the user interface to manage Client features ( manage, create, modify, remove )
  */
 @Controller( controllerJsp = "ManageClients.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGECLIENTS )
-public class ClientJspBean extends AbstractJspBean <String, Client>
+public class ClientJspBean extends AbstractJspBean<String, Client>
 {
     // Templates
     private static final String TEMPLATE_MANAGE_CLIENTS = "/admin/plugins/apimanager/manage_clients.html";
@@ -116,105 +114,109 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     private static final String INFO_CLIENT_CREATED = "apimanager.info.client.created";
     private static final String INFO_CLIENT_UPDATED = "apimanager.info.client.updated";
     private static final String INFO_CLIENT_REMOVED = "apimanager.info.client.removed";
-    
+
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    
+
     // Session variable to store working values
     private Client _client;
     private List<String> _listIdClients;
-    private HashMap<String,String> _mapFilterCriteria = new HashMap<>();
+    private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
-    
+
     /**
      * Build the Manage View
-     * @param request The HTTP request
+     * 
+     * @param request
+     *            The HTTP request
      * @return The page
      */
     @View( value = VIEW_MANAGE_CLIENTS, defaultView = true )
     public String getManageClients( HttpServletRequest request )
     {
-        final String infoMsg = request.getParameter(PARAMETER_INFO_MSG);
-        if(infoMsg != null) {
-            addInfo(infoMsg, getLocale());
+        final String infoMsg = request.getParameter( PARAMETER_INFO_MSG );
+        if ( infoMsg != null )
+        {
+            addInfo( infoMsg, getLocale( ) );
             return redirectView( request, VIEW_MANAGE_CLIENTS );
         }
         _client = null;
-        
+
         // new search only if in pagination mode
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null )
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
-        	// if sorting request : new search with the existing filter criteria, ordered 
-        	// example of order by parameter : orderby=name
-        	if ( StringUtils.isNotBlank( (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY) ) )
-        	{
-        		
-        		String strOrderByColumn =  (String)request.getParameter(PARAMETER_SEARCH_ORDER_BY);
-        		String strSortMode = getSortMode(); 
-        		
-        		_listIdClients = ClientService.getInstance().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
-               	
-	       	}
-	       	else
-	       	{
-	       		// reload the filter criteria and search
-	       		_mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-	       		_listIdClients = ClientService.getInstance().getIdEntitiesList( _mapFilterCriteria );
-	       	}
-        	
-        	//set CurrentPageIndex of Paginator to null in aim of displays the first page of results
-        	resetCurrentPageIndexOfPaginator();
+            // if sorting request : new search with the existing filter criteria, ordered
+            // example of order by parameter : orderby=name
+            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
+            {
+
+                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
+                String strSortMode = getSortMode( );
+
+                _listIdClients = ClientService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+
+            }
+            else
+            {
+                // reload the filter criteria and search
+                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+                _listIdClients = ClientService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+            }
+
+            // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
+            resetCurrentPageIndexOfPaginator( );
         }
-       	
-       	Map<String, Object> model = getPaginatedListModel( request, MARK_CLIENT_LIST, _listIdClients, JSP_MANAGE_CLIENTS );
-             
-        addSearchParameters(model,_mapFilterCriteria); //allow the persistence of search values in inputs search bar inputs
-                     
+
+        Map<String, Object> model = getPaginatedListModel( request, MARK_CLIENT_LIST, _listIdClients, JSP_MANAGE_CLIENTS );
+
+        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CLIENTS, TEMPLATE_MANAGE_CLIENTS, model );
 
     }
 
-	/**
+    /**
      * Get Items from Ids list
+     * 
      * @param listIds
      * @return the populated list of items corresponding to the id List
      */
-	@Override
-	List<Client> getItemsFromIds( List<String> listIds )
-	{
-		List<Client> listClient = ClientService.getInstance().getEntitiesListByIds( listIds );
-		
-		// keep original order
-        return listClient.stream()
-                 .sorted(Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid())))
-                 .collect(Collectors.toList());
-	}
-	
-	@Override
-	int getPluginDefaultNumberOfItemPerPage( ) {
-		return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
-	}
-    
+    @Override
+    List<Client> getItemsFromIds( List<String> listIds )
+    {
+        List<Client> listClient = ClientService.getInstance( ).getEntitiesListByIds( listIds );
+
+        // keep original order
+        return listClient.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    int getPluginDefaultNumberOfItemPerPage( )
+    {
+        return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
+    }
+
     /**
-    * reset the _listIdClients list
-    */
+     * reset the _listIdClients list
+     */
     public void resetListId( )
     {
-    	_listIdClients = new ArrayList<>( );
+        _listIdClients = new ArrayList<>( );
     }
 
     /**
      * Returns the form to create a client
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the html code of the client form
      */
     @View( VIEW_CREATE_CLIENT )
     public String getCreateClient( HttpServletRequest request )
     {
-        _client = ( _client != null ) ? _client : new Client(  );
+        _client = ( _client != null ) ? _client : new Client( );
 
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
         model.put( MARK_CLIENT, _client );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_CLIENT ) );
 
@@ -224,7 +226,8 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     /**
      * Process the data capture form of a new client
      *
-     * @param request The Http Request
+     * @param request
+     *            The Http Request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
@@ -232,11 +235,12 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     public String doCreateClient( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _client, request, getLocale( ) );
-        _client.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
+        _client.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
+                .collect( Collectors.toList( ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_CLIENT ) )
         {
-            throw new AccessDeniedException ( "Invalid security token" );
+            throw new AccessDeniedException( "Invalid security token" );
         }
 
         // Check constraints
@@ -245,18 +249,18 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
             return redirectView( request, VIEW_CREATE_CLIENT );
         }
 
-        ClientService.getInstance().create( _client, getUser().getEmail() );
-        addInfo( INFO_CLIENT_CREATED, getLocale(  ) );
+        ClientService.getInstance( ).create( _client, getUser( ).getEmail( ) );
+        addInfo( INFO_CLIENT_CREATED, getLocale( ) );
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_CLIENTS );
     }
 
     /**
-     * Manages the removal form of a client whose identifier is in the http
-     * request
+     * Manages the removal form of a client whose identifier is in the http request
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the html code to confirm
      */
     @Action( ACTION_CONFIRM_REMOVE_CLIENT )
@@ -266,7 +270,7 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
         UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_CLIENT ) );
         url.addParameter( PARAMETER_ID_CLIENT, uuid );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CLIENT, url.getUrl(  ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CLIENT, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
         return redirect( request, strMessageUrl );
     }
@@ -274,7 +278,8 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     /**
      * Handles the removal form of a client
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return the jsp URL to display the form to manage clients
      */
     @Action( ACTION_REMOVE_CLIENT )
@@ -282,9 +287,8 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     {
         String uuid = request.getParameter( PARAMETER_ID_CLIENT );
 
-
-        ClientService.getInstance().delete( uuid, getUser().getEmail() );
-        addInfo( INFO_CLIENT_REMOVED, getLocale(  ) );
+        ClientService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
+        addInfo( INFO_CLIENT_REMOVED, getLocale( ) );
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_CLIENTS );
@@ -293,25 +297,26 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     /**
      * Returns the form to update info about a client
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The HTML form to update info
      */
     @View( VIEW_MODIFY_CLIENT )
     public String getModifyClient( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_CLIENT );
-        if(uuid==null){
+        if ( uuid == null )
+        {
             return redirectView( request, VIEW_MANAGE_CLIENTS );
         }
 
         if ( _client == null || !uuid.equals( _client.getUuid( ) ) )
         {
-            Optional<Client> optClient = ClientHome.findByPrimaryKey(uuid);
-            _client = optClient.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
+            Optional<Client> optClient = ClientHome.findByPrimaryKey( uuid );
+            _client = optClient.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         }
 
-
-        Map<String, Object> model = getModel(  );
+        Map<String, Object> model = getModel( );
         model.put( MARK_CLIENT, _client );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_CLIENT ) );
 
@@ -321,29 +326,31 @@ public class ClientJspBean extends AbstractJspBean <String, Client>
     /**
      * Process the change form of a client
      *
-     * @param request The Http request
+     * @param request
+     *            The Http request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
     @Action( ACTION_MODIFY_CLIENT )
     public String doModifyClient( HttpServletRequest request ) throws AccessDeniedException
-    {   
+    {
         populate( _client, request, getLocale( ) );
-        _client.setTags(Arrays.stream(Optional.ofNullable( request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse( new String[0])).collect(Collectors.toList()));
+        _client.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
+                .collect( Collectors.toList( ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_CLIENT ) )
         {
-            throw new AccessDeniedException ( "Invalid security token" );
+            throw new AccessDeniedException( "Invalid security token" );
         }
 
         // Check constraints
         if ( !validateBean( _client, VALIDATION_ATTRIBUTES_PREFIX ) )
         {
-            return redirect( request, VIEW_MODIFY_CLIENT, Map.of(PARAMETER_ID_CLIENT, _client.getUuid( )) );
+            return redirect( request, VIEW_MODIFY_CLIENT, Map.of( PARAMETER_ID_CLIENT, _client.getUuid( ) ) );
         }
 
-        ClientService.getInstance().update( _client, getUser().getEmail() );
-        addInfo( INFO_CLIENT_UPDATED, getLocale(  ) );
+        ClientService.getInstance( ).update( _client, getUser( ).getEmail( ) );
+        addInfo( INFO_CLIENT_UPDATED, getLocale( ) );
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_CLIENTS );

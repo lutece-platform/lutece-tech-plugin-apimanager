@@ -33,7 +33,6 @@
  */
 package fr.paris.lutece.plugins.apimanager.business;
 
-
 import java.lang.reflect.Method;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -52,294 +50,340 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+public abstract class AbstractFilterDao
+{
 
-public abstract class AbstractFilterDao {
-	
-	//Maps containing names and types of each databases column associated to a business class attribute 
-	protected HashMap<String,String> _mapSql;
-	
-	//Prefix 
-	private final static String PREFIX_GET = "get";
-	private final static String PREFIX_IS = "is";
-	
-	//Constants SQL
-	private final static String SQL_WHERE =" WHERE 1 ";
-	private final static String SQL_ORDER_BY =" ORDER BY ";
-	private final static String SQL_EQUAL =" = ? ";
-	private final static String SQL_LIKE =" LIKE ? ";
-	private final static String SQL_AND = " AND ";
-	private final static String SQL_ASC =" ASC ";
-	private final static String SQL_DESC =" DESC ";
-	private final static String SQL_EXISTS = " EXISTS( ${query} ) ";
-	private final static String SQL_SELECT = " SELECT ";
-	private final static String SQL_FROM = " FROM ";
+    // Maps containing names and types of each databases column associated to a business class attribute
+    protected HashMap<String, String> _mapSql;
 
-	private final static String SQL_QUERY_INSERT_TAG = "INSERT INTO apimanager_tag ( uuid, uuid_ref, value ) VALUES ";
-	private final static String SQL_QUERY_INSERT_VALUES_PLACEHOLDER = " ( '${uuid}', '${uuid_ref}', '${value}' )";
-	private final static String SQL_QUERY_DELETE_UUID_REF_TAGS = "DELETE FROM apimanager_tag WHERE uuid_ref = ?";
-	private final static String SQL_QUERY_SELECT_UUID_REF_TAG_VALUES = "SELECT value FROM apimanager_tag WHERE uuid_ref = ?";
+    // Prefix
+    private final static String PREFIX_GET = "get";
+    private final static String PREFIX_IS = "is";
 
-	//types only allowed for research
-	protected final static String TYPE_DATE = "Date";
-	protected final static String TYPE_STRING = "String";
-	protected final static String TYPE_BOOLEAN = "boolean";
-	protected final static String TYPE_INT = "int";
+    // Constants SQL
+    private final static String SQL_WHERE = " WHERE 1 ";
+    private final static String SQL_ORDER_BY = " ORDER BY ";
+    private final static String SQL_EQUAL = " = ? ";
+    private final static String SQL_LIKE = " LIKE ? ";
+    private final static String SQL_AND = " AND ";
+    private final static String SQL_ASC = " ASC ";
+    private final static String SQL_DESC = " DESC ";
+    private final static String SQL_EXISTS = " EXISTS( ${query} ) ";
+    private final static String SQL_SELECT = " SELECT ";
+    private final static String SQL_FROM = " FROM ";
 
-	//List of constraints
-	private final static List<String> _listPrefixToRemove = Arrays.asList(PREFIX_GET,PREFIX_IS);
-	protected final static List<String> _listTypeAllowedForSearch = Arrays.asList(TYPE_DATE,TYPE_STRING,TYPE_BOOLEAN,TYPE_INT);
+    private final static String SQL_QUERY_INSERT_TAG = "INSERT INTO apimanager_tag ( uuid, uuid_ref, value ) VALUES ";
+    private final static String SQL_QUERY_INSERT_VALUES_PLACEHOLDER = " ( '${uuid}', '${uuid_ref}', '${value}' )";
+    private final static String SQL_QUERY_DELETE_UUID_REF_TAGS = "DELETE FROM apimanager_tag WHERE uuid_ref = ?";
+    private final static String SQL_QUERY_SELECT_UUID_REF_TAG_VALUES = "SELECT value FROM apimanager_tag WHERE uuid_ref = ?";
 
-	private final static String FILTER_TAG = "tag";
-	private final static String TAG_TABLE = "apimanager_tag";
-	private final static String UUID_COLUMN = "uuid";
-	private final static String UUID_REF_COLUMN = "uuid_ref";
-	private final static String VALUE_COLUMN = "value";
+    // types only allowed for research
+    protected final static String TYPE_DATE = "Date";
+    protected final static String TYPE_STRING = "String";
+    protected final static String TYPE_BOOLEAN = "boolean";
+    protected final static String TYPE_INT = "int";
 
-	
-	 /**
-     *  Preparation of filterStatement
-     * @param mapFilterCriteria contains searchbar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
-	 * @return a string with the WHERE part and the ORDER BY part of the sql statement
+    // List of constraints
+    private final static List<String> _listPrefixToRemove = Arrays.asList( PREFIX_GET, PREFIX_IS );
+    protected final static List<String> _listTypeAllowedForSearch = Arrays.asList( TYPE_DATE, TYPE_STRING, TYPE_BOOLEAN, TYPE_INT );
+
+    private final static String FILTER_TAG = "tag";
+    private final static String TAG_TABLE = "apimanager_tag";
+    private final static String UUID_COLUMN = "uuid";
+    private final static String UUID_REF_COLUMN = "uuid_ref";
+    private final static String VALUE_COLUMN = "value";
+
+    /**
+     * Preparation of filterStatement
+     * 
+     * @param mapFilterCriteria
+     *            contains searchbar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * @return a string with the WHERE part and the ORDER BY part of the sql statement
      */
-	
-	protected String prepareSelectStatement(String SQL_QUERY_SELECTALL_ID,String tableName,Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode) {
-		
-		
-		StringBuilder builder = new StringBuilder();
 
-        builder.append(SQL_QUERY_SELECTALL_ID);
-        builder.append(addWhereClauses(mapFilterCriteria, tableName));
-        builder.append(addOrderByClause(strColumnToOrder,strSortMode));
-		
-		
-		return  builder.toString();
-		
-	}
+    protected String prepareSelectStatement( String SQL_QUERY_SELECTALL_ID, String tableName, Map<String, String> mapFilterCriteria, String strColumnToOrder,
+            String strSortMode )
+    {
 
-	/**
-     *  add Where clause to the filterStatement
-     *  @param mapFilterCriteria contains name and value of each where clause
-     *  @return the where part of the filterStatement
+        StringBuilder builder = new StringBuilder( );
+
+        builder.append( SQL_QUERY_SELECTALL_ID );
+        builder.append( addWhereClauses( mapFilterCriteria, tableName ) );
+        builder.append( addOrderByClause( strColumnToOrder, strSortMode ) );
+
+        return builder.toString( );
+
+    }
+
+    /**
+     * add Where clause to the filterStatement
+     * 
+     * @param mapFilterCriteria
+     *            contains name and value of each where clause
+     * @return the where part of the filterStatement
      */
-	
-	protected String addWhereClauses(Map<String, String> mapFilterCriteria, String tableName) {
-		
-		StringBuilder WhereClauses = new StringBuilder();
-		
-		if(!mapFilterIsEmpty(mapFilterCriteria)) {
 
-			WhereClauses.append(SQL_WHERE);
-			
-			for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-			    
-				//Check if a value was passed for the search 
-				if(StringUtils.isNotBlank(filter.getValue())) {
-					
-					//Check if the criteria name match with a BDD column name and if the type of this column is allowed for a search
-					if(_mapSql.containsKey(filter.getKey()) && _listTypeAllowedForSearch.contains(_mapSql.get(filter.getKey()))) {
-								
-						WhereClauses.append(SQL_AND);
-						WhereClauses.append(filter.getKey());
-						WhereClauses.append(addWhereClauseOperator(filter.getKey()));
-					}
-				}
-			}
-			final String tagFilter = mapFilterCriteria.get(FILTER_TAG);
-			if(StringUtils.isNotBlank(tagFilter)) {
-				WhereClauses.append(SQL_AND);
+    protected String addWhereClauses( Map<String, String> mapFilterCriteria, String tableName )
+    {
 
-                final String existsInnerQuery = SQL_SELECT + TAG_TABLE + "." + UUID_COLUMN +
-                                                SQL_FROM + TAG_TABLE +
-                                                SQL_WHERE + SQL_AND + tableName + "." + UUID_COLUMN + "=" + TAG_TABLE + "." + UUID_REF_COLUMN +
-                                                SQL_AND + TAG_TABLE + "." + VALUE_COLUMN + "='" + tagFilter + "'";
+        StringBuilder WhereClauses = new StringBuilder( );
 
-				WhereClauses.append(SQL_EXISTS.replace("${query}", existsInnerQuery));
-			}
-		}
-		
-		return WhereClauses.toString();
-	}; 
-	    
-	 /**
-     *  add OrderBy columns to the filterStatement
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
-	 * @return the orderBy part of the filterStatement
+        if ( !mapFilterIsEmpty( mapFilterCriteria ) )
+        {
+
+            WhereClauses.append( SQL_WHERE );
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                // Check if a value was passed for the search
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) )
+                {
+
+                    // Check if the criteria name match with a BDD column name and if the type of this column is allowed for a search
+                    if ( _mapSql.containsKey( filter.getKey( ) ) && _listTypeAllowedForSearch.contains( _mapSql.get( filter.getKey( ) ) ) )
+                    {
+
+                        WhereClauses.append( SQL_AND );
+                        WhereClauses.append( filter.getKey( ) );
+                        WhereClauses.append( addWhereClauseOperator( filter.getKey( ) ) );
+                    }
+                }
+            }
+            final String tagFilter = mapFilterCriteria.get( FILTER_TAG );
+            if ( StringUtils.isNotBlank( tagFilter ) )
+            {
+                WhereClauses.append( SQL_AND );
+
+                final String existsInnerQuery = SQL_SELECT + TAG_TABLE + "." + UUID_COLUMN + SQL_FROM + TAG_TABLE + SQL_WHERE + SQL_AND + tableName + "."
+                        + UUID_COLUMN + "=" + TAG_TABLE + "." + UUID_REF_COLUMN + SQL_AND + TAG_TABLE + "." + VALUE_COLUMN + "='" + tagFilter + "'";
+
+                WhereClauses.append( SQL_EXISTS.replace( "${query}", existsInnerQuery ) );
+            }
+        }
+
+        return WhereClauses.toString( );
+    };
+
+    /**
+     * add OrderBy columns to the filterStatement
+     * 
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * @return the orderBy part of the filterStatement
      */
-	
-	protected String addOrderByClause(String strColumnToOrder,String strSortMode) {
-		
-		
-		if(StringUtils.isNotBlank(strColumnToOrder) && _mapSql.containsKey(strColumnToOrder)) {
 
-			
-			StringBuilder orderByClauses = new StringBuilder();
-			
-			orderByClauses.append(SQL_ORDER_BY);
-			orderByClauses.append(strColumnToOrder);
-			orderByClauses.append(strSortMode);				
-			
-			return  orderByClauses.toString(); 
-			
-		}
-		
-		return "";
-	} 
-	
+    protected String addOrderByClause( String strColumnToOrder, String strSortMode )
+    {
+
+        if ( StringUtils.isNotBlank( strColumnToOrder ) && _mapSql.containsKey( strColumnToOrder ) )
+        {
+
+            StringBuilder orderByClauses = new StringBuilder( );
+
+            orderByClauses.append( SQL_ORDER_BY );
+            orderByClauses.append( strColumnToOrder );
+            orderByClauses.append( strSortMode );
+
+            return orderByClauses.toString( );
+
+        }
+
+        return "";
+    }
+
     /**
      * Check if _mapFilter is empty
+     * 
      * @return boolean
      */
-    
-    private boolean mapFilterIsEmpty(Map<String,String> mapFilterCriteria) {
-		
-    	for (Map.Entry<String, String> entry : mapFilterCriteria.entrySet()) {
-    		if(StringUtils.isNotBlank(entry.getValue())) {
-    			return false;
-    		}
+
+    private boolean mapFilterIsEmpty( Map<String, String> mapFilterCriteria )
+    {
+
+        for ( Map.Entry<String, String> entry : mapFilterCriteria.entrySet( ) )
+        {
+            if ( StringUtils.isNotBlank( entry.getValue( ) ) )
+            {
+                return false;
+            }
         }
-    	
-    	return true;
-	}
-	
-	 /**
-     *  add where clause operator to the filterStatement
-     * @param strWhereClauseColumn contains one of the column names to use for where clause part
-	 * @return operator to use for the clause passed in argument
+
+        return true;
+    }
+
+    /**
+     * add where clause operator to the filterStatement
+     * 
+     * @param strWhereClauseColumn
+     *            contains one of the column names to use for where clause part
+     * @return operator to use for the clause passed in argument
      */
-	
-    private String addWhereClauseOperator(String strWhereClauseColumn) {
-    	
-    	if(_mapSql.containsKey(strWhereClauseColumn)) {
-    		
-    		switch(_mapSql.get(strWhereClauseColumn)) {
-    			case TYPE_DATE :
-    				return SQL_EQUAL;
-    			case TYPE_STRING :
-    				return SQL_LIKE;  			
-    			case TYPE_BOOLEAN :
-    				return SQL_EQUAL;
-    			case TYPE_INT :
-    				return SQL_EQUAL;
-    			default :
-    				return SQL_LIKE; //Other types will be managed as strings
-    		}
-    	}
-            	
-    	return SQL_LIKE; //Other types will be managed as strings
+
+    private String addWhereClauseOperator( String strWhereClauseColumn )
+    {
+
+        if ( _mapSql.containsKey( strWhereClauseColumn ) )
+        {
+
+            switch( _mapSql.get( strWhereClauseColumn ) )
+            {
+                case TYPE_DATE:
+                    return SQL_EQUAL;
+                case TYPE_STRING:
+                    return SQL_LIKE;
+                case TYPE_BOOLEAN:
+                    return SQL_EQUAL;
+                case TYPE_INT:
+                    return SQL_EQUAL;
+                default:
+                    return SQL_LIKE; // Other types will be managed as strings
+            }
+        }
+
+        return SQL_LIKE; // Other types will be managed as strings
     }
-    
+
     /**
-    * Return name of column in sql database format from getter name of business class exemples : getImageUrl -> image_url , getCost -> cost
-    * @return the name of column in sql database   
-    */
-    private String getFormatedColumnName(String strAttributeName, String strPrefixToCut){
-    	
-    	//Remove prefix (get or is) and lowercase the first character
-    	String strRemovePrefix = StringUtils.uncapitalize(strAttributeName.substring(strPrefixToCut.length())).toString();
-    	
-    	StringBuilder builder = new StringBuilder();
-    	
-    	//Change uppercase character to lowercase and add an underscore in front of it. exemple : dateStart -> date_start 
-    	for(char c: strRemovePrefix.toCharArray()) {
-    		
-    		if( Character.isUpperCase(c)) {
-    			builder.append('_');
-    			builder.append(Character.toLowerCase(c));
-    		}else {
-    			builder.append(c);
-    		}
-    	}
-    	
-    	return builder.toString();
-    	
+     * Return name of column in sql database format from getter name of business class exemples : getImageUrl -> image_url , getCost -> cost
+     * 
+     * @return the name of column in sql database
+     */
+    private String getFormatedColumnName( String strAttributeName, String strPrefixToCut )
+    {
+
+        // Remove prefix (get or is) and lowercase the first character
+        String strRemovePrefix = StringUtils.uncapitalize( strAttributeName.substring( strPrefixToCut.length( ) ) ).toString( );
+
+        StringBuilder builder = new StringBuilder( );
+
+        // Change uppercase character to lowercase and add an underscore in front of it. exemple : dateStart -> date_start
+        for ( char c : strRemovePrefix.toCharArray( ) )
+        {
+
+            if ( Character.isUpperCase( c ) )
+            {
+                builder.append( '_' );
+                builder.append( Character.toLowerCase( c ) );
+            }
+            else
+            {
+                builder.append( c );
+            }
+        }
+
+        return builder.toString( );
+
     }
-    
-    
+
     /**
-    * Initialization of mapSql. 
-    * mapSql Containing names and types of each databases column associated to a business class attribute.
-    */
-	protected void initMapSql(Class<?> businessClass) {
-			
-			_mapSql = new HashMap<>();
-			
-			for (Method method : businessClass.getDeclaredMethods()) {
-				
-				for(String prefix : _listPrefixToRemove) {
-					//Use only getter and is function of business class to infer database name of each attributes
-					if(method.getName().startsWith(prefix)){
-						_mapSql.put(getFormatedColumnName(method.getName(),prefix),method.getReturnType().getSimpleName()); 
-					}
-				}
-	        }
-	}
+     * Initialization of mapSql. mapSql Containing names and types of each databases column associated to a business class attribute.
+     */
+    protected void initMapSql( Class<?> businessClass )
+    {
+
+        _mapSql = new HashMap<>( );
+
+        for ( Method method : businessClass.getDeclaredMethods( ) )
+        {
+
+            for ( String prefix : _listPrefixToRemove )
+            {
+                // Use only getter and is function of business class to infer database name of each attributes
+                if ( method.getName( ).startsWith( prefix ) )
+                {
+                    _mapSql.put( getFormatedColumnName( method.getName( ), prefix ), method.getReturnType( ).getSimpleName( ) );
+                }
+            }
+        }
+    }
 
     /**
      * Insert new tag records in the table
-     * @param uuidref the uuid_ref
-     * @param tags the tag list
-     * @param plugin the plugin
+     * 
+     * @param uuidref
+     *            the uuid_ref
+     * @param tags
+     *            the tag list
+     * @param plugin
+     *            the plugin
      */
-    protected void insertTags(final String uuidref, final List<String> tags, final Plugin plugin) {
-        if (StringUtils.isEmpty(uuidref) || CollectionUtils.isEmpty(tags)) {
+    protected void insertTags( final String uuidref, final List<String> tags, final Plugin plugin )
+    {
+        if ( StringUtils.isEmpty( uuidref ) || CollectionUtils.isEmpty( tags ) )
+        {
             return;
         }
 
-        final String sql = SQL_QUERY_INSERT_TAG +
-                           tags.stream().map(tag -> SQL_QUERY_INSERT_VALUES_PLACEHOLDER.replace("${uuid}", UUID.randomUUID().toString())
-                                                                                       .replace("${uuid_ref}", uuidref)
-                                                                                       .replace("${value}", tag)).collect(Collectors.joining(","));
-        try (DAOUtil daoUtil = new DAOUtil(sql, Statement.NO_GENERATED_KEYS, plugin)) {
-            daoUtil.executeUpdate();
+        final String sql = SQL_QUERY_INSERT_TAG
+                + tags.stream( ).map( tag -> SQL_QUERY_INSERT_VALUES_PLACEHOLDER.replace( "${uuid}", UUID.randomUUID( ).toString( ) )
+                        .replace( "${uuid_ref}", uuidref ).replace( "${value}", tag ) ).collect( Collectors.joining( "," ) );
+        try ( DAOUtil daoUtil = new DAOUtil( sql, Statement.NO_GENERATED_KEYS, plugin ) )
+        {
+            daoUtil.executeUpdate( );
         }
     }
 
     /**
      * Select tags with uuid_ref
-     * @param uuidRef the uuid_ref
-     * @param plugin the plugin
+     * 
+     * @param uuidRef
+     *            the uuid_ref
+     * @param plugin
+     *            the plugin
      * @return a list of tags
      */
-    protected List<String> selectTags(final String uuidRef, final Plugin plugin) {
-        final List<String> tagList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_UUID_REF_TAG_VALUES, plugin ) )
+    protected List<String> selectTags( final String uuidRef, final Plugin plugin )
+    {
+        final List<String> tagList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_UUID_REF_TAG_VALUES, plugin ) )
         {
-            daoUtil.setString(1, uuidRef);
+            daoUtil.setString( 1, uuidRef );
             daoUtil.executeQuery( );
-            while ( daoUtil.next(  ) )
+            while ( daoUtil.next( ) )
             {
-                tagList.add( daoUtil.getString(1) );
+                tagList.add( daoUtil.getString( 1 ) );
             }
         }
-		return tagList;
+        return tagList;
     }
 
     /**
      * Delete tags with uuid_ref
-     * @param uuidRef the uuid_ref
-     * @param plugin the plugin
+     * 
+     * @param uuidRef
+     *            the uuid_ref
+     * @param plugin
+     *            the plugin
      */
-    protected void deleteTags(final String uuidRef, final Plugin plugin) {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_UUID_REF_TAGS, plugin ) )
+    protected void deleteTags( final String uuidRef, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_UUID_REF_TAGS, plugin ) )
         {
-            daoUtil.setString(1, uuidRef);
-            daoUtil.executeUpdate();
+            daoUtil.setString( 1, uuidRef );
+            daoUtil.executeUpdate( );
         }
     }
 
     /**
      * Delete existing tags and insert new ones
-     * @param uuidRef the uuid_ref
-     * @param tags the tag list
-     * @param plugin the plugin
+     * 
+     * @param uuidRef
+     *            the uuid_ref
+     * @param tags
+     *            the tag list
+     * @param plugin
+     *            the plugin
      */
-    protected void deleteAndInsertTags(final String uuidRef, final List<String> tags, final Plugin plugin)
+    protected void deleteAndInsertTags( final String uuidRef, final List<String> tags, final Plugin plugin )
     {
-        this.deleteTags(uuidRef, plugin);
-        this.insertTags(uuidRef, tags, plugin);
+        this.deleteTags( uuidRef, plugin );
+        this.insertTags( uuidRef, tags, plugin );
     }
 }
- 

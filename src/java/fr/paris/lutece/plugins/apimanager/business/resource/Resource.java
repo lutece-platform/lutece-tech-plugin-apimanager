@@ -37,25 +37,27 @@ import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+
 /**
  * This is the business class for the object Resource
- */ 
+ */
 public class Resource implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
-    
+
     private Plan _plan;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.resource.Path.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.resource.Path.size}" )
     private String _strPath;
-    
+
     private ResourceVerbEnum _verb;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -65,15 +67,18 @@ public class Resource implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
     }
-    
+
     /**
      * Returns the Plan
+     * 
      * @return The Plan
      */
     public Plan getPlan( )
@@ -83,16 +88,18 @@ public class Resource implements Serializable
 
     /**
      * Sets the Plan
-     * @param plan The Plan
-     */ 
+     * 
+     * @param plan
+     *            The Plan
+     */
     public void setPlan( Plan plan )
     {
         _plan = plan;
     }
-    
-    
+
     /**
      * Returns the Path
+     * 
      * @return The Path
      */
     public String getPath( )
@@ -102,30 +109,34 @@ public class Resource implements Serializable
 
     /**
      * Sets the Path
-     * @param strPath The Path
-     */ 
+     * 
+     * @param strPath
+     *            The Path
+     */
     public void setPath( String strPath )
     {
         _strPath = strPath;
     }
-    
-    
+
     /**
      * Returns the Verb
+     * 
      * @return The Verb
      */
-    public ResourceVerbEnum getVerb()
+    public ResourceVerbEnum getVerb( )
     {
         return _verb;
     }
 
     /**
      * Sets the Verb
-     * @param verb The Verb
-     */ 
-    public void setVerb(ResourceVerbEnum verb)
+     * 
+     * @param verb
+     *            The Verb
+     */
+    public void setVerb( ResourceVerbEnum verb )
     {
         _verb = verb;
     }
-    
+
 }

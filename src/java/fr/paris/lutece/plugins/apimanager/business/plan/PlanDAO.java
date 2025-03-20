@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -57,29 +56,29 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_plan";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_plan";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, uuid_header_matching, oauth_enabled, uuid_oauth_configuration, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, uuid_header_matching, oauth_enabled, uuid_oauth_configuration, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET uuid_api = ?, name = ?, description = ?, active = ?, version = ?, uuid_rate_limiting = ?, uuid_client_http_configuration = ?, request_timeout = ?, load_balancing_strategy = ?, uuid_header_matching = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, trace_enabled = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, uuid_header_matching, oauth_enabled, uuid_oauth_configuration, trace_enabled FROM apimanager_plan";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, uuid_header_matching, oauth_enabled, uuid_oauth_configuration, trace_enabled FROM apimanager_plan";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public PlanDAO() {
+    public PlanDAO( )
+    {
 
-		initMapSql(Plan.class); //Maps with name and type of each databases column associated to the business class attributes
-		_mapSql.remove("api");
-		_mapSql.put("uuid_api", "String");
-	}
+        initMapSql( Plan.class ); // Maps with name and type of each databases column associated to the business class attributes
+        _mapSql.remove( "api" );
+        _mapSql.put( "uuid_api", "String" );
+    }
 
     /**
      * {@inheritDoc }
@@ -87,29 +86,29 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     @Override
     public void insert( Plan plan, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid);
-			daoUtil.setString( nIndex++, plan.getApi() != null ? plan.getApi().getUuid() : null );
-            daoUtil.setString( nIndex++ , plan.getName( ) );
-            daoUtil.setString( nIndex++ , plan.getDescription( ) );
-            daoUtil.setBoolean( nIndex++ , plan.getActive( ) );
-            daoUtil.setString( nIndex++ , plan.getVersion( ) );
-            daoUtil.setString( nIndex++ , plan.getRateLimiting() != null ? plan.getRateLimiting().getUuid() : null );
-            daoUtil.setString( nIndex++ , plan.getClientHttpConfiguration() != null ? plan.getClientHttpConfiguration().getUuid() : null );
-            daoUtil.setInt( nIndex++ , plan.getRequestTimeout( ) );
-            daoUtil.setString( nIndex++ , plan.getLoadBalancingStrategy( ) );
-			daoUtil.setString( nIndex++, plan.getHeaderMatching() != null ? plan.getHeaderMatching().getUuid() : null);
-            daoUtil.setBoolean( nIndex++ , plan.getOauthEnabled( ) );
-            daoUtil.setString( nIndex++ , plan.getOauthConfiguration() != null ?plan.getOauthConfiguration().getUuid():null );
-            daoUtil.setBoolean( nIndex++ , plan.getTraceEnabled( ) );
-            
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, plan.getApi( ) != null ? plan.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, plan.getName( ) );
+            daoUtil.setString( nIndex++, plan.getDescription( ) );
+            daoUtil.setBoolean( nIndex++, plan.getActive( ) );
+            daoUtil.setString( nIndex++, plan.getVersion( ) );
+            daoUtil.setString( nIndex++, plan.getRateLimiting( ) != null ? plan.getRateLimiting( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, plan.getClientHttpConfiguration( ) != null ? plan.getClientHttpConfiguration( ).getUuid( ) : null );
+            daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
+            daoUtil.setString( nIndex++, plan.getLoadBalancingStrategy( ) );
+            daoUtil.setString( nIndex++, plan.getHeaderMatching( ) != null ? plan.getHeaderMatching( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, plan.getOauthEnabled( ) );
+            daoUtil.setString( nIndex++, plan.getOauthConfiguration( ) != null ? plan.getOauthConfiguration( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, plan.getTraceEnabled( ) );
+
             daoUtil.executeUpdate( );
-			plan.setUuid(uuid);
+            plan.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -118,18 +117,18 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     @Override
     public Optional<Plan> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        Plan plan = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            plan = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( plan );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            Plan plan = null;
+
+            if ( daoUtil.next( ) )
+            {
+                plan = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( plan );
         }
     }
 
@@ -139,10 +138,10 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -152,26 +151,26 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     @Override
     public void store( Plan plan, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
+            int nIndex = 1;
 
-				daoUtil.setString(nIndex++, plan.getApi() != null ? plan.getApi().getUuid() : null );
-            	daoUtil.setString( nIndex++ , plan.getName( ) );
-            	daoUtil.setString( nIndex++ , plan.getDescription( ) );
-            	daoUtil.setBoolean( nIndex++ , plan.getActive( ) );
-            	daoUtil.setString( nIndex++ , plan.getVersion( ) );
-				daoUtil.setString( nIndex++ , plan.getRateLimiting() != null ? plan.getRateLimiting().getUuid() : null );
-				daoUtil.setString( nIndex++ , plan.getClientHttpConfiguration() != null ? plan.getClientHttpConfiguration().getUuid() : null );
-            	daoUtil.setInt( nIndex++ , plan.getRequestTimeout( ) );
-            	daoUtil.setString( nIndex++ , plan.getLoadBalancingStrategy( ) );
-				daoUtil.setString( nIndex++, plan.getHeaderMatching() != null ? plan.getHeaderMatching().getUuid() : null);
-				daoUtil.setBoolean( nIndex++ , plan.getOauthEnabled( ) );
-				daoUtil.setString( nIndex++ , plan.getOauthConfiguration() != null ?plan.getOauthConfiguration().getUuid():null );
-            	daoUtil.setBoolean( nIndex++ , plan.getTraceEnabled( ) );
-	        daoUtil.setString( nIndex , plan.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( nIndex++, plan.getApi( ) != null ? plan.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, plan.getName( ) );
+            daoUtil.setString( nIndex++, plan.getDescription( ) );
+            daoUtil.setBoolean( nIndex++, plan.getActive( ) );
+            daoUtil.setString( nIndex++, plan.getVersion( ) );
+            daoUtil.setString( nIndex++, plan.getRateLimiting( ) != null ? plan.getRateLimiting( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, plan.getClientHttpConfiguration( ) != null ? plan.getClientHttpConfiguration( ).getUuid( ) : null );
+            daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
+            daoUtil.setString( nIndex++, plan.getLoadBalancingStrategy( ) );
+            daoUtil.setString( nIndex++, plan.getHeaderMatching( ) != null ? plan.getHeaderMatching( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, plan.getOauthEnabled( ) );
+            daoUtil.setString( nIndex++, plan.getOauthConfiguration( ) != null ? plan.getOauthConfiguration( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, plan.getTraceEnabled( ) );
+            daoUtil.setString( nIndex, plan.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -181,131 +180,135 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     @Override
     public List<Plan> selectEntitiesList( Plugin plugin )
     {
-        List<Plan> planList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<Plan> planList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				planList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return planList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return planList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return planList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planList.add( daoUtil.getString( 1 ) );
+            }
+
+            return planList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList planList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList planList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return planList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return planList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<Plan> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<Plan> planList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<Plan> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<Plan> planList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            planList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return planList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private Plan loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		Plan plan = new Plan(  );
-		int nIndex = 1;
-		
-		plan.setUuid( daoUtil.getString( nIndex++ ) );
-		plan.setApi(ApiHome.findByPrimaryKey(daoUtil.getString(nIndex++)).orElse(null));
-		plan.setName( daoUtil.getString( nIndex++ ) );
-		plan.setDescription( daoUtil.getString( nIndex++ ) );
-		plan.setActive( daoUtil.getBoolean( nIndex++ ) );
-		plan.setVersion( daoUtil.getString( nIndex++ ) );
-		plan.setRateLimiting( PlanRateLimitingHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse(null) );
-		plan.setClientHttpConfiguration( PlanClientHttpConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse(null) );
-		plan.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
-		plan.setLoadBalancingStrategy( daoUtil.getString( nIndex++ ) );
-		plan.setHeaderMatching( PlanHeaderMatchingHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse(null));
-		plan.setOauthEnabled( daoUtil.getBoolean( nIndex++ ) );
-		plan.setOauthConfiguration( PlanOauthConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse(null));
-		plan.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
-		
-		return plan;
-	}
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    planList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return planList;
+
+    }
+
+    private Plan loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        Plan plan = new Plan( );
+        int nIndex = 1;
+
+        plan.setUuid( daoUtil.getString( nIndex++ ) );
+        plan.setApi( ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        plan.setName( daoUtil.getString( nIndex++ ) );
+        plan.setDescription( daoUtil.getString( nIndex++ ) );
+        plan.setActive( daoUtil.getBoolean( nIndex++ ) );
+        plan.setVersion( daoUtil.getString( nIndex++ ) );
+        plan.setRateLimiting( PlanRateLimitingHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        plan.setClientHttpConfiguration( PlanClientHttpConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        plan.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
+        plan.setLoadBalancingStrategy( daoUtil.getString( nIndex++ ) );
+        plan.setHeaderMatching( PlanHeaderMatchingHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        plan.setOauthEnabled( daoUtil.getBoolean( nIndex++ ) );
+        plan.setOauthConfiguration( PlanOauthConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        plan.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
+
+        return plan;
+    }
 }

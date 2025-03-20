@@ -34,14 +34,15 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import java.io.Serializable;
+
 /**
  * This is the business class for the object PlanOauthConfiguration
- */ 
+ */
 public class PlanOauthConfiguration implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
 
     private String _strJwtIssuer;
@@ -50,33 +51,42 @@ public class PlanOauthConfiguration implements Serializable
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
-    public String getUuid() {
+    public String getUuid( )
+    {
         return _strUuid;
     }
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
+     * 
+     * @param strUuid
+     *            The Uuid
      */
-    public void setUuid( String strUuid) {
+    public void setUuid( String strUuid )
+    {
         _strUuid = strUuid;
     }
 
-    public String getJwtIssuer() {
+    public String getJwtIssuer( )
+    {
         return _strJwtIssuer;
     }
 
-    public void setJwtIssuer(final String strJwtIssuer) {
+    public void setJwtIssuer( final String strJwtIssuer )
+    {
         _strJwtIssuer = strJwtIssuer;
     }
 
-    public int getJwtValidity() {
+    public int getJwtValidity( )
+    {
         return _nJwtValidity;
     }
 
-    public void setJwtValidity(final int nJwtValidity) {
+    public void setJwtValidity( final int nJwtValidity )
+    {
         _nJwtValidity = nJwtValidity;
     }
 }

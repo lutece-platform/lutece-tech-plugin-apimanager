@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -58,29 +57,29 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class SubscriptionDAO extends AbstractFilterDao implements ISubscriptionDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_subscription";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_subscription";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, trace_enabled ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, trace_enabled ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, trace_enabled = ? WHERE uuid = ?";
 
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_plan, trace_enabled FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_plan, trace_enabled FROM apimanager_subscription";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public SubscriptionDAO() {
+    public SubscriptionDAO( )
+    {
 
-		initMapSql(Subscription.class); //Maps with name and type of each databases column associated to the business class attributes
-		_mapSql.remove("client");
-		_mapSql.put("uuid_client", "String");
-	}
+        initMapSql( Subscription.class ); // Maps with name and type of each databases column associated to the business class attributes
+        _mapSql.remove( "client" );
+        _mapSql.put( "uuid_client", "String" );
+    }
 
     /**
      * {@inheritDoc }
@@ -88,19 +87,19 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     @Override
     public void insert( Subscription subscription, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-            final String uuid = UUID.randomUUID().toString();
+            final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setString( nIndex++ , subscription.getClient() != null ? subscription.getClient().getUuid() : null );
-            daoUtil.setString( nIndex++ , subscription.getPlan() != null ? subscription.getPlan().getUuid() : null );
-            daoUtil.setBoolean( nIndex++ , subscription.getTraceEnabled( ) );
-            
+            daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
+
             daoUtil.executeUpdate( );
-			subscription.setUuid( uuid );
+            subscription.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -109,18 +108,18 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     @Override
     public Optional<Subscription> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        Subscription subscription = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            subscription = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( subscription );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            Subscription subscription = null;
+
+            if ( daoUtil.next( ) )
+            {
+                subscription = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( subscription );
         }
     }
 
@@ -130,10 +129,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -143,16 +142,16 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     @Override
     public void store( Subscription subscription, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
-	        
-            	daoUtil.setString( nIndex++ , subscription.getClient() != null ? subscription.getClient().getUuid() : null );
-            	daoUtil.setString( nIndex++ , subscription.getPlan() != null ? subscription.getPlan().getUuid() : null );
-            	daoUtil.setBoolean( nIndex++ , subscription.getTraceEnabled( ) );
-	        daoUtil.setString( nIndex , subscription.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
+            int nIndex = 1;
+
+            daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
+            daoUtil.setString( nIndex, subscription.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -162,121 +161,125 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     @Override
     public List<Subscription> selectEntitiesList( Plugin plugin )
     {
-        List<Subscription> subscriptionList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<Subscription> subscriptionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				subscriptionList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return subscriptionList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                subscriptionList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return subscriptionList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> subscriptionList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            subscriptionList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return subscriptionList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                subscriptionList.add( daoUtil.getString( 1 ) );
+            }
+
+            return subscriptionList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList subscriptionList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList subscriptionList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            subscriptionList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return subscriptionList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                subscriptionList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return subscriptionList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<Subscription> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<Subscription> subscriptionList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<Subscription> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<Subscription> subscriptionList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            subscriptionList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return subscriptionList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private Subscription loadFromDaoUtil (DAOUtil daoUtil) {
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
 
-		Subscription subscription = new Subscription(  );
-		int nIndex = 1;
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
 
-		subscription.setUuid( daoUtil.getString( nIndex++ ) );
-        subscription.setClient(ClientHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse(null));
-		subscription.setPlan(PlanHome.findByPrimaryKey(daoUtil.getString( nIndex++ )).orElse(null));
-		subscription.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    subscriptionList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return subscriptionList;
 
-		return subscription;
-	}
+    }
+
+    private Subscription loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        Subscription subscription = new Subscription( );
+        int nIndex = 1;
+
+        subscription.setUuid( daoUtil.getString( nIndex++ ) );
+        subscription.setClient( ClientHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        subscription.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        subscription.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
+
+        return subscription;
+    }
 }

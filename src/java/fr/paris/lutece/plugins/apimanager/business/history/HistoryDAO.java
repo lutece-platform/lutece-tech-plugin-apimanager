@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.history;
 
 import com.mchange.v2.uid.UidUtils;
@@ -57,27 +56,27 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_history";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_history";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_history ( uuid, uuid_ref, date, type, user ) VALUES ( ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_history ( uuid, uuid_ref, date, type, user ) VALUES ( ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_history WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_history SET uuid_ref = ?, date = ?, type = ?, user = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_ref, date, type, user FROM apimanager_history";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_ref, date, type, user FROM apimanager_history";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_history";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public HistoryDAO() {
+    public HistoryDAO( )
+    {
 
-		initMapSql(History.class); //Maps with name and type of each databases column associated to the business class attributes 
-	}
+        initMapSql( History.class ); // Maps with name and type of each databases column associated to the business class attributes
+    }
 
     /**
      * {@inheritDoc }
@@ -85,20 +84,20 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     @Override
     public void insert( History history, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid );
-			daoUtil.setString( nIndex++, history.getUuidRef( ) );
-            daoUtil.setTimestamp( nIndex++ , history.getDate( ) );
-            daoUtil.setString( nIndex++ , history.getType( ).name() );
-            daoUtil.setString( nIndex++ , history.getUser( ) );
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, history.getUuidRef( ) );
+            daoUtil.setTimestamp( nIndex++, history.getDate( ) );
+            daoUtil.setString( nIndex++, history.getType( ).name( ) );
+            daoUtil.setString( nIndex++, history.getUser( ) );
 
             daoUtil.executeUpdate( );
-			history.setUuid( uuid );
+            history.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -107,18 +106,18 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     @Override
     public Optional<History> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        History history = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            history = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( history );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            History history = null;
+
+            if ( daoUtil.next( ) )
+            {
+                history = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( history );
         }
     }
 
@@ -128,10 +127,10 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -141,17 +140,17 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     @Override
     public void store( History history, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
+            int nIndex = 1;
 
-            	daoUtil.setString( nIndex++, history.getUuidRef( ) );
-            	daoUtil.setTimestamp( nIndex++ , history.getDate( ) );
-            	daoUtil.setString( nIndex++ , history.getType( ).name() );
-            	daoUtil.setString( nIndex++ , history.getUser( ) );
-	        daoUtil.setString( nIndex , history.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( nIndex++, history.getUuidRef( ) );
+            daoUtil.setTimestamp( nIndex++, history.getDate( ) );
+            daoUtil.setString( nIndex++, history.getType( ).name( ) );
+            daoUtil.setString( nIndex++, history.getUser( ) );
+            daoUtil.setString( nIndex, history.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -161,123 +160,127 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     @Override
     public List<History> selectEntitiesList( Plugin plugin )
     {
-        List<History> historyList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<History> historyList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				historyList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return historyList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                historyList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return historyList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> historyList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            historyList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return historyList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                historyList.add( daoUtil.getString( 1 ) );
+            }
+
+            return historyList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList historyList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList historyList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            historyList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return historyList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                historyList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return historyList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<History> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<History> historyList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<History> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<History> historyList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            historyList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return historyList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private History loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		History history = new History(  );
-		int nIndex = 1;
-		
-		history.setUuid( daoUtil.getString( nIndex++ ) );
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    historyList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return historyList;
+
+    }
+
+    private History loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        History history = new History( );
+        int nIndex = 1;
+
+        history.setUuid( daoUtil.getString( nIndex++ ) );
         history.setUuidRef( daoUtil.getString( nIndex++ ) );
-		history.setDate( daoUtil.getTimestamp( nIndex++ ) );
-		final String typeStr = daoUtil.getString(nIndex++);
-		history.setType(typeStr != null ? HistoryTypeEnum.valueOf(typeStr) : null);
-		history.setUser( daoUtil.getString( nIndex ) );
-		
-		return history;
-	}
+        history.setDate( daoUtil.getTimestamp( nIndex++ ) );
+        final String typeStr = daoUtil.getString( nIndex++ );
+        history.setType( typeStr != null ? HistoryTypeEnum.valueOf( typeStr ) : null );
+        history.setUser( daoUtil.getString( nIndex ) );
+
+        return history;
+    }
 }

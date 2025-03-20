@@ -32,15 +32,13 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.instance;
+package fr.paris.lutece.plugins.apimanager.business.instance;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +50,22 @@ import java.util.Optional;
 public final class InstanceHome
 {
     // Static variable pointed at the DAO instance
-    private static IInstanceDAO _dao = SpringContextService.getBean("apimanager.instanceDAO");
+    private static IInstanceDAO _dao = SpringContextService.getBean( "apimanager.instanceDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private InstanceHome(  )
+    private InstanceHome( )
     {
     }
 
     /**
      * Create an instance of the instance class
-     * @param instance The instance of the Instance which contains the informations to store
-     * @return The  instance of instance which has been created with its primary key.
+     * 
+     * @param instance
+     *            The instance of the Instance which contains the informations to store
+     * @return The instance of instance which has been created with its primary key.
      */
     public static Instance create( Instance instance )
     {
@@ -76,8 +76,10 @@ public final class InstanceHome
 
     /**
      * Update of the instance which is specified in parameter
-     * @param instance The instance of the Instance which contains the data to store
-     * @return The instance of the  instance which has been updated
+     * 
+     * @param instance
+     *            The instance of the Instance which contains the data to store
+     * @return The instance of the instance which has been updated
      */
     public static Instance update( Instance instance )
     {
@@ -88,7 +90,9 @@ public final class InstanceHome
 
     /**
      * Remove the instance whose identifier is specified in parameter
-     * @param nKey The instance Id
+     * 
+     * @param nKey
+     *            The instance Id
      */
     public static void remove( String nKey )
     {
@@ -97,7 +101,9 @@ public final class InstanceHome
 
     /**
      * Returns an instance of a instance whose identifier is specified in parameter
-     * @param nKey The instance primary key
+     * 
+     * @param nKey
+     *            The instance primary key
      * @return an instance of Instance
      */
     public static Optional<Instance> findByPrimaryKey( String nKey )
@@ -107,38 +113,45 @@ public final class InstanceHome
 
     /**
      * Load the data of all the instance objects and returns them as a list
+     * 
      * @return the list which contains the data of all the instance objects
      */
     public static List<Instance> getInstancesList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the instance objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdInstancesList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdInstancesList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the instance objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the instance objects
      */
     public static ReferenceList getInstancesReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<Instance> getInstancesListByIds( List<String> listIds )
@@ -147,4 +160,3 @@ public final class InstanceHome
     }
 
 }
-

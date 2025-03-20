@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -56,27 +55,27 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPlanRateLimitingDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_plan_rate_limiting";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_plan_rate_limiting";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_rate_limiting ( uuid, max_requests, time_window, decrement, criteria, implementation, backend ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_rate_limiting ( uuid, max_requests, time_window, decrement, criteria, implementation, backend ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_rate_limiting WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_rate_limiting SET max_requests = ?, time_window = ?, decrement = ?, criteria = ?, implementation = ?, backend = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, max_requests, time_window, decrement, criteria, implementation, backend FROM apimanager_plan_rate_limiting";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, max_requests, time_window, decrement, criteria, implementation, backend FROM apimanager_plan_rate_limiting";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan_rate_limiting";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public PlanRateLimitingDAO() {
+    public PlanRateLimitingDAO( )
+    {
 
-		initMapSql(PlanRateLimiting.class); //Maps with name and type of each databases column associated to the business class attributes 
-	}
+        initMapSql( PlanRateLimiting.class ); // Maps with name and type of each databases column associated to the business class attributes
+    }
 
     /**
      * {@inheritDoc }
@@ -84,22 +83,22 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     @Override
     public void insert( PlanRateLimiting planRateLimiting, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid );
-			daoUtil.setInt( nIndex++ , planRateLimiting.getMaxRequests( ) );
-            daoUtil.setInt( nIndex++ , planRateLimiting.getTimeWindow( ) );
-            daoUtil.setBoolean( nIndex++ , planRateLimiting.getDecrement( ) );
-            daoUtil.setString( nIndex++ , planRateLimiting.getCriteria( ) );
-            daoUtil.setString( nIndex++ , planRateLimiting.getImplementation( ) );
-            daoUtil.setString( nIndex++ , planRateLimiting.getBackend( ) );
-            
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setInt( nIndex++, planRateLimiting.getMaxRequests( ) );
+            daoUtil.setInt( nIndex++, planRateLimiting.getTimeWindow( ) );
+            daoUtil.setBoolean( nIndex++, planRateLimiting.getDecrement( ) );
+            daoUtil.setString( nIndex++, planRateLimiting.getCriteria( ) );
+            daoUtil.setString( nIndex++, planRateLimiting.getImplementation( ) );
+            daoUtil.setString( nIndex++, planRateLimiting.getBackend( ) );
+
             daoUtil.executeUpdate( );
-			planRateLimiting.setUuid( uuid );
+            planRateLimiting.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -108,18 +107,18 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     @Override
     public Optional<PlanRateLimiting> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        PlanRateLimiting planRateLimiting = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            planRateLimiting = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( planRateLimiting );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            PlanRateLimiting planRateLimiting = null;
+
+            if ( daoUtil.next( ) )
+            {
+                planRateLimiting = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( planRateLimiting );
         }
     }
 
@@ -129,10 +128,10 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -142,19 +141,19 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     @Override
     public void store( PlanRateLimiting planRateLimiting, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
-	        
-            	daoUtil.setInt( nIndex++ , planRateLimiting.getMaxRequests( ) );
-            	daoUtil.setInt( nIndex++ , planRateLimiting.getTimeWindow( ) );
-            	daoUtil.setBoolean( nIndex++ , planRateLimiting.getDecrement( ) );
-            	daoUtil.setString( nIndex++ , planRateLimiting.getCriteria( ) );
-            	daoUtil.setString( nIndex++ , planRateLimiting.getImplementation( ) );
-            	daoUtil.setString( nIndex++ , planRateLimiting.getBackend( ) );
-	        daoUtil.setString( nIndex , planRateLimiting.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
+            int nIndex = 1;
+
+            daoUtil.setInt( nIndex++, planRateLimiting.getMaxRequests( ) );
+            daoUtil.setInt( nIndex++, planRateLimiting.getTimeWindow( ) );
+            daoUtil.setBoolean( nIndex++, planRateLimiting.getDecrement( ) );
+            daoUtil.setString( nIndex++, planRateLimiting.getCriteria( ) );
+            daoUtil.setString( nIndex++, planRateLimiting.getImplementation( ) );
+            daoUtil.setString( nIndex++, planRateLimiting.getBackend( ) );
+            daoUtil.setString( nIndex, planRateLimiting.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -164,124 +163,128 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     @Override
     public List<PlanRateLimiting> selectEntitiesList( Plugin plugin )
     {
-        List<PlanRateLimiting> planRateLimitingList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<PlanRateLimiting> planRateLimitingList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				planRateLimitingList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return planRateLimitingList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planRateLimitingList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return planRateLimitingList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> planRateLimitingList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planRateLimitingList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return planRateLimitingList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planRateLimitingList.add( daoUtil.getString( 1 ) );
+            }
+
+            return planRateLimitingList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList planRateLimitingList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList planRateLimitingList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            planRateLimitingList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return planRateLimitingList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planRateLimitingList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return planRateLimitingList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<PlanRateLimiting> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<PlanRateLimiting> planRateLimitingList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<PlanRateLimiting> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<PlanRateLimiting> planRateLimitingList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            planRateLimitingList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return planRateLimitingList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private PlanRateLimiting loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		PlanRateLimiting planRateLimiting = new PlanRateLimiting(  );
-		int nIndex = 1;
-		
-		planRateLimiting.setUuid( daoUtil.getString( nIndex++ ) );
-		planRateLimiting.setMaxRequests( daoUtil.getInt( nIndex++ ) );
-		planRateLimiting.setTimeWindow( daoUtil.getInt( nIndex++ ) );
-		planRateLimiting.setDecrement( daoUtil.getBoolean( nIndex++ ) );
-		planRateLimiting.setCriteria( daoUtil.getString( nIndex++ ) );
-		planRateLimiting.setImplementation( daoUtil.getString( nIndex++ ) );
-		planRateLimiting.setBackend( daoUtil.getString( nIndex ) );
-		
-		return planRateLimiting;
-	}
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    planRateLimitingList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return planRateLimitingList;
+
+    }
+
+    private PlanRateLimiting loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        PlanRateLimiting planRateLimiting = new PlanRateLimiting( );
+        int nIndex = 1;
+
+        planRateLimiting.setUuid( daoUtil.getString( nIndex++ ) );
+        planRateLimiting.setMaxRequests( daoUtil.getInt( nIndex++ ) );
+        planRateLimiting.setTimeWindow( daoUtil.getInt( nIndex++ ) );
+        planRateLimiting.setDecrement( daoUtil.getBoolean( nIndex++ ) );
+        planRateLimiting.setCriteria( daoUtil.getString( nIndex++ ) );
+        planRateLimiting.setImplementation( daoUtil.getString( nIndex++ ) );
+        planRateLimiting.setBackend( daoUtil.getString( nIndex ) );
+
+        return planRateLimiting;
+    }
 }

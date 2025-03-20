@@ -32,7 +32,6 @@
  * License 1.0
  */
 
-
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
@@ -57,27 +56,27 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
 {
-	// Constants
-	private static final String TABLE_NAME = "apimanager_resource";
+    // Constants
+    private static final String TABLE_NAME = "apimanager_resource";
 
-	private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb ) VALUES ( ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_resource WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ? WHERE uuid = ?";
-   
-	private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb FROM apimanager_resource";
+
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb FROM apimanager_resource";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_resource";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
-	private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-
-	/**
+    /**
      * Constructor
      */
-	public ResourceDAO() {
+    public ResourceDAO( )
+    {
 
-		initMapSql(Resource.class); //Maps with name and type of each databases column associated to the business class attributes 
-	}
+        initMapSql( Resource.class ); // Maps with name and type of each databases column associated to the business class attributes
+    }
 
     /**
      * {@inheritDoc }
@@ -85,19 +84,19 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     @Override
     public void insert( Resource resource, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			final String uuid = UUID.randomUUID().toString();
-			daoUtil.setString( nIndex++, uuid);
-			daoUtil.setString( nIndex++ , resource.getPlan() != null ? resource.getPlan().getUuid() : null );
-            daoUtil.setString( nIndex++ , resource.getPath( ) );
-            daoUtil.setString( nIndex++ , resource.getVerb().name());
-            
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, resource.getPlan( ) != null ? resource.getPlan( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, resource.getPath( ) );
+            daoUtil.setString( nIndex++, resource.getVerb( ).name( ) );
+
             daoUtil.executeUpdate( );
-			resource.setUuid( uuid );
+            resource.setUuid( uuid );
         }
-        
+
     }
 
     /**
@@ -106,18 +105,18 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     @Override
     public Optional<Resource> load( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeQuery( );
-	        Resource resource = null;
-	
-	        if ( daoUtil.next( ) )
-	        {
-	            resource = loadFromDaoUtil( daoUtil );
-	        }
-	
-	        return Optional.ofNullable( resource );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeQuery( );
+            Resource resource = null;
+
+            if ( daoUtil.next( ) )
+            {
+                resource = loadFromDaoUtil( daoUtil );
+            }
+
+            return Optional.ofNullable( resource );
         }
     }
 
@@ -127,10 +126,10 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
-	        daoUtil.setString( 1 , nKey );
-	        daoUtil.executeUpdate( );
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -140,16 +139,16 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     @Override
     public void store( Resource resource, Plugin plugin )
     {
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
-	        int nIndex = 1;
-	        
-            	daoUtil.setString( nIndex++ , resource.getPlan() != null ? resource.getPlan().getUuid() : null );
-            	daoUtil.setString( nIndex++ , resource.getPath( ) );
-            	daoUtil.setString( nIndex++ , resource.getVerb().name());
-	        daoUtil.setString( nIndex , resource.getUuid( ) );
-	
-	        daoUtil.executeUpdate( );
+            int nIndex = 1;
+
+            daoUtil.setString( nIndex++, resource.getPlan( ) != null ? resource.getPlan( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, resource.getPath( ) );
+            daoUtil.setString( nIndex++, resource.getVerb( ).name( ) );
+            daoUtil.setString( nIndex, resource.getUuid( ) );
+
+            daoUtil.executeUpdate( );
         }
     }
 
@@ -159,122 +158,126 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     @Override
     public List<Resource> selectEntitiesList( Plugin plugin )
     {
-        List<Resource> resourceList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        List<Resource> resourceList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-				resourceList.add( loadFromDaoUtil( daoUtil ) );
-	        }
-	
-	        return resourceList;
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                resourceList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return resourceList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin,  Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         List<String> resourceList = new ArrayList<>( );
-        
-        String strSelectStatement =  prepareSelectStatement(SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode);  
-        
-        try( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
+
+        String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
+
+        try ( DAOUtil daoUtil = new DAOUtil( strSelectStatement, plugin ) )
         {
-        
-        	int nIndex = 1;
-    	        
-   	        for(Map.Entry<String, String> filter : mapFilterCriteria.entrySet()) {
-   	        	
-   	        	if(StringUtils.isNotBlank(filter.getValue())  && _mapSql.containsKey(filter.getKey())) {
-   	        		daoUtil.setString( nIndex++ , filter.getValue() );
-   	        	}
-   	        }
-    	        
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            resourceList.add( daoUtil.getString( 1 ) );
-	        }
-	
-	        return resourceList;
+
+            int nIndex = 1;
+
+            for ( Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+            {
+
+                if ( StringUtils.isNotBlank( filter.getValue( ) ) && _mapSql.containsKey( filter.getKey( ) ) )
+                {
+                    daoUtil.setString( nIndex++, filter.getValue( ) );
+                }
+            }
+
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                resourceList.add( daoUtil.getString( 1 ) );
+            }
+
+            return resourceList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public ReferenceList selectEntitiesReferenceList( Plugin plugin )
     {
-        ReferenceList resourceList = new ReferenceList();
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
+        ReferenceList resourceList = new ReferenceList( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
-	        daoUtil.executeQuery(  );
-	
-	        while ( daoUtil.next(  ) )
-	        {
-	            resourceList.addItem( daoUtil.getString( 1 ) , daoUtil.getString( 2 ) );
-	        }
-	
-	        return resourceList;
-    	}
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                resourceList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return resourceList;
+        }
     }
-    
+
     /**
      * {@inheritDoc }
      */
-	@Override
-	public List<Resource> selectEntitiesListByIds( Plugin plugin, List<String> listIds ) {
-		List<Resource> resourceList = new ArrayList<>(  );
-		
-		StringBuilder builder = new StringBuilder( );
+    @Override
+    public List<Resource> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    {
+        List<Resource> resourceList = new ArrayList<>( );
 
-		if ( !listIds.isEmpty( ) )
-		{
-			for( int i = 0 ; i < listIds.size(); i++ ) {
-			    builder.append( "?," );
-			}
-	
-			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
-			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
-	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-	        {
-	        	int index = 1;
-				for( String id : listIds ) {
-					daoUtil.setString(  index++, id );
-				}
-	        	
-	        	daoUtil.executeQuery(  );
-	        	while ( daoUtil.next(  ) )
-		        {
-		            resourceList.add( loadFromDaoUtil( daoUtil ) );
-		        }
-	        }
-	    }
-		return resourceList;
-		
-	}
+        StringBuilder builder = new StringBuilder( );
 
+        if ( !listIds.isEmpty( ) )
+        {
+            for ( int i = 0; i < listIds.size( ); i++ )
+            {
+                builder.append( "?," );
+            }
 
-	private Resource loadFromDaoUtil (DAOUtil daoUtil) {
-		
-		Resource resource = new Resource(  );
-		int nIndex = 1;
-		
-		resource.setUuid( daoUtil.getString( nIndex++ ) );
-		resource.setPlan(PlanHome.findByPrimaryKey( daoUtil.getString(nIndex++)).orElse(null));
-		resource.setPath( daoUtil.getString( nIndex++ ) );
-		final String verbStr = daoUtil.getString(nIndex);
-		resource.setVerb(verbStr != null ? ResourceVerbEnum.valueOf(verbStr) : null	);
-		
-		return resource;
-	}
+            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
+            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
+
+            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+            {
+                int index = 1;
+                for ( String id : listIds )
+                {
+                    daoUtil.setString( index++, id );
+                }
+
+                daoUtil.executeQuery( );
+                while ( daoUtil.next( ) )
+                {
+                    resourceList.add( loadFromDaoUtil( daoUtil ) );
+                }
+            }
+        }
+        return resourceList;
+
+    }
+
+    private Resource loadFromDaoUtil( DAOUtil daoUtil )
+    {
+
+        Resource resource = new Resource( );
+        int nIndex = 1;
+
+        resource.setUuid( daoUtil.getString( nIndex++ ) );
+        resource.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        resource.setPath( daoUtil.getString( nIndex++ ) );
+        final String verbStr = daoUtil.getString( nIndex );
+        resource.setVerb( verbStr != null ? ResourceVerbEnum.valueOf( verbStr ) : null );
+
+        return resource;
+    }
 }

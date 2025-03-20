@@ -32,15 +32,13 @@
  * License 1.0
  */
 
-
- package fr.paris.lutece.plugins.apimanager.business.api;
+package fr.paris.lutece.plugins.apimanager.business.api;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
-
 
 import java.util.List;
 import java.util.Map;
@@ -52,20 +50,22 @@ import java.util.Optional;
 public final class ApiHome
 {
     // Static variable pointed at the DAO instance
-    private static IApiDAO _dao = SpringContextService.getBean("apimanager.apiDAO");
+    private static IApiDAO _dao = SpringContextService.getBean( "apimanager.apiDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private ApiHome(  )
+    private ApiHome( )
     {
     }
 
     /**
      * Create an instance of the api class
-     * @param api The instance of the Api which contains the informations to store
-     * @return The  instance of api which has been created with its primary key.
+     * 
+     * @param api
+     *            The instance of the Api which contains the informations to store
+     * @return The instance of api which has been created with its primary key.
      */
     public static Api create( Api api )
     {
@@ -76,8 +76,10 @@ public final class ApiHome
 
     /**
      * Update of the api which is specified in parameter
-     * @param api The instance of the Api which contains the data to store
-     * @return The instance of the  api which has been updated
+     * 
+     * @param api
+     *            The instance of the Api which contains the data to store
+     * @return The instance of the api which has been updated
      */
     public static Api update( Api api )
     {
@@ -88,7 +90,9 @@ public final class ApiHome
 
     /**
      * Remove the api whose identifier is specified in parameter
-     * @param nKey The api Id
+     * 
+     * @param nKey
+     *            The api Id
      */
     public static void remove( String nKey )
     {
@@ -97,7 +101,9 @@ public final class ApiHome
 
     /**
      * Returns an instance of a api whose identifier is specified in parameter
-     * @param nKey The api primary key
+     * 
+     * @param nKey
+     *            The api primary key
      * @return an instance of Api
      */
     public static Optional<Api> findByPrimaryKey( String nKey )
@@ -107,38 +113,45 @@ public final class ApiHome
 
     /**
      * Load the data of all the api objects and returns them as a list
+     * 
      * @return the list which contains the data of all the api objects
      */
     public static List<Api> getApisList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
-    
-        /**
+
+    /**
      * Load the id of all the api objects and returns them as a list
-     * @param mapFilterCriteria contains search bar names/values inputs 
-     * @param strColumnToOrder contains the column name to use for orderBy statement in case of sorting request (must be null)
-     * @param strSortMode contains the sortMode in case of sorting request : ASC or DESC (must be null)
+     * 
+     * @param mapFilterCriteria
+     *            contains search bar names/values inputs
+     * @param strColumnToOrder
+     *            contains the column name to use for orderBy statement in case of sorting request (must be null)
+     * @param strSortMode
+     *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdApisList( Map <String,String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdApisList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
-        return _dao.selectIdEntitiesList( _plugin,mapFilterCriteria,strColumnToOrder,strSortMode );
+        return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
-    
+
     /**
      * Load the data of all the api objects and returns them as a referenceList
+     * 
      * @return the referenceList which contains the data of all the api objects
      */
     public static ReferenceList getApisReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
-    
-	
+
     /**
      * Load the data of all the avant objects and returns them as a list
-     * @param listIds liste of ids
+     * 
+     * @param listIds
+     *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
     public static List<Api> getApisListByIds( List<String> listIds )
@@ -147,4 +160,3 @@ public final class ApiHome
     }
 
 }
-

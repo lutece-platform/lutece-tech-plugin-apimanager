@@ -35,33 +35,35 @@ package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+
 /**
  * This is the business class for the object PlanRateLimiting
- */ 
+ */
 public class PlanRateLimiting implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
-    
+
     private int _nMaxRequests;
-    
+
     private int _nTimeWindow;
-    
+
     private boolean _bDecrement;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.planratelimiting.Criteria.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.planratelimiting.Criteria.size}" )
     private String _strCriteria;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.planratelimiting.Implementation.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.planratelimiting.Implementation.size}" )
     private String _strImplementation;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.planratelimiting.Backend.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.planratelimiting.Backend.size}" )
     private String _strBackend;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -71,15 +73,18 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
     }
-    
+
     /**
      * Returns the MaxRequests
+     * 
      * @return The MaxRequests
      */
     public int getMaxRequests( )
@@ -89,16 +94,18 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the MaxRequests
-     * @param nMaxRequests The MaxRequests
-     */ 
+     * 
+     * @param nMaxRequests
+     *            The MaxRequests
+     */
     public void setMaxRequests( int nMaxRequests )
     {
         _nMaxRequests = nMaxRequests;
     }
-    
-    
+
     /**
      * Returns the TimeWindow
+     * 
      * @return The TimeWindow
      */
     public int getTimeWindow( )
@@ -108,16 +115,18 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the TimeWindow
-     * @param nTimeWindow The TimeWindow
-     */ 
+     * 
+     * @param nTimeWindow
+     *            The TimeWindow
+     */
     public void setTimeWindow( int nTimeWindow )
     {
         _nTimeWindow = nTimeWindow;
     }
-    
-    
+
     /**
      * Returns the Decrement
+     * 
      * @return The Decrement
      */
     public boolean getDecrement( )
@@ -127,16 +136,18 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the Decrement
-     * @param bDecrement The Decrement
-     */ 
+     * 
+     * @param bDecrement
+     *            The Decrement
+     */
     public void setDecrement( boolean bDecrement )
     {
         _bDecrement = bDecrement;
     }
-    
-    
+
     /**
      * Returns the Criteria
+     * 
      * @return The Criteria
      */
     public String getCriteria( )
@@ -146,16 +157,18 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the Criteria
-     * @param strCriteria The Criteria
-     */ 
+     * 
+     * @param strCriteria
+     *            The Criteria
+     */
     public void setCriteria( String strCriteria )
     {
         _strCriteria = strCriteria;
     }
-    
-    
+
     /**
      * Returns the Implementation
+     * 
      * @return The Implementation
      */
     public String getImplementation( )
@@ -165,16 +178,18 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the Implementation
-     * @param strImplementation The Implementation
-     */ 
+     * 
+     * @param strImplementation
+     *            The Implementation
+     */
     public void setImplementation( String strImplementation )
     {
         _strImplementation = strImplementation;
     }
-    
-    
+
     /**
      * Returns the Backend
+     * 
      * @return The Backend
      */
     public String getBackend( )
@@ -184,11 +199,13 @@ public class PlanRateLimiting implements Serializable
 
     /**
      * Sets the Backend
-     * @param strBackend The Backend
-     */ 
+     * 
+     * @param strBackend
+     *            The Backend
+     */
     public void setBackend( String strBackend )
     {
         _strBackend = strBackend;
     }
-    
+
 }

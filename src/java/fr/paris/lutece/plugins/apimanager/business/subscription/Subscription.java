@@ -37,24 +37,26 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 
 import java.io.Serializable;
+
 /**
  * This is the business class for the object Subscription
- */ 
+ */
 public class Subscription implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
-    
+
     private Client _client;
-    
+
     private Plan _plan;
-    
+
     private boolean _bTraceEnabled;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -64,15 +66,18 @@ public class Subscription implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
     }
-    
+
     /**
      * Returns the Client
+     * 
      * @return The Client
      */
     public Client getClient( )
@@ -82,16 +87,18 @@ public class Subscription implements Serializable
 
     /**
      * Sets the Client
-     * @param client The Client
-     */ 
+     * 
+     * @param client
+     *            The Client
+     */
     public void setClient( Client client )
     {
         _client = client;
     }
-    
-    
+
     /**
      * Returns the Plan
+     * 
      * @return The Plan
      */
     public Plan getPlan( )
@@ -101,16 +108,18 @@ public class Subscription implements Serializable
 
     /**
      * Sets the Plan
-     * @param plan The Plan
-     */ 
+     * 
+     * @param plan
+     *            The Plan
+     */
     public void setPlan( Plan plan )
     {
         _plan = plan;
     }
-    
-    
+
     /**
      * Returns the TraceEnabled
+     * 
      * @return The TraceEnabled
      */
     public boolean getTraceEnabled( )
@@ -120,11 +129,13 @@ public class Subscription implements Serializable
 
     /**
      * Sets the TraceEnabled
-     * @param bTraceEnabled The TraceEnabled
-     */ 
+     * 
+     * @param bTraceEnabled
+     *            The TraceEnabled
+     */
     public void setTraceEnabled( boolean bTraceEnabled )
     {
         _bTraceEnabled = bTraceEnabled;
     }
-    
+
 }

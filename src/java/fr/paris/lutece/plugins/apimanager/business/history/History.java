@@ -38,9 +38,10 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import javax.validation.constraints.NotNull;
+
 /**
  * This is the business class for the object History
- */ 
+ */
 public class History implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -52,30 +53,36 @@ public class History implements Serializable
 
     @NotNull( message = "#i18n{portal.validation.message.notEmpty}" )
     private Timestamp _dateDate;
-    
+
     private HistoryTypeEnum _type;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.history.User.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.history.User.size}" )
     private String _strUser;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
-    public String getUuid() {
+    public String getUuid( )
+    {
         return _strUuid;
     }
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
+     * 
+     * @param strUuid
+     *            The Uuid
      */
-    public void setUuid(final String strUuid) {
+    public void setUuid( final String strUuid )
+    {
         _strUuid = _strUuid;
     }
 
     /**
      * Returns the UuidRef
+     * 
      * @return The UuidRef
      */
     public String getUuidRef( )
@@ -85,15 +92,18 @@ public class History implements Serializable
 
     /**
      * Sets the UuidRef
-     * @param strUuidRef The UuidRef
-     */ 
+     * 
+     * @param strUuidRef
+     *            The UuidRef
+     */
     public void setUuidRef( String strUuidRef )
     {
         _strUuidRef = strUuidRef;
     }
-    
+
     /**
      * Returns the Date
+     * 
      * @return The Date
      */
     public Timestamp getDate( )
@@ -103,35 +113,39 @@ public class History implements Serializable
 
     /**
      * Sets the Date
-     * @param dateDate The Date
-     */ 
+     * 
+     * @param dateDate
+     *            The Date
+     */
     public void setDate( Timestamp dateDate )
     {
         _dateDate = dateDate;
     }
-    
-    
+
     /**
      * Returns the Type
+     * 
      * @return The Type
      */
-    public HistoryTypeEnum getType()
+    public HistoryTypeEnum getType( )
     {
         return _type;
     }
 
     /**
      * Sets the Type
-     * @param type The Type
-     */ 
-    public void setType(HistoryTypeEnum type)
+     * 
+     * @param type
+     *            The Type
+     */
+    public void setType( HistoryTypeEnum type )
     {
         _type = type;
     }
-    
-    
+
     /**
      * Returns the User
+     * 
      * @return The User
      */
     public String getUser( )
@@ -141,11 +155,13 @@ public class History implements Serializable
 
     /**
      * Sets the User
-     * @param strUser The User
-     */ 
+     * 
+     * @param strUser
+     *            The User
+     */
     public void setUser( String strUser )
     {
         _strUser = strUser;
     }
-    
+
 }

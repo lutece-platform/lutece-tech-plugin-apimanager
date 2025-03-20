@@ -37,46 +37,48 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+
 /**
  * This is the business class for the object Plan
- */ 
+ */
 public class Plan implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
 
     private Api _api;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.plan.Name.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.plan.Name.size}" )
     private String _strName;
-    
+
     private String _strDescription;
-    
+
     private boolean _bActive;
-    
-    @Size( max = 50 , message = "#i18n{apimanager.validation.plan.Version.size}" ) 
+
+    @Size( max = 50, message = "#i18n{apimanager.validation.plan.Version.size}" )
     private String _strVersion;
-    
+
     private PlanRateLimiting _rateLimiting;
-    
+
     private PlanClientHttpConfiguration _clientHttpConfiguration;
-    
+
     private int _nRequestTimeout;
-    
+
     private String _strLoadBalancingStrategy;
 
     private PlanHeaderMatching _headerMatching;
 
     private boolean _bOauthEnabled;
-    
+
     private PlanOauthConfiguration _oauthConfiguration;
-    
+
     private boolean _bTraceEnabled;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -86,8 +88,10 @@ public class Plan implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
@@ -95,22 +99,28 @@ public class Plan implements Serializable
 
     /**
      * Returns the Api
+     * 
      * @return The Api
      */
-    public Api getApi() {
+    public Api getApi( )
+    {
         return _api;
     }
 
     /**
      * Sets the Api
-     * @param api The Api
+     * 
+     * @param api
+     *            The Api
      */
-    public void setApi(final Api api) {
+    public void setApi( final Api api )
+    {
         _api = api;
     }
 
     /**
      * Returns the Name
+     * 
      * @return The Name
      */
     public String getName( )
@@ -120,16 +130,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the Name
-     * @param strName The Name
-     */ 
+     * 
+     * @param strName
+     *            The Name
+     */
     public void setName( String strName )
     {
         _strName = strName;
     }
-    
-    
+
     /**
      * Returns the Description
+     * 
      * @return The Description
      */
     public String getDescription( )
@@ -139,16 +151,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the Description
-     * @param strDescription The Description
-     */ 
+     * 
+     * @param strDescription
+     *            The Description
+     */
     public void setDescription( String strDescription )
     {
         _strDescription = strDescription;
     }
-    
-    
+
     /**
      * Returns the Active
+     * 
      * @return The Active
      */
     public boolean getActive( )
@@ -158,16 +172,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the Active
-     * @param bActive The Active
-     */ 
+     * 
+     * @param bActive
+     *            The Active
+     */
     public void setActive( boolean bActive )
     {
         _bActive = bActive;
     }
-    
-    
+
     /**
      * Returns the Version
+     * 
      * @return The Version
      */
     public String getVersion( )
@@ -177,16 +193,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the Version
-     * @param strVersion The Version
-     */ 
+     * 
+     * @param strVersion
+     *            The Version
+     */
     public void setVersion( String strVersion )
     {
         _strVersion = strVersion;
     }
-    
-    
+
     /**
      * Returns the RateLimiting
+     * 
      * @return The RateLimiting
      */
     public PlanRateLimiting getRateLimiting( )
@@ -196,16 +214,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the RateLimiting
-     * @param rateLimiting The RateLimiting
-     */ 
+     * 
+     * @param rateLimiting
+     *            The RateLimiting
+     */
     public void setRateLimiting( PlanRateLimiting rateLimiting )
     {
         _rateLimiting = rateLimiting;
     }
-    
-    
+
     /**
      * Returns the ClientHttpConfiguration
+     * 
      * @return The ClientHttpConfiguration
      */
     public PlanClientHttpConfiguration getClientHttpConfiguration( )
@@ -215,16 +235,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the ClientHttpConfiguration
-     * @param clientHttpConfiguration The ClientHttpConfiguration
-     */ 
+     * 
+     * @param clientHttpConfiguration
+     *            The ClientHttpConfiguration
+     */
     public void setClientHttpConfiguration( PlanClientHttpConfiguration clientHttpConfiguration )
     {
         _clientHttpConfiguration = clientHttpConfiguration;
     }
-    
-    
+
     /**
      * Returns the RequestTimeout
+     * 
      * @return The RequestTimeout
      */
     public int getRequestTimeout( )
@@ -234,16 +256,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the RequestTimeout
-     * @param nRequestTimeout The RequestTimeout
-     */ 
+     * 
+     * @param nRequestTimeout
+     *            The RequestTimeout
+     */
     public void setRequestTimeout( int nRequestTimeout )
     {
         _nRequestTimeout = nRequestTimeout;
     }
-    
-    
+
     /**
      * Returns the LoadBalancingStrategy
+     * 
      * @return The LoadBalancingStrategy
      */
     public String getLoadBalancingStrategy( )
@@ -253,8 +277,10 @@ public class Plan implements Serializable
 
     /**
      * Sets the LoadBalancingStrategy
-     * @param strLoadBalancingStrategy The LoadBalancingStrategy
-     */ 
+     * 
+     * @param strLoadBalancingStrategy
+     *            The LoadBalancingStrategy
+     */
     public void setLoadBalancingStrategy( String strLoadBalancingStrategy )
     {
         _strLoadBalancingStrategy = strLoadBalancingStrategy;
@@ -262,22 +288,28 @@ public class Plan implements Serializable
 
     /**
      * Returns the HeaderMatching
+     * 
      * @return The HeaderMatching
      */
-    public PlanHeaderMatching getHeaderMatching() {
+    public PlanHeaderMatching getHeaderMatching( )
+    {
         return _headerMatching;
     }
 
     /**
      * Sets the HeaderMatching
-     * @param headerMatching The HeaderMatching
+     * 
+     * @param headerMatching
+     *            The HeaderMatching
      */
-    public void setHeaderMatching(final PlanHeaderMatching headerMatching) {
+    public void setHeaderMatching( final PlanHeaderMatching headerMatching )
+    {
         _headerMatching = headerMatching;
     }
 
     /**
      * Returns the OauthEnabled
+     * 
      * @return The OauthEnabled
      */
     public boolean getOauthEnabled( )
@@ -287,16 +319,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the OauthEnabled
-     * @param bOauthEnabled The OauthEnabled
-     */ 
+     * 
+     * @param bOauthEnabled
+     *            The OauthEnabled
+     */
     public void setOauthEnabled( boolean bOauthEnabled )
     {
         _bOauthEnabled = bOauthEnabled;
     }
-    
-    
+
     /**
      * Returns the OauthConfiguration
+     * 
      * @return The OauthConfiguration
      */
     public PlanOauthConfiguration getOauthConfiguration( )
@@ -306,16 +340,18 @@ public class Plan implements Serializable
 
     /**
      * Sets the OauthConfiguration
-     * @param oauthConfiguration The OauthConfiguration
-     */ 
+     * 
+     * @param oauthConfiguration
+     *            The OauthConfiguration
+     */
     public void setOauthConfiguration( PlanOauthConfiguration oauthConfiguration )
     {
         _oauthConfiguration = oauthConfiguration;
     }
-    
-    
+
     /**
      * Returns the TraceEnabled
+     * 
      * @return The TraceEnabled
      */
     public boolean getTraceEnabled( )
@@ -325,11 +361,13 @@ public class Plan implements Serializable
 
     /**
      * Sets the TraceEnabled
-     * @param bTraceEnabled The TraceEnabled
-     */ 
+     * 
+     * @param bTraceEnabled
+     *            The TraceEnabled
+     */
     public void setTraceEnabled( boolean bTraceEnabled )
     {
         _bTraceEnabled = bTraceEnabled;
     }
-    
+
 }

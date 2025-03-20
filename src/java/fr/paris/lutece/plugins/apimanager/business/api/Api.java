@@ -41,26 +41,27 @@ import java.util.Map;
 
 /**
  * This is the business class for the object Api
- */ 
+ */
 public class Api extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private String _strUuid;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.api.Name.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.api.Name.size}" )
     private String _strName;
-    
+
     private String _strDescription;
-    
-    @Size( max = 255 , message = "#i18n{apimanager.validation.api.Path.size}" ) 
+
+    @Size( max = 255, message = "#i18n{apimanager.validation.api.Path.size}" )
     private String _strPath;
-    
+
     private Map<String, Object> _openapi;
 
     /**
      * Returns the Uuid
+     * 
      * @return The Uuid
      */
     public String getUuid( )
@@ -70,15 +71,18 @@ public class Api extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Uuid
-     * @param strUuid The Uuid
-     */ 
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
     }
-    
+
     /**
      * Returns the Name
+     * 
      * @return The Name
      */
     public String getName( )
@@ -88,16 +92,18 @@ public class Api extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Name
-     * @param strName The Name
-     */ 
+     * 
+     * @param strName
+     *            The Name
+     */
     public void setName( String strName )
     {
         _strName = strName;
     }
-    
-    
+
     /**
      * Returns the Description
+     * 
      * @return The Description
      */
     public String getDescription( )
@@ -107,16 +113,18 @@ public class Api extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Description
-     * @param strDescription The Description
-     */ 
+     * 
+     * @param strDescription
+     *            The Description
+     */
     public void setDescription( String strDescription )
     {
         _strDescription = strDescription;
     }
-    
-    
+
     /**
      * Returns the Path
+     * 
      * @return The Path
      */
     public String getPath( )
@@ -126,16 +134,18 @@ public class Api extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Path
-     * @param strPath The Path
-     */ 
+     * 
+     * @param strPath
+     *            The Path
+     */
     public void setPath( String strPath )
     {
         _strPath = strPath;
     }
-    
-    
+
     /**
      * Returns the Openapi
+     * 
      * @return The Openapi
      */
     public Map<String, Object> getOpenapi( )
@@ -145,11 +155,13 @@ public class Api extends AbstractTagBean implements Serializable
 
     /**
      * Sets the Openapi
-     * @param openapi The Openapi
-     */ 
+     * 
+     * @param openapi
+     *            The Openapi
+     */
     public void setOpenapi( Map<String, Object> openapi )
     {
         _openapi = openapi;
     }
-    
+
 }
