@@ -1,9 +1,20 @@
 
+DROP TABLE IF EXISTS apimanager_subscription;
+DROP TABLE IF EXISTS apimanager_resource;
+DROP TABLE IF EXISTS apimanager_plan_header_matching;
+DROP TABLE IF EXISTS apimanager_plan;
+DROP TABLE IF EXISTS apimanager_instance;
+DROP TABLE IF EXISTS apimanager_api;
+DROP TABLE IF EXISTS apimanager_plan_oauth_configuration;
+DROP TABLE IF EXISTS apimanager_plan_client_http_configuration;
+DROP TABLE IF EXISTS apimanager_plan_rate_limiting;
+DROP TABLE IF EXISTS apimanager_tag;
+DROP TABLE IF EXISTS apimanager_history;
+DROP TABLE IF EXISTS apimanager_client;
+
 --
 -- Structure for table apimanager_client
 --
-
-DROP TABLE IF EXISTS apimanager_client;
 CREATE TABLE apimanager_client (
 uuid varchar(50),
 name varchar(50) default '' NOT NULL,
@@ -17,8 +28,6 @@ PRIMARY KEY (uuid)
 --
 -- Structure for table apimanager_history
 --
-
-DROP TABLE IF EXISTS apimanager_history;
 CREATE TABLE apimanager_history (
 uuid varchar(50),
 uuid_ref varchar(50),
@@ -32,7 +41,6 @@ PRIMARY KEY (uuid)
 -- Structure for table apimanager_tag
 --
 
-DROP TABLE IF EXISTS apimanager_tag;
 CREATE TABLE apimanager_tag (
 uuid varchar(50),
 uuid_ref varchar(50),
@@ -44,7 +52,6 @@ PRIMARY KEY (uuid)
 -- Structure for table apimanager_plan_rate_limiting
 --
 
-DROP TABLE IF EXISTS apimanager_plan_rate_limiting;
 CREATE TABLE apimanager_plan_rate_limiting (
 uuid varchar(50),
 max_requests int default '0',
@@ -59,8 +66,6 @@ PRIMARY KEY (uuid)
 --
 -- Structure for table apimanager_plan_client_http_configuration
 --
-
-DROP TABLE IF EXISTS apimanager_plan_client_http_configuration;
 CREATE TABLE apimanager_plan_client_http_configuration (
 uuid varchar(50),
 connection_ttl int default '0',
@@ -75,23 +80,8 @@ PRIMARY KEY (uuid)
 );
 
 --
--- Structure for table apimanager_plan_header_matching
---
-
-DROP TABLE IF EXISTS apimanager_plan_header_matching;
-CREATE TABLE apimanager_plan_header_matching (
-uuid varchar(50),
-name varchar(50) default '',
-value varchar(255) default '',
-type varchar(50) default '',
-PRIMARY KEY (uuid)
-);
-
---
 -- Structure for table apimanager_plan_oauth_configuration
 --
-
-DROP TABLE IF EXISTS apimanager_plan_oauth_configuration;
 CREATE TABLE apimanager_plan_oauth_configuration (
 uuid varchar(50),
 jwt_issuer varchar(50) default '',
@@ -102,8 +92,6 @@ PRIMARY KEY (uuid)
 --
 -- Structure for table apimanager_api
 --
-
-DROP TABLE IF EXISTS apimanager_api;
 CREATE TABLE apimanager_api (
 uuid varchar(50),
 name varchar(255) default '',
@@ -116,8 +104,6 @@ PRIMARY KEY (uuid)
 --
 -- Structure for table apimanager_instance
 --
-
-DROP TABLE IF EXISTS apimanager_instance;
 CREATE TABLE apimanager_instance (
 uuid varchar(50),
 uuid_api varchar(50),
@@ -138,7 +124,6 @@ ALTER TABLE apimanager_instance
 -- Structure for table apimanager_plan
 --
 
-DROP TABLE IF EXISTS apimanager_plan;
 CREATE TABLE apimanager_plan (
 uuid varchar(50),
 uuid_api varchar(50),
@@ -150,7 +135,6 @@ uuid_rate_limiting varchar(50),
 uuid_client_http_configuration varchar(50),
 request_timeout int default '0',
 load_balancing_strategy long varchar,
-uuid_header_matching varchar(50),
 oauth_enabled SMALLINT,
 uuid_oauth_configuration varchar(50),
 trace_enabled SMALLINT,
@@ -164,15 +148,28 @@ ALTER TABLE apimanager_plan
 ALTER TABLE apimanager_plan
     ADD CONSTRAINT fk_plan_uuid_client_http_configuration FOREIGN KEY (uuid_client_http_configuration) REFERENCES apimanager_plan_client_http_configuration (uuid);
 ALTER TABLE apimanager_plan
-    ADD CONSTRAINT fk_plan_uuid_header_matching FOREIGN KEY (uuid_header_matching) REFERENCES apimanager_plan_header_matching (uuid);
-ALTER TABLE apimanager_plan
     ADD CONSTRAINT fk_plan_uuid_oauth_configuration FOREIGN KEY (uuid_oauth_configuration) REFERENCES apimanager_plan_oauth_configuration (uuid);
+
+
+--
+-- Structure for table apimanager_plan_header_matching
+--
+CREATE TABLE apimanager_plan_header_matching (
+uuid varchar(50),
+uuid_plan varchar(50),
+name varchar(50) default '',
+value varchar(255) default '',
+type varchar(50) default '',
+PRIMARY KEY (uuid)
+);
+
+ALTER TABLE apimanager_plan_header_matching
+    ADD CONSTRAINT fk_plan_header_matching_uuid_plan FOREIGN KEY (uuid_plan) REFERENCES apimanager_plan (uuid);
+
 
 --
 -- Structure for table apimanager_resource
 --
-
-DROP TABLE IF EXISTS apimanager_resource;
 CREATE TABLE apimanager_resource (
 uuid varchar(50),
 uuid_plan varchar(50),
@@ -188,7 +185,6 @@ ALTER TABLE apimanager_resource
 -- Structure for table apimanager_subscription
 --
 
-DROP TABLE IF EXISTS apimanager_subscription;
 CREATE TABLE apimanager_subscription (
 uuid varchar(50),
 uuid_client varchar(50),

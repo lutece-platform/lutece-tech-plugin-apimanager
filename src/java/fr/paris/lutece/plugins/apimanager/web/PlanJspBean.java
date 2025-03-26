@@ -35,40 +35,36 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanClientHttpConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanRateLimiting;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
+import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
-import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
-import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
+import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-
-import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
@@ -367,6 +363,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     {
         populate( _plan, request, locale );
 
+        // RATE LIMITING
         final PlanRateLimiting planRateLimiting = new PlanRateLimiting( );
         final Map<String, String [ ]> rateLimitingParams = request.getParameterMap( ).entrySet( ).stream( )
                 .filter( entry -> entry.getKey( ).startsWith( PARAMETER_RATE_LIMITING_PREFIX ) )
@@ -375,6 +372,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         populate( planRateLimiting, rateLimitingRequest, locale );
         _plan.setRateLimiting( planRateLimiting );
 
+        // HTTP CONFIGURATION
         final PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration( );
         final Map<String, String [ ]> clientHttpParams = request.getParameterMap( ).entrySet( ).stream( )
                 .filter( entry -> entry.getKey( ).startsWith( PARAMETER_CLIENT_HTTP_PREFIX ) )
@@ -383,14 +381,23 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         populate( planClientHttpConfiguration, clientHttpRequest, locale );
         _plan.setClientHttpConfiguration( planClientHttpConfiguration );
 
-        final PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching( );
-        final Map<String, String [ ]> headerMatchingParams = request.getParameterMap( ).entrySet( ).stream( )
-                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_HEADER_MATCHING_PREFIX ) )
-                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_HEADER_MATCHING_PREFIX, "" ), Map.Entry::getValue ) );
-        final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest( request, Map.of( ), headerMatchingParams );
-        populate( planHeaderMatching, headerMatchingRequest, locale );
-        _plan.setHeaderMatching( planHeaderMatching );
+        // HEADER MATCHINGS
+        final List<Integer> headerMatchingIndexes = request.getParameterMap( ).keySet( ).stream( )
+                .filter( key -> key.startsWith( PARAMETER_HEADER_MATCHING_PREFIX ) ).map( key -> key.replace( PARAMETER_HEADER_MATCHING_PREFIX, "" ) )
+                .map( key -> Integer.parseInt( key.substring( 0, key.indexOf( '_' ) ) ) ).distinct( ).collect( Collectors.toList( ) );
+        for ( final int index : headerMatchingIndexes )
+        {
+            final String prefix = PARAMETER_HEADER_MATCHING_PREFIX + index + "_";
+            final Map<String, String [ ]> headerMatchingParams = request.getParameterMap( ).entrySet( ).stream( )
+                    .filter( entry -> entry.getKey( ).startsWith( prefix ) )
+                    .collect( Collectors.toMap( entry -> entry.getKey( ).replace( prefix, "" ), Map.Entry::getValue ) );
+            final PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching( );
+            final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest( request, Map.of( ), headerMatchingParams );
+            populate( planHeaderMatching, headerMatchingRequest, locale );
+            _plan.getHeaderMatchings( ).add( planHeaderMatching );
+        }
 
+        // OAUTH CONFIGURATION
         final PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration( );
         final Map<String, String [ ]> oauthConfigurationParams = request.getParameterMap( ).entrySet( ).stream( )
                 .filter( entry -> entry.getKey( ).startsWith( PARAMETER_OAUTH_CONFIGURATION_PREFIX ) )

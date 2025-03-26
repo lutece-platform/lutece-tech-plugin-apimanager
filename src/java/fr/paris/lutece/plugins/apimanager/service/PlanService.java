@@ -68,10 +68,10 @@ public class PlanService extends AbstractService<Plan>
     {
         Optional.ofNullable( entity.getRateLimiting( ) ).ifPresent( PlanRateLimitingHome::create );
         Optional.ofNullable( entity.getClientHttpConfiguration( ) ).ifPresent( PlanClientHttpConfigurationHome::create );
-        Optional.ofNullable( entity.getHeaderMatching( ) ).ifPresent( PlanHeaderMatchingHome::create );
         Optional.ofNullable( entity.getOauthConfiguration( ) ).ifPresent( PlanOauthConfigurationHome::create );
 
         final String uuid = PlanHome.create( entity ).getUuid( );
+
         this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
     }
 
@@ -80,7 +80,6 @@ public class PlanService extends AbstractService<Plan>
     {
         Optional.ofNullable( entity.getRateLimiting( ) ).ifPresent( PlanRateLimitingHome::update );
         Optional.ofNullable( entity.getClientHttpConfiguration( ) ).ifPresent( PlanClientHttpConfigurationHome::update );
-        Optional.ofNullable( entity.getHeaderMatching( ) ).ifPresent( PlanHeaderMatchingHome::update );
         Optional.ofNullable( entity.getOauthConfiguration( ) ).ifPresent( PlanOauthConfigurationHome::update );
 
         PlanHome.update( entity );
@@ -101,7 +100,6 @@ public class PlanService extends AbstractService<Plan>
             // Delete plan config objects
             Optional.ofNullable( plan.getRateLimiting( ) ).ifPresent( rl -> PlanRateLimitingHome.remove( rl.getUuid( ) ) );
             Optional.ofNullable( plan.getClientHttpConfiguration( ) ).ifPresent( chc -> PlanClientHttpConfigurationHome.remove( chc.getUuid( ) ) );
-            Optional.ofNullable( plan.getHeaderMatching( ) ).ifPresent( hm -> PlanHeaderMatchingHome.remove( hm.getUuid( ) ) );
             Optional.ofNullable( plan.getOauthConfiguration( ) ).ifPresent( oac -> PlanOauthConfigurationHome.remove( oac.getUuid( ) ) );
 
             this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );

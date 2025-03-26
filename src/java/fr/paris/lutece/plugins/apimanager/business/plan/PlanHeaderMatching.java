@@ -46,6 +46,8 @@ public class PlanHeaderMatching implements Serializable
     // Variables declarations
     private String _strUuid;
 
+    private String _strUuidPlan;
+
     @Size( max = 50, message = "#i18n{apimanager.validation.planheadermatching.Name.size}" )
     private String _strName;
 
@@ -74,6 +76,27 @@ public class PlanHeaderMatching implements Serializable
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
+    }
+
+    /**
+     * Returns the Plan Uuid
+     *
+     * @return The Plan Uuid
+     */
+    public String getUuidPlan( )
+    {
+        return _strUuidPlan;
+    }
+
+    /**
+     * Sets the Plan Uuid
+     * 
+     * @param strUuidPlan
+     *            The Plan Uuid
+     */
+    public void setUuidPlan( final String strUuidPlan )
+    {
+        _strUuidPlan = strUuidPlan;
     }
 
     /**

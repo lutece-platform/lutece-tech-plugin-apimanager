@@ -37,6 +37,8 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the business class for the object Plan
@@ -68,7 +70,7 @@ public class Plan implements Serializable
 
     private String _strLoadBalancingStrategy;
 
-    private PlanHeaderMatching _headerMatching;
+    private List<PlanHeaderMatching> _headerMatchings = new ArrayList<>( );
 
     private boolean _bOauthEnabled;
 
@@ -287,24 +289,24 @@ public class Plan implements Serializable
     }
 
     /**
-     * Returns the HeaderMatching
+     * Returns the HeaderMatchings
      * 
-     * @return The HeaderMatching
+     * @return The HeaderMatchings
      */
-    public PlanHeaderMatching getHeaderMatching( )
+    public List<PlanHeaderMatching> getHeaderMatchings( )
     {
-        return _headerMatching;
+        return _headerMatchings;
     }
 
     /**
-     * Sets the HeaderMatching
+     * Sets the HeaderMatchings
      * 
-     * @param headerMatching
-     *            The HeaderMatching
+     * @param headerMatchings
+     *            The HeaderMatchings
      */
-    public void setHeaderMatching( final PlanHeaderMatching headerMatching )
+    public void setHeaderMatchings( final List<PlanHeaderMatching> headerMatchings )
     {
-        _headerMatching = headerMatching;
+        _headerMatchings = headerMatchings;
     }
 
     /**

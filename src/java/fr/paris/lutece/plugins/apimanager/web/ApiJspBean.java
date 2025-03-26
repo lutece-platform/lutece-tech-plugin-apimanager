@@ -52,6 +52,7 @@ import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
+import fr.paris.lutece.portal.web.xss.XSSRequestWrapper;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
@@ -64,7 +65,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
@@ -252,7 +255,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
      * @throws AccessDeniedException
      */
     @Action( ACTION_CREATE_API )
-    public String doCreateApi( MultipartHttpServletRequest request ) throws AccessDeniedException
+    public String doCreateApi( HttpServletRequest request ) throws AccessDeniedException
     {
         populateApi( _api, request, getLocale( ) );
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_API ) )
@@ -387,9 +390,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     {
         super.populate( bean, request, locale );
 
-        if ( request instanceof MultipartHttpServletRequest )
+        final ServletRequest unwrappedRequest = request instanceof HttpServletRequestWrapper ? ( (HttpServletRequestWrapper) request ).getRequest( ) : request;
+        if ( unwrappedRequest instanceof MultipartHttpServletRequest )
         {
-            final FileItem openapiFile = ( (MultipartHttpServletRequest) request ).getFile( PARAMETER_OPENAPI );
+            final FileItem openapiFile = ( (MultipartHttpServletRequest) unwrappedRequest ).getFile( PARAMETER_OPENAPI );
             if ( openapiFile != null && openapiFile.getSize( ) > 0 )
             {
                 try
