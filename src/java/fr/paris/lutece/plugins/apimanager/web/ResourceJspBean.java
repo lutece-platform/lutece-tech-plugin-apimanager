@@ -34,36 +34,33 @@
 
 package fr.paris.lutece.plugins.apimanager.web;
 
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
-import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
-import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
+import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-
-import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
@@ -236,7 +233,6 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     public String doCreateResource( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _resource, request, getLocale( ) );
-        _resource.setVerb( ResourceVerbEnum.valueOf( request.getParameter( PARAMETER_VERB_NAME ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_RESOURCE ) )
         {
@@ -317,6 +313,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_RESOURCE, _resource );
+        model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_RESOURCE, TEMPLATE_MODIFY_RESOURCE, model );
@@ -351,5 +348,12 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         resetListId( );
 
         return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_RESOURCE_UPDATED );
+    }
+
+    @Override
+    protected void populate( Object bean, HttpServletRequest request, Locale locale )
+    {
+        super.populate( bean, request, locale );
+        _resource.setVerb( ResourceVerbEnum.valueOf( request.getParameter( PARAMETER_VERB_NAME ) ) );
     }
 }
