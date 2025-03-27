@@ -10,6 +10,13 @@
 			<@formGroup labelFor='uuid_api' labelKey='#i18n{apimanager.instance.labelUuidApi}' mandatory=true>
 				<@input type='text' id='uuid_api' name='uuid_api' maxlength=255 value=instance.api.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
 			</@formGroup>
+			<@formGroup labelFor='protocol_name' labelKey='#i18n{apimanager.instance.labelProtocol}' mandatory=true>
+					<select id="protocol_name" name="protocol_name" class="form-control">
+						<#list protocol_list as protocol>
+							<option value="${protocol.name()}">${protocol.name()}</option>
+						</#list>
+					</select>
+			</@formGroup>
 			<@formGroup labelFor='host' labelKey='#i18n{apimanager.instance.labelHost}' mandatory=true>
 					<@input type='text' id='host' name='host'  maxlength=255 value=instance.host!'' tabIndex='0' />
 			</@formGroup>

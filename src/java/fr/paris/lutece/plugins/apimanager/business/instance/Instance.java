@@ -51,6 +51,8 @@ public class Instance extends AbstractTagBean implements Serializable
 
     private Api _api;
 
+    private InstanceProtocolEnum _protocol;
+
     @Size( max = 255, message = "#i18n{apimanager.validation.instance.Host.size}" )
     private String _strHost;
 
@@ -111,6 +113,27 @@ public class Instance extends AbstractTagBean implements Serializable
     public void setApi( final Api api )
     {
         _api = api;
+    }
+
+    /**
+     * Returns the Protocol
+     *
+     * @return The Protocol
+     */
+    public InstanceProtocolEnum getProtocol( )
+    {
+        return _protocol;
+    }
+
+    /**
+     * Sets the Protocol
+     *
+     * @param protocol
+     *            The Protocol
+     */
+    public void setProtocol( final InstanceProtocolEnum protocol )
+    {
+        _protocol = protocol;
     }
 
     /**

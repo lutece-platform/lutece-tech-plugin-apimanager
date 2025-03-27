@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceProtocolEnum;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -56,6 +57,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,6 +84,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String PARAMETER_ID_INSTANCE = "uuid";
     private static final String PARAMETER_ID_API = "uuid_api";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
+    private static final String PARAMETER_PROTOCOL_NAME = "protocol_name";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_INSTANCES = "apimanager.manage_instances.pageTitle";
@@ -91,6 +94,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     // Markers
     private static final String MARK_INSTANCE_LIST = "instance_list";
     private static final String MARK_INSTANCE = "instance";
+    private static final String MARK_PROTOCOL_LIST = "protocol_list";
 
     private static final String JSP_MANAGE_INSTANCES = "jsp/admin/plugins/apimanager/ManageInstances.jsp";
 
@@ -216,6 +220,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
+        model.put( MARK_PROTOCOL_LIST, InstanceProtocolEnum.values( ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_INSTANCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_INSTANCE, TEMPLATE_CREATE_INSTANCE, model );
@@ -233,8 +238,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String doCreateInstance( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _instance, request, getLocale( ) );
-        _instance.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
-                .collect( Collectors.toList( ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_INSTANCE ) )
         {
@@ -313,6 +316,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
+        model.put( MARK_PROTOCOL_LIST, InstanceProtocolEnum.values( ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_INSTANCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_INSTANCE, TEMPLATE_MODIFY_INSTANCE, model );
@@ -330,8 +334,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String doModifyInstance( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _instance, request, getLocale( ) );
-        _instance.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
-                .collect( Collectors.toList( ) ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_INSTANCE ) )
         {
@@ -349,4 +351,14 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
 
         return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_UPDATED );
     }
+
+    @Override
+    protected void populate( Object bean, HttpServletRequest request, Locale locale )
+    {
+        super.populate( bean, request, locale );
+        _instance.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
+                .collect( Collectors.toList( ) ) );
+        _instance.setProtocol( InstanceProtocolEnum.valueOf( request.getParameter( PARAMETER_PROTOCOL_NAME ) ) );
+    }
+
 }

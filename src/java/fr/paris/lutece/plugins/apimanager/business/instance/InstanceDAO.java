@@ -59,11 +59,11 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_instance";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, protocol, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET uuid_api = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET uuid_api = ?, protocol = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, protocol, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_instance";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -92,6 +92,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
             daoUtil.setString( nIndex++, instance.getApi( ) != null ? instance.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, instance.getProtocol( ) != null ? instance.getProtocol( ).name( ) : null );
             daoUtil.setString( nIndex++, instance.getHost( ) );
             daoUtil.setString( nIndex++, instance.getPort( ) );
             daoUtil.setString( nIndex++, instance.getName( ) );
@@ -152,6 +153,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
         {
             int nIndex = 1;
             daoUtil.setString( nIndex++, instance.getApi( ) != null ? instance.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, instance.getProtocol( ) != null ? instance.getProtocol( ).name( ) : null );
             daoUtil.setString( nIndex++, instance.getHost( ) );
             daoUtil.setString( nIndex++, instance.getPort( ) );
             daoUtil.setString( nIndex++, instance.getName( ) );
@@ -289,6 +291,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
         final String uuid = daoUtil.getString( nIndex++ );
         instance.setUuid( uuid );
         instance.setApi( ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        instance.setProtocol( InstanceProtocolEnum.valueOf( daoUtil.getString( nIndex++ ) ) );
         instance.setHost( daoUtil.getString( nIndex++ ) );
         instance.setPort( daoUtil.getString( nIndex++ ) );
         instance.setName( daoUtil.getString( nIndex++ ) );

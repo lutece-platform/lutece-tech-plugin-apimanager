@@ -10,6 +10,17 @@
 			<@formGroup labelFor='uuid_api' labelKey='#i18n{apimanager.instance.labelUuidApi}' mandatory=true>
 				<@input type='text' id='uuid_api' name='uuid_api' maxlength=255 value=instance.api.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
 			</@formGroup>
+			<@formGroup labelFor='protocol_name' labelKey='#i18n{apimanager.instance.labelProtocol}' mandatory=true>
+				<select id="protocol_name" name="protocol_name" class="form-control">
+					<#list protocol_list as protocol>
+						<#if instance.protocol == protocol>
+							<option value="${protocol.name()}" selected>${protocol.name()}</option>
+						<#else>
+							<option value="${protocol.name()}">${protocol.name()}</option>
+						</#if>
+					</#list>
+				</select>
+			</@formGroup>
 			<@formGroup labelFor='host' labelKey='#i18n{apimanager.instance.labelHost}' mandatory=true>
 				<@input type='text' id='host' name='host'  maxlength=255 value=instance.host!'' tabIndex='0' />
 			</@formGroup>
@@ -34,7 +45,7 @@
 			<@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
 					<input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
 					<div id="tags-container" class="mt-2">
-						<#list client.tags as tag>
+						<#list instance.tags as tag>
 							<span class="badge bg-primary px-2 me-1" id="tag-${tag?index}">
 								${tag}
 								<a id="delete-tag-${tag?index}" class="icon-block"><i class="fas fa-times-circle" style="color:white"></i></a>

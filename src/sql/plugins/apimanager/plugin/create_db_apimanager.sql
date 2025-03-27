@@ -107,6 +107,7 @@ PRIMARY KEY (uuid)
 CREATE TABLE apimanager_instance (
 uuid varchar(50),
 uuid_api varchar(50),
+protocol varchar(5),
 host varchar(255) default '',
 port varchar(50) default '',
 name varchar(255) default '',
