@@ -46,4 +46,12 @@ import java.util.Optional;
  */
 public interface IHistoryDAO extends IDAO<History>
 {
+    /**
+     * Get the full history of the entity identified by the provided UUID
+     * 
+     * @param uuidRef
+     *            the entity UUID
+     * @return the history list
+     */
+    List<History> getHistoryListByUuidRef( String uuidRef, Plugin plugin );
 }

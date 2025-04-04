@@ -41,6 +41,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanRateLimiting;
+import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -154,14 +155,14 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
                 String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
                 String strSortMode = getSortMode( );
 
-                _listIdPlans = PlanService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+                _listIdPlans = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
 
             }
             else
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdPlans = PlanService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+                _listIdPlans = getService( ).getIdEntitiesList( _mapFilterCriteria );
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -191,10 +192,16 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     @Override
     List<Plan> getItemsFromIds( List<String> listIds )
     {
-        List<Plan> listPlan = PlanService.getInstance( ).getEntitiesListByIds( listIds );
+        List<Plan> listPlan = getService( ).getEntitiesListByIds( listIds );
 
         // keep original order
         return listPlan.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    protected PlanService getService( )
+    {
+        return PlanService.getInstance( );
     }
 
     @Override
@@ -257,7 +264,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             return redirectView( request, VIEW_CREATE_PLAN );
         }
 
-        PlanService.getInstance( ).create( _plan, getUser( ).getEmail( ) );
+        getService( ).create( _plan, getUser( ).getEmail( ) );
         resetListId( );
 
         return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED );
@@ -294,7 +301,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     {
         String uuid = request.getParameter( PARAMETER_ID_PLAN );
 
-        PlanService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
+        getService( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
 
         return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_REMOVED );
@@ -352,7 +359,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             return redirect( request, VIEW_MODIFY_PLAN, Map.of( PARAMETER_ID_PLAN, _plan.getUuid( ) ) );
         }
 
-        PlanService.getInstance( ).update( _plan, getUser( ).getEmail( ) );
+        getService( ).update( _plan, getUser( ).getEmail( ) );
 
         resetListId( );
 

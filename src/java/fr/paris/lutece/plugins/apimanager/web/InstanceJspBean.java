@@ -35,10 +35,13 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceProtocolEnum;
+import fr.paris.lutece.plugins.apimanager.service.AbstractService;
+import fr.paris.lutece.plugins.apimanager.service.ApiService;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -68,11 +71,12 @@ import org.apache.commons.lang3.StringUtils;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEINSTANCES;
 
 /**
  * This class provides the user interface to manage Instance features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageInstances.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
+@Controller( controllerJsp = "ManageInstances.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEINSTANCES )
 public class InstanceJspBean extends AbstractJspBean<String, Instance>
 {
     // Templates
@@ -82,9 +86,12 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
 
     // Parameters
     private static final String PARAMETER_ID_INSTANCE = "uuid";
-    private static final String PARAMETER_ID_API = "uuid_api";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_PROTOCOL_NAME = "protocol_name";
+    private static final String PARAMETER_ID_API = "uuid_api";
+    private static final String PARAMETER_LINK_MODE = "linkMode";
+    private static final String PARAMETER_SHOW_APIS = "showApis";
+    private static final String PARAMETER_DELETE_LINK = "deleteLink";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_INSTANCES = "apimanager.manage_instances.pageTitle";
@@ -100,6 +107,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_INSTANCE = "apimanager.message.confirmRemoveInstance";
+    private static final String MESSAGE_CONFIRM_REMOVE_LINK = "apimanager.message.confirmRemoveLink";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.instance.attribute.";
@@ -108,17 +116,23 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String VIEW_MANAGE_INSTANCES = "manageInstances";
     private static final String VIEW_CREATE_INSTANCE = "createInstance";
     private static final String VIEW_MODIFY_INSTANCE = "modifyInstance";
+    private static final String VIEW_LINK_INSTANCE = "linkInstance";
 
     // Actions
     private static final String ACTION_CREATE_INSTANCE = "createInstance";
     private static final String ACTION_MODIFY_INSTANCE = "modifyInstance";
     private static final String ACTION_REMOVE_INSTANCE = "removeInstance";
     private static final String ACTION_CONFIRM_REMOVE_INSTANCE = "confirmRemoveInstance";
+    private static final String ACTION_REMOVE_LINK = "removeLink";
+    private static final String ACTION_CONFIRM_REMOVE_LINK = "confirmRemoveLink";
+    private static final String ACTION_LINK_API = "linkApi";
 
     // Infos
     private static final String INFO_INSTANCE_CREATED = "apimanager.info.instance.created";
     private static final String INFO_INSTANCE_UPDATED = "apimanager.info.instance.updated";
     private static final String INFO_INSTANCE_REMOVED = "apimanager.info.instance.removed";
+    private static final String INFO_API_LINKED = "apimanager.info.instance.apiLinked";
+    private static final String INFO_LINK_REMOVED = "apimanager.info.instance.linkRemoved";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
@@ -140,7 +154,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String getManageInstances( HttpServletRequest request )
     {
         _instance = null;
-
+        final Map<String, Object> model = new HashMap<>( );
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
@@ -148,25 +162,35 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
             // example of order by parameter : orderby=name
             if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
             {
-
                 String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
                 String strSortMode = getSortMode( );
 
-                _listIdInstances = InstanceService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+                _listIdInstances = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
 
             }
             else
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdInstances = InstanceService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+                if ( _mapFilterCriteria.containsKey( PARAMETER_ID_API ) )
+                {
+                    final String apiUuid = _mapFilterCriteria.get( PARAMETER_ID_API );
+                    _listIdInstances = getService( ).getIdInstancesListLinkedToApiUuid( apiUuid );
+                    model.put( PARAMETER_ID_API, apiUuid );
+                    model.put( PARAMETER_SHOW_APIS, false );
+                    model.put( PARAMETER_DELETE_LINK, true );
+                }
+                else
+                {
+                    _listIdInstances = getService( ).getIdEntitiesList( _mapFilterCriteria );
+                }
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
         }
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES );
+        model.putAll( getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES ) );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
@@ -183,10 +207,16 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     @Override
     List<Instance> getItemsFromIds( List<String> listIds )
     {
-        List<Instance> listInstance = InstanceService.getInstance( ).getEntitiesListByIds( listIds );
+        List<Instance> listInstance = getService( ).getEntitiesListByIds( listIds );
 
         // keep original order
         return listInstance.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    protected InstanceService getService( )
+    {
+        return InstanceService.getInstance( );
     }
 
     @Override
@@ -214,9 +244,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String getCreateInstance( HttpServletRequest request )
     {
         _instance = ( _instance != null ) ? _instance : new Instance( );
-        final Api api = new Api( );
-        api.setUuid( request.getParameter( PARAMETER_ID_API ) );
-        _instance.setApi( api );
 
         Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
@@ -250,10 +277,12 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
             return redirectView( request, VIEW_CREATE_INSTANCE );
         }
 
-        InstanceService.getInstance( ).create( _instance, getUser( ).getEmail( ) );
+        getService( ).create( _instance, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_CREATED );
+        addInfo( INFO_INSTANCE_CREATED, getLocale( ) );
+
+        return redirectView( request, VIEW_MANAGE_INSTANCES );
     }
 
     /**
@@ -287,10 +316,53 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     {
         String uuid = request.getParameter( PARAMETER_ID_INSTANCE );
 
-        InstanceService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
+        getService( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_REMOVED );
+        addInfo( INFO_INSTANCE_REMOVED, getLocale( ) );
+
+        return redirectView( request, VIEW_MANAGE_INSTANCES );
+    }
+
+    /**
+     * Manages the removal form of an instance link to an API whose identifiers is in the http request
+     *
+     * @param request
+     *            The Http request
+     * @return the html code to confirm
+     */
+    @Action( ACTION_CONFIRM_REMOVE_LINK )
+    public String getConfirmRemoveLink( HttpServletRequest request )
+    {
+        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
+        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        final UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_LINK ) );
+        url.addParameter( PARAMETER_ID_INSTANCE, instanceUuid );
+        url.addParameter( PARAMETER_ID_API, apiUuid );
+
+        final String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_LINK, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+
+        return redirect( request, strMessageUrl );
+    }
+
+    /**
+     * Handles the removal form of an instance link to an API
+     *
+     * @param request
+     *            The Http request
+     * @return the jsp URL to display the form to manage instances
+     */
+    @Action( ACTION_REMOVE_LINK )
+    public String doRemoveLink( HttpServletRequest request )
+    {
+        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
+        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        final Instance instance = InstanceHome.findByPrimaryKey( instanceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        getService( ).deleteLinkApi( instance, apiUuid, getUser( ).getEmail( ) );
+
+        addInfo( INFO_LINK_REMOVED, getLocale( ) );
+        return redirectView( request, VIEW_MANAGE_INSTANCES );
     }
 
     /**
@@ -346,10 +418,49 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
             return redirect( request, VIEW_MODIFY_INSTANCE, Map.of( PARAMETER_ID_INSTANCE, _instance.getUuid( ) ) );
         }
 
-        InstanceService.getInstance( ).update( _instance, getUser( ).getEmail( ) );
+        getService( ).update( _instance, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_INSTANCE_UPDATED );
+        addInfo( INFO_INSTANCE_UPDATED, getLocale( ) );
+
+        return redirectView( request, VIEW_MANAGE_INSTANCES );
+    }
+
+    @View( VIEW_LINK_INSTANCE )
+    public String getLinkInstance( HttpServletRequest request )
+    {
+        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        _listIdInstances = getService( ).getIdInstancesListNotLinkedToApiUuid( apiUuid );
+
+        final Map<String, Object> model = getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES );
+
+        final String linkMode = request.getParameter( PARAMETER_LINK_MODE );
+        if ( linkMode != null )
+        {
+            model.put( PARAMETER_LINK_MODE, Boolean.parseBoolean( linkMode ) );
+        }
+        model.put( PARAMETER_ID_API, apiUuid );
+        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_INSTANCES, TEMPLATE_MANAGE_INSTANCES, model );
+    }
+
+    @Action( ACTION_LINK_API )
+    public String doLinkApi( HttpServletRequest request )
+    {
+        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
+        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        if ( StringUtils.isAnyBlank( instanceUuid, apiUuid ) )
+        {
+            return redirectView( request, VIEW_MANAGE_INSTANCES );
+        }
+        final Instance instance = InstanceHome.findByPrimaryKey( instanceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        getService( ).linkApi( instance, apiUuid, getUser( ).getEmail( ) );
+        addInfo( INFO_API_LINKED, getLocale( ) );
+
+        return redirectView( request, VIEW_MANAGE_INSTANCES );
     }
 
     @Override

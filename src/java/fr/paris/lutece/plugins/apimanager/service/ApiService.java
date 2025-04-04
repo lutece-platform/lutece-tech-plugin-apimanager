@@ -101,4 +101,45 @@ public class ApiService extends AbstractService<Api>
     {
         return ApiHome.getApisListByIds( listIds );
     }
+
+    /**
+     * Load the uuid of all APIs that are NOT linked to the specified instance UUID, and returns them as a list
+     * 
+     * @param instanceUuid
+     *            the instance uuid
+     * @return the list which contains the uuid of all the APIs
+     */
+    public List<String> getIdApisListNotLinkedToInstanceUuid( final String instanceUuid )
+    {
+        return ApiHome.getIdApisListNotLinkedToInstanceUuid( instanceUuid );
+    }
+
+    /**
+     * Load the uuid of all APIs that are linked to the specified instance UUID, and returns them as a list
+     * 
+     * @param instanceUuid
+     *            the instance uuid
+     * @return the list which contains the uuid of all the APIs
+     */
+    public List<String> getIdApisListLinkedToInstanceUuid( final String instanceUuid )
+    {
+        return ApiHome.getIdApisListLinkedToInstanceUuid( instanceUuid );
+    }
+
+    /**
+     * Link the specified API to the specified instance UUID.
+     * 
+     * @param api
+     *            the API
+     * @param instanceUuid
+     *            the instance UUID
+     * @param user
+     *            the user
+     */
+    public void linkInstance( final Api api, final String instanceUuid, final String user )
+    {
+        ApiHome.linkInstance( api, instanceUuid );
+        this.addNewHistory( api.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( instanceUuid, HistoryTypeEnum.UPDATE, user );
+    }
 }

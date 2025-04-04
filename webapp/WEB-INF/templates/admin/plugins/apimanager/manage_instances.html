@@ -68,6 +68,10 @@
 				 <th>#i18n{apimanager.manage_instances.columnHealthFreq}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_freq'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.global.labelTags}</th>
 				<th>#i18n{portal.util.labelActions}</th>
+				<#if linkMode!false>
+				<#elseif showApis!true>
+					<th>#i18n{apimanager.manage_instances.columnApis}</th>
+				</#if>
 			</tr>
 			<@tableHeadBodySeparator />
 			<#list instance_list as instance >
@@ -102,13 +106,27 @@
 					</#list>
 				</td>
 				<td>
-					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+					<#if linkMode!false>
+						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=linkInstance&uuid=${uuid_api}&uuid_instance=${instance.uuid}' title='#i18n{apimanager.manage_apis.linkInstance}' buttonIcon='link' hideTitle=['all']  />
+					<#else>
+						<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageHistory=&filter_uuid_ref=${instance.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageHistory=&filter_uuid_ref=${instance.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
-					<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-
+						<#if deleteLink!false>
+							<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveLink&uuid=${uuid_api}&uuid_instance=${instance.uuid}' title='#i18n{apimanager.instance.deleteLink}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+						<#else>
+							<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+						</#if>
+					</#if>
 				</td>
+				<#if linkMode!false>
+				<#elseif showApis!true>
+					<td>
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageApis=&filter_uuid_instance=${instance.uuid}" targetElement="#api-result-container" id="list-api-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_instances.viewApis}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_linkApi=&uuid_instance=${instance.uuid}&linkMode=true" targetElement="#api-result-container" id="list-link-api-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_instances.linkApi}" size="auto" bodyClass="p-3" btnIcon="link" hideTitle=['all'] />
+					</td>
+				</#if>
 			</tr>
 			</#list>
 		</@table>

@@ -37,6 +37,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -153,14 +154,14 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
                 String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
                 String strSortMode = getSortMode( );
 
-                _listIdClients = ClientService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+                _listIdClients = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
 
             }
             else
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdClients = ClientService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+                _listIdClients = getService( ).getIdEntitiesList( _mapFilterCriteria );
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -184,10 +185,16 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     @Override
     List<Client> getItemsFromIds( List<String> listIds )
     {
-        List<Client> listClient = ClientService.getInstance( ).getEntitiesListByIds( listIds );
+        List<Client> listClient = getService( ).getEntitiesListByIds( listIds );
 
         // keep original order
         return listClient.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    protected ClientService getService( )
+    {
+        return ClientService.getInstance( );
     }
 
     @Override
@@ -249,7 +256,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
             return redirectView( request, VIEW_CREATE_CLIENT );
         }
 
-        ClientService.getInstance( ).create( _client, getUser( ).getEmail( ) );
+        getService( ).create( _client, getUser( ).getEmail( ) );
         addInfo( INFO_CLIENT_CREATED, getLocale( ) );
         resetListId( );
 
@@ -287,7 +294,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     {
         String uuid = request.getParameter( PARAMETER_ID_CLIENT );
 
-        ClientService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
+        getService( ).delete( uuid, getUser( ).getEmail( ) );
         addInfo( INFO_CLIENT_REMOVED, getLocale( ) );
         resetListId( );
 
@@ -349,7 +356,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
             return redirect( request, VIEW_MODIFY_CLIENT, Map.of( PARAMETER_ID_CLIENT, _client.getUuid( ) ) );
         }
 
-        ClientService.getInstance( ).update( _client, getUser( ).getEmail( ) );
+        getService( ).update( _client, getUser( ).getEmail( ) );
         addInfo( INFO_CLIENT_UPDATED, getLocale( ) );
         resetListId( );
 

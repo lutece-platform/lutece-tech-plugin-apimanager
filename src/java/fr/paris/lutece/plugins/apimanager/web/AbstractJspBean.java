@@ -37,6 +37,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -141,6 +142,8 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
      */
     abstract List<T> getItemsFromIds( List<S> listIds );
 
+    protected abstract AbstractService<T> getService( );
+
     int getPluginDefaultNumberOfItemPerPage( )
     {
         return PROPERTY_DEFAULT_ITEM_PER_PAGE;
@@ -210,11 +213,10 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
     public String getManageHistory( HttpServletRequest request )
     {
         final Map<String, String> mapFilterCriteria = getFilterCriteriaFromRequest( request );
-        final List<String> listIdHistory = HistoryHome.getIdHistorysList( mapFilterCriteria, "date", SORT_ATTRIBUTES_DESC );
 
         Map<String, Object> model = getModel( );
-        model.put( MARK_HISTORY_LIST, HistoryHome.getHistorysListByIds( listIdHistory ).stream( )
-                .sorted( Comparator.comparingInt( history -> listIdHistory.indexOf( history.getUuid( ) ) ) ).collect( Collectors.toList( ) ) );
+        model.put( MARK_HISTORY_LIST, getService( ).getHistoryListByUuidRef( mapFilterCriteria.get( "uuid_ref" ) ).stream( )
+                .sorted( Comparator.comparing( History::getDate ).reversed( ) ).collect( Collectors.toList( ) ) );
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_HISTORY, TEMPLATE_MANAGE_HISTORY, model );
     }
 }

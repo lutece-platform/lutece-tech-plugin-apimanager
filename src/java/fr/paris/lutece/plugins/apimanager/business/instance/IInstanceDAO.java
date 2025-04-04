@@ -46,4 +46,49 @@ import java.util.Optional;
  */
 public interface IInstanceDAO extends IDAO<Instance>
 {
+    /**
+     * Load the uuid of all the instances that are NOT linked to the specified API UUID, and returns them as a list
+     * 
+     * @param apiUuid
+     *            the API uuid
+     * @param plugin
+     *            the plugin
+     * @return the list which contains the uuid of all the instances
+     */
+    List<String> getIdInstancesListNotLinkedToApiUuid( String apiUuid, Plugin plugin );
+
+    /**
+     * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
+     * 
+     * @param apiUuid
+     *            the API uuid
+     * @param plugin
+     *            the plugin
+     * @return the list which contains the uuid of all the instances
+     */
+    List<String> getIdInstancesListLinkedToApiUuid( String apiUuid, Plugin plugin );
+
+    /**
+     * Link the specified instance to the specified API UUID.
+     * 
+     * @param instance
+     *            the instance
+     * @param apiUuid
+     *            the API UUID
+     * @param plugin
+     *            the plugin
+     */
+    void linkApi( Instance instance, String apiUuid, Plugin plugin );
+
+    /**
+     * Deletes the link between the specified instance and the specified API UUID.
+     * 
+     * @param instance
+     *            the instance
+     * @param apiUuid
+     *            the API UUID
+     * @param plugin
+     *            the plugin
+     */
+    void deleteLinkApi( Instance instance, String apiUuid, Plugin plugin );
 }

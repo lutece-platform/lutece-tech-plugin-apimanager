@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -77,7 +78,6 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     // Templates
     private static final String TEMPLATE_MANAGE_SUBSCRIPTIONS = "/admin/plugins/apimanager/manage_subscriptions.html";
     private static final String TEMPLATE_CREATE_SUBSCRIPTION = "/admin/plugins/apimanager/create_subscription.html";
-    private static final String TEMPLATE_MODIFY_SUBSCRIPTION = "/admin/plugins/apimanager/modify_subscription.html";
 
     // Parameters
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
@@ -86,7 +86,6 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS = "apimanager.manage_subscriptions.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_MODIFY_SUBSCRIPTION = "apimanager.modify_subscription.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_SUBSCRIPTION = "apimanager.create_subscription.pageTitle";
 
     // Markers
@@ -104,17 +103,14 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     // Views
     private static final String VIEW_MANAGE_SUBSCRIPTIONS = "manageSubscriptions";
     private static final String VIEW_CREATE_SUBSCRIPTION = "createSubscription";
-    private static final String VIEW_MODIFY_SUBSCRIPTION = "modifySubscription";
 
     // Actions
     private static final String ACTION_CREATE_SUBSCRIPTION = "createSubscription";
-    private static final String ACTION_MODIFY_SUBSCRIPTION = "modifySubscription";
     private static final String ACTION_REMOVE_SUBSCRIPTION = "removeSubscription";
     private static final String ACTION_CONFIRM_REMOVE_SUBSCRIPTION = "confirmRemoveSubscription";
 
     // Infos
     private static final String INFO_SUBSCRIPTION_CREATED = "apimanager.info.subscription.created";
-    private static final String INFO_SUBSCRIPTION_UPDATED = "apimanager.info.subscription.updated";
     private static final String INFO_SUBSCRIPTION_REMOVED = "apimanager.info.subscription.removed";
 
     // Errors
@@ -149,14 +145,14 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
                 String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
                 String strSortMode = getSortMode( );
 
-                _listIdSubscriptions = SubscriptionService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+                _listIdSubscriptions = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
 
             }
             else
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdSubscriptions = SubscriptionService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+                _listIdSubscriptions = getService( ).getIdEntitiesList( _mapFilterCriteria );
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -180,10 +176,16 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     @Override
     List<Subscription> getItemsFromIds( List<String> listIds )
     {
-        List<Subscription> listSubscription = SubscriptionService.getInstance( ).getEntitiesListByIds( listIds );
+        List<Subscription> listSubscription = getService( ).getEntitiesListByIds( listIds );
 
         // keep original order
         return listSubscription.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    protected SubscriptionService getService( )
+    {
+        return SubscriptionService.getInstance( );
     }
 
     @Override
@@ -248,7 +250,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             return redirectView( request, VIEW_CREATE_SUBSCRIPTION );
         }
 
-        SubscriptionService.getInstance( ).create( _subscription, getUser( ).getEmail( ) );
+        getService( ).create( _subscription, getUser( ).getEmail( ) );
 
         resetListId( );
 
@@ -286,7 +288,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     {
         String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
 
-        SubscriptionService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
+        getService( ).delete( uuid, getUser( ).getEmail( ) );
 
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale( ) );
         resetListId( );
@@ -294,62 +296,4 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED );
     }
 
-    /**
-     * Returns the form to update info about a subscription
-     *
-     * @param request
-     *            The Http request
-     * @return The HTML form to update info
-     */
-    @View( VIEW_MODIFY_SUBSCRIPTION )
-    public String getModifySubscription( HttpServletRequest request )
-    {
-        String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
-        if ( uuid == null )
-        {
-            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-        }
-        if ( _subscription == null || !uuid.equals( _subscription.getUuid( ) ) )
-        {
-            Optional<Subscription> optSubscription = SubscriptionHome.findByPrimaryKey( uuid );
-            _subscription = optSubscription.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        }
-
-        Map<String, Object> model = getModel( );
-        model.put( MARK_SUBSCRIPTION, _subscription );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_SUBSCRIPTION ) );
-
-        return getPage( PROPERTY_PAGE_TITLE_MODIFY_SUBSCRIPTION, TEMPLATE_MODIFY_SUBSCRIPTION, model );
-    }
-
-    /**
-     * Process the change form of a subscription
-     *
-     * @param request
-     *            The Http request
-     * @return The Jsp URL of the process result
-     * @throws AccessDeniedException
-     */
-    @Action( ACTION_MODIFY_SUBSCRIPTION )
-    public String doModifySubscription( HttpServletRequest request ) throws AccessDeniedException
-    {
-        populate( _subscription, request, getLocale( ) );
-
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_SUBSCRIPTION ) )
-        {
-            throw new AccessDeniedException( "Invalid security token" );
-        }
-
-        // Check constraints
-        if ( !validateBean( _subscription, VALIDATION_ATTRIBUTES_PREFIX ) )
-        {
-            return redirect( request, VIEW_MODIFY_SUBSCRIPTION, Map.of( PARAMETER_ID_SUBSCRIPTION, _subscription.getUuid( ) ) );
-        }
-
-        SubscriptionService.getInstance( ).update( _subscription, getUser( ).getEmail( ) );
-
-        resetListId( );
-
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_UPDATED );
-    }
 }

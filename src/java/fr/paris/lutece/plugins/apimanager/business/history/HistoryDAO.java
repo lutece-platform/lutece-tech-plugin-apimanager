@@ -69,6 +69,8 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
+    private static final String SQL_QUERY_SELECTALL_BY_UUID_REF = SQL_QUERY_SELECTALL + " WHERE uuid_ref = ? ";
+
     /**
      * Constructor
      */
@@ -265,6 +267,28 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
             }
         }
         return historyList;
+
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<History> getHistoryListByUuidRef( final String uuidRef, final Plugin plugin )
+    {
+        List<History> historyList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_BY_UUID_REF, plugin ) )
+        {
+            daoUtil.setString( 1, uuidRef );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                historyList.add( loadFromDaoUtil( daoUtil ) );
+            }
+
+            return historyList;
+        }
 
     }
 

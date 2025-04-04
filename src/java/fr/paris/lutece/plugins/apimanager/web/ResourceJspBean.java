@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
+import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -147,14 +148,14 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
                 String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
                 String strSortMode = getSortMode( );
 
-                _listIdResources = ResourceService.getInstance( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+                _listIdResources = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
 
             }
             else
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdResources = ResourceService.getInstance( ).getIdEntitiesList( _mapFilterCriteria );
+                _listIdResources = getService( ).getIdEntitiesList( _mapFilterCriteria );
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -178,10 +179,16 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     @Override
     List<Resource> getItemsFromIds( List<String> listIds )
     {
-        List<Resource> listResource = ResourceService.getInstance( ).getEntitiesListByIds( listIds );
+        List<Resource> listResource = getService( ).getEntitiesListByIds( listIds );
 
         // keep original order
         return listResource.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+    }
+
+    @Override
+    protected ResourceService getService( )
+    {
+        return ResourceService.getInstance( );
     }
 
     @Override
@@ -245,7 +252,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
             return redirectView( request, VIEW_CREATE_RESOURCE );
         }
 
-        ResourceService.getInstance( ).create( _resource, getUser( ).getEmail( ) );
+        getService( ).create( _resource, getUser( ).getEmail( ) );
 
         resetListId( );
 
@@ -283,7 +290,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     {
         String uuid = request.getParameter( PARAMETER_ID_RESOURCE );
 
-        ResourceService.getInstance( ).delete( uuid, getUser( ).getEmail( ) );
+        getService( ).delete( uuid, getUser( ).getEmail( ) );
 
         resetListId( );
 
@@ -343,7 +350,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
             return redirect( request, VIEW_MODIFY_RESOURCE, Map.of( PARAMETER_ID_RESOURCE, _resource.getUuid( ) ) );
         }
 
-        ResourceService.getInstance( ).update( _resource, getUser( ).getEmail( ) );
+        getService( ).update( _resource, getUser( ).getEmail( ) );
 
         resetListId( );
 

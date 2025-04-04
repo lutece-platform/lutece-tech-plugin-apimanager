@@ -72,6 +72,11 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
+    private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE = "SELECT uuid_api FROM apimanager_deployed WHERE uuid_instance = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
+            + SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE + " )";
+    private static final String SQL_QUERY_LINK_INSTANCE = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
+
     private final ObjectMapper objectMapper = new ObjectMapper( );
 
     /**
@@ -293,6 +298,59 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
         }
         return apiList;
 
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> getIdApisListNotLinkedToInstanceUuid( final String instanceUuid, final Plugin plugin )
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE, plugin ) )
+        {
+            daoUtil.setString( 1, instanceUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> getIdApisListLinkedToInstanceUuid( final String instanceUuid, final Plugin plugin )
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE, plugin ) )
+        {
+            daoUtil.setString( 1, instanceUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
+    }
+
+    @Override
+    public void linkInstance( final Api api, final String instanceUuid, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_LINK_INSTANCE, Statement.NO_GENERATED_KEYS, plugin ) )
+        {
+            int nIndex = 1;
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, api.getUuid( ) );
+            daoUtil.setString( nIndex, instanceUuid );
+
+            daoUtil.executeUpdate( );
+        }
     }
 
     private Api loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin ) throws JsonProcessingException

@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS apimanager_subscription;
 DROP TABLE IF EXISTS apimanager_resource;
 DROP TABLE IF EXISTS apimanager_plan_header_matching;
 DROP TABLE IF EXISTS apimanager_plan;
+DROP TABLE IF EXISTS apimanager_deployed;
 DROP TABLE IF EXISTS apimanager_instance;
 DROP TABLE IF EXISTS apimanager_api;
 DROP TABLE IF EXISTS apimanager_plan_oauth_configuration;
@@ -106,7 +107,6 @@ PRIMARY KEY (uuid)
 --
 CREATE TABLE apimanager_instance (
 uuid varchar(50),
-uuid_api varchar(50),
 protocol varchar(5),
 host varchar(255) default '',
 port varchar(50) default '',
@@ -118,8 +118,21 @@ health_freq int default '0',
 PRIMARY KEY (uuid)
 );
 
-ALTER TABLE apimanager_instance
-    ADD CONSTRAINT fk_instance_uuid_api FOREIGN KEY (uuid_api) REFERENCES apimanager_api (uuid);
+--
+-- Structure for table apimanager_deployed
+--
+CREATE TABLE apimanager_deployed (
+uuid varchar(50),
+uuid_api varchar(50),
+uuid_instance varchar(50),
+PRIMARY KEY (uuid)
+);
+
+ALTER TABLE apimanager_deployed
+    ADD CONSTRAINT fk_deployed_uuid_api FOREIGN KEY (uuid_api) REFERENCES apimanager_api (uuid);
+ALTER TABLE apimanager_deployed
+    ADD CONSTRAINT fk_deployed_uuid_instance FOREIGN KEY (uuid_instance) REFERENCES apimanager_instance (uuid);
+
 
 --
 -- Structure for table apimanager_plan

@@ -159,4 +159,16 @@ public final class HistoryHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+    /**
+     * Get the full history of the entity identified by the provided UUID
+     * 
+     * @param uuidRef
+     *            the entity UUID
+     * @return the history list
+     */
+    public static List<History> getHistoryListByUuidRef( String uuidRef )
+    {
+        return _dao.getHistoryListByUuidRef( uuidRef, _plugin );
+    }
+
 }

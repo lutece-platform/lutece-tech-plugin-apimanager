@@ -59,15 +59,22 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_instance";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, uuid_api, protocol, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET uuid_api = ?, protocol = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, protocol, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, protocol, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_instance";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+
+    private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_API = "SELECT uuid_instance FROM apimanager_deployed WHERE uuid_api = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_API = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
+            + SQL_QUERY_SELECTALL_ID_LINKED_TO_API + " )";
+    private static final String SQL_QUERY_LINK_API = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
+
+    private static final String SQL_QUERY_DELETE_LINK_API = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_api = ?";
 
     /**
      * Constructor
@@ -76,8 +83,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     {
 
         initMapSql( Instance.class ); // Maps with name and type of each databases column associated to the business class attributes
-        _mapSql.remove( "api" );
-        _mapSql.put( "uuid_api", "String" );
     }
 
     /**
@@ -91,7 +96,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setString( nIndex++, instance.getApi( ) != null ? instance.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, instance.getProtocol( ) != null ? instance.getProtocol( ).name( ) : null );
             daoUtil.setString( nIndex++, instance.getHost( ) );
             daoUtil.setString( nIndex++, instance.getPort( ) );
@@ -152,7 +156,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
             int nIndex = 1;
-            daoUtil.setString( nIndex++, instance.getApi( ) != null ? instance.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, instance.getProtocol( ) != null ? instance.getProtocol( ).name( ) : null );
             daoUtil.setString( nIndex++, instance.getHost( ) );
             daoUtil.setString( nIndex++, instance.getPort( ) );
@@ -282,6 +285,76 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getIdInstancesListNotLinkedToApiUuid( final String apiUuid, final Plugin plugin )
+    {
+        final List<String> idInstanceList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_API, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idInstanceList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idInstanceList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getIdInstancesListLinkedToApiUuid( final String apiUuid, final Plugin plugin )
+    {
+        final List<String> idInstanceList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_LINKED_TO_API, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idInstanceList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idInstanceList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void linkApi( final Instance instance, final String apiUuid, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_LINK_API, Statement.NO_GENERATED_KEYS, plugin ) )
+        {
+            int nIndex = 1;
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, apiUuid );
+            daoUtil.setString( nIndex, instance.getUuid( ) );
+
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteLinkApi( final Instance instance, final String apiUuid, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_API, plugin ) )
+        {
+            daoUtil.setString( 1, instance.getUuid( ) );
+            daoUtil.setString( 2, apiUuid );
+            daoUtil.executeUpdate( );
+        }
+    }
+
     private Instance loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin )
     {
 
@@ -290,7 +363,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
 
         final String uuid = daoUtil.getString( nIndex++ );
         instance.setUuid( uuid );
-        instance.setApi( ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         instance.setProtocol( InstanceProtocolEnum.valueOf( daoUtil.getString( nIndex++ ) ) );
         instance.setHost( daoUtil.getString( nIndex++ ) );
         instance.setPort( daoUtil.getString( nIndex++ ) );
@@ -303,4 +375,5 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
 
         return instance;
     }
+
 }

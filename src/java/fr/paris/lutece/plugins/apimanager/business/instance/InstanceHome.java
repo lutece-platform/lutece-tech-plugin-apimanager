@@ -159,4 +159,53 @@ public final class InstanceHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+    /**
+     * Load the uuid of all the instances that are NOT linked to the specified API UUID, and returns them as a list
+     * 
+     * @param apiUuid
+     *            the API uuid
+     * @return the list which contains the uuid of all the instances
+     */
+    public static List<String> getIdInstancesListNotLinkedToApiUuid( String apiUuid )
+    {
+        return _dao.getIdInstancesListNotLinkedToApiUuid( apiUuid, _plugin );
+    }
+
+    /**
+     * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
+     * 
+     * @param apiUuid
+     *            the API uuid
+     * @return the list which contains the uuid of all the instances
+     */
+    public static List<String> getIdInstancesListLinkedToApiUuid( String apiUuid )
+    {
+        return _dao.getIdInstancesListLinkedToApiUuid( apiUuid, _plugin );
+    }
+
+    /**
+     * Link the specified instance to the specified API UUID.
+     * 
+     * @param instance
+     *            the instance
+     * @param apiUuid
+     *            the API UUID
+     */
+    public static void linkApi( final Instance instance, final String apiUuid )
+    {
+        _dao.linkApi( instance, apiUuid, _plugin );
+    }
+
+    /**
+     * Deletes the link between the specified instance and the specified API UUID.
+     * 
+     * @param instance
+     *            the instance
+     * @param apiUuid
+     *            the API UUID
+     */
+    public static void deleteLinkApi( final Instance instance, final String apiUuid )
+    {
+        _dao.deleteLinkApi( instance, apiUuid, _plugin );
+    }
 }

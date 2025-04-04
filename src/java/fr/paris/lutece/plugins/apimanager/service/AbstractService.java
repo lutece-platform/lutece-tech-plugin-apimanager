@@ -130,4 +130,16 @@ public abstract class AbstractService<T>
         return HistoryHome.create( history );
     }
 
+    /**
+     * Get the full history of the entity identified by the provided UUID
+     * 
+     * @param uuidRef
+     *            the entity UUID
+     * @return the history list
+     */
+    public List<History> getHistoryListByUuidRef( final String uuidRef )
+    {
+        return HistoryHome.getHistoryListByUuidRef( uuidRef );
+    }
+
 }

@@ -35,6 +35,7 @@
 package fr.paris.lutece.plugins.apimanager.business.api;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -157,6 +158,43 @@ public final class ApiHome
     public static List<Api> getApisListByIds( List<String> listIds )
     {
         return _dao.selectEntitiesListByIds( _plugin, listIds );
+    }
+
+    /**
+     * Load the uuid of all the avant objects that are NOT linked to the specified instance UUID, and returns them as a list
+     * 
+     * @param instanceUuid
+     *            the instance uuid
+     * @return the list which contains the uuid of all the avant objects
+     */
+    public static List<String> getIdApisListNotLinkedToInstanceUuid( String instanceUuid )
+    {
+        return _dao.getIdApisListNotLinkedToInstanceUuid( instanceUuid, _plugin );
+    }
+
+    /**
+     * Load the uuid of all APIs that are linked to the specified instance UUID, and returns them as a list
+     * 
+     * @param instanceUuid
+     *            the instance uuid
+     * @return the list which contains the uuid of all the APIs
+     */
+    public static List<String> getIdApisListLinkedToInstanceUuid( String instanceUuid )
+    {
+        return _dao.getIdApisListLinkedToInstanceUuid( instanceUuid, _plugin );
+    }
+
+    /**
+     * Link the specified API to the specified instance UUID.
+     * 
+     * @param api
+     *            the API
+     * @param instanceUuid
+     *            the instance UUID
+     */
+    public static void linkInstance( final Api api, final String instanceUuid )
+    {
+        _dao.linkInstance( api, instanceUuid, _plugin );
     }
 
 }

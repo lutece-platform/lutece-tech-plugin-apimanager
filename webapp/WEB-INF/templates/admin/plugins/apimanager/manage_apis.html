@@ -48,9 +48,11 @@
 				 <th>#i18n{apimanager.manage_apis.columnPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageApis.jsp?orderBy=path'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.global.labelTags}</th>
 				 <th>#i18n{portal.util.labelActions}</th>
-				<#if subscriptionMode!false>
+				<#if subscriptionMode!false || linkMode!false>
 				<#else>
-					<th>#i18n{apimanager.manage_apis.columnInstances}</th>
+					<#if showInstances!true>
+						<th>#i18n{apimanager.manage_apis.columnInstances}</th>
+					</#if>
 					<th>#i18n{apimanager.manage_apis.columnPlans}</th>
 				</#if>
 			</tr>
@@ -72,7 +74,9 @@
 					</#list>
 				</td>
 				<td>
-					<#if subscriptionMode!false>
+					<#if linkMode!false>
+						<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=linkApi&uuid=${uuid_instance}&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_instances.linkApi}' buttonIcon='link' hideTitle=['all']  />
+					<#elseif subscriptionMode!false>
 						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}&filter_active=1&subscriptionMode=true" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="arrow-right" hideTitle=['all'] />
 					<#else>
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
@@ -81,15 +85,21 @@
 
 						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
-						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveApi&uuid=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+						<#if deleteLink!false>
+							<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveLink&uuid=${uuid_instance}&uuid_api=${api.uuid}' title='#i18n{apimanager.api.deleteLink}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+						<#else>
+							<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveApi&uuid=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+						</#if>
 					</#if>
 				</td>
-				<#if subscriptionMode!false>
+				<#if subscriptionMode!false || linkMode!false>
 				<#else>
-					<td>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageInstances=&filter_uuid_api=${api.uuid}" targetElement="#instance-result-container" id="list-instance-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewInstances}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
-						<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=createInstance&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_instances.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
-					</td>
+					<#if showInstances!true>
+						<td>
+							<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageInstances=&filter_uuid_api=${api.uuid}" targetElement="#instance-result-container" id="list-instance-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewInstances}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
+							<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_linkInstance=&uuid_api=${api.uuid}&linkMode=true" targetElement="#instance-result-container" id="list-link-instance-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.linkInstance}" size="auto" bodyClass="p-3" btnIcon="link" hideTitle=['all'] />
+						</td>
+					</#if>
 					<td>
 						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=createPlan&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_plans.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />

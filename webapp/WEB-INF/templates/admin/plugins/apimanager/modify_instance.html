@@ -7,9 +7,6 @@
 			<@input type="hidden" id="uuid" name="uuid" value="${instance.uuid}"/>
 			<@input type="hidden" value="${token}" name="token" />
 
-			<@formGroup labelFor='uuid_api' labelKey='#i18n{apimanager.instance.labelUuidApi}' mandatory=true>
-				<@input type='text' id='uuid_api' name='uuid_api' maxlength=255 value=instance.api.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
-			</@formGroup>
 			<div class="col-xl-12 py-2">
 				<div class="row gx-2">
 					<@formGroup class='col-2' labelFor='protocol_name' labelKey='#i18n{apimanager.instance.labelProtocol}' mandatory=true>
@@ -70,9 +67,6 @@
 
 <script type="text/javascript">
 	$(function() {
-		$('.form-control-plaintext').each(function() {
-			$(this).removeClass('form-control');
-		});
 		$('#tags-input').keypress(function (e) {
 			if(e.which == 13)  // the enter key code
 			{

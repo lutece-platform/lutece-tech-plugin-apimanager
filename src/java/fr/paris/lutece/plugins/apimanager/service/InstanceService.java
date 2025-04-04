@@ -90,4 +90,62 @@ public class InstanceService extends AbstractService<Instance>
     {
         return InstanceHome.getInstancesListByIds( listIds );
     }
+
+    /**
+     * Load the uuid of all instances that are NOT linked to the specified API UUID, and returns them as a list
+     * 
+     * @param apiUuid
+     *            the API uuid
+     * @return the list which contains the uuid of all the instances
+     */
+    public List<String> getIdInstancesListNotLinkedToApiUuid( final String apiUuid )
+    {
+        return InstanceHome.getIdInstancesListNotLinkedToApiUuid( apiUuid );
+    }
+
+    /**
+     * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
+     * 
+     * @param apiUuid
+     *            the API uuid
+     * @return the list which contains the uuid of all the instances
+     */
+    public List<String> getIdInstancesListLinkedToApiUuid( final String apiUuid )
+    {
+        return InstanceHome.getIdInstancesListLinkedToApiUuid( apiUuid );
+    }
+
+    /**
+     * Link the specified instance to the specified API UUID.
+     * 
+     * @param instance
+     *            the instance
+     * @param apiUuid
+     *            the API UUID
+     * @param user
+     *            the user
+     */
+    public void linkApi( final Instance instance, final String apiUuid, final String user )
+    {
+        InstanceHome.linkApi( instance, apiUuid );
+        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( apiUuid, HistoryTypeEnum.UPDATE, user );
+    }
+
+    /**
+     * Deletes the link between the specified instance and the specified API UUID.
+     * 
+     * @param instance
+     *            the instance
+     * @param apiUuid
+     *            the API UUID
+     * @param user
+     *            the user
+     */
+    public void deleteLinkApi( final Instance instance, final String apiUuid, final String user )
+    {
+        InstanceHome.deleteLinkApi( instance, apiUuid );
+        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( apiUuid, HistoryTypeEnum.UPDATE, user );
+    }
 }

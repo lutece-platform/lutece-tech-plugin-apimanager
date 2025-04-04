@@ -49,8 +49,6 @@ public class Instance extends AbstractTagBean implements Serializable
     // Variables declarations
     private String _strUuid;
 
-    private Api _api;
-
     private InstanceProtocolEnum _protocol;
 
     @Size( max = 255, message = "#i18n{apimanager.validation.instance.Host.size}" )
@@ -92,27 +90,6 @@ public class Instance extends AbstractTagBean implements Serializable
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
-    }
-
-    /**
-     * Returns the Api
-     * 
-     * @return The Api
-     */
-    public Api getApi( )
-    {
-        return _api;
-    }
-
-    /**
-     * Sets the Api
-     * 
-     * @param api
-     *            The Api
-     */
-    public void setApi( final Api api )
-    {
-        _api = api;
     }
 
     /**
