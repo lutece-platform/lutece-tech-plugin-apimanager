@@ -102,6 +102,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String MARK_INSTANCE_LIST = "instance_list";
     private static final String MARK_INSTANCE = "instance";
     private static final String MARK_PROTOCOL_LIST = "protocol_list";
+    private static final String MARK_ENVIRONMENT_LIST = "environment_list";
 
     private static final String JSP_MANAGE_INSTANCES = "jsp/admin/plugins/apimanager/ManageInstances.jsp";
 
@@ -248,6 +249,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
         Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
         model.put( MARK_PROTOCOL_LIST, InstanceProtocolEnum.values( ) );
+        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_INSTANCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_INSTANCE, TEMPLATE_CREATE_INSTANCE, model );
@@ -389,6 +391,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
         Map<String, Object> model = getModel( );
         model.put( MARK_INSTANCE, _instance );
         model.put( MARK_PROTOCOL_LIST, InstanceProtocolEnum.values( ) );
+        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_INSTANCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_INSTANCE, TEMPLATE_MODIFY_INSTANCE, model );
