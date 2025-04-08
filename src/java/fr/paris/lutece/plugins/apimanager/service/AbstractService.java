@@ -120,7 +120,7 @@ public abstract class AbstractService<T>
      *            the user who initiated the action
      * @return the new history record
      */
-    protected History addNewHistory( final String uuidRef, final HistoryTypeEnum type, final String user )
+    public History addNewHistory( final String uuidRef, final HistoryTypeEnum type, final String user )
     {
         final History history = new History( );
         history.setUuidRef( uuidRef );

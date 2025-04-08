@@ -16,5 +16,6 @@
     <bean id="apimanager.planHeaderMatchingDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatchingDAO" />
     <bean id="apimanager.planOauthConfigurationDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationDAO" />
 
+    <bean id="apimanager.configGeneratorService" class="fr.paris.lutece.plugins.apimanager.service.generator.MockConfigGeneratorService" />
 
 </beans>

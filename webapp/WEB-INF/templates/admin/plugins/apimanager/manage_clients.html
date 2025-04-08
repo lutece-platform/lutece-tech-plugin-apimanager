@@ -54,6 +54,9 @@
              <th>#i18n{apimanager.manage_clients.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClients.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
             <th>#i18n{portal.util.labelActions}</th>
 			<th>#i18n{apimanager.manage_clients.columnSubscriptions}</th>
+			<#if show_generate_button>
+				<th>#i18n{apimanager.global.columnGenerate}</th>
+			</#if>
         </tr>
         <@tableHeadBodySeparator />
         <#list client_list as client >
@@ -87,6 +90,11 @@
 
 				<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription&uuid_client=${client.uuid}' title='#i18n{apimanager.manage_subscriptions.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
 			</td>
+			<#if show_generate_button>
+				<td>
+					<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=generateOauth2&uuid=${client.uuid}' title='#i18n{apimanager.manage_clients.generateClientOauth2}' hideTitle=['all'] buttonIcon='settings' />
+				</td>
+			</#if>
         </tr>
         </#list>
     </@table>

@@ -39,10 +39,12 @@ import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
@@ -77,20 +79,26 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String TEMPLATE_MANAGE_CLIENTS = "/admin/plugins/apimanager/manage_clients.html";
     private static final String TEMPLATE_CREATE_CLIENT = "/admin/plugins/apimanager/create_client.html";
     private static final String TEMPLATE_MODIFY_CLIENT = "/admin/plugins/apimanager/modify_client.html";
+    private static final String TEMPLATE_GENERATE_OAUTH2 = "/admin/plugins/apimanager/generate_client_oauth2.html";
 
     // Parameters
     private static final String PARAMETER_ID_CLIENT = "uuid";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_INFO_MSG = "infoMsg";
+    private static final String PARAMETER_ENVIRONNEMENT = "environnement";
+    private static final String PARAMETER_COMMENT = "comment";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CLIENTS = "apimanager.manage_clients.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_CLIENT = "apimanager.modify_client.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_CLIENT = "apimanager.create_client.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_GENERATE_OAUTH2 = "apimanager.generate_oauth2.title";
 
     // Markers
     private static final String MARK_CLIENT_LIST = "client_list";
     private static final String MARK_CLIENT = "client";
+    private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
 
     private static final String JSP_MANAGE_CLIENTS = "jsp/admin/plugins/apimanager/ManageClients.jsp";
 
@@ -104,26 +112,32 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String VIEW_MANAGE_CLIENTS = "manageClients";
     private static final String VIEW_CREATE_CLIENT = "createClient";
     private static final String VIEW_MODIFY_CLIENT = "modifyClient";
+    private static final String VIEW_GENERATE_OAUTH2 = "generateOauth2";
 
     // Actions
     private static final String ACTION_CREATE_CLIENT = "createClient";
     private static final String ACTION_MODIFY_CLIENT = "modifyClient";
     private static final String ACTION_REMOVE_CLIENT = "removeClient";
     private static final String ACTION_CONFIRM_REMOVE_CLIENT = "confirmRemoveClient";
+    private static final String ACTION_GENERATE_OAUTH2 = "generateOauth2";
 
     // Infos
     private static final String INFO_CLIENT_CREATED = "apimanager.info.client.created";
     private static final String INFO_CLIENT_UPDATED = "apimanager.info.client.updated";
     private static final String INFO_CLIENT_REMOVED = "apimanager.info.client.removed";
+    private static final String INFO_CLIENT_OAUTH2_GENERATED = "apimanager.info.client.oauth2.generated";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String ERROR_CLIENT_OAUTH2_GENERATION = "Error generating OAuth2 Client";
 
     // Session variable to store working values
     private Client _client;
     private List<String> _listIdClients;
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
+
+    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean( IConfigGeneratorService.BEAN_NAME );
 
     /**
      * Build the Manage View
@@ -171,6 +185,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         Map<String, Object> model = getPaginatedListModel( request, MARK_CLIENT_LIST, _listIdClients, JSP_MANAGE_CLIENTS );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+        model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CLIENTS, TEMPLATE_MANAGE_CLIENTS, model );
 
@@ -360,6 +375,55 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         addInfo( INFO_CLIENT_UPDATED, getLocale( ) );
         resetListId( );
 
+        return redirectView( request, VIEW_MANAGE_CLIENTS );
+    }
+
+    @View( VIEW_GENERATE_OAUTH2 )
+    public String getGenerateOauth2( final HttpServletRequest request )
+    {
+        final String uuid = request.getParameter( PARAMETER_ID_CLIENT );
+        if ( uuid == null )
+        {
+            return redirectView( request, VIEW_MANAGE_CLIENTS );
+        }
+        _client = ClientHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        final Map<String, Object> model = getModel( );
+        model.put( MARK_CLIENT, _client );
+        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_GENERATE_OAUTH2 ) );
+
+        return getPage( PROPERTY_PAGE_TITLE_GENERATE_OAUTH2, TEMPLATE_GENERATE_OAUTH2, model );
+    }
+
+    @Action( ACTION_GENERATE_OAUTH2 )
+    public String doGenerateOauth2( final HttpServletRequest request ) throws AccessDeniedException
+    {
+        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_GENERATE_OAUTH2 ) )
+        {
+            throw new AccessDeniedException( "Invalid security token" );
+        }
+        final String uuid = request.getParameter( PARAMETER_ID_CLIENT );
+        if ( uuid == null )
+        {
+            return redirectView( request, VIEW_MANAGE_CLIENTS );
+        }
+        _client = ClientHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
+        final String comment = request.getParameter( PARAMETER_COMMENT );
+
+        try
+        {
+            _configGeneratorService.generateOauth2Client( _client, env, comment, getUser( ).getEmail( ) );
+            getService( ).addNewHistory( _client.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+        }
+        catch( final AppException e )
+        {
+            addError( ERROR_CLIENT_OAUTH2_GENERATION, getLocale( ) );
+            return redirectView( request, VIEW_MANAGE_CLIENTS );
+        }
+        addInfo( INFO_CLIENT_OAUTH2_GENERATED, getLocale( ) );
         return redirectView( request, VIEW_MANAGE_CLIENTS );
     }
 }

@@ -31,12 +31,22 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.business.history;
+package fr.paris.lutece.plugins.apimanager.service.generator;
 
-public enum HistoryTypeEnum
+import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppLogService;
+
+public class MockConfigGeneratorService implements IConfigGeneratorService
 {
-    CREATE,
-    UPDATE,
-    DELETE,
-    GENERATE
+    @Override
+    public void generateOauth2Client( final Client client, final String environment, final String comment, final String user ) throws AppException
+    {
+        AppLogService.info( "====================================" );
+        AppLogService.info( "MOCK => generateOauth2Client called." );
+        AppLogService.info( "client : " + client.getUuid( ) );
+        AppLogService.info( "environment : " + environment );
+        AppLogService.info( "comment : " + comment );
+        AppLogService.info( "====================================" );
+    }
 }
