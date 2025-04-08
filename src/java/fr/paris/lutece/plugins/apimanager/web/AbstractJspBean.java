@@ -53,6 +53,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
@@ -77,6 +78,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
     private static final String PARAMETER_PAGE_INDEX = "page_index";
     protected static final String PARAMETER_SEARCH_ORDER_BY = "orderBy";
     private static final String PARAMETER_MAP_FILTER_CRITERIA = "mapFilterCriteria";
+    private static final String PARAMETER_HISTORY_UUID_REF = "uuid_ref";
 
     // Markers
     private static final String MARK_PAGINATOR = "paginator";
@@ -203,7 +205,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
     protected String getSortMode( )
     {
 
-        _strSortMode = ( _strSortMode == SORT_ATTRIBUTES_ASC ) ? SORT_ATTRIBUTES_DESC : SORT_ATTRIBUTES_ASC;
+        _strSortMode = ( Objects.equals( _strSortMode, SORT_ATTRIBUTES_ASC ) ) ? SORT_ATTRIBUTES_DESC : SORT_ATTRIBUTES_ASC;
 
         return _strSortMode;
 
@@ -215,7 +217,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
         final Map<String, String> mapFilterCriteria = getFilterCriteriaFromRequest( request );
 
         Map<String, Object> model = getModel( );
-        model.put( MARK_HISTORY_LIST, getService( ).getHistoryListByUuidRef( mapFilterCriteria.get( "uuid_ref" ) ).stream( )
+        model.put( MARK_HISTORY_LIST, getService( ).getHistoryListByUuidRef( mapFilterCriteria.get( PARAMETER_HISTORY_UUID_REF ) ).stream( )
                 .sorted( Comparator.comparing( History::getDate ).reversed( ) ).collect( Collectors.toList( ) ) );
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_HISTORY, TEMPLATE_MANAGE_HISTORY, model );
     }
