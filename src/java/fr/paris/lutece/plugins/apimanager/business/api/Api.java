@@ -57,6 +57,12 @@ public class Api extends AbstractTagBean implements Serializable
     @Size( max = 255, message = "#i18n{apimanager.validation.api.Path.size}" )
     private String _strPath;
 
+    private boolean _bActive;
+
+    private boolean _bInMaintenance;
+
+    private Integer _nWait;
+
     private Map<String, Object> _openapi;
 
     /**
@@ -141,6 +147,69 @@ public class Api extends AbstractTagBean implements Serializable
     public void setPath( String strPath )
     {
         _strPath = strPath;
+    }
+
+    /**
+     * Returns the Active
+     *
+     * @return The Active
+     */
+    public boolean getActive( )
+    {
+        return _bActive;
+    }
+
+    /**
+     * Sets the Active
+     *
+     * @param isActive
+     *            The Active
+     */
+    public void setActive( final boolean isActive )
+    {
+        _bActive = isActive;
+    }
+
+    /**
+     * Returns the InMaintenance
+     *
+     * @return The InMaintenance
+     */
+    public boolean isInMaintenance( )
+    {
+        return _bInMaintenance;
+    }
+
+    /**
+     * Sets the InMaintenance
+     *
+     * @param inMaintenance
+     *            The InMaintenance
+     */
+    public void setInMaintenance( final boolean inMaintenance )
+    {
+        _bInMaintenance = inMaintenance;
+    }
+
+    /**
+     * Returns the Wait
+     *
+     * @return The Wait
+     */
+    public Integer getWait( )
+    {
+        return _nWait;
+    }
+
+    /**
+     * Sets the Wait
+     *
+     * @param nWait
+     *            The Wait
+     */
+    public void setWait( final Integer nWait )
+    {
+        _nWait = nWait;
     }
 
     /**

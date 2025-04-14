@@ -15,6 +15,15 @@
 			<@formGroup labelFor='path' labelKey='#i18n{apimanager.api.labelPath}' mandatory=true>
 				<@input type='text' id='path' name='path'  maxlength=255 value=api.path!'' tabIndex='2' />
 			</@formGroup>
+			<@formGroup labelFor='active' labelKey='#i18n{apimanager.manage_apis.columnActive}' mandatory=true>
+					<@checkBox id="active" name="active"  value="1" checked=api.active!false tabIndex='3' />
+			</@formGroup>
+			<@formGroup labelFor='inMaintenance' labelKey='#i18n{apimanager.manage_apis.columnInMaintenance}' mandatory=true>
+					<@checkBox id="inMaintenance" name="inMaintenance"  value="1" checked=api.inMaintenance!false tabIndex='4' />
+			</@formGroup>
+			<@formGroup labelFor='wait' labelKey='#i18n{apimanager.manage_apis.columnWait}' mandatory=true>
+					<@input type='text' id='wait' name='wait'  maxlength=255 value=api.wait!'' tabIndex='5' />
+			</@formGroup>
 			<@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
 					<input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
 					<div id="tags-container" class="mt-2">

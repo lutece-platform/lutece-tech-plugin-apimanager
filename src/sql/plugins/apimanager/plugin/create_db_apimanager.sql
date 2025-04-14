@@ -98,6 +98,9 @@ uuid varchar(50),
 name varchar(255) default '',
 description long varchar,
 path varchar(255) default '',
+active boolean default false,
+in_maintenance boolean default false,
+wait int default '0',
 openapi json,
 PRIMARY KEY (uuid)
 );

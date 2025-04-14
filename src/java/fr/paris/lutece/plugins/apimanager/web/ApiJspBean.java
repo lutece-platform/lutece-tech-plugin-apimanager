@@ -497,10 +497,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     {
         super.populate( bean, request, locale );
 
-        final ServletRequest unwrappedRequest = request instanceof HttpServletRequestWrapper ? ( (HttpServletRequestWrapper) request ).getRequest( ) : request;
-        if ( unwrappedRequest instanceof MultipartHttpServletRequest )
+        if ( request instanceof MultipartHttpServletRequest )
         {
-            final FileItem openapiFile = ( (MultipartHttpServletRequest) unwrappedRequest ).getFile( PARAMETER_OPENAPI );
+            final FileItem openapiFile = ( (MultipartHttpServletRequest) request ).getFile( PARAMETER_OPENAPI );
             if ( openapiFile != null && openapiFile.getSize( ) > 0 )
             {
                 try

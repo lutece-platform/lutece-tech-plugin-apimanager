@@ -37,6 +37,14 @@
             <feature-url>jsp/admin/plugins/apimanager/ManageApis.jsp</feature-url>
             <feature-icon-url></feature-icon-url>
         </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_INSTANCE_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageInstances.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageInstances.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageInstances.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
     </admin-features>
 
     <!-- XPages parameters -->
