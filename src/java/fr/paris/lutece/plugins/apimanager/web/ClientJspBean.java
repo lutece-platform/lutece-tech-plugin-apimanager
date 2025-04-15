@@ -112,7 +112,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String VIEW_MANAGE_CLIENTS = "manageClients";
     private static final String VIEW_CREATE_CLIENT = "createClient";
     private static final String VIEW_MODIFY_CLIENT = "modifyClient";
-    private static final String VIEW_GENERATE_OAUTH2 = "generateOauth2";
 
     // Actions
     private static final String ACTION_CREATE_CLIENT = "createClient";
@@ -186,6 +185,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
+        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CLIENTS, TEMPLATE_MANAGE_CLIENTS, model );
 
@@ -378,31 +378,9 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         return redirectView( request, VIEW_MANAGE_CLIENTS );
     }
 
-    @View( VIEW_GENERATE_OAUTH2 )
-    public String getGenerateOauth2( final HttpServletRequest request )
-    {
-        final String uuid = request.getParameter( PARAMETER_ID_CLIENT );
-        if ( uuid == null )
-        {
-            return redirectView( request, VIEW_MANAGE_CLIENTS );
-        }
-        _client = ClientHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        final Map<String, Object> model = getModel( );
-        model.put( MARK_CLIENT, _client );
-        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_GENERATE_OAUTH2 ) );
-
-        return getPage( PROPERTY_PAGE_TITLE_GENERATE_OAUTH2, TEMPLATE_GENERATE_OAUTH2, model );
-    }
-
     @Action( ACTION_GENERATE_OAUTH2 )
-    public String doGenerateOauth2( final HttpServletRequest request ) throws AccessDeniedException
+    public String doGenerateOauth2( final HttpServletRequest request )
     {
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_GENERATE_OAUTH2 ) )
-        {
-            throw new AccessDeniedException( "Invalid security token" );
-        }
         final String uuid = request.getParameter( PARAMETER_ID_CLIENT );
         if ( uuid == null )
         {

@@ -13,7 +13,7 @@
     <@offcanvas id='search_client' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
     <@tform id='client_search_form' name='client_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageClients.jsp' >
 		<@messages errors=errors />
-    		
+
 	    			<@formGroup labelFor='filter_name' labelKey='#i18n{apimanager.manage_clients.columnName}'>
 				    		<@input type='text' id='filter_name' name='filter_name'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnName}' value=mapFilterCriteria["name"]!'' tabIndex='1' />
 				    </@formGroup>
@@ -92,7 +92,25 @@
 			</td>
 			<#if show_generate_button>
 				<td>
-					<@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=generateOauth2&uuid=${client.uuid}' title='#i18n{apimanager.manage_clients.generateClientOauth2}' hideTitle=['all'] buttonIcon='settings' />
+					<@offcanvas id='generate_client_${client?index}' title='#i18n{apimanager.manage_clients.generateClientOauth2}' position='end' btnTitle='#i18n{apimanager.manage_clients.generateClientOauth2}' hideTitle=['all'] btnIcon='settings'>
+						<@tform class="generate-client-form border-bottom pb-3" method="post" name="generate_client_${client?index}" action="jsp/admin/plugins/apimanager/ManageClients.jsp?action=generateOauth2" >
+								<@messages errors=errors />
+								<@input type="hidden" name="uuid" value="${client.uuid}"/>
+
+								<@formGroup labelFor='environnement-${client?index}' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
+									<select id="environnement-${client?index}" name="environnement" class="form-control">
+										<#list environment_list as environment>
+											<option value="${environment}">${environment}</option>
+										</#list>
+									</select>
+								</@formGroup>
+								<@formGroup labelFor='comment-${client?index}' labelKey='#i18n{apimanager.client.labelComment}' mandatory=true>
+									<@input type='textarea' id='comment-${client?index}' name='comment'  maxlength=500  tabIndex='0' />
+								</@formGroup>
+
+								<@button type='submit' title='OK' buttonIcon='device-floppy'/>
+						</@tform>
+					</@offcanvas>
 				</td>
 			</#if>
         </tr>
@@ -103,3 +121,10 @@
 
   </@boxBody>
 </@box>
+<script type="text/javascript">
+	$(function() {
+		$('.generate-client-form').each(function() {
+			$(this).removeClass("d-flex");
+		});
+	});
+</script>
