@@ -145,7 +145,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
         {
             daoUtil.setString( 1, nKey );
             daoUtil.executeUpdate( );
-            PlanHeaderMatchingHome.getIdPlanHeaderMatchingsList( Map.of( "uuid_plan", nKey ), null, null ).forEach( PlanHeaderMatchingHome::remove );
         }
     }
 

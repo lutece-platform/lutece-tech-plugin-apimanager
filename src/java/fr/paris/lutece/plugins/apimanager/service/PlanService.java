@@ -94,6 +94,9 @@ public class PlanService extends AbstractService<Plan>
             ResourceService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) )
                     .forEach( resourceId -> ResourceService.getInstance( ).delete( resourceId, user ) );
 
+            // Delete header matching
+            PlanHeaderMatchingHome.getIdPlanHeaderMatchingsList( Map.of( "uuid_plan", uuid ), null, null ).forEach( PlanHeaderMatchingHome::remove );
+
             // Delete plan
             PlanHome.remove( uuid );
 
