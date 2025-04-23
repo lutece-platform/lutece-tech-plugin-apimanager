@@ -59,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -99,10 +100,39 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_PLAN = "plan";
 
+    private static final String MARK_LOAD_BALANCING_STRATEGY_LIST = "load_balancing_strategy_list";
+    private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
+    private static final String MARK_RATE_LIMITING_CRITERIA_LIST = "rate_limiting_criteria_list";
+    private static final String MARK_RATE_LIMITING_IMPLEMENTATION_LIST = "rate_limiting_implementation_list";
+    private static final String MARK_RATE_LIMITING_BACKEND_LIST = "rate_limiting_backend_list";
+
+    private static final String MARK_DEFAULT_CLIENT_HTTP_CONFIG = "default_client_http_config";
+    private static final String MARK_DEFAULT_RATE_LIMITING = "default_rate_limiting";
+
     private static final String JSP_MANAGE_PLANS = "jsp/admin/plugins/apimanager/ManagePlans.jsp";
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_PLAN = "apimanager.message.confirmRemovePlan";
+    private static final String LOAD_BALANCING_STRATEGY_VALUES = "apimanager.plan.loadbalancingstrategy.values";
+    private static final String HEADER_MATCHING_TYPE_VALUES = "apimanager.plan.headermatching.type.values";
+    private static final String RATE_LIMITING_CRITERIA_VALUES = "apimanager.plan.ratelimiting.criteria.values";
+    private static final String RATE_LIMITING_IMPLEMENTATION_VALUES = "apimanager.plan.ratelimiting.implementation.values";
+    private static final String RATE_LIMITING_BACKEND_VALUES = "apimanager.plan.ratelimiting.backend.values";
+
+    private static final String CLIENT_HTTP_CONFIG_CONNECTION_TTL_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.connectionttl.default.value";
+    private static final String CLIENT_HTTP_CONFIG_CONNECTION_TIMEOUT_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.connectiontimeout.default.value";
+    private static final String CLIENT_HTTP_CONFIG_READ_TIMEOUT_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.readtimeout.default.value";
+    private static final String CLIENT_HTTP_CONFIG_REQUEST_TIMEOUT_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.requesttimeout.default.value";
+    private static final String CLIENT_HTTP_CONFIG_CODEC_MAX_CHUNK_SIZE_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecmaxchunksize.default.value";
+    private static final String CLIENT_HTTP_CONFIG_CODEC_MAX_HEADER_SIZE_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecmaxheadersize.default.value";
+    private static final String CLIENT_HTTP_CONFIG_CODEC_INITIAL_BUFFER_SIZE_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecinitialbuffersize.default.value";
+    private static final String CLIENT_HTTP_CONFIG_CODEC_MAX_INITIAL_LINE_LENGTH_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecmaxinitiallinelength.default.value";
+
+    private static final String RATE_LIMITING_MAX_REQUESTS_DEFAULT_VALUE = "apimanager.plan.ratelimiting.maxrequests.default.value";
+    private static final String RATE_LIMITING_TIME_WINDOW_DEFAULT_VALUE = "apimanager.plan.ratelimiting.timewindow.default.value";
+    private static final String RATE_LIMITING_CRITERIA_DEFAULT_VALUE = "apimanager.plan.ratelimiting.criteria.default.value";
+    private static final String RATE_LIMITING_IMPLEMENTATION_DEFAULT_VALUE = "apimanager.plan.ratelimiting.implementation.default.value";
+    private static final String RATE_LIMITING_BACKEND_DEFAULT_VALUE = "apimanager.plan.ratelimiting.backend.default.value";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.plan.attribute.";
@@ -131,6 +161,15 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private List<String> _listIdPlans;
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
+
+    private PlanClientHttpConfiguration defaultClientHttpConfig = null;
+    private PlanRateLimiting defaultPlanRateLimiting = null;
+    private final List<String> loadBalancingStrategyList = Arrays.asList( AppPropertiesService.getProperty( LOAD_BALANCING_STRATEGY_VALUES ).split( "," ) );
+    private final List<String> headerMatchingTypeList = Arrays.asList( AppPropertiesService.getProperty( HEADER_MATCHING_TYPE_VALUES ).split( "," ) );
+    private final List<String> rateLimitingCriteriaList = Arrays.asList( AppPropertiesService.getProperty( RATE_LIMITING_CRITERIA_VALUES ).split( "," ) );
+    private final List<String> rateLimitingImplementationList = Arrays
+            .asList( AppPropertiesService.getProperty( RATE_LIMITING_IMPLEMENTATION_VALUES ).split( "," ) );
+    private final List<String> rateLimitingBackendList = Arrays.asList( AppPropertiesService.getProperty( RATE_LIMITING_BACKEND_VALUES ).split( "," ) );
 
     /**
      * Build the Manage View
@@ -236,6 +275,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_PLAN ) );
+        addValuesAndDefaultsToModel( model );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_PLAN, TEMPLATE_CREATE_PLAN, model );
     }
@@ -331,6 +371,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_PLAN ) );
+        addValuesAndDefaultsToModel( model );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_PLAN, TEMPLATE_MODIFY_PLAN, model );
     }
@@ -389,6 +430,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         _plan.setClientHttpConfiguration( planClientHttpConfiguration );
 
         // HEADER MATCHINGS
+        _plan.getHeaderMatchings( ).clear( );
         final List<Integer> headerMatchingIndexes = request.getParameterMap( ).keySet( ).stream( )
                 .filter( key -> key.startsWith( PARAMETER_HEADER_MATCHING_PREFIX ) ).map( key -> key.replace( PARAMETER_HEADER_MATCHING_PREFIX, "" ) )
                 .map( key -> Integer.parseInt( key.substring( 0, key.indexOf( '_' ) ) ) ).distinct( ).collect( Collectors.toList( ) );
@@ -412,5 +454,42 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         final MultipartHttpServletRequest oauthConfigurationRequest = new MultipartHttpServletRequest( request, Map.of( ), oauthConfigurationParams );
         populate( planOauthConfiguration, oauthConfigurationRequest, locale );
         _plan.setOauthConfiguration( planOauthConfiguration );
+    }
+
+    private void addValuesAndDefaultsToModel( final Map<String, Object> model )
+    {
+        model.put( MARK_LOAD_BALANCING_STRATEGY_LIST, loadBalancingStrategyList );
+        model.put( MARK_HEADER_MATCHING_TYPE_LIST, headerMatchingTypeList );
+        model.put( MARK_RATE_LIMITING_CRITERIA_LIST, rateLimitingCriteriaList );
+        model.put( MARK_RATE_LIMITING_IMPLEMENTATION_LIST, rateLimitingImplementationList );
+        model.put( MARK_RATE_LIMITING_BACKEND_LIST, rateLimitingBackendList );
+
+        if ( defaultClientHttpConfig == null )
+        {
+            defaultClientHttpConfig = new PlanClientHttpConfiguration( );
+            defaultClientHttpConfig.setConnectionTtl( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CONNECTION_TTL_DEFAULT_VALUE, -1 ) );
+            defaultClientHttpConfig.setConnectTimeout( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CONNECTION_TIMEOUT_DEFAULT_VALUE, 0 ) );
+            defaultClientHttpConfig.setReadTimeout( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_READ_TIMEOUT_DEFAULT_VALUE, 60000 ) );
+            defaultClientHttpConfig.setRequestTimeout( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_REQUEST_TIMEOUT_DEFAULT_VALUE, 60000 ) );
+            defaultClientHttpConfig.setCodecMaxChunkSize( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_MAX_CHUNK_SIZE_DEFAULT_VALUE, 8192 ) );
+            defaultClientHttpConfig
+                    .setCodecMaxHeaderSize( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_MAX_HEADER_SIZE_DEFAULT_VALUE, 8192 ) );
+            defaultClientHttpConfig
+                    .setCodecInitialBufferSize( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_INITIAL_BUFFER_SIZE_DEFAULT_VALUE, 128 ) );
+            defaultClientHttpConfig.setCodecMaxInitialLineLength(
+                    AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_MAX_INITIAL_LINE_LENGTH_DEFAULT_VALUE, 4096 ) );
+        }
+        model.put( MARK_DEFAULT_CLIENT_HTTP_CONFIG, defaultClientHttpConfig );
+
+        if ( defaultPlanRateLimiting == null )
+        {
+            defaultPlanRateLimiting = new PlanRateLimiting( );
+            defaultPlanRateLimiting.setMaxRequests( AppPropertiesService.getPropertyInt( RATE_LIMITING_MAX_REQUESTS_DEFAULT_VALUE, 100 ) );
+            defaultPlanRateLimiting.setTimeWindow( AppPropertiesService.getPropertyInt( RATE_LIMITING_TIME_WINDOW_DEFAULT_VALUE, 1000 ) );
+            defaultPlanRateLimiting.setCriteria( AppPropertiesService.getProperty( RATE_LIMITING_CRITERIA_DEFAULT_VALUE, "GLOBAL" ) );
+            defaultPlanRateLimiting.setImplementation( AppPropertiesService.getProperty( RATE_LIMITING_IMPLEMENTATION_DEFAULT_VALUE, "SLIDING_WINDOW" ) );
+            defaultPlanRateLimiting.setBackend( AppPropertiesService.getProperty( RATE_LIMITING_BACKEND_DEFAULT_VALUE, "MEMORY" ) );
+        }
+        model.put( MARK_DEFAULT_RATE_LIMITING, defaultPlanRateLimiting );
     }
 }

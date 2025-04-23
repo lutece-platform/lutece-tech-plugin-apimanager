@@ -25,7 +25,15 @@
 					<@input type='text' id='request_timeout' name='request_timeout' value=plan.requestTimeout!''  tabIndex='6' />
 			</@formGroup>
 			<@formGroup labelFor='load_balancing_strategy' labelKey='#i18n{apimanager.plan.labelLoadBalancingStrategy}' mandatory=true>
-					<@input type='text' id='load_balancing_strategy' name='load_balancing_strategy' value=plan.loadBalancingStrategy!''  tabIndex='7' />
+				<select id="load_balancing_strategy" name="load_balancing_strategy" class="form-control">
+					<#list load_balancing_strategy_list as strategy>
+						<#if plan.loadBalancingStrategy == strategy>
+							<option value="${strategy}" selected>${strategy}</option>
+						<#else>
+							<option value="${strategy}">${strategy}</option>
+						</#if>
+					</#list>
+				</select>
 			</@formGroup>
 			<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.plan.labelTraceEnabled}' mandatory=true>
 					<@checkBox id="trace_enabled" name="trace_enabled"  value="1"  checked=plan.traceEnabled!false  tabIndex='10' />
@@ -33,58 +41,82 @@
 
 			<!-- RATE LIMITING -->
 			<div class="col-xl-12 py-2">
-				<h2><i class="ti ti-hand-stop"></i> Rate Limiting</h2>
+				<h2><i class="ti ti-hand-stop"></i> Rate Limiting <@button id='set-default-rate-limiting' title='#i18n{apimanager.plan.button.load.default}'/></h2>
 				<@input type="hidden" id="rate_limiting_uuid" name="rate_limiting_uuid" value="${plan.rateLimiting.uuid}"/>
-				<div class="row gx-2">
+				<div id="rate-limiting-container" class="row gx-2">
 					<@formGroup class='col' labelFor='rate_limiting_max_requests' labelKey='#i18n{apimanager.planratelimiting.labelMaxRequests}' mandatory=true>
-							<@input type='text' id='rate_limiting_max_requests' name='rate_limiting_max_requests' value=plan.rateLimiting.maxRequests!''   tabIndex='0' />
+							<@input type='text' id='rate_limiting_max_requests' name='rate_limiting_max_requests' value=plan.rateLimiting.maxRequests!''   tabIndex='0'  params='data-default="${default_rate_limiting.maxRequests}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='rate_limiting_time_window' labelKey='#i18n{apimanager.planratelimiting.labelWindow}' mandatory=true>
-							<@input type='text' id='rate_limiting_time_window' name='rate_limiting_time_window' value=plan.rateLimiting.timeWindow!''  tabIndex='1' />
+							<@input type='text' id='rate_limiting_time_window' name='rate_limiting_time_window' value=plan.rateLimiting.timeWindow!''  tabIndex='1' params='data-default="${default_rate_limiting.timeWindow}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='rate_limiting_decrement' labelKey='#i18n{apimanager.planratelimiting.labelDecrement}' mandatory=true>
 							<@checkBox id="rate_limiting_decrement" name="rate_limiting_decrement"  value="1"  checked=plan.rateLimiting.decrement!false  tabIndex='2' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='rate_limiting_criteria' labelKey='#i18n{apimanager.planratelimiting.labelCriteria}' mandatory=true>
-							<@input type='text' id='rate_limiting_criteria' name='rate_limiting_criteria' value=plan.rateLimiting.criteria!''  maxlength=50  tabIndex='3' />
+						<select id="rate_limiting_criteria" name="rate_limiting_criteria" class="form-control" data-default="${default_rate_limiting.criteria}">
+							<#list rate_limiting_criteria_list as criteria>
+								<#if plan.rateLimiting.criteria == criteria>
+									<option value="${criteria}" selected>${criteria}</option>
+								<#else>
+									<option value="${criteria}">${criteria}</option>
+								</#if>
+							</#list>
+						</select>
 					</@formGroup>
 					<@formGroup class='col' labelFor='rate_limiting_implementation' labelKey='#i18n{apimanager.planratelimiting.labelImplementation}' mandatory=true>
-							<@input type='text' id='rate_limiting_implementation' name='rate_limiting_implementation' value=plan.rateLimiting.implementation!''  maxlength=50   tabIndex='4' />
+						<select id="rate_limiting_implementation" name="rate_limiting_implementation" class="form-control" data-default="${default_rate_limiting.implementation}">
+							<#list rate_limiting_implementation_list as implementation>
+								<#if plan.rateLimiting.implementation == implementation>
+									<option value="${implementation}" selected>${implementation}</option>
+								<#else>
+									<option value="${implementation}">${implementation}</option>
+								</#if>
+							</#list>
+						</select>
 					</@formGroup>
 					<@formGroup class='col' labelFor='rate_limiting_backend' labelKey='#i18n{apimanager.planratelimiting.labelBackend}' mandatory=true>
-							<@input type='text' id='rate_limiting_backend' name='rate_limiting_backend'  value=plan.rateLimiting.backend!'' maxlength=50  tabIndex='5' />
+						<select id="rate_limiting_backend" name="rate_limiting_backend" class="form-control" data-default="${default_rate_limiting.backend}">
+							<#list rate_limiting_backend_list as backend>
+								<#if plan.rateLimiting.backend == backend>
+									<option value="${backend}" selected>${backend}</option>
+								<#else>
+									<option value="${backend}">${backend}</option>
+								</#if>
+							</#list>
+						</select>
 					</@formGroup>
 				</div>
 			</div>
 
 			<!-- CLIENT HTTP CONFIGURATION -->
 			<div class="col-xl-12 py-2">
-				<h2><i class="ti ti-server"></i> Client Http</h2>
+				<h2><i class="ti ti-server"></i> Client Http <@button id='set-default-client-http' title='#i18n{apimanager.plan.button.load.default}'/></h2>
 				<@input type="hidden" id="client_http_uuid" name="client_http_uuid" value="${plan.clientHttpConfiguration.uuid}"/>
-				<div class="row gx-2">
+				<div id="client-http-config-container" class="row gx-2">
 					<@formGroup class='col' labelFor='client_http_connection_ttl' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelConnectionTtl}' mandatory=true>
-							<@input type='text' id='client_http_connection_ttl' name='client_http_connection_ttl' value=plan.clientHttpConfiguration.connectionTtl!''  tabIndex='0' />
+							<@input type='text' id='client_http_connection_ttl' name='client_http_connection_ttl' value=plan.clientHttpConfiguration.connectionTtl!''  tabIndex='0' params='data-default="${default_client_http_config.connectionTtl}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_connect_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelConnectTimeout}' mandatory=true>
-							<@input type='text' id='client_http_connect_timeout' name='client_http_connect_timeout' value=plan.clientHttpConfiguration.connectTimeout!''   tabIndex='1' />
+							<@input type='text' id='client_http_connect_timeout' name='client_http_connect_timeout' value=plan.clientHttpConfiguration.connectTimeout!''   tabIndex='1' params='data-default="${default_client_http_config.connectTimeout}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_read_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelReadTimeout}' mandatory=true>
-							<@input type='text' id='client_http_read_timeout' name='client_http_read_timeout' value=plan.clientHttpConfiguration.readTimeout!''  tabIndex='2' />
+							<@input type='text' id='client_http_read_timeout' name='client_http_read_timeout' value=plan.clientHttpConfiguration.readTimeout!''  tabIndex='2' params='data-default="${default_client_http_config.readTimeout}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_request_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelRequestTimeout}' mandatory=true>
-							<@input type='text' id='client_http_request_timeout' name='client_http_request_timeout' value=plan.clientHttpConfiguration.requestTimeout!''   tabIndex='3' />
+							<@input type='text' id='client_http_request_timeout' name='client_http_request_timeout' value=plan.clientHttpConfiguration.requestTimeout!''   tabIndex='3' params='data-default="${default_client_http_config.requestTimeout}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_codec_max_chunk_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxChunkSize}' mandatory=true>
-							<@input type='text' id='client_http_codec_max_chunk_size' name='client_http_codec_max_chunk_size' value=plan.clientHttpConfiguration.codecMaxChunkSize!''  tabIndex='4' />
+							<@input type='text' id='client_http_codec_max_chunk_size' name='client_http_codec_max_chunk_size' value=plan.clientHttpConfiguration.codecMaxChunkSize!''  tabIndex='4' params='data-default="${default_client_http_config.codecMaxChunkSize}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_codec_initial_buffer_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecInitialBufferSize}' mandatory=true>
-							<@input type='text' id='client_http_codec_initial_buffer_size' name='client_http_codec_initial_buffer_size' value=plan.clientHttpConfiguration.codecInitialBufferSize!''  tabIndex='5' />
+							<@input type='text' id='client_http_codec_initial_buffer_size' name='client_http_codec_initial_buffer_size' value=plan.clientHttpConfiguration.codecInitialBufferSize!''  tabIndex='5' params='data-default="${default_client_http_config.codecInitialBufferSize}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_codec_max_header_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxHeaderSize}' mandatory=true>
-							<@input type='text' id='client_http_codec_max_header_size' name='client_http_codec_max_header_size' value=plan.clientHttpConfiguration.codecMaxHeaderSize!''  tabIndex='6' />
+							<@input type='text' id='client_http_codec_max_header_size' name='client_http_codec_max_header_size' value=plan.clientHttpConfiguration.codecMaxHeaderSize!''  tabIndex='6' params='data-default="${default_client_http_config.codecMaxHeaderSize}"' />
 					</@formGroup>
 					<@formGroup class='col' labelFor='client_http_codec_max_initial_line_length' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxInitialLineLength}' mandatory=true>
-							<@input type='text' id='client_http_codec_max_initial_line_length' name='client_http_codec_max_initial_line_length' value=plan.clientHttpConfiguration.codecMaxInitialLineLength!''  tabIndex='7' />
+							<@input type='text' id='client_http_codec_max_initial_line_length' name='client_http_codec_max_initial_line_length' value=plan.clientHttpConfiguration.codecMaxInitialLineLength!''  tabIndex='7' params='data-default="${default_client_http_config.codecMaxInitialLineLength}"' />
 					</@formGroup>
 				</div>
 			</div>
@@ -94,14 +126,22 @@
 				<h2><i class="ti ti-checkbox"></i> Header Matching <@button id='add-hm' buttonIcon='plus'/></h2>
 				<#list plan.headerMatchings as headermatching>
 					<div id="header-matching-row-${headermatching?index}" class="header-matching-row row gx-2" data-index="${headermatching?index}">
-						<@formGroup class='col' labelFor='header_matching_name_${headermatching?index}' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true>
-								<@input type='text' id='header_matching_name_${headermatching?index}' name='header_matching_${headermatching?index}_name' value=headermatching.name!''  maxlength=50  tabIndex='0' />
+						<@formGroup class='col' labelFor='header_matching_${headermatching?index}_name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true>
+								<@input type='text' id='header_matching_${headermatching?index}_name' name='header_matching_${headermatching?index}_name' value=headermatching.name!''  maxlength=50  tabIndex='0' />
 						</@formGroup>
-						<@formGroup class='col' labelFor='header_matching_value_${headermatching?index}' labelKey='#i18n{apimanager.planheadermatching.labelValue}' mandatory=true>
-								<@input type='text' id='header_matching_value_${headermatching?index}' name='header_matching_${headermatching?index}_value' value=headermatching.value!''  maxlength=255  tabIndex='1' />
+						<@formGroup class='col' labelFor='header_matching_${headermatching?index}_value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' mandatory=true>
+								<@input type='text' id='header_matching_${headermatching?index}_value' name='header_matching_${headermatching?index}_value' value=headermatching.value!''  maxlength=255  tabIndex='1' />
 						</@formGroup>
-						<@formGroup class='col' labelFor='header_matching_type_${headermatching?index}' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true>
-								<@input type='text' id='header_matching_type_${headermatching?index}' name='header_matching_${headermatching?index}_type' value=headermatching.type!''  maxlength=50   tabIndex='2' />
+						<@formGroup class='col' labelFor='header_matching_${headermatching?index}_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true>
+							<select id="header_matching_${headermatching?index}_type" name="header_matching_${headermatching?index}_type" class="form-control">
+								<#list header_matching_type_list as type>
+									<#if headermatching.type == type>
+										<option value="${type}" selected>${type}</option>
+									<#else>
+										<option value="${type}">${type}</option>
+									</#if>
+								</#list>
+							</select>
 						</@formGroup>
 						<div class="mb-3 col-1 align-content-end"><@button id='delete-hm-${headermatching?index}' buttonIcon='trash' color='light'/></div>
 					</div>
@@ -149,6 +189,11 @@
 				$(this).attr('name', $(this).attr('name').replace(oldIndex, newIndex));
 				$(this).attr('value', '');
 			});
+			$(newRow).find('select').each(function() {
+				$(this).attr('id', $(this).attr('id').replace(oldIndex, newIndex));
+				$(this).attr('name', $(this).attr('name').replace(oldIndex, newIndex));
+				$(this).val($(this).find("option:first").val());
+			});
 			$(newRow).find('#delete-hm-' + oldIndex).each(function(){
 				$(this).attr('id', 'delete-hm-' + newIndex);
 				$(this).off();
@@ -164,6 +209,26 @@
 			if($('.header-matching-row').length > 1) {
 				$('#header-matching-row-' + $(this).attr("id").replace('delete-hm-', '')).remove();
 			}
+		});
+		$('#set-default-client-http').click(function(){
+			$('#client-http-config-container input[data-default]').each(function() {
+				$(this).val($(this).data('default'));
+			});
+		});
+		$('#set-default-rate-limiting').click(function() {
+			$('#rate-limiting-container input[data-default]').each(function() {
+				$(this).val($(this).data('default'));
+			});
+			$('#rate-limiting-container select[data-default]').each(function () {
+				let value = $(this).data('default');
+				$(this).children().each(function(){
+					if($(this).val() === value) {
+						$(this).prop('selected', true);
+					} else {
+						$(this).prop('selected', false);
+					}
+				});
+			});
 		});
 	});
 
