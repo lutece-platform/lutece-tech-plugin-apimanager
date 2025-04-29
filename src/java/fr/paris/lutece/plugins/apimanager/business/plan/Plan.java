@@ -66,7 +66,7 @@ public class Plan implements Serializable
 
     private PlanClientHttpConfiguration _clientHttpConfiguration;
 
-    private int _nRequestTimeout;
+    private Integer _nRequestTimeout;
 
     private String _strLoadBalancingStrategy;
 
@@ -251,7 +251,7 @@ public class Plan implements Serializable
      * 
      * @return The RequestTimeout
      */
-    public int getRequestTimeout( )
+    public Integer getRequestTimeout( )
     {
         return _nRequestTimeout;
     }
@@ -262,7 +262,7 @@ public class Plan implements Serializable
      * @param nRequestTimeout
      *            The RequestTimeout
      */
-    public void setRequestTimeout( int nRequestTimeout )
+    public void setRequestTimeout( Integer nRequestTimeout )
     {
         _nRequestTimeout = nRequestTimeout;
     }

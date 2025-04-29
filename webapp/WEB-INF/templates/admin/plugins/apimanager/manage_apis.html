@@ -114,7 +114,12 @@
 					</#if>
 					<td>
 						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
-						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=createPlan&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_plans.buttonAdd}' buttonIcon='plus' hideTitle=['all']  />
+						<@button buttonIcon='plus' title='#i18n{apimanager.manage_plans.buttonAdd}' dropdownMenu=true showTitle=false >
+							<li class="my-1"><@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=createPlan&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_plans.buttonCreateEmpty}' buttonIcon='plus'  /></li>
+							<#list plan_template_names as template_name>
+								<li class="my-1"><@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=createPlan&uuid_api=${api.uuid}&template_name=${template_name}' title='#i18n{apimanager.manage_plans.buttonCreateFromTemplate} ${template_name}' buttonIcon='plus'  /></li>
+							</#list>
+						</@button>
 					</td>
 				</#if>
 			</tr>

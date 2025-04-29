@@ -46,9 +46,9 @@ public class PlanRateLimiting implements Serializable
     // Variables declarations
     private String _strUuid;
 
-    private int _nMaxRequests;
+    private Integer _nMaxRequests;
 
-    private int _nTimeWindow;
+    private Integer _nTimeWindow;
 
     private boolean _bDecrement;
 
@@ -87,7 +87,7 @@ public class PlanRateLimiting implements Serializable
      * 
      * @return The MaxRequests
      */
-    public int getMaxRequests( )
+    public Integer getMaxRequests( )
     {
         return _nMaxRequests;
     }
@@ -98,7 +98,7 @@ public class PlanRateLimiting implements Serializable
      * @param nMaxRequests
      *            The MaxRequests
      */
-    public void setMaxRequests( int nMaxRequests )
+    public void setMaxRequests( Integer nMaxRequests )
     {
         _nMaxRequests = nMaxRequests;
     }
@@ -108,7 +108,7 @@ public class PlanRateLimiting implements Serializable
      * 
      * @return The TimeWindow
      */
-    public int getTimeWindow( )
+    public Integer getTimeWindow( )
     {
         return _nTimeWindow;
     }
@@ -119,7 +119,7 @@ public class PlanRateLimiting implements Serializable
      * @param nTimeWindow
      *            The TimeWindow
      */
-    public void setTimeWindow( int nTimeWindow )
+    public void setTimeWindow( Integer nTimeWindow )
     {
         _nTimeWindow = nTimeWindow;
     }

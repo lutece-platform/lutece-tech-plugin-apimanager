@@ -38,42 +38,38 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
-import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.ApiService;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
+import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
-import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
-import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
+import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.StringUtils;
-
-import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
@@ -109,12 +105,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     // Markers
     private static final String MARK_API_LIST = "api_list";
     private static final String MARK_API = "api";
+    private static final String MARK_PLAN_TEMPLATE_NAMES = "plan_template_names";
 
     private static final String JSP_MANAGE_APIS = "jsp/admin/plugins/apimanager/ManageApis.jsp";
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_API = "apimanager.message.confirmRemoveApi";
     private static final String MESSAGE_CONFIRM_REMOVE_LINK = "apimanager.message.confirmRemoveLink";
+    private static final String TEMPLATE_NAME_PROP = "apimanager.plan.template.{i}.template.name";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.api.attribute.";
@@ -215,6 +213,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
         {
             model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean( subscriptionMode ) );
         }
+        addPlanTemplateNamesToModel( model );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
@@ -516,5 +515,20 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
         }
         _api.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
                 .collect( Collectors.toList( ) ) );
+    }
+
+    private void addPlanTemplateNamesToModel( final Map<String, Object> model )
+    {
+        final List<String> templateNameList = new ArrayList<>( );
+        for ( int i = 0;; i++ )
+        {
+            final String templateName = AppPropertiesService.getProperty( TEMPLATE_NAME_PROP.replace( "{i}", String.valueOf( i ) ), null );
+            if ( templateName == null )
+            {
+                break;
+            }
+            templateNameList.add( templateName );
+        }
+        model.put( MARK_PLAN_TEMPLATE_NAMES, templateNameList );
     }
 }

@@ -41,7 +41,6 @@ import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanRateLimiting;
-import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -55,9 +54,11 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -90,6 +91,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_CLIENT_HTTP_PREFIX = "client_http_";
     private static final String PARAMETER_HEADER_MATCHING_PREFIX = "header_matching_";
     private static final String PARAMETER_OAUTH_CONFIGURATION_PREFIX = "oauth_configuration_";
+    private static final String PARAMETER_TEMPLATE_NAME = "template_name";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -134,6 +136,8 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String RATE_LIMITING_IMPLEMENTATION_DEFAULT_VALUE = "apimanager.plan.ratelimiting.implementation.default.value";
     private static final String RATE_LIMITING_BACKEND_DEFAULT_VALUE = "apimanager.plan.ratelimiting.backend.default.value";
 
+    private static final String TEMPLATE_PREFIX = "apimanager.plan.template.";
+
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.plan.attribute.";
 
@@ -155,6 +159,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String ERROR_TEMPLATE_LOADING = "Template loading failed";
 
     // Session variable to store working values
     private Plan _plan;
@@ -164,6 +169,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
     private PlanClientHttpConfiguration defaultClientHttpConfig = null;
     private PlanRateLimiting defaultPlanRateLimiting = null;
+
     private final List<String> loadBalancingStrategyList = Arrays.asList( AppPropertiesService.getProperty( LOAD_BALANCING_STRATEGY_VALUES ).split( "," ) );
     private final List<String> headerMatchingTypeList = Arrays.asList( AppPropertiesService.getProperty( HEADER_MATCHING_TYPE_VALUES ).split( "," ) );
     private final List<String> rateLimitingCriteriaList = Arrays.asList( AppPropertiesService.getProperty( RATE_LIMITING_CRITERIA_VALUES ).split( "," ) );
@@ -171,9 +177,11 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             .asList( AppPropertiesService.getProperty( RATE_LIMITING_IMPLEMENTATION_VALUES ).split( "," ) );
     private final List<String> rateLimitingBackendList = Arrays.asList( AppPropertiesService.getProperty( RATE_LIMITING_BACKEND_VALUES ).split( "," ) );
 
+    private final Map<String, Plan> planTemplates = new HashMap<>( );
+
     /**
      * Build the Manage View
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return The page
@@ -219,12 +227,11 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_PLANS, TEMPLATE_MANAGE_PLANS, model );
-
     }
 
     /**
      * Get Items from Ids list
-     * 
+     *
      * @param listIds
      * @return the populated list of items corresponding to the id List
      */
@@ -267,7 +274,32 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     @View( VIEW_CREATE_PLAN )
     public String getCreatePlan( HttpServletRequest request )
     {
-        _plan = ( _plan != null ) ? _plan : new Plan( );
+        _plan = new Plan( );
+        final String templateName = request.getParameter( PARAMETER_TEMPLATE_NAME );
+        if ( StringUtils.isNotBlank( templateName ) )
+        {
+            try
+            {
+                loadTemplates( );
+                _plan = (Plan) BeanUtilsBean.getInstance( ).cloneBean( planTemplates.get( templateName ) );
+            }
+            catch( final Exception e )
+            {
+                this.addError( ERROR_TEMPLATE_LOADING );
+            }
+        }
+        if ( _plan.getRateLimiting( ) == null )
+        {
+            _plan.setRateLimiting( new PlanRateLimiting( ) );
+        }
+        if ( _plan.getClientHttpConfiguration( ) == null )
+        {
+            _plan.setClientHttpConfiguration( new PlanClientHttpConfiguration( ) );
+        }
+        if ( _plan.getOauthConfiguration( ) == null )
+        {
+            _plan.setOauthConfiguration( new PlanOauthConfiguration( ) );
+        }
         final Api api = new Api( );
         api.setUuid( request.getParameter( PARAMETER_ID_API ) );
         _plan.setApi( api );
@@ -491,5 +523,46 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             defaultPlanRateLimiting.setBackend( AppPropertiesService.getProperty( RATE_LIMITING_BACKEND_DEFAULT_VALUE, "MEMORY" ) );
         }
         model.put( MARK_DEFAULT_RATE_LIMITING, defaultPlanRateLimiting );
+    }
+
+    private void loadTemplates( ) throws InvocationTargetException, IllegalAccessException
+    {
+        if ( planTemplates.isEmpty( ) )
+        {
+            for ( int i = 0;; i++ )
+            {
+                final String prefix = TEMPLATE_PREFIX + i + ".";
+                if ( AppPropertiesService.getKeys( prefix ).isEmpty( ) )
+                {
+                    break;
+                }
+                final String templateName = AppPropertiesService.getProperty( prefix + "template.name" );
+
+                final Plan planTemplate = new Plan( );
+                final String planPrefix = prefix + "plan.";
+                final Map<String, Object> planProperties = new HashMap<>( );
+                AppPropertiesService.getKeys( planPrefix )
+                        .forEach( key -> planProperties.put( key.replace( planPrefix, "" ), AppPropertiesService.getProperty( key ) ) );
+                BeanUtilsBean.getInstance( ).populate( planTemplate, planProperties );
+
+                final PlanRateLimiting planRateLimitingTemplate = new PlanRateLimiting( );
+                final String ratelimitingPrefix = prefix + "ratelimiting.";
+                final Map<String, Object> ratelimitingProperties = new HashMap<>( );
+                AppPropertiesService.getKeys( ratelimitingPrefix )
+                        .forEach( key -> ratelimitingProperties.put( key.replace( ratelimitingPrefix, "" ), AppPropertiesService.getProperty( key ) ) );
+                BeanUtilsBean.getInstance( ).populate( planRateLimitingTemplate, ratelimitingProperties );
+                planTemplate.setRateLimiting( planRateLimitingTemplate );
+
+                final PlanClientHttpConfiguration planClientHttpConfigurationTemplate = new PlanClientHttpConfiguration( );
+                final String clientHttpConfigPrefix = prefix + "clienthttpconfig.";
+                final Map<String, Object> clientHttpConfigProperties = new HashMap<>( );
+                AppPropertiesService.getKeys( clientHttpConfigPrefix )
+                        .forEach( key -> clientHttpConfigProperties.put( key.replace( clientHttpConfigPrefix, "" ), AppPropertiesService.getProperty( key ) ) );
+                BeanUtilsBean.getInstance( ).populate( planClientHttpConfigurationTemplate, clientHttpConfigProperties );
+                planTemplate.setClientHttpConfiguration( planClientHttpConfigurationTemplate );
+
+                planTemplates.put( templateName, planTemplate );
+            }
+        }
     }
 }

@@ -45,21 +45,21 @@ public class PlanClientHttpConfiguration implements Serializable
     // Variables declarations
     private String _strUuid;
 
-    private int _nConnectionTtl;
+    private Integer _nConnectionTtl;
 
-    private int _nConnectTimeout;
+    private Integer _nConnectTimeout;
 
-    private int _nReadTimeout;
+    private Integer _nReadTimeout;
 
-    private int _nRequestTimeout;
+    private Integer _nRequestTimeout;
 
-    private int _nCodecMaxChunkSize;
+    private Integer _nCodecMaxChunkSize;
 
-    private int _nCodecInitialBufferSize;
+    private Integer _nCodecInitialBufferSize;
 
-    private int _nCodecMaxHeaderSize;
+    private Integer _nCodecMaxHeaderSize;
 
-    private int _nCodecMaxInitialLineLength;
+    private Integer _nCodecMaxInitialLineLength;
 
     /**
      * Returns the Uuid
@@ -87,7 +87,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The ConnectionTtl
      */
-    public int getConnectionTtl( )
+    public Integer getConnectionTtl( )
     {
         return _nConnectionTtl;
     }
@@ -98,7 +98,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nConnectionTtl
      *            The ConnectionTtl
      */
-    public void setConnectionTtl( int nConnectionTtl )
+    public void setConnectionTtl( Integer nConnectionTtl )
     {
         _nConnectionTtl = nConnectionTtl;
     }
@@ -108,7 +108,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The ConnectTimeout
      */
-    public int getConnectTimeout( )
+    public Integer getConnectTimeout( )
     {
         return _nConnectTimeout;
     }
@@ -119,7 +119,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nConnectTimeout
      *            The ConnectTimeout
      */
-    public void setConnectTimeout( int nConnectTimeout )
+    public void setConnectTimeout( Integer nConnectTimeout )
     {
         _nConnectTimeout = nConnectTimeout;
     }
@@ -129,7 +129,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The ReadTimeout
      */
-    public int getReadTimeout( )
+    public Integer getReadTimeout( )
     {
         return _nReadTimeout;
     }
@@ -140,7 +140,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nReadTimeout
      *            The ReadTimeout
      */
-    public void setReadTimeout( int nReadTimeout )
+    public void setReadTimeout( Integer nReadTimeout )
     {
         _nReadTimeout = nReadTimeout;
     }
@@ -150,7 +150,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The RequestTimeout
      */
-    public int getRequestTimeout( )
+    public Integer getRequestTimeout( )
     {
         return _nRequestTimeout;
     }
@@ -161,7 +161,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nRequestTimeout
      *            The RequestTimeout
      */
-    public void setRequestTimeout( int nRequestTimeout )
+    public void setRequestTimeout( Integer nRequestTimeout )
     {
         _nRequestTimeout = nRequestTimeout;
     }
@@ -171,7 +171,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The CodecMaxChunkSize
      */
-    public int getCodecMaxChunkSize( )
+    public Integer getCodecMaxChunkSize( )
     {
         return _nCodecMaxChunkSize;
     }
@@ -182,7 +182,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nCodecMaxChunkSize
      *            The CodecMaxChunkSize
      */
-    public void setCodecMaxChunkSize( int nCodecMaxChunkSize )
+    public void setCodecMaxChunkSize( Integer nCodecMaxChunkSize )
     {
         _nCodecMaxChunkSize = nCodecMaxChunkSize;
     }
@@ -192,7 +192,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The CodecInitialBufferSize
      */
-    public int getCodecInitialBufferSize( )
+    public Integer getCodecInitialBufferSize( )
     {
         return _nCodecInitialBufferSize;
     }
@@ -203,7 +203,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nCodecInitialBufferSize
      *            The CodecInitialBufferSize
      */
-    public void setCodecInitialBufferSize( int nCodecInitialBufferSize )
+    public void setCodecInitialBufferSize( Integer nCodecInitialBufferSize )
     {
         _nCodecInitialBufferSize = nCodecInitialBufferSize;
     }
@@ -213,7 +213,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The CodecMaxHeaderSize
      */
-    public int getCodecMaxHeaderSize( )
+    public Integer getCodecMaxHeaderSize( )
     {
         return _nCodecMaxHeaderSize;
     }
@@ -224,7 +224,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nCodecMaxHeaderSize
      *            The CodecMaxHeaderSize
      */
-    public void setCodecMaxHeaderSize( int nCodecMaxHeaderSize )
+    public void setCodecMaxHeaderSize( Integer nCodecMaxHeaderSize )
     {
         _nCodecMaxHeaderSize = nCodecMaxHeaderSize;
     }
@@ -234,7 +234,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * 
      * @return The CodecMaxInitialLineLength
      */
-    public int getCodecMaxInitialLineLength( )
+    public Integer getCodecMaxInitialLineLength( )
     {
         return _nCodecMaxInitialLineLength;
     }
@@ -245,7 +245,7 @@ public class PlanClientHttpConfiguration implements Serializable
      * @param nCodecMaxInitialLineLength
      *            The CodecMaxInitialLineLength
      */
-    public void setCodecMaxInitialLineLength( int nCodecMaxInitialLineLength )
+    public void setCodecMaxInitialLineLength( Integer nCodecMaxInitialLineLength )
     {
         _nCodecMaxInitialLineLength = nCodecMaxInitialLineLength;
     }

@@ -47,7 +47,7 @@ public class PlanOauthConfiguration implements Serializable
 
     private String _strJwtIssuer;
 
-    private int _nJwtValidity;
+    private Integer _nJwtValidity;
 
     /**
      * Returns the Uuid
@@ -80,12 +80,12 @@ public class PlanOauthConfiguration implements Serializable
         _strJwtIssuer = strJwtIssuer;
     }
 
-    public int getJwtValidity( )
+    public Integer getJwtValidity( )
     {
         return _nJwtValidity;
     }
 
-    public void setJwtValidity( final int nJwtValidity )
+    public void setJwtValidity( final Integer nJwtValidity )
     {
         _nJwtValidity = nJwtValidity;
     }
