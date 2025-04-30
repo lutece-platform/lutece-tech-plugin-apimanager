@@ -398,7 +398,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         }
         catch( final AppException e )
         {
-            addError( ERROR_CLIENT_OAUTH2_GENERATION, getLocale( ) );
+            addError( ERROR_CLIENT_OAUTH2_GENERATION );
             return redirectView( request, VIEW_MANAGE_CLIENTS );
         }
         addInfo( INFO_CLIENT_OAUTH2_GENERATED, getLocale( ) );

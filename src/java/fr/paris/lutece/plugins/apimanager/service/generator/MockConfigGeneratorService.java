@@ -34,8 +34,13 @@
 package fr.paris.lutece.plugins.apimanager.service.generator;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MockConfigGeneratorService implements IConfigGeneratorService
 {
@@ -47,6 +52,22 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "client : " + client.getUuid( ) );
         AppLogService.info( "environment : " + environment );
         AppLogService.info( "comment : " + comment );
+        AppLogService.info( "user : " + user );
+        AppLogService.info( "====================================" );
+    }
+
+    @Override
+    public void generateApiManager( final Client client, final Plan plan, final List<Resource> planResources, final String environment, final String comment,
+            final String user ) throws AppException
+    {
+        AppLogService.info( "====================================" );
+        AppLogService.info( "MOCK => generateApiManager called." );
+        AppLogService.info( "client : " + client.getUuid( ) );
+        AppLogService.info( "plan : " + plan.getUuid( ) );
+        AppLogService.info( "planResources : " + planResources.stream( ).map( Resource::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
+        AppLogService.info( "environment : " + environment );
+        AppLogService.info( "comment : " + comment );
+        AppLogService.info( "user : " + user );
         AppLogService.info( "====================================" );
     }
 }

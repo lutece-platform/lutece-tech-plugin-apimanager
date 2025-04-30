@@ -90,4 +90,21 @@ public class ResourceService extends AbstractService<Resource>
     {
         return ResourceHome.getResourcesListByIds( listIds );
     }
+
+    /**
+     * Get Resources by plan UUID
+     * 
+     * @param planUuid
+     *            the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByPlanUuid( final String planUuid )
+    {
+        final List<String> resourceIds = this.getIdEntitiesList( Map.of( "uuid_plan", planUuid ) );
+        if ( resourceIds.isEmpty( ) )
+        {
+            return List.of( );
+        }
+        return this.getEntitiesListByIds( resourceIds );
+    }
 }
