@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.service.InstanceService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
@@ -321,7 +322,10 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         try
         {
             _configGeneratorService.generateApiManager( _subscription.getClient( ), _subscription.getPlan( ),
-                    ResourceService.getInstance( ).getResourcesByPlanUuid( _subscription.getPlan( ).getUuid( ) ), env, comment, getUser( ).getEmail( ) );
+                    ResourceService.getInstance( ).getResourcesByPlanUuid( _subscription.getPlan( ).getUuid( ) ),
+                    InstanceService.getInstance( ).getEntitiesListByIds(
+                            InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( _subscription.getPlan( ).getApi( ).getUuid( ) ) ),
+                    env, comment, getUser( ).getEmail( ) );
             getService( ).addNewHistory( _subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
         }
         catch( final AppException e )

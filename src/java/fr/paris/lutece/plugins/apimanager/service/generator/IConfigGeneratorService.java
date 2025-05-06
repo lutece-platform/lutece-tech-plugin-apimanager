@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.service.generator;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.portal.service.util.AppException;
@@ -47,6 +48,6 @@ public interface IConfigGeneratorService
 
     void generateOauth2Client( final Client client, final String environment, final String comment, final String user ) throws AppException;
 
-    void generateApiManager( final Client client, final Plan plan, final List<Resource> planResources, final String environment, final String comment,
-            final String user ) throws AppException;
+    void generateApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
+            final String environment, final String comment, final String user ) throws AppException;
 }
