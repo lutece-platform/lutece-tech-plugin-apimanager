@@ -34,38 +34,38 @@
 
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.service.AbstractService;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.InstanceService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
+import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
-import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
-import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
+import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-
-import fr.paris.lutece.plugins.apimanager.business.client.Client;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGECLIENTS;
 
@@ -87,6 +87,8 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String PARAMETER_INFO_MSG = "infoMsg";
     private static final String PARAMETER_ENVIRONNEMENT = "environnement";
     private static final String PARAMETER_COMMENT = "comment";
+    private static final String PARAMETER_ID_SUBSCRIPTION = "uuid_subscription";
+    private static final String PARAMETER_RELOAD = "reload";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CLIENTS = "apimanager.manage_clients.pageTitle";
@@ -119,16 +121,19 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String ACTION_REMOVE_CLIENT = "removeClient";
     private static final String ACTION_CONFIRM_REMOVE_CLIENT = "confirmRemoveClient";
     private static final String ACTION_GENERATE_OAUTH2 = "generateOauth2";
+    private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
 
     // Infos
     private static final String INFO_CLIENT_CREATED = "apimanager.info.client.created";
     private static final String INFO_CLIENT_UPDATED = "apimanager.info.client.updated";
     private static final String INFO_CLIENT_REMOVED = "apimanager.info.client.removed";
     private static final String INFO_CLIENT_OAUTH2_GENERATED = "apimanager.info.client.oauth2.generated";
+    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.generated";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
     private static final String ERROR_CLIENT_OAUTH2_GENERATION = "Error generating OAuth2 Client";
+    private static final String ERROR_API_MANAGER_GENERATION = "Error generating API manager";
 
     // Session variable to store working values
     private Client _client;
@@ -140,7 +145,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
 
     /**
      * Build the Manage View
-     * 
+     *
      * @param request
      *            The HTTP request
      * @return The page
@@ -153,6 +158,10 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         {
             addInfo( infoMsg, getLocale( ) );
             return redirectView( request, VIEW_MANAGE_CLIENTS );
+        }
+        if ( "true".equals( request.getParameter( PARAMETER_RELOAD ) ) )
+        {
+            return getPage( PROPERTY_PAGE_TITLE_MANAGE_CLIENTS, TEMPLATE_MANAGE_CLIENTS, Map.of( ) );
         }
         _client = null;
 
@@ -193,7 +202,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
 
     /**
      * Get Items from Ids list
-     * 
+     *
      * @param listIds
      * @return the populated list of items corresponding to the id List
      */
@@ -399,9 +408,43 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         catch( final AppException e )
         {
             addError( ERROR_CLIENT_OAUTH2_GENERATION );
+            addError( e.getMessage( ) );
             return redirectView( request, VIEW_MANAGE_CLIENTS );
         }
         addInfo( INFO_CLIENT_OAUTH2_GENERATED, getLocale( ) );
         return redirectView( request, VIEW_MANAGE_CLIENTS );
+    }
+
+    @Action( ACTION_GENERATE_API_MANAGER )
+    public String doGenerateApiManager( final HttpServletRequest request )
+    {
+        final String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
+        if ( uuid == null )
+        {
+            addError( ERROR_RESOURCE_NOT_FOUND );
+            return redirectView( request, VIEW_MANAGE_CLIENTS );
+        }
+        final Subscription subscription = SubscriptionHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
+        final String comment = request.getParameter( PARAMETER_COMMENT );
+
+        try
+        {
+            _configGeneratorService.generateApiManager( subscription.getClient( ), subscription.getPlan( ),
+                    ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getPlan( ).getUuid( ) ),
+                    InstanceService.getInstance( ).getEntitiesListByIds(
+                            InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( subscription.getPlan( ).getApi( ).getUuid( ) ) ),
+                    env, comment, getUser( ).getEmail( ) );
+            getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+        }
+        catch( final AppException e )
+        {
+            addError( ERROR_API_MANAGER_GENERATION );
+            addError( e.getMessage( ) );
+            return redirect( request, "ManageClients.jsp?reload=true" );
+        }
+        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
+        return redirect( request, "ManageClients.jsp?reload=true" );
     }
 }

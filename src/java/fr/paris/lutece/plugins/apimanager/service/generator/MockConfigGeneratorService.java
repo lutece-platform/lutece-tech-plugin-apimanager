@@ -55,6 +55,7 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "comment : " + comment );
         AppLogService.info( "user : " + user );
         AppLogService.info( "====================================" );
+        throw new AppException( "Mock exception happened : you should see this on screen" );
     }
 
     @Override
@@ -71,5 +72,6 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "comment : " + comment );
         AppLogService.info( "user : " + user );
         AppLogService.info( "====================================" );
+        throw new AppException( "Mock exception happened : you should see this on screen" );
     }
 }

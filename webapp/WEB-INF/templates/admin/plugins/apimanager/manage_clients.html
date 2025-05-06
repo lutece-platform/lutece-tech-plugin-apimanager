@@ -6,7 +6,7 @@
 		</@tform>
 	</@boxHeader>
 	<@boxBody>    
-    <@messages infos=infos />
+    <@messages infos=infos warnings=warnings errors=errors />
     <@paginationAdmin paginator=paginator combo=1 />
     <div class="clearfix"></div>
     
@@ -94,7 +94,6 @@
 				<td>
 					<@offcanvas id='generate_client_${client?index}' title='#i18n{apimanager.manage_clients.generateClientOauth2}' position='end' btnTitle='#i18n{apimanager.manage_clients.generateClientOauth2}' hideTitle=['all'] btnIcon='settings'>
 						<@tform class="generate-client-form border-bottom pb-3" method="post" name="generate_client_${client?index}" action="jsp/admin/plugins/apimanager/ManageClients.jsp?action=generateOauth2" >
-								<@messages errors=errors />
 								<@input type="hidden" name="uuid" value="${client.uuid}"/>
 
 								<@formGroup labelFor='environnement-${client?index}' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
