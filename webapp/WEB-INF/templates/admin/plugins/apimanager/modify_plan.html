@@ -124,16 +124,32 @@
 			<!-- HEADER MATCHING -->
 			<div id="header-matching-container" class="col-xl-12 py-2">
 				<h2><i class="ti ti-checkbox"></i> Header Matching <@button id='add-hm' buttonIcon='plus'/></h2>
+				<div id="header-matching-row-0" class="row gx-2 header-matching-row d-none" data-index="0">
+					<@formGroup class='col' labelFor='header_matching_0_name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true >
+							<@input type='text' id='header_matching_0_name' name='header_matching_0_name'  maxlength=50  tabIndex='0' disabled=true />
+					</@formGroup>
+					<@formGroup class='col' labelFor='header_matching_0_value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' >
+							<@input type='text' id='header_matching_0_value' name='header_matching_0_value'  maxlength=255  tabIndex='1' disabled=true />
+					</@formGroup>
+					<@formGroup class='col' labelFor='header_matching_0_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true >
+						<select id="header_matching_0_type" name="header_matching_0_type" class="form-control" disabled="disabled">
+							<#list header_matching_type_list as type>
+								<option value="${type}">${type}</option>
+							</#list>
+						</select>
+					</@formGroup>
+					<div class="mb-3 col-1 align-content-end"><@button id='delete-hm-0' buttonIcon='trash' color='light'/></div>
+				</div>
 				<#list plan.headerMatchings as headermatching>
-					<div id="header-matching-row-${headermatching?index}" class="header-matching-row row gx-2" data-index="${headermatching?index}">
-						<@formGroup class='col' labelFor='header_matching_${headermatching?index}_name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true>
-								<@input type='text' id='header_matching_${headermatching?index}_name' name='header_matching_${headermatching?index}_name' value=headermatching.name!''  maxlength=50  tabIndex='0' />
+					<div id="header-matching-row-${headermatching?index + 1}" class="header-matching-row row gx-2" data-index="${headermatching?index + 1}">
+						<@formGroup class='col' labelFor='header_matching_${headermatching?index + 1}_name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true>
+								<@input type='text' id='header_matching_${headermatching?index + 1}_name' name='header_matching_${headermatching?index + 1}_name' value=headermatching.name!''  maxlength=50  tabIndex='0' />
 						</@formGroup>
-						<@formGroup class='col' labelFor='header_matching_${headermatching?index}_value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' mandatory=true>
-								<@input type='text' id='header_matching_${headermatching?index}_value' name='header_matching_${headermatching?index}_value' value=headermatching.value!''  maxlength=255  tabIndex='1' />
+						<@formGroup class='col' labelFor='header_matching_${headermatching?index + 1}_value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' >
+								<@input type='text' id='header_matching_${headermatching?index + 1}_value' name='header_matching_${headermatching?index + 1}_value' value=headermatching.value!''  maxlength=255  tabIndex='1' />
 						</@formGroup>
-						<@formGroup class='col' labelFor='header_matching_${headermatching?index}_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true>
-							<select id="header_matching_${headermatching?index}_type" name="header_matching_${headermatching?index}_type" class="form-control">
+						<@formGroup class='col' labelFor='header_matching_${headermatching?index + 1}_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true>
+							<select id="header_matching_${headermatching?index + 1}_type" name="header_matching_${headermatching?index + 1}_type" class="form-control">
 								<#list header_matching_type_list as type>
 									<#if headermatching.type == type>
 										<option value="${type}" selected>${type}</option>
@@ -143,7 +159,7 @@
 								</#list>
 							</select>
 						</@formGroup>
-						<div class="mb-3 col-1 align-content-end"><@button id='delete-hm-${headermatching?index}' buttonIcon='trash' color='light'/></div>
+						<div class="mb-3 col-1 align-content-end"><@button id='delete-hm-${headermatching?index + 1}' buttonIcon='trash' color='light'/></div>
 					</div>
 				</#list>
 			</div>
@@ -179,6 +195,7 @@
 			let newRow = $('.header-matching-row').last().clone();
 			let oldIndex = $(newRow).data('index');
 			let newIndex = (parseInt(oldIndex) + 1).toString();
+			$(newRow).removeClass('d-none');
 			$(newRow).attr('id', 'header-matching-row-' + newIndex);
 			$(newRow).attr('data-index', newIndex)
 			$(newRow).find('label').each(function() {
@@ -188,11 +205,13 @@
 				$(this).attr('id', $(this).attr('id').replace(oldIndex, newIndex));
 				$(this).attr('name', $(this).attr('name').replace(oldIndex, newIndex));
 				$(this).attr('value', '');
+				$(this).removeAttr('disabled');
 			});
 			$(newRow).find('select').each(function() {
 				$(this).attr('id', $(this).attr('id').replace(oldIndex, newIndex));
 				$(this).attr('name', $(this).attr('name').replace(oldIndex, newIndex));
 				$(this).val($(this).find("option:first").val());
+				$(this).removeAttr('disabled');
 			});
 			$(newRow).find('#delete-hm-' + oldIndex).each(function(){
 				$(this).attr('id', 'delete-hm-' + newIndex);
