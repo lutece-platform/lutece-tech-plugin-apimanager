@@ -3,11 +3,11 @@
 	<@boxBody>
     <@tform class="form-horizontal" method="post" name="resource" action="jsp/admin/plugins/apimanager/ManageResources.jsp" >
 			<@messages errors=errors />
-			<@input type="hidden" id="id" name="id" value="${resource.id}"/>
+			<@input type="hidden" id="uuid" name="uuid" value="${resource.uuid}"/>
 			<@input type="hidden" value="${token}" name="token" />
 			
-			<@formGroup labelFor='id_plan' labelKey='#i18n{apimanager.resource.labelIdPlan}' mandatory=true>
-				<@input type='text' id='id_plan' name='id_plan'  value=resource.idPlan!'' tabIndex='0' />
+			<@formGroup labelFor='uuid_plan' labelKey='#i18n{apimanager.resource.labelIdPlan}' mandatory=true>
+				<@input type='text' id='uuid_plan' name='uuid_plan'  value=resource.plan.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
 			</@formGroup>
 			<@formGroup labelFor='path' labelKey='#i18n{apimanager.resource.labelPath}' mandatory=true>
 				<@input type='text' id='path' name='path'  maxlength=255 value=resource.path!'' tabIndex='1' />
@@ -27,3 +27,11 @@
     </@tform>
 	</@boxBody>
 </@box>
+
+<script type="text/javascript">
+	$(function() {
+		$('.form-control-plaintext').each(function() {
+			$(this).removeClass('form-control');
+		});
+	});
+</script>
