@@ -76,6 +76,8 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     {
 
         initMapSql( Resource.class ); // Maps with name and type of each databases column associated to the business class attributes
+        _mapSql.remove( "plan" );
+        _mapSql.put( "uuid_plan", "String" );
     }
 
     /**
