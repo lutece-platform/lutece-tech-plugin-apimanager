@@ -76,6 +76,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
             + SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE + " )";
     private static final String SQL_QUERY_LINK_INSTANCE = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
+    private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_api = ?";
 
     private final ObjectMapper objectMapper = new ObjectMapper( );
 
@@ -148,6 +149,11 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINKS, plugin ) )
+        {
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
+        }
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
             daoUtil.setString( 1, nKey );

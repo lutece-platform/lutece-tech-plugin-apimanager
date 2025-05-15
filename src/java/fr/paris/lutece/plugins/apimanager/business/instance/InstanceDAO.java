@@ -75,6 +75,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     private static final String SQL_QUERY_LINK_API = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
 
     private static final String SQL_QUERY_DELETE_LINK_API = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_api = ?";
+    private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_instance = ?";
 
     /**
      * Constructor
@@ -139,6 +140,11 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINKS, plugin ) )
+        {
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
+        }
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
             daoUtil.setString( 1, nKey );

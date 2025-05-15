@@ -79,15 +79,10 @@ public class ApiService extends AbstractService<Api>
             // Delete API plans
             PlanService.getInstance( ).getIdEntitiesList( Map.of( "uuid_api", uuid ) ).forEach( planId -> PlanService.getInstance( ).delete( planId, user ) );
 
-            // Delete API instances
-            InstanceService.getInstance( ).getIdEntitiesList( Map.of( "uuid_api", uuid ) )
-                    .forEach( instanceId -> InstanceService.getInstance( ).delete( instanceId, user ) );
-
             // Delete API
             ApiHome.remove( uuid );
             this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
         } );
-        ApiHome.remove( uuid );
     }
 
     @Override
