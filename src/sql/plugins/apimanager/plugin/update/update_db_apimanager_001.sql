@@ -1,0 +1,1 @@
+alter table apimanager_plan_rate_limiting add active boolean default true;

@@ -58,11 +58,11 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
     // Constants
     private static final String TABLE_NAME = "apimanager_plan_rate_limiting";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_rate_limiting ( uuid, max_requests, time_window, decrement, criteria, implementation, backend ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan_rate_limiting ( uuid, active, max_requests, time_window, decrement, criteria, implementation, backend ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan_rate_limiting WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_rate_limiting SET max_requests = ?, time_window = ?, decrement = ?, criteria = ?, implementation = ?, backend = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan_rate_limiting SET active = ?, max_requests = ?, time_window = ?, decrement = ?, criteria = ?, implementation = ?, backend = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, max_requests, time_window, decrement, criteria, implementation, backend FROM apimanager_plan_rate_limiting";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, active, max_requests, time_window, decrement, criteria, implementation, backend FROM apimanager_plan_rate_limiting";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan_rate_limiting";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -88,9 +88,31 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setInt( nIndex++, planRateLimiting.getMaxRequests( ) );
-            daoUtil.setInt( nIndex++, planRateLimiting.getTimeWindow( ) );
-            daoUtil.setBoolean( nIndex++, planRateLimiting.getDecrement( ) );
+            daoUtil.setBoolean( nIndex++, planRateLimiting.isActive( ) );
+            if ( planRateLimiting.getMaxRequests( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planRateLimiting.getMaxRequests( ) );
+            }
+            if ( planRateLimiting.getTimeWindow( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planRateLimiting.getTimeWindow( ) );
+            }
+            if ( planRateLimiting.getDecrement( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setBoolean( nIndex++, planRateLimiting.getDecrement( ) );
+            }
             daoUtil.setString( nIndex++, planRateLimiting.getCriteria( ) );
             daoUtil.setString( nIndex++, planRateLimiting.getImplementation( ) );
             daoUtil.setString( nIndex++, planRateLimiting.getBackend( ) );
@@ -145,9 +167,31 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
         {
             int nIndex = 1;
 
-            daoUtil.setInt( nIndex++, planRateLimiting.getMaxRequests( ) );
-            daoUtil.setInt( nIndex++, planRateLimiting.getTimeWindow( ) );
-            daoUtil.setBoolean( nIndex++, planRateLimiting.getDecrement( ) );
+            daoUtil.setBoolean( nIndex++, planRateLimiting.isActive( ) );
+            if ( planRateLimiting.getMaxRequests( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planRateLimiting.getMaxRequests( ) );
+            }
+            if ( planRateLimiting.getTimeWindow( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planRateLimiting.getTimeWindow( ) );
+            }
+            if ( planRateLimiting.getDecrement( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setBoolean( nIndex++, planRateLimiting.getDecrement( ) );
+            }
             daoUtil.setString( nIndex++, planRateLimiting.getCriteria( ) );
             daoUtil.setString( nIndex++, planRateLimiting.getImplementation( ) );
             daoUtil.setString( nIndex++, planRateLimiting.getBackend( ) );
@@ -278,6 +322,7 @@ public final class PlanRateLimitingDAO extends AbstractFilterDao implements IPla
         int nIndex = 1;
 
         planRateLimiting.setUuid( daoUtil.getString( nIndex++ ) );
+        planRateLimiting.setActive( daoUtil.getBoolean( nIndex++ ) );
         planRateLimiting.setMaxRequests( daoUtil.getInt( nIndex++ ) );
         planRateLimiting.setTimeWindow( daoUtil.getInt( nIndex++ ) );
         planRateLimiting.setDecrement( daoUtil.getBoolean( nIndex++ ) );

@@ -46,11 +46,13 @@ public class PlanRateLimiting implements Serializable
     // Variables declarations
     private String _strUuid;
 
+    private boolean _bActive;
+
     private Integer _nMaxRequests;
 
     private Integer _nTimeWindow;
 
-    private boolean _bDecrement;
+    private Boolean _bDecrement;
 
     @Size( max = 50, message = "#i18n{apimanager.validation.planratelimiting.Criteria.size}" )
     private String _strCriteria;
@@ -80,6 +82,27 @@ public class PlanRateLimiting implements Serializable
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
+    }
+
+    /**
+     * Returns the Active flag
+     *
+     * @return The Active flag
+     */
+    public boolean isActive( )
+    {
+        return _bActive;
+    }
+
+    /**
+     * Sets the Active flag
+     *
+     * @param bActive
+     *            The Active flag
+     */
+    public void setActive( final boolean bActive )
+    {
+        _bActive = bActive;
     }
 
     /**
@@ -129,7 +152,7 @@ public class PlanRateLimiting implements Serializable
      * 
      * @return The Decrement
      */
-    public boolean getDecrement( )
+    public Boolean getDecrement( )
     {
         return _bDecrement;
     }
@@ -140,7 +163,7 @@ public class PlanRateLimiting implements Serializable
      * @param bDecrement
      *            The Decrement
      */
-    public void setDecrement( boolean bDecrement )
+    public void setDecrement( Boolean bDecrement )
     {
         _bDecrement = bDecrement;
     }
