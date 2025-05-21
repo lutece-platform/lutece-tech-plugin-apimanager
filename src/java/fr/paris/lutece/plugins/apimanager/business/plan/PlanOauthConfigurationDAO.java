@@ -89,8 +89,14 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
             daoUtil.setString( nIndex++, planOauthConfiguration.getJwtIssuer( ) );
-            daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity( ) );
-
+            if ( planOauthConfiguration.getJwtValidity( ) == null )
+            {
+                daoUtil.setIntNull( nIndex );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex, planOauthConfiguration.getJwtValidity( ) );
+            }
             daoUtil.executeUpdate( );
             planOauthConfiguration.setUuid( uuid );
         }
@@ -142,7 +148,14 @@ public final class PlanOauthConfigurationDAO extends AbstractFilterDao implement
             int nIndex = 1;
 
             daoUtil.setString( nIndex++, planOauthConfiguration.getJwtIssuer( ) );
-            daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity( ) );
+            if ( planOauthConfiguration.getJwtValidity( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planOauthConfiguration.getJwtValidity( ) );
+            }
             daoUtil.setString( nIndex, planOauthConfiguration.getUuid( ) );
 
             daoUtil.executeUpdate( );
