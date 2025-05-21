@@ -88,14 +88,70 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectionTtl( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectTimeout( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getReadTimeout( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getRequestTimeout( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxChunkSize( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecInitialBufferSize( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
+            if ( planClientHttpConfiguration.getConnectionTtl( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectionTtl( ) );
+            }
+            if ( planClientHttpConfiguration.getConnectTimeout( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectTimeout( ) );
+            }
+            if ( planClientHttpConfiguration.getReadTimeout( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getReadTimeout( ) );
+            }
+            if ( planClientHttpConfiguration.getRequestTimeout( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getRequestTimeout( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecMaxChunkSize( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxChunkSize( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecInitialBufferSize( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecInitialBufferSize( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecMaxHeaderSize( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecMaxInitialLineLength( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
+            }
 
             daoUtil.executeUpdate( );
             planClientHttpConfiguration.setUuid( uuid );
@@ -147,14 +203,70 @@ public final class PlanClientHttpConfigurationDAO extends AbstractFilterDao impl
         {
             int nIndex = 1;
 
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectionTtl( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectTimeout( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getReadTimeout( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getRequestTimeout( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxChunkSize( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecInitialBufferSize( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
-            daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
+            if ( planClientHttpConfiguration.getConnectionTtl( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectionTtl( ) );
+            }
+            if ( planClientHttpConfiguration.getConnectTimeout( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getConnectTimeout( ) );
+            }
+            if ( planClientHttpConfiguration.getReadTimeout( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getReadTimeout( ) );
+            }
+            if ( planClientHttpConfiguration.getRequestTimeout( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getRequestTimeout( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecMaxChunkSize( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxChunkSize( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecInitialBufferSize( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecInitialBufferSize( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecMaxHeaderSize( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxHeaderSize( ) );
+            }
+            if ( planClientHttpConfiguration.getCodecMaxInitialLineLength( ) == null )
+            {
+                daoUtil.setIntNull( nIndex++ );
+            }
+            else
+            {
+                daoUtil.setInt( nIndex++, planClientHttpConfiguration.getCodecMaxInitialLineLength( ) );
+            }
             daoUtil.setString( nIndex, planClientHttpConfiguration.getUuid( ) );
 
             daoUtil.executeUpdate( );
