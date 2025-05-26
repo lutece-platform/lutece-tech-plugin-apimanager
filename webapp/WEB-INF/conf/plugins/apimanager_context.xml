@@ -11,7 +11,6 @@
     <bean id="apimanager.apiDAO" class="fr.paris.lutece.plugins.apimanager.business.api.ApiDAO" />
     <bean id="apimanager.instanceDAO" class="fr.paris.lutece.plugins.apimanager.business.instance.InstanceDAO" />
     <bean id="apimanager.historyDAO" class="fr.paris.lutece.plugins.apimanager.business.history.HistoryDAO" />
-    <bean id="apimanager.planRateLimitingDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanRateLimitingDAO" />
     <bean id="apimanager.planClientHttpConfigurationDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanClientHttpConfigurationDAO" />
     <bean id="apimanager.planHeaderMatchingDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatchingDAO" />
     <bean id="apimanager.planOauthConfigurationDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationDAO" />

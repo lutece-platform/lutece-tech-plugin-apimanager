@@ -35,21 +35,18 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
-import java.sql.Statement;
+import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Optional;
 import java.util.UUID;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class provides Data Access methods for Plan objects
@@ -59,11 +56,11 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_plan";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, oauth_enabled, uuid_oauth_configuration, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, rate_limiting_enabled, rate_limiting_template, uuid_client_http_configuration, request_timeout, load_balancing_strategy, oauth_enabled, uuid_oauth_configuration, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET uuid_api = ?, name = ?, description = ?, active = ?, version = ?, uuid_rate_limiting = ?, uuid_client_http_configuration = ?, request_timeout = ?, load_balancing_strategy = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, trace_enabled = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET uuid_api = ?, name = ?, description = ?, active = ?, version = ?, rate_limiting_enabled = ?, rate_limiting_template = ?, uuid_client_http_configuration = ?, request_timeout = ?, load_balancing_strategy = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, trace_enabled = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, name, description, active, version, uuid_rate_limiting, uuid_client_http_configuration, request_timeout, load_balancing_strategy, oauth_enabled, uuid_oauth_configuration, trace_enabled FROM apimanager_plan";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, name, description, active, version, rate_limiting_enabled, rate_limiting_template, uuid_client_http_configuration, request_timeout, load_balancing_strategy, oauth_enabled, uuid_oauth_configuration, trace_enabled FROM apimanager_plan";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -96,7 +93,8 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setString( nIndex++, plan.getDescription( ) );
             daoUtil.setBoolean( nIndex++, plan.getActive( ) );
             daoUtil.setString( nIndex++, plan.getVersion( ) );
-            daoUtil.setString( nIndex++, plan.getRateLimiting( ) != null ? plan.getRateLimiting( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, plan.getRateLimitingEnabled( ) );
+            daoUtil.setString( nIndex++, plan.getRateLimitingTemplate( ) );
             daoUtil.setString( nIndex++, plan.getClientHttpConfiguration( ) != null ? plan.getClientHttpConfiguration( ).getUuid( ) : null );
             daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
             daoUtil.setString( nIndex++, plan.getLoadBalancingStrategy( ) );
@@ -163,7 +161,8 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setString( nIndex++, plan.getDescription( ) );
             daoUtil.setBoolean( nIndex++, plan.getActive( ) );
             daoUtil.setString( nIndex++, plan.getVersion( ) );
-            daoUtil.setString( nIndex++, plan.getRateLimiting( ) != null ? plan.getRateLimiting( ).getUuid( ) : null );
+            daoUtil.setBoolean( nIndex++, plan.getRateLimitingEnabled( ) );
+            daoUtil.setString( nIndex++, plan.getRateLimitingTemplate( ) );
             daoUtil.setString( nIndex++, plan.getClientHttpConfiguration( ) != null ? plan.getClientHttpConfiguration( ).getUuid( ) : null );
             daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
             daoUtil.setString( nIndex++, plan.getLoadBalancingStrategy( ) );
@@ -309,7 +308,8 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
         plan.setDescription( daoUtil.getString( nIndex++ ) );
         plan.setActive( daoUtil.getBoolean( nIndex++ ) );
         plan.setVersion( daoUtil.getString( nIndex++ ) );
-        plan.setRateLimiting( PlanRateLimitingHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        plan.setRateLimitingEnabled( daoUtil.getBoolean( nIndex++ ) );
+        plan.setRateLimitingTemplate( daoUtil.getString( nIndex++ ) );
         plan.setClientHttpConfiguration( PlanClientHttpConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         plan.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
         plan.setLoadBalancingStrategy( daoUtil.getString( nIndex++ ) );

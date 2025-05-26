@@ -62,7 +62,9 @@ public class Plan implements Serializable
     @Size( max = 50, message = "#i18n{apimanager.validation.plan.Version.size}" )
     private String _strVersion;
 
-    private PlanRateLimiting _rateLimiting;
+    private boolean _bRateLimitingEnabled;
+
+    private String _strRateLimitingTemplate;
 
     private PlanClientHttpConfiguration _clientHttpConfiguration;
 
@@ -205,24 +207,45 @@ public class Plan implements Serializable
     }
 
     /**
-     * Returns the RateLimiting
-     * 
-     * @return The RateLimiting
+     * Returns the rate limiting enabled
+     *
+     * @return The rate limiting enabled
      */
-    public PlanRateLimiting getRateLimiting( )
+    public boolean getRateLimitingEnabled( )
     {
-        return _rateLimiting;
+        return _bRateLimitingEnabled;
     }
 
     /**
-     * Sets the RateLimiting
-     * 
-     * @param rateLimiting
-     *            The RateLimiting
+     * Sets the rate limiting enabled
+     *
+     * @param bRateLimitingEnabled
+     *            The rate limiting enabled
      */
-    public void setRateLimiting( PlanRateLimiting rateLimiting )
+    public void setRateLimitingEnabled( final boolean bRateLimitingEnabled )
     {
-        _rateLimiting = rateLimiting;
+        _bRateLimitingEnabled = bRateLimitingEnabled;
+    }
+
+    /**
+     * Returns the rate limiting template
+     *
+     * @return The rate limiting template
+     */
+    public String getRateLimitingTemplate( )
+    {
+        return _strRateLimitingTemplate;
+    }
+
+    /**
+     * Sets the rate limiting template
+     *
+     * @param strRateLimitingTemplate
+     *            The rate limiting template
+     */
+    public void setRateLimitingTemplate( final String strRateLimitingTemplate )
+    {
+        _strRateLimitingTemplate = strRateLimitingTemplate;
     }
 
     /**
