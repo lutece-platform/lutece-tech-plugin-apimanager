@@ -15,6 +15,13 @@
 
 					<@input type='text' id='uuid_plan' name='uuid_plan' tabIndex='1' readonly=true class='form-control-plaintext' />
 			</@formGroup>
+			<@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
+				<select id="environnement" name="environnement" class="form-control">
+					<#list environment_list as environment>
+						<option value="${environment}">${environment}</option>
+					</#list>
+				</select>
+			</@formGroup>
 			<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.subscription.labelTraceEnabled}' mandatory=true>
 		          	<@checkBox id="trace_enabled" name="trace_enabled"  value="1" checked=subscription.traceEnabled!false tabIndex='2' />
 			</@formGroup>

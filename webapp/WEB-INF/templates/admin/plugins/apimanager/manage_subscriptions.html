@@ -41,6 +41,7 @@
 		<div class="clearfix"></div>
 		<@table>
 			<tr>
+				<th>#i18n{apimanager.manage_instances.columnEnvironnement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{apimanager.manage_plans.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
@@ -53,6 +54,9 @@
 			<@tableHeadBodySeparator />
 			<#list subscription_list as subscription >
 			<tr>
+				<td>
+					${subscription.environnement!''}
+				</td>
 				<td>
 					${subscription.plan.name!''}
 				</td>

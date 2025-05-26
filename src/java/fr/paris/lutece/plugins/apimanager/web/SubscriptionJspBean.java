@@ -222,6 +222,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_SUBSCRIPTION, _subscription );
+        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_SUBSCRIPTION ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_SUBSCRIPTION, TEMPLATE_CREATE_SUBSCRIPTION, model );

@@ -52,6 +52,8 @@ public class Subscription implements Serializable
 
     private Plan _plan;
 
+    private String _strEnvironnement;
+
     private boolean _bTraceEnabled;
 
     /**
@@ -115,6 +117,27 @@ public class Subscription implements Serializable
     public void setPlan( Plan plan )
     {
         _plan = plan;
+    }
+
+    /**
+     * Returns the Environnement
+     *
+     * @return The Environnement
+     */
+    public String getEnvironnement( )
+    {
+        return _strEnvironnement;
+    }
+
+    /**
+     * Sets the Environnement
+     *
+     * @param strEnvironnement
+     *            The Environnement
+     */
+    public void setEnvironnement( final String strEnvironnement )
+    {
+        _strEnvironnement = strEnvironnement;
     }
 
     /**
