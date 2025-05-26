@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanClientHttpConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
@@ -86,7 +85,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_ID_PLAN = "uuid";
     private static final String PARAMETER_ID_API = "uuid_api";
     private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
-    private static final String PARAMETER_CLIENT_HTTP_PREFIX = "client_http_";
     private static final String PARAMETER_HEADER_MATCHING_PREFIX = "header_matching_";
     private static final String PARAMETER_OAUTH_CONFIGURATION_PREFIX = "oauth_configuration_";
     private static final String PARAMETER_TEMPLATE_NAME = "template_name";
@@ -103,8 +101,8 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String MARK_LOAD_BALANCING_STRATEGY_LIST = "load_balancing_strategy_list";
     private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
 
-    private static final String MARK_DEFAULT_CLIENT_HTTP_CONFIG = "default_client_http_config";
     private static final String MARK_RATE_LIMITING_TEMPLATE_MAP = "rate_limiting_template_map";
+    private static final String MARK_CLIENT_HTTP_TEMPLATE_MAP = "client_http_template_map";
 
     private static final String JSP_MANAGE_PLANS = "jsp/admin/plugins/apimanager/ManagePlans.jsp";
 
@@ -113,17 +111,9 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String LOAD_BALANCING_STRATEGY_VALUES = "apimanager.plan.loadbalancingstrategy.values";
     private static final String HEADER_MATCHING_TYPE_VALUES = "apimanager.plan.headermatching.type.values";
 
-    private static final String CLIENT_HTTP_CONFIG_CONNECTION_TTL_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.connectionttl.default.value";
-    private static final String CLIENT_HTTP_CONFIG_CONNECTION_TIMEOUT_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.connectiontimeout.default.value";
-    private static final String CLIENT_HTTP_CONFIG_READ_TIMEOUT_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.readtimeout.default.value";
-    private static final String CLIENT_HTTP_CONFIG_REQUEST_TIMEOUT_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.requesttimeout.default.value";
-    private static final String CLIENT_HTTP_CONFIG_CODEC_MAX_CHUNK_SIZE_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecmaxchunksize.default.value";
-    private static final String CLIENT_HTTP_CONFIG_CODEC_MAX_HEADER_SIZE_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecmaxheadersize.default.value";
-    private static final String CLIENT_HTTP_CONFIG_CODEC_INITIAL_BUFFER_SIZE_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecinitialbuffersize.default.value";
-    private static final String CLIENT_HTTP_CONFIG_CODEC_MAX_INITIAL_LINE_LENGTH_DEFAULT_VALUE = "apimanager.plan.clienthttpconfig.codecmaxinitiallinelength.default.value";
-
     private static final String TEMPLATE_PREFIX = "apimanager.plan.template.";
     private static final String RATE_LIMITING_TEMPLATE_PREFIX = "apimanager.plan.ratelimiting.template.";
+    private static final String CLIENT_HTTP_TEMPLATE_PREFIX = "apimanager.plan.clienthttp.template.";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.plan.attribute.";
@@ -154,7 +144,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
 
-    private PlanClientHttpConfiguration defaultClientHttpConfig = null;
+    private final Map<String, String> clientHttpTemplateMap = new HashMap<>( );
     private final Map<String, String> rateLimitingTemplateMap = new HashMap<>( );
 
     private final List<String> loadBalancingStrategyList = Arrays.asList( AppPropertiesService.getProperty( LOAD_BALANCING_STRATEGY_VALUES ).split( "," ) );
@@ -283,10 +273,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             {
                 this.addError( ERROR_TEMPLATE_LOADING );
             }
-        }
-        if ( _plan.getClientHttpConfiguration( ) == null )
-        {
-            _plan.setClientHttpConfiguration( new PlanClientHttpConfiguration( ) );
         }
         if ( _plan.getOauthConfiguration( ) == null )
         {
@@ -435,15 +421,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     {
         populate( _plan, request, locale );
 
-        // HTTP CONFIGURATION
-        final PlanClientHttpConfiguration planClientHttpConfiguration = new PlanClientHttpConfiguration( );
-        final Map<String, String [ ]> clientHttpParams = request.getParameterMap( ).entrySet( ).stream( )
-                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_CLIENT_HTTP_PREFIX ) )
-                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_CLIENT_HTTP_PREFIX, "" ), Map.Entry::getValue ) );
-        final MultipartHttpServletRequest clientHttpRequest = new MultipartHttpServletRequest( request, Map.of( ), clientHttpParams );
-        populate( planClientHttpConfiguration, clientHttpRequest, locale );
-        _plan.setClientHttpConfiguration( planClientHttpConfiguration );
-
         // HEADER MATCHINGS
         _plan.getHeaderMatchings( ).clear( );
         final List<Integer> headerMatchingIndexes = request.getParameterMap( ).keySet( ).stream( )
@@ -476,23 +453,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         model.put( MARK_LOAD_BALANCING_STRATEGY_LIST, loadBalancingStrategyList );
         model.put( MARK_HEADER_MATCHING_TYPE_LIST, headerMatchingTypeList );
         model.put( MARK_RATE_LIMITING_TEMPLATE_MAP, rateLimitingTemplateMap );
-
-        if ( defaultClientHttpConfig == null )
-        {
-            defaultClientHttpConfig = new PlanClientHttpConfiguration( );
-            defaultClientHttpConfig.setConnectionTtl( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CONNECTION_TTL_DEFAULT_VALUE, -1 ) );
-            defaultClientHttpConfig.setConnectTimeout( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CONNECTION_TIMEOUT_DEFAULT_VALUE, 0 ) );
-            defaultClientHttpConfig.setReadTimeout( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_READ_TIMEOUT_DEFAULT_VALUE, 60000 ) );
-            defaultClientHttpConfig.setRequestTimeout( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_REQUEST_TIMEOUT_DEFAULT_VALUE, 60000 ) );
-            defaultClientHttpConfig.setCodecMaxChunkSize( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_MAX_CHUNK_SIZE_DEFAULT_VALUE, 8192 ) );
-            defaultClientHttpConfig
-                    .setCodecMaxHeaderSize( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_MAX_HEADER_SIZE_DEFAULT_VALUE, 8192 ) );
-            defaultClientHttpConfig
-                    .setCodecInitialBufferSize( AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_INITIAL_BUFFER_SIZE_DEFAULT_VALUE, 128 ) );
-            defaultClientHttpConfig.setCodecMaxInitialLineLength(
-                    AppPropertiesService.getPropertyInt( CLIENT_HTTP_CONFIG_CODEC_MAX_INITIAL_LINE_LENGTH_DEFAULT_VALUE, 4096 ) );
-        }
-        model.put( MARK_DEFAULT_CLIENT_HTTP_CONFIG, defaultClientHttpConfig );
+        model.put( MARK_CLIENT_HTTP_TEMPLATE_MAP, clientHttpTemplateMap );
     }
 
     private void loadTemplates( ) throws InvocationTargetException, IllegalAccessException
@@ -515,14 +476,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
                         .forEach( key -> planProperties.put( key.replace( planPrefix, "" ), AppPropertiesService.getProperty( key ) ) );
                 BeanUtilsBean.getInstance( ).populate( planTemplate, planProperties );
 
-                final PlanClientHttpConfiguration planClientHttpConfigurationTemplate = new PlanClientHttpConfiguration( );
-                final String clientHttpConfigPrefix = prefix + "clienthttpconfig.";
-                final Map<String, Object> clientHttpConfigProperties = new HashMap<>( );
-                AppPropertiesService.getKeys( clientHttpConfigPrefix )
-                        .forEach( key -> clientHttpConfigProperties.put( key.replace( clientHttpConfigPrefix, "" ), AppPropertiesService.getProperty( key ) ) );
-                BeanUtilsBean.getInstance( ).populate( planClientHttpConfigurationTemplate, clientHttpConfigProperties );
-                planTemplate.setClientHttpConfiguration( planClientHttpConfigurationTemplate );
-
                 planTemplates.put( templateName, planTemplate );
             }
         }
@@ -538,6 +491,20 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
                 final String templateName = AppPropertiesService.getProperty( prefix + "name" );
                 final String templateDesc = AppPropertiesService.getProperty( prefix + "description" );
                 rateLimitingTemplateMap.put( templateName, templateDesc );
+            }
+        }
+        if ( clientHttpTemplateMap.isEmpty( ) )
+        {
+            for ( int i = 0;; i++ )
+            {
+                final String prefix = CLIENT_HTTP_TEMPLATE_PREFIX + i + ".";
+                if ( AppPropertiesService.getKeys( prefix ).isEmpty( ) )
+                {
+                    break;
+                }
+                final String templateName = AppPropertiesService.getProperty( prefix + "name" );
+                final String templateDesc = AppPropertiesService.getProperty( prefix + "description" );
+                clientHttpTemplateMap.put( templateName, templateDesc );
             }
         }
     }

@@ -66,7 +66,7 @@ public class Plan implements Serializable
 
     private String _strRateLimitingTemplate;
 
-    private PlanClientHttpConfiguration _clientHttpConfiguration;
+    private String _strClientHttpTemplate;
 
     private Integer _nRequestTimeout;
 
@@ -249,24 +249,24 @@ public class Plan implements Serializable
     }
 
     /**
-     * Returns the ClientHttpConfiguration
-     * 
-     * @return The ClientHttpConfiguration
+     * Returns the client http template
+     *
+     * @return The client http template
      */
-    public PlanClientHttpConfiguration getClientHttpConfiguration( )
+    public String getClientHttpTemplate( )
     {
-        return _clientHttpConfiguration;
+        return _strClientHttpTemplate;
     }
 
     /**
-     * Sets the ClientHttpConfiguration
-     * 
-     * @param clientHttpConfiguration
-     *            The ClientHttpConfiguration
+     * Sets the client http template
+     *
+     * @param strClientHttpTemplate
+     *            The client http template
      */
-    public void setClientHttpConfiguration( PlanClientHttpConfiguration clientHttpConfiguration )
+    public void setClientHttpTemplate( final String strClientHttpTemplate )
     {
-        _clientHttpConfiguration = clientHttpConfiguration;
+        _strClientHttpTemplate = strClientHttpTemplate;
     }
 
     /**

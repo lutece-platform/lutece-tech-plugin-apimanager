@@ -63,32 +63,20 @@
 			</div>
 
 			<!-- CLIENT HTTP CONFIGURATION -->
-			<div class="col-xl-12 py-2 d-none">
-				<h2><i class="ti ti-server"></i> Client Http <@button id='set-default-client-http' title='#i18n{apimanager.plan.button.load.default}'/></h2>
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-server"></i> Client Http</h2>
 				<div id="client-http-config-container" class="row gx-2">
-					<@formGroup class='col' labelFor='client_http_connection_ttl' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelConnectionTtl}' mandatory=true>
-							<@input type='text' id='client_http_connection_ttl' name='client_http_connection_ttl' value=plan.clientHttpConfiguration.connectionTtl!'' tabIndex='0' params='data-default="${default_client_http_config.connectionTtl}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_connect_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelConnectTimeout}' mandatory=true>
-							<@input type='text' id='client_http_connect_timeout' name='client_http_connect_timeout' value=plan.clientHttpConfiguration.connectTimeout!''  tabIndex='1' params='data-default="${default_client_http_config.connectTimeout}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_read_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelReadTimeout}' mandatory=true>
-							<@input type='text' id='client_http_read_timeout' name='client_http_read_timeout' value=plan.clientHttpConfiguration.readTimeout!'' tabIndex='2' params='data-default="${default_client_http_config.readTimeout}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_request_timeout' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelRequestTimeout}' mandatory=true>
-							<@input type='text' id='client_http_request_timeout' name='client_http_request_timeout' value=plan.clientHttpConfiguration.requestTimeout!''  tabIndex='3' params='data-default="${default_client_http_config.requestTimeout}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_codec_max_chunk_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxChunkSize}' mandatory=true>
-							<@input type='text' id='client_http_codec_max_chunk_size' name='client_http_codec_max_chunk_size' value=plan.clientHttpConfiguration.codecMaxChunkSize!'' tabIndex='4' params='data-default="${default_client_http_config.codecMaxChunkSize}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_codec_initial_buffer_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecInitialBufferSize}' mandatory=true>
-							<@input type='text' id='client_http_codec_initial_buffer_size' name='client_http_codec_initial_buffer_size' value=plan.clientHttpConfiguration.codecInitialBufferSize!'' tabIndex='5' params='data-default="${default_client_http_config.codecInitialBufferSize}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_codec_max_header_size' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxHeaderSize}' mandatory=true>
-							<@input type='text' id='client_http_codec_max_header_size' name='client_http_codec_max_header_size' value=plan.clientHttpConfiguration.codecMaxHeaderSize!'' tabIndex='6' params='data-default="${default_client_http_config.codecMaxHeaderSize}"' disabled=true />
-					</@formGroup>
-					<@formGroup class='col' labelFor='client_http_codec_max_initial_line_length' labelKey='#i18n{apimanager.planclienthttpconfiguration.labelCodecMaxInitialLineLength}' mandatory=true>
-							<@input type='text' id='client_http_codec_max_initial_line_length' name='client_http_codec_max_initial_line_length' value=plan.clientHttpConfiguration.codecMaxInitialLineLength!'' tabIndex='7' params='data-default="${default_client_http_config.codecMaxInitialLineLength}"' disabled=true />
+					<@formGroup class='col' labelFor='client_http_template' labelKey='#i18n{apimanager.plan.labelClientHttpTemplate}'>
+						<select id="client_http_template" name="client_http_template" class="form-control">
+							<option value=""></option>
+							<#list client_http_template_map as templateName, templateDescription>
+								<#if plan.clientHttpTemplate?? && plan.clientHttpTemplate == templateName>
+									<option value="${templateName}" selected>${templateDescription}</option>
+								<#else>
+									<option value="${templateName}">${templateDescription}</option>
+								</#if>
+							</#list>
+						</select>
 					</@formGroup>
 				</div>
 			</div>
@@ -178,11 +166,6 @@
 			if($('.header-matching-row').length > 1) {
 				$('#header-matching-row-0').remove();
 			}
-		});
-		$('#set-default-client-http').click(function(){
-			$('#client-http-config-container input[data-default]').each(function() {
-				$(this).val($(this).data('default'));
-			});
 		});
 	});
 </script>

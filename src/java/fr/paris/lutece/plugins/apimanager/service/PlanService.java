@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanClientHttpConfigurationHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatchingHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationHome;
@@ -65,7 +64,6 @@ public class PlanService extends AbstractService<Plan>
     @Override
     public void create( final Plan entity, final String user )
     {
-        Optional.ofNullable( entity.getClientHttpConfiguration( ) ).ifPresent( PlanClientHttpConfigurationHome::create );
         Optional.ofNullable( entity.getOauthConfiguration( ) ).ifPresent( PlanOauthConfigurationHome::create );
 
         final String uuid = PlanHome.create( entity ).getUuid( );
@@ -76,7 +74,6 @@ public class PlanService extends AbstractService<Plan>
     @Override
     public void update( final Plan entity, final String user )
     {
-        Optional.ofNullable( entity.getClientHttpConfiguration( ) ).ifPresent( PlanClientHttpConfigurationHome::update );
         Optional.ofNullable( entity.getOauthConfiguration( ) ).ifPresent( PlanOauthConfigurationHome::update );
 
         PlanHome.update( entity );
@@ -98,7 +95,6 @@ public class PlanService extends AbstractService<Plan>
             PlanHome.remove( uuid );
 
             // Delete plan config objects
-            Optional.ofNullable( plan.getClientHttpConfiguration( ) ).ifPresent( chc -> PlanClientHttpConfigurationHome.remove( chc.getUuid( ) ) );
             Optional.ofNullable( plan.getOauthConfiguration( ) ).ifPresent( oac -> PlanOauthConfigurationHome.remove( oac.getUuid( ) ) );
 
             this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
