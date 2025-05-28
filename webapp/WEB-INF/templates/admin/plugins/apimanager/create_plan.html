@@ -49,7 +49,6 @@
 					</@formGroup>
 					<@formGroup class='col' labelFor='rate_limiting_template' labelKey='#i18n{apimanager.plan.labelRateLimitingTemplate}' mandatory=true>
 						<select id="rate_limiting_template" name="rate_limiting_template" class="form-control">
-							<option value=""></option>
 							<#list rate_limiting_template_map as templateName, templateDescription>
 								<#if plan.rateLimitingTemplate?? && plan.rateLimitingTemplate == templateName>
 									<option value="${templateName}" selected>${templateDescription}</option>
@@ -66,9 +65,8 @@
 			<div class="col-xl-12 py-2">
 				<h2><i class="ti ti-server"></i> Client Http</h2>
 				<div id="client-http-config-container" class="row gx-2">
-					<@formGroup class='col' labelFor='client_http_template' labelKey='#i18n{apimanager.plan.labelClientHttpTemplate}'>
+					<@formGroup class='col' labelFor='client_http_template' labelKey='#i18n{apimanager.plan.labelClientHttpTemplate}' mandatory=true>
 						<select id="client_http_template" name="client_http_template" class="form-control">
-							<option value=""></option>
 							<#list client_http_template_map as templateName, templateDescription>
 								<#if plan.clientHttpTemplate?? && plan.clientHttpTemplate == templateName>
 									<option value="${templateName}" selected>${templateDescription}</option>
@@ -126,8 +124,25 @@
 
 <script type="text/javascript">
 	$(function() {
+		if($('#rate_limiting_enabled').is(":checked")) {
+			$('#rate_limiting_template').removeAttr('disabled');
+			$('#rate_limiting_template').show();
+		}else{
+			$('#rate_limiting_template').attr('disabled','disabled');
+			$('#rate_limiting_template').hide();
+		}
 		$('.form-control-plaintext').each(function() {
 			$(this).removeClass('form-control');
+		});
+
+		$('#rate_limiting_enabled').change(function() {
+			if($(this).is(":checked")){
+				$('#rate_limiting_template').removeAttr('disabled');
+				$('#rate_limiting_template').show();
+			}else{
+				$('#rate_limiting_template').attr('disabled','disabled');
+				$('#rate_limiting_template').hide();
+			}
 		});
 		$('#add-hm').click(function() {
 			let newRow = $('.header-matching-row').last().clone();
