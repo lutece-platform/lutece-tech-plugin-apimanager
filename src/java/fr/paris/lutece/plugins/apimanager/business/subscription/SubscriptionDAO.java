@@ -70,6 +70,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
+    private static final String FILTER_CLIENT = "client";
+    private static final String FILTER_API = "api";
+    private static final String FILTER_PLAN = "plan";
+
     /**
      * Constructor
      */
@@ -77,8 +81,9 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     {
 
         initMapSql( Subscription.class ); // Maps with name and type of each databases column associated to the business class attributes
+        _mapSql.remove( "plan" );
         _mapSql.remove( "client" );
-        _mapSql.put( "uuid_client", "String" );
+        _mapSql.remove( "api" );
     }
 
     /**
@@ -284,5 +289,37 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         subscription.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
 
         return subscription;
+    }
+
+    @Override
+    protected String addWhereClauses( Map<String, String> mapFilterCriteria, String tableName )
+    {
+        final String whereClauses = super.addWhereClauses( mapFilterCriteria, tableName );
+        final StringBuilder additionalClauses = new StringBuilder( );
+        for ( final Map.Entry<String, String> filter : mapFilterCriteria.entrySet( ) )
+        {
+            if ( StringUtils.isNotBlank( filter.getValue( ) ) )
+            {
+                if ( filter.getKey( ).equals( FILTER_CLIENT ) )
+                {
+                    additionalClauses.append( whereClauses.isEmpty( ) ? " WHERE " : " AND " );
+                    additionalClauses.append( " uuid_client in ( select uuid from apimanager_client where name like '%" ).append( filter.getValue( ) )
+                            .append( "%' )" );
+                }
+                if ( filter.getKey( ).equals( FILTER_API ) )
+                {
+                    additionalClauses.append( ( whereClauses.isEmpty( ) && additionalClauses.length( ) == 0 ) ? " WHERE " : " AND " );
+                    additionalClauses.append( " uuid_plan in ( select uuid from apimanager_plan where name like '%" ).append( filter.getValue( ) )
+                            .append( "%' )" );
+                }
+                if ( filter.getKey( ).equals( FILTER_PLAN ) )
+                {
+                    additionalClauses.append( ( whereClauses.isEmpty( ) && additionalClauses.length( ) == 0 ) ? " WHERE " : " AND " );
+                    additionalClauses.append( " uuid_plan in ( select uuid from apimanager_plan where name like '%" ).append( filter.getValue( ) )
+                            .append( "%' )" );
+                }
+            }
+        }
+        return whereClauses + additionalClauses.toString( );
     }
 }

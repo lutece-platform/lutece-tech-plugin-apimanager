@@ -45,6 +45,14 @@
             <feature-url>jsp/admin/plugins/apimanager/ManageInstances.jsp</feature-url>
             <feature-icon-url></feature-icon-url>
         </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_SUBSCRIPTION_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageSubscriptions.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageSubscriptions.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageSubscriptions.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
     </admin-features>
 
     <!-- XPages parameters -->

@@ -34,6 +34,7 @@
 
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
@@ -58,14 +59,16 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGESUBSCRIPTIONS;
 
 /**
  * This class provides the user interface to manage Subscription features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageSubscriptions.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
+@Controller( controllerJsp = "ManageSubscriptions.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGESUBSCRIPTIONS )
 public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 {
 
@@ -77,8 +80,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
     private static final String PARAMETER_ID_CLIENT = "uuid_client";
     private static final String PARAMETER_ID_PLAN = "uuid_plan";
-    private static final String PARAMETER_ENVIRONNEMENT = "environnement";
-    private static final String PARAMETER_COMMENT = "comment";
+    private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS = "apimanager.manage_subscriptions.pageTitle";
@@ -89,6 +91,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String MARK_SUBSCRIPTION = "subscription";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
 
     private static final String JSP_MANAGE_SUBSCRIPTIONS = "jsp/admin/plugins/apimanager/ManageSubscriptions.jsp";
 
@@ -110,9 +113,6 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     // Infos
     private static final String INFO_SUBSCRIPTION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_SUBSCRIPTION_REMOVED = "apimanager.info.subscription.removed";
-
-    // Errors
-    private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
 
     // Session variable to store working values
     private Subscription _subscription;
@@ -137,23 +137,9 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
-            // if sorting request : new search with the existing filter criteria, ordered
-            // example of order by parameter : orderby=name
-            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
-            {
-
-                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
-                String strSortMode = getSortMode( );
-
-                _listIdSubscriptions = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
-
-            }
-            else
-            {
-                // reload the filter criteria and search
-                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdSubscriptions = getService( ).getIdEntitiesList( _mapFilterCriteria );
-            }
+            _optionOrderBy = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
+            _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+            _listIdSubscriptions = getService( ).getIdEntitiesList( _mapFilterCriteria );
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
@@ -164,6 +150,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
+        model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS, TEMPLATE_MANAGE_SUBSCRIPTIONS, model );
 
@@ -179,9 +166,35 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     List<Subscription> getItemsFromIds( List<String> listIds )
     {
         List<Subscription> listSubscription = getService( ).getEntitiesListByIds( listIds );
+        Comparator<Subscription> comparator = Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) );
+        if ( StringUtils.isBlank( _optionOrderBy ) )
+        {
+            // keep original order
+            return listSubscription.stream( ).sorted( comparator ).collect( Collectors.toList( ) );
+        }
 
-        // keep original order
-        return listSubscription.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+        if ( "plan".equals( _optionOrderBy ) )
+        {
+            comparator = Comparator.comparing( Subscription::getPlan, Comparator.comparing( Plan::getName ) );
+        }
+        if ( "environment".equals( _optionOrderBy ) )
+        {
+            comparator = Comparator.comparing( Subscription::getEnvironnement );
+        }
+        if ( "api".equals( _optionOrderBy ) )
+        {
+            comparator = Comparator.comparing( sub -> sub.getPlan( ).getApi( ), Comparator.comparing( Api::getName ) );
+        }
+        if ( "client".equals( _optionOrderBy ) )
+        {
+            comparator = Comparator.comparing( Subscription::getClient, Comparator.comparing( Client::getName ) );
+        }
+
+        if ( getSortMode( ).equals( SORT_ATTRIBUTES_ASC ) )
+        {
+            return listSubscription.stream( ).sorted( comparator ).collect( Collectors.toList( ) );
+        }
+        return listSubscription.stream( ).sorted( comparator.reversed( ) ).collect( Collectors.toList( ) );
     }
 
     @Override

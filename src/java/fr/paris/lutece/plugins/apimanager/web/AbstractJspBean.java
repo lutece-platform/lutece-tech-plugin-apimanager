@@ -87,8 +87,8 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
 
     // Search
     private static final String FILTER_ATTRIBUTES_PREFIX = "filter_";
-    private static final String SORT_ATTRIBUTES_ASC = " ASC ";
-    private static final String SORT_ATTRIBUTES_DESC = " DESC ";
+    protected static final String SORT_ATTRIBUTES_ASC = " ASC ";
+    protected static final String SORT_ATTRIBUTES_DESC = " DESC ";
 
     // Variables
     private String _strCurrentPageIndex;
