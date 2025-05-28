@@ -87,7 +87,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String PARAMETER_INFO_MSG = "infoMsg";
     private static final String PARAMETER_ENVIRONNEMENT = "environnement";
     private static final String PARAMETER_COMMENT = "comment";
-    private static final String PARAMETER_ID_SUBSCRIPTION = "uuid_subscription";
     private static final String PARAMETER_RELOAD = "reload";
 
     // Properties for page titles
@@ -121,19 +120,16 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String ACTION_REMOVE_CLIENT = "removeClient";
     private static final String ACTION_CONFIRM_REMOVE_CLIENT = "confirmRemoveClient";
     private static final String ACTION_GENERATE_OAUTH2 = "generateOauth2";
-    private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
 
     // Infos
     private static final String INFO_CLIENT_CREATED = "apimanager.info.client.created";
     private static final String INFO_CLIENT_UPDATED = "apimanager.info.client.updated";
     private static final String INFO_CLIENT_REMOVED = "apimanager.info.client.removed";
     private static final String INFO_CLIENT_OAUTH2_GENERATED = "apimanager.info.client.oauth2.generated";
-    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.generated";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
     private static final String ERROR_CLIENT_OAUTH2_GENERATION = "Error generating OAuth2 Client";
-    private static final String ERROR_API_MANAGER_GENERATION = "Error generating API manager";
 
     // Session variable to store working values
     private Client _client;
@@ -415,36 +411,4 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         return redirectView( request, VIEW_MANAGE_CLIENTS );
     }
 
-    @Action( ACTION_GENERATE_API_MANAGER )
-    public String doGenerateApiManager( final HttpServletRequest request )
-    {
-        final String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
-        if ( uuid == null )
-        {
-            addError( ERROR_RESOURCE_NOT_FOUND );
-            return redirectView( request, VIEW_MANAGE_CLIENTS );
-        }
-        final Subscription subscription = SubscriptionHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
-        final String comment = request.getParameter( PARAMETER_COMMENT );
-
-        try
-        {
-            _configGeneratorService.generateApiManager( subscription.getClient( ), subscription.getPlan( ),
-                    ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getPlan( ).getUuid( ) ),
-                    InstanceService.getInstance( ).getEntitiesListByIds(
-                            InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( subscription.getPlan( ).getApi( ).getUuid( ) ) ),
-                    env, comment, getUser( ).getEmail( ) );
-            getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-        }
-        catch( final AppException e )
-        {
-            addError( ERROR_API_MANAGER_GENERATION );
-            addError( e.getMessage( ) );
-            return redirect( request, "ManageClients.jsp?reload=true" );
-        }
-        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
-        return redirect( request, "ManageClients.jsp?reload=true" );
-    }
 }

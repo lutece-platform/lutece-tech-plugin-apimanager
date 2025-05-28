@@ -36,8 +36,12 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.service.InstanceService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -45,6 +49,7 @@ import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
@@ -61,7 +66,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGESUBSCRIPTIONS;
 
@@ -81,6 +85,9 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String PARAMETER_ID_CLIENT = "uuid_client";
     private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
+    private static final String PARAMETER_ENVIRONNEMENT = "environnement";
+    private static final String PARAMETER_COMMENT = "comment";
+    private static final String PARAMETER_UUID_SUBSCRIPTION = "uuid_subscription";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS = "apimanager.manage_subscriptions.pageTitle";
@@ -109,10 +116,16 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String ACTION_CREATE_SUBSCRIPTION = "createSubscription";
     private static final String ACTION_REMOVE_SUBSCRIPTION = "removeSubscription";
     private static final String ACTION_CONFIRM_REMOVE_SUBSCRIPTION = "confirmRemoveSubscription";
+    private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
 
     // Infos
     private static final String INFO_SUBSCRIPTION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_SUBSCRIPTION_REMOVED = "apimanager.info.subscription.removed";
+    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.generated";
+
+    // Errors
+    private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String ERROR_API_MANAGER_GENERATION = "Error generating API manager";
 
     // Session variable to store working values
     private Subscription _subscription;
@@ -311,4 +324,38 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED );
     }
+
+    @Action( ACTION_GENERATE_API_MANAGER )
+    public String doGenerateApiManager( final HttpServletRequest request )
+    {
+        final String uuid = request.getParameter( PARAMETER_UUID_SUBSCRIPTION );
+        if ( uuid == null )
+        {
+            addError( ERROR_RESOURCE_NOT_FOUND );
+            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
+        }
+        final Subscription subscription = SubscriptionHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
+        final String comment = request.getParameter( PARAMETER_COMMENT );
+
+        try
+        {
+            _configGeneratorService.generateApiManager( subscription.getClient( ), subscription.getPlan( ),
+                    ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getPlan( ).getUuid( ) ),
+                    InstanceService.getInstance( ).getEntitiesListByIds(
+                            InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( subscription.getPlan( ).getApi( ).getUuid( ) ) ),
+                    env, comment, getUser( ).getEmail( ) );
+            getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+        }
+        catch( final AppException e )
+        {
+            addError( ERROR_API_MANAGER_GENERATION );
+            addError( e.getMessage( ) );
+            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
+        }
+        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
+        return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
+    }
+
 }

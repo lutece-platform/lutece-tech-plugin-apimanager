@@ -41,6 +41,7 @@ import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MockConfigGeneratorService implements IConfigGeneratorService
@@ -55,6 +56,17 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "comment : " + comment );
         AppLogService.info( "user : " + user );
         AppLogService.info( "====================================" );
+        AppLogService.info( "WAIT 2 SECONDS" );
+        AppLogService.info( "====================================" );
+
+        try
+        {
+            TimeUnit.SECONDS.sleep( 2 );
+        }
+        catch( InterruptedException e )
+        {
+            throw new AppException( "Sleep failed", e );
+        }
         throw new AppException( "Mock exception happened : you should see this on screen" );
     }
 
@@ -72,6 +84,17 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "comment : " + comment );
         AppLogService.info( "user : " + user );
         AppLogService.info( "====================================" );
+        AppLogService.info( "WAIT 2 SECONDS" );
+        AppLogService.info( "====================================" );
+
+        try
+        {
+            TimeUnit.SECONDS.sleep( 2 );
+        }
+        catch( InterruptedException e )
+        {
+            throw new AppException( "Sleep failed", e );
+        }
         throw new AppException( "Mock exception happened : you should see this on screen" );
     }
 }

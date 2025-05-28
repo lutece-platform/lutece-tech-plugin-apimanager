@@ -87,7 +87,7 @@
 				<#if show_generate_button>
 					<td>
 						<@offcanvas id='generate_subscription_${subscription?index}' title='#i18n{apimanager.manage_subscriptions.generateApiManager}' position='end' btnTitle='#i18n{apimanager.manage_subscriptions.generateApiManager}' hideTitle=['all'] btnIcon='settings'>
-							<@tform class="generate-subscription-form border-bottom pb-3" method="post" name="generate_subscription_${subscription?index}" action="jsp/admin/plugins/apimanager/ManageClients.jsp?action=generateApiManager" >
+							<@tform class="generate-subscription-form border-bottom pb-3" method="post" name="generate_subscription_${subscription?index}" action="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=generateApiManager" >
 									<@messages errors=errors />
 									<@input type="hidden" name="uuid_subscription" value="${subscription.uuid}"/>
 
@@ -102,7 +102,7 @@
 										<@input type='textarea' id='comment-${subscription?index}' name='comment'  maxlength=500  tabIndex='0' />
 									</@formGroup>
 
-									<@button type='submit' title='OK' buttonIcon='device-floppy'/>
+									<@button id='generate-submit-btn-${subscription?index}' type='button' title='OK' buttonIcon='device-floppy' params='onclick="loadAndSubmit(\'generate-submit-btn-${subscription?index}\')"'/>
 							</@tform>
 						</@offcanvas>
 					</td>
@@ -115,3 +115,32 @@
 
   </@boxBody>
 </@box>
+<style>
+	.loader {
+		width: 22px;
+		--b: 8px;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		padding: 1px;
+		background: conic-gradient(#0000 10%, #000000) content-box;
+		-webkit-mask:
+				repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+				radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+		-webkit-mask-composite: destination-in;
+		mask-composite: intersect;
+		animation:l4 1s infinite steps(10);
+	}
+	@keyframes l4 {to{transform: rotate(1turn)}}
+</style>
+<script type="application/javascript">
+	$(function() {
+		$('.generate-subscription-form').each(function() {
+			$(this).removeClass("d-flex");
+		});
+	});
+	function loadAndSubmit(idButton) {
+		$('#' + idButton).attr('disabled', 'disabled');
+		$('#' + idButton).html('<div class="loader"></div>');
+		$('#' + idButton).closest('form').submit();
+	}
+</script>
