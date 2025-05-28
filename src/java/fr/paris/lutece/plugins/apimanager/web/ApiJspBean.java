@@ -285,7 +285,15 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     @Action( ACTION_CREATE_API )
     public String doCreateApi( HttpServletRequest request ) throws AccessDeniedException
     {
-        populateApi( _api, request, getLocale( ) );
+        try
+        {
+            populateApi( _api, request, getLocale( ) );
+        }
+        catch( JsonProcessingException e )
+        {
+            this.addError( "Error while parsing the openapi file. Please select a valid JSON file." );
+            return redirectView( request, VIEW_CREATE_API );
+        }
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_API ) )
         {
             throw new AccessDeniedException( "Invalid security token" );
@@ -422,7 +430,15 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     @Action( ACTION_MODIFY_API )
     public String doModifyApi( MultipartHttpServletRequest request ) throws AccessDeniedException
     {
-        populateApi( _api, request, getLocale( ) );
+        try
+        {
+            populateApi( _api, request, getLocale( ) );
+        }
+        catch( JsonProcessingException e )
+        {
+            this.addError( "Error while parsing the openapi file. Please select a valid JSON file." );
+            return redirect( request, VIEW_MODIFY_API, Map.of( PARAMETER_ID_API, _api.getUuid( ) ) );
+        }
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_API ) )
         {
@@ -492,7 +508,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
         return redirectView( request, VIEW_MANAGE_APIS );
     }
 
-    protected void populateApi( Object bean, HttpServletRequest request, Locale locale )
+    protected void populateApi( Object bean, HttpServletRequest request, Locale locale ) throws JsonProcessingException
     {
         super.populate( bean, request, locale );
 
@@ -501,16 +517,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
             final FileItem openapiFile = ( (MultipartHttpServletRequest) request ).getFile( PARAMETER_OPENAPI );
             if ( openapiFile != null && openapiFile.getSize( ) > 0 )
             {
-                try
+                _api.setOpenapi( JSON_MAPPER.readValue( openapiFile.getString( ), new TypeReference<Map<String, Object>>( )
                 {
-                    _api.setOpenapi( JSON_MAPPER.readValue( openapiFile.getString( ), new TypeReference<Map<String, Object>>( )
-                    {
-                    } ) );
-                }
-                catch( final JsonProcessingException e )
-                {
-                    throw new AppException( "Error while parsing the openapi file", e );
-                }
+                } ) );
             }
         }
         _api.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
