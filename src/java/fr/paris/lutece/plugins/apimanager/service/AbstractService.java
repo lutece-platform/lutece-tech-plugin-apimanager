@@ -89,6 +89,16 @@ public abstract class AbstractService<T>
     public abstract List<String> getIdEntitiesList( Map<String, String> mapFilterCriteria, String columnToOrder, String orderBy );
 
     /**
+     * returns the ID of all the entities.
+     * 
+     * @return List of uuid
+     */
+    public List<String> getIdEntitiesList( )
+    {
+        return getIdEntitiesList( Map.of( ) );
+    }
+
+    /**
      * search for entities according to the provided criterias, and returns their uuid, unordered
      * 
      * @param mapFilterCriteria

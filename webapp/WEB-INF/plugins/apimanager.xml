@@ -105,25 +105,21 @@
     -->
 
     <!-- Admin Dashboard components -->
-    <!-- 
     <admindashboard-components>
         <admindashboard-component>
-            <dashboard-component-name>...</dashboard-component-name>
-            <dashboard-component-class>...</dashboard-component-class>
+            <dashboard-component-name>subscriptionDashboard</dashboard-component-name>
+            <dashboard-component-class>fr.paris.lutece.plugins.apimanager.web.dashboard.SubscriptionDashboard</dashboard-component-class>
         </admindashboard-component>
     </admindashboard-components>
-    -->
-    
+
     <!-- Dashboard components -->
-    <!--
     <dashboard-components>
         <dashboard-component>
-            <dashboard-component-name>...</dashboard-component-name>
-            <dashboard-component-class>...</dashboard-component-class>
-            <dashboard-feature-right>...</dashboard-feature-right>
+            <dashboard-component-name>subscriptionDashboard</dashboard-component-name>
+            <dashboard-component-class>fr.paris.lutece.plugins.apimanager.web.dashboard.SubscriptionDashboard</dashboard-component-class>
+            <dashboard-feature-right>APIMANAGER_SUBSCRIPTION_MANAGEMENT</dashboard-feature-right>
         </dashboard-component>
     </dashboard-components>
-    -->
 
     <!-- Daemons -->
     <!-- 
