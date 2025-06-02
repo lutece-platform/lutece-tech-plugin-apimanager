@@ -97,4 +97,55 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         }
         throw new AppException( "Mock exception happened : you should see this on screen" );
     }
+
+    @Override
+    public void deleteOauth2Client( final Client client, final String environment, final String user ) throws AppException
+    {
+        AppLogService.info( "====================================" );
+        AppLogService.info( "MOCK => deleteOauth2Client called." );
+        AppLogService.info( "client : " + client.getUuid( ) );
+        AppLogService.info( "environment : " + environment );
+        AppLogService.info( "user : " + user );
+        AppLogService.info( "====================================" );
+        AppLogService.info( "WAIT 2 SECONDS" );
+        AppLogService.info( "====================================" );
+
+        try
+        {
+            TimeUnit.SECONDS.sleep( 2 );
+        }
+        catch( InterruptedException e )
+        {
+            throw new AppException( "Sleep failed", e );
+        }
+        throw new AppException( "Mock exception happened : you should see this on screen" );
+    }
+
+    @Override
+    public void deleteApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
+            final String environment, final String user ) throws AppException
+    {
+        AppLogService.info( "====================================" );
+        AppLogService.info( "MOCK => deleteApiManager called." );
+        AppLogService.info( "client : " + client.getUuid( ) );
+        AppLogService.info( "plan : " + plan.getUuid( ) );
+        AppLogService.info( "planResources : " + planResources.stream( ).map( Resource::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
+        AppLogService.info( "planApiInstances : " + planApiInstances.stream( ).map( Instance::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
+        AppLogService.info( "environment : " + environment );
+        AppLogService.info( "user : " + user );
+        AppLogService.info( "====================================" );
+        AppLogService.info( "WAIT 2 SECONDS" );
+        AppLogService.info( "====================================" );
+
+        try
+        {
+            TimeUnit.SECONDS.sleep( 2 );
+        }
+        catch( InterruptedException e )
+        {
+            throw new AppException( "Sleep failed", e );
+        }
+        throw new AppException( "Mock exception happened : you should see this on screen" );
+
+    }
 }

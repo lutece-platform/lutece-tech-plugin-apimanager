@@ -50,4 +50,9 @@ public interface IConfigGeneratorService
 
     void generateApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
             final String environment, final String comment, final String user ) throws AppException;
+
+    void deleteOauth2Client( final Client client, final String environment, final String user ) throws AppException;
+
+    void deleteApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
+            final String environment, final String user ) throws AppException;
 }
