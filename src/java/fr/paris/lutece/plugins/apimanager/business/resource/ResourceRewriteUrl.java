@@ -33,34 +33,22 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
-import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
-/**
- * This is the business class for the object Resource
- */
-public class Resource implements Serializable
+public class ResourceRewriteUrl implements Serializable
 {
+
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations
     private String _strUuid;
-
-    private Plan _plan;
-
-    @Size( max = 255, message = "#i18n{apimanager.validation.resource.Path.size}" )
-    private String _strPath;
-
-    private ResourceVerbEnum _verb;
-
-    private ResourceRewriteUrl _rewriteUrl;
+    private String _strTarget;
+    private String _strValue;
+    private ResourceRewriteUrlTypeEnum _type;
 
     /**
-     * Returns the Uuid
+     * Get the uuid
      * 
-     * @return The Uuid
+     * @return the uuid
      */
     public String getUuid( )
     {
@@ -68,97 +56,76 @@ public class Resource implements Serializable
     }
 
     /**
-     * Sets the Uuid
+     * Set the uuid
      * 
      * @param strUuid
-     *            The Uuid
+     *            the uuid
      */
-    public void setUuid( String strUuid )
+    public void setUuid( final String strUuid )
     {
         _strUuid = strUuid;
     }
 
     /**
-     * Returns the Plan
+     * get the target
      * 
-     * @return The Plan
+     * @return the target
      */
-    public Plan getPlan( )
+    public String getTarget( )
     {
-        return _plan;
+        return _strTarget;
     }
 
     /**
-     * Sets the Plan
+     * set the target
      * 
-     * @param plan
-     *            The Plan
+     * @param strTarget
+     *            the target
      */
-    public void setPlan( Plan plan )
+    public void setTarget( final String strTarget )
     {
-        _plan = plan;
+        _strTarget = strTarget;
     }
 
     /**
-     * Returns the Path
+     * get the value
      * 
-     * @return The Path
+     * @return the value
      */
-    public String getPath( )
+    public String getValue( )
     {
-        return _strPath;
+        return _strValue;
     }
 
     /**
-     * Sets the Path
+     * set the value
      * 
-     * @param strPath
-     *            The Path
+     * @param strValue
+     *            the value
      */
-    public void setPath( String strPath )
+    public void setValue( final String strValue )
     {
-        _strPath = strPath;
+        _strValue = strValue;
     }
 
     /**
-     * Returns the Verb
+     * get the type
      * 
-     * @return The Verb
+     * @return the type
      */
-    public ResourceVerbEnum getVerb( )
+    public ResourceRewriteUrlTypeEnum getType( )
     {
-        return _verb;
+        return _type;
     }
 
     /**
-     * Sets the Verb
+     * set the type
      * 
-     * @param verb
-     *            The Verb
+     * @param type
+     *            the type
      */
-    public void setVerb( ResourceVerbEnum verb )
+    public void setType( final ResourceRewriteUrlTypeEnum type )
     {
-        _verb = verb;
-    }
-
-    /**
-     * get the rewrite url
-     * 
-     * @return the rewrite url
-     */
-    public ResourceRewriteUrl getRewriteUrl( )
-    {
-        return _rewriteUrl;
-    }
-
-    /**
-     * set the rewrite url
-     * 
-     * @param rewriteUrl
-     *            the rewrite url
-     */
-    public void setRewriteUrl( final ResourceRewriteUrl rewriteUrl )
-    {
-        _rewriteUrl = rewriteUrl;
+        _type = type;
     }
 }

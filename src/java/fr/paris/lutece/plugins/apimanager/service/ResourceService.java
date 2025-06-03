@@ -36,9 +36,11 @@ package fr.paris.lutece.plugins.apimanager.service;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlHome;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ResourceService extends AbstractService<Resource>
 {
@@ -61,6 +63,7 @@ public class ResourceService extends AbstractService<Resource>
     @Override
     public void create( final Resource entity, final String user )
     {
+        Optional.ofNullable( entity.getRewriteUrl( ) ).ifPresent( ResourceRewriteUrlHome::create );
         final String uuid = ResourceHome.create( entity ).getUuid( );
         this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
     }
@@ -68,6 +71,7 @@ public class ResourceService extends AbstractService<Resource>
     @Override
     public void update( final Resource entity, final String user )
     {
+        Optional.ofNullable( entity.getRewriteUrl( ) ).ifPresent( ResourceRewriteUrlHome::update );
         ResourceHome.update( entity );
         this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
     }
@@ -75,8 +79,13 @@ public class ResourceService extends AbstractService<Resource>
     @Override
     public void delete( final String uuid, final String user )
     {
-        ResourceHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        ResourceHome.findByPrimaryKey( uuid ).ifPresent( resource -> {
+            ResourceHome.remove( uuid );
+
+            Optional.ofNullable( resource.getRewriteUrl( ) ).ifPresent( ru -> ResourceRewriteUrlHome.remove( ru.getUuid( ) ) );
+
+            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        } );
     }
 
     @Override

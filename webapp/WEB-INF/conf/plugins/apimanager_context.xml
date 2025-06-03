@@ -8,6 +8,7 @@
     <bean id="apimanager.subscriptionDAO" class="fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionDAO" />
     <bean id="apimanager.planDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanDAO" />
     <bean id="apimanager.resourceDAO" class="fr.paris.lutece.plugins.apimanager.business.resource.ResourceDAO" />
+    <bean id="apimanager.resourceRewriteUrlDAO" class="fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlDAO" />
     <bean id="apimanager.apiDAO" class="fr.paris.lutece.plugins.apimanager.business.api.ApiDAO" />
     <bean id="apimanager.instanceDAO" class="fr.paris.lutece.plugins.apimanager.business.instance.InstanceDAO" />
     <bean id="apimanager.historyDAO" class="fr.paris.lutece.plugins.apimanager.business.history.HistoryDAO" />

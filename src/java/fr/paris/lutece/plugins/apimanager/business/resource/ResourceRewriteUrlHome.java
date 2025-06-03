@@ -31,7 +31,6 @@
  *
  * License 1.0
  */
-
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -43,55 +42,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * This class provides instances management methods (create, find, ...) for Resource objects
- */
-public final class ResourceHome
+public class ResourceRewriteUrlHome
 {
     // Static variable pointed at the DAO instance
-    private static IResourceDAO _dao = SpringContextService.getBean( "apimanager.resourceDAO" );
+    private static IResourceRewriteUrlDAO _dao = SpringContextService.getBean( "apimanager.resourceRewriteUrlDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private ResourceHome( )
+    private ResourceRewriteUrlHome( )
     {
     }
 
     /**
-     * Create an instance of the resource class
-     * 
-     * @param resource
-     *            The instance of the Resource which contains the informations to store
-     * @return The instance of resource which has been created with its primary key.
+     * Create an instance of the ResourceRewriteUrl class
+     *
+     * @param resourceRewriteUrl
+     *            The instance of the ResourceRewriteUrl which contains the informations to store
+     * @return The instance of ResourceRewriteUrl which has been created with its primary key.
      */
-    public static Resource create( Resource resource )
+    public static ResourceRewriteUrl create( ResourceRewriteUrl resourceRewriteUrl )
     {
-        _dao.insert( resource, _plugin );
+        _dao.insert( resourceRewriteUrl, _plugin );
 
-        return resource;
+        return resourceRewriteUrl;
     }
 
     /**
-     * Update of the resource which is specified in parameter
-     * 
-     * @param resource
-     *            The instance of the Resource which contains the data to store
-     * @return The instance of the resource which has been updated
+     * Update of the ResourceRewriteUrl which is specified in parameter
+     *
+     * @param resourceRewriteUrl
+     *            The instance of the ResourceRewriteUrl which contains the data to store
+     * @return The instance of the ResourceRewriteUrl which has been updated
      */
-    public static Resource update( Resource resource )
+    public static ResourceRewriteUrl update( ResourceRewriteUrl resourceRewriteUrl )
     {
-        _dao.store( resource, _plugin );
+        _dao.store( resourceRewriteUrl, _plugin );
 
-        return resource;
+        return resourceRewriteUrl;
     }
 
     /**
-     * Remove the resource whose identifier is specified in parameter
-     * 
+     * Remove the ResourceRewriteUrl whose identifier is specified in parameter
+     *
      * @param nKey
-     *            The resource Id
+     *            The ResourceRewriteUrl Id
      */
     public static void remove( String nKey )
     {
@@ -99,61 +95,61 @@ public final class ResourceHome
     }
 
     /**
-     * Returns an instance of a resource whose identifier is specified in parameter
-     * 
+     * Returns an instance of a ResourceRewriteUrl whose identifier is specified in parameter
+     *
      * @param nKey
-     *            The resource primary key
-     * @return an instance of Resource
+     *            The ResourceRewriteUrl primary key
+     * @return an instance of ResourceRewriteUrl
      */
-    public static Optional<Resource> findByPrimaryKey( String nKey )
+    public static Optional<ResourceRewriteUrl> findByPrimaryKey( String nKey )
     {
         return _dao.load( nKey, _plugin );
     }
 
     /**
-     * Load the data of all the resource objects and returns them as a list
-     * 
-     * @return the list which contains the data of all the resource objects
+     * Load the data of all the ResourceRewriteUrl objects and returns them as a list
+     *
+     * @return the list which contains the data of all the ResourceRewriteUrl objects
      */
-    public static List<Resource> getResourcesList( )
+    public static List<ResourceRewriteUrl> getResourceRewriteUrlsList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
 
     /**
-     * Load the id of all the resource objects and returns them as a list
-     * 
+     * Load the id of all the ResourceRewriteUrl objects and returns them as a list
+     *
      * @param mapFilterCriteria
      *            contains search bar names/values inputs
      * @param strColumnToOrder
      *            contains the column name to use for orderBy statement in case of sorting request (must be null)
      * @param strSortMode
      *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
-     * @return the list which contains the id of all the project objects
+     * @return the list which contains the id of all the ResourceRewriteUrl objects
      */
-    public static List<String> getIdResourcesList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdResourceRewriteUrlsList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
 
     /**
-     * Load the data of all the resource objects and returns them as a referenceList
-     * 
-     * @return the referenceList which contains the data of all the resource objects
+     * Load the data of all the ResourceRewriteUrl objects and returns them as a referenceList
+     *
+     * @return the referenceList which contains the data of all the ResourceRewriteUrl objects
      */
-    public static ReferenceList getResourcesReferenceList( )
+    public static ReferenceList getResourceRewriteUrlsReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
 
     /**
-     * Load the data of all the avant objects and returns them as a list
-     * 
+     * Load the data of all the ResourceRewriteUrl objects and returns them as a list
+     *
      * @param listIds
      *            liste of ids
-     * @return the list which contains the data of all the avant objects
+     * @return the list which contains the data of all the ResourceRewriteUrl objects
      */
-    public static List<Resource> getResourcesListByIds( List<String> listIds )
+    public static List<ResourceRewriteUrl> getResourceRewriteUrlsListByIds( List<String> listIds )
     {
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }

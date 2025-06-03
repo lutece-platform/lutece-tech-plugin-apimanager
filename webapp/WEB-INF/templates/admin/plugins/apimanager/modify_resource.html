@@ -23,6 +23,31 @@
 					</#list>
 				</select>
 			</@formGroup>
+			<!-- REWRITE URL -->
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-reload"></i> Rewrite URL</h2>
+				<div id="rewrite-url-container" class="row gx-2">
+					<@input type="hidden" id="rewrite_url_uuid" name="rewrite_url_uuid" value="${resource.rewriteUrl.uuid}"/>
+					<@formGroup class='col-3' labelFor='rewrite_url_target' labelKey='#i18n{apimanager.resource.labelRewriteUrlTarget}' mandatory=true>
+							<@input type='text' id='rewrite_url_target' name='rewrite_url_target' value="${resource.rewriteUrl.target}" tabIndex='0'  />
+					</@formGroup>
+					<@formGroup class='col-3' labelFor='rewrite_url_value' labelKey='#i18n{apimanager.resource.labelRewriteUrlValue}' mandatory=true>
+							<@input type='text' id='rewrite_url_value' name='rewrite_url_value'  value="${resource.rewriteUrl.value}" tabIndex='0'  />
+					</@formGroup>
+					<@formGroup class='col-6' labelFor='rewrite_url_type_name' labelKey='#i18n{apimanager.resource.labelRewriteUrlType}' mandatory=true>
+						<select id="rewrite_url_type_name" name="rewrite_url_type_name" class="form-control">
+							<#list rewrite_url_type_list as type>
+								<#if resource.rewriteUrl.type == type >
+									<option value="${type.name()}" selected>${type.name()} - ${type.description}</option>
+								<#else>
+									<option value="${type.name()}">${type.name()} - ${type.description}</option>
+								</#if>
+							</#list>
+						</select>
+					</@formGroup>
+				</div>
+			</div>
+
         <@actionButtons button1Name="action_modifyResource" button2Name="view_manageResource"/>
     </@tform>
 	</@boxBody>

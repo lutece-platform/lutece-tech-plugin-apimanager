@@ -37,8 +37,9 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrl;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
-import fr.paris.lutece.plugins.apimanager.service.AbstractService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -49,6 +50,7 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.upload.MultipartHttpServletRequest;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +83,8 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private static final String PARAMETER_ID_RESOURCE = "uuid";
     private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VERB_NAME = "verb_name";
+    private static final String PARAMETER_REWRITE_URL_PREFIX = "rewrite_url_";
+    private static final String PARAMETER_REWRITE_URL_TYPE_NAME = "rewrite_url_type_name";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_RESOURCES = "apimanager.manage_resources.pageTitle";
@@ -91,6 +95,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private static final String MARK_RESOURCE_LIST = "resource_list";
     private static final String MARK_RESOURCE = "resource";
     private static final String MARK_VERB_LIST = "verb_list";
+    private static final String MARK_REWRITE_URL_TYPE_LIST = "rewrite_url_type_list";
 
     private static final String JSP_MANAGE_RESOURCES = "jsp/admin/plugins/apimanager/ManageResources.jsp";
 
@@ -223,6 +228,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         Map<String, Object> model = getModel( );
         model.put( MARK_RESOURCE, _resource );
         model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
+        model.put( MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values( ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_RESOURCE, TEMPLATE_CREATE_RESOURCE, model );
@@ -321,6 +327,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         Map<String, Object> model = getModel( );
         model.put( MARK_RESOURCE, _resource );
         model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
+        model.put( MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values( ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_RESOURCE, TEMPLATE_MODIFY_RESOURCE, model );
@@ -362,5 +369,15 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     {
         super.populate( bean, request, locale );
         _resource.setVerb( ResourceVerbEnum.valueOf( request.getParameter( PARAMETER_VERB_NAME ) ) );
+
+        // REWRITE URL
+        final ResourceRewriteUrl resourceRewriteUrl = new ResourceRewriteUrl( );
+        final Map<String, String [ ]> rewriteUrlParams = request.getParameterMap( ).entrySet( ).stream( )
+                .filter( entry -> entry.getKey( ).startsWith( PARAMETER_REWRITE_URL_PREFIX ) )
+                .collect( Collectors.toMap( entry -> entry.getKey( ).replace( PARAMETER_REWRITE_URL_PREFIX, "" ), Map.Entry::getValue ) );
+        final MultipartHttpServletRequest rewriteUrlRequest = new MultipartHttpServletRequest( request, Map.of( ), rewriteUrlParams );
+        super.populate( resourceRewriteUrl, rewriteUrlRequest, locale );
+        resourceRewriteUrl.setType( ResourceRewriteUrlTypeEnum.valueOf( request.getParameter( PARAMETER_REWRITE_URL_TYPE_NAME ) ) );
+        _resource.setRewriteUrl( resourceRewriteUrl );
     }
 }

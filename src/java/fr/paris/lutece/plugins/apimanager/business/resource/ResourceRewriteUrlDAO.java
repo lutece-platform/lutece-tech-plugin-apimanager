@@ -31,40 +31,33 @@
  *
  * License 1.0
  */
-
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
-import java.sql.Statement;
+import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
-
-/**
- * This class provides Data Access methods for Resource objects
- */
-public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
+public class ResourceRewriteUrlDAO extends AbstractFilterDao implements IResourceRewriteUrlDAO
 {
+
     // Constants
-    private static final String TABLE_NAME = "apimanager_resource";
+    private static final String TABLE_NAME = "apimanager_resource_rewrite_url";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url ) VALUES ( ?, ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_resource WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO " + TABLE_NAME + " ( uuid, target, value, type ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_DELETE = "DELETE FROM " + TABLE_NAME + " WHERE uuid = ? ";
+    private static final String SQL_QUERY_UPDATE = "UPDATE " + TABLE_NAME + " SET target = ?, value = ?, type = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url FROM apimanager_resource";
-    private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_resource";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, target, value, type FROM " + TABLE_NAME;
+    private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM " + TABLE_NAME;
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
@@ -72,62 +65,48 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     /**
      * Constructor
      */
-    public ResourceDAO( )
+    public ResourceRewriteUrlDAO( )
     {
-
-        initMapSql( Resource.class ); // Maps with name and type of each databases column associated to the business class attributes
-        _mapSql.remove( "plan" );
-        _mapSql.put( "uuid_plan", "String" );
+        initMapSql( ResourceRewriteUrl.class ); // Maps with name and type of each databases column associated to the business class attributes
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public void insert( Resource resource, Plugin plugin )
+    public void insert( final ResourceRewriteUrl resourceRewriteUrl, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setString( nIndex++, resource.getPlan( ) != null ? resource.getPlan( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, resource.getPath( ) );
-            daoUtil.setString( nIndex++, resource.getVerb( ).name( ) );
-            daoUtil.setString( nIndex, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
-
+            daoUtil.setString( nIndex++, resourceRewriteUrl.getTarget( ) );
+            daoUtil.setString( nIndex++, resourceRewriteUrl.getValue( ) );
+            daoUtil.setString( nIndex, resourceRewriteUrl.getType( ).name( ) );
             daoUtil.executeUpdate( );
-            resource.setUuid( uuid );
+            resourceRewriteUrl.setUuid( uuid );
         }
 
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public Optional<Resource> load( String nKey, Plugin plugin )
+    public Optional<ResourceRewriteUrl> load( final String nKey, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_ID, plugin ) )
         {
             daoUtil.setString( 1, nKey );
             daoUtil.executeQuery( );
-            Resource resource = null;
+            ResourceRewriteUrl resourceRewriteUrl = null;
 
             if ( daoUtil.next( ) )
             {
-                resource = loadFromDaoUtil( daoUtil );
+                resourceRewriteUrl = loadFromDaoUtil( daoUtil );
             }
 
-            return Optional.ofNullable( resource );
+            return Optional.ofNullable( resourceRewriteUrl );
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public void delete( String nKey, Plugin plugin )
+    public void delete( final String nKey, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
@@ -136,53 +115,43 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public void store( Resource resource, Plugin plugin )
+    public void store( final ResourceRewriteUrl resourceRewriteUrl, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
             int nIndex = 1;
-
-            daoUtil.setString( nIndex++, resource.getPlan( ) != null ? resource.getPlan( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, resource.getPath( ) );
-            daoUtil.setString( nIndex++, resource.getVerb( ).name( ) );
-            daoUtil.setString( nIndex++, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
-            daoUtil.setString( nIndex, resource.getUuid( ) );
+            daoUtil.setString( nIndex++, resourceRewriteUrl.getTarget( ) );
+            daoUtil.setString( nIndex++, resourceRewriteUrl.getValue( ) );
+            daoUtil.setString( nIndex++, resourceRewriteUrl.getType( ).name( ) );
+            daoUtil.setString( nIndex, resourceRewriteUrl.getUuid( ) );
 
             daoUtil.executeUpdate( );
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public List<Resource> selectEntitiesList( Plugin plugin )
+    public List<ResourceRewriteUrl> selectEntitiesList( final Plugin plugin )
     {
-        List<Resource> resourceList = new ArrayList<>( );
+        List<ResourceRewriteUrl> resourceRewriteUrlList = new ArrayList<>( );
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
             daoUtil.executeQuery( );
 
             while ( daoUtil.next( ) )
             {
-                resourceList.add( loadFromDaoUtil( daoUtil ) );
+                resourceRewriteUrlList.add( loadFromDaoUtil( daoUtil ) );
             }
 
-            return resourceList;
+            return resourceRewriteUrlList;
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public List<String> selectIdEntitiesList( Plugin plugin, Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public List<String> selectIdEntitiesList( final Plugin plugin, final Map<String, String> mapFilterCriteria, final String strColumnToOrder,
+            final String strSortMode )
     {
-        List<String> resourceList = new ArrayList<>( );
+        List<String> idList = new ArrayList<>( );
 
         String strSelectStatement = prepareSelectStatement( SQL_QUERY_SELECTALL_ID, TABLE_NAME, mapFilterCriteria, strColumnToOrder, strSortMode );
 
@@ -204,42 +173,35 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
 
             while ( daoUtil.next( ) )
             {
-                resourceList.add( daoUtil.getString( 1 ) );
+                idList.add( daoUtil.getString( 1 ) );
             }
 
-            return resourceList;
+            return idList;
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public ReferenceList selectEntitiesReferenceList( Plugin plugin )
+    public ReferenceList selectEntitiesReferenceList( final Plugin plugin )
     {
-        ReferenceList resourceList = new ReferenceList( );
+        ReferenceList resourceRewriteUrlList = new ReferenceList( );
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
             daoUtil.executeQuery( );
 
             while ( daoUtil.next( ) )
             {
-                resourceList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+                resourceRewriteUrlList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
             }
 
-            return resourceList;
+            return resourceRewriteUrlList;
         }
     }
 
-    /**
-     * {@inheritDoc }
-     */
     @Override
-    public List<Resource> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
+    public List<ResourceRewriteUrl> selectEntitiesListByIds( final Plugin plugin, final List<String> listIds )
     {
-        List<Resource> resourceList = new ArrayList<>( );
-
-        StringBuilder builder = new StringBuilder( );
+        final List<ResourceRewriteUrl> resourceRewriteUrlList = new ArrayList<>( );
+        final StringBuilder builder = new StringBuilder( );
 
         if ( !listIds.isEmpty( ) )
         {
@@ -262,27 +224,25 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
                 daoUtil.executeQuery( );
                 while ( daoUtil.next( ) )
                 {
-                    resourceList.add( loadFromDaoUtil( daoUtil ) );
+                    resourceRewriteUrlList.add( loadFromDaoUtil( daoUtil ) );
                 }
             }
         }
-        return resourceList;
+        return resourceRewriteUrlList;
 
     }
 
-    private Resource loadFromDaoUtil( DAOUtil daoUtil )
+    private ResourceRewriteUrl loadFromDaoUtil( DAOUtil daoUtil )
     {
-
-        Resource resource = new Resource( );
+        ResourceRewriteUrl resourceRewriteUrl = new ResourceRewriteUrl( );
         int nIndex = 1;
 
-        resource.setUuid( daoUtil.getString( nIndex++ ) );
-        resource.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        resource.setPath( daoUtil.getString( nIndex++ ) );
-        final String verbStr = daoUtil.getString( nIndex++ );
-        resource.setVerb( verbStr != null ? ResourceVerbEnum.valueOf( verbStr ) : null );
-        resource.setRewriteUrl( ResourceRewriteUrlHome.findByPrimaryKey( daoUtil.getString( nIndex ) ).orElse( null ) );
+        resourceRewriteUrl.setUuid( daoUtil.getString( nIndex++ ) );
+        resourceRewriteUrl.setTarget( daoUtil.getString( nIndex++ ) );
+        resourceRewriteUrl.setValue( daoUtil.getString( nIndex++ ) );
+        resourceRewriteUrl.setType( ResourceRewriteUrlTypeEnum.valueOf( daoUtil.getString( nIndex ) ) );
 
-        return resource;
+        return resourceRewriteUrl;
     }
+
 }
