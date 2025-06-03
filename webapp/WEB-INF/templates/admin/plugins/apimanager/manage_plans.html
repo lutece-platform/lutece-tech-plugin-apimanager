@@ -81,6 +81,20 @@
 					<#else>
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=modifyPlan&uuid=${plan.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
+						<@offcanvas id='new_version_plan_${plan?index}' title='#i18n{apimanager.manage_plans.buttonNewVersion}' position='end' btnTitle='#i18n{apimanager.manage_plans.buttonNewVersion}' hideTitle=['all'] btnIcon='plus'>
+							<@tform class="new-version-plan-form border-bottom pb-3" method="post" name="new_version_plan_${plan?index}" action="jsp/admin/plugins/apimanager/ManagePlans.jsp?action=newVersion" >
+									<@messages errors=errors />
+									<@input type="hidden" name="uuid" value="${plan.uuid}"/>
+
+									<@formGroup labelFor='version-${plan?index}' labelKey='#i18n{apimanager.plan.labelVersion}' mandatory=true>
+										<@input type='text' id='new-version-${plan?index}' name='version'  maxlength=50  tabIndex='0' params='onchange="validateNewPlanVersion(\'new-version-${plan?index}\', \'${plan.version}\')" onkeyup="validateNewPlanVersion(\'new-version-${plan?index}\', \'${plan.version}\')"' />
+									</@formGroup>
+									<div class="new-version-validation-msg p-2 mb-2 bg-warning-subtle text-center fw-bold d-none">#i18n{apimanager.validation.plan.newVersion.same}</div>
+
+									<@button type='submit' title='OK' buttonIcon='device-floppy' />
+							</@tform>
+						</@offcanvas>
+
 						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_manageHistory=&filter_uuid_ref=${plan.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${plan?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?action=confirmRemovePlan&uuid=${plan.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />

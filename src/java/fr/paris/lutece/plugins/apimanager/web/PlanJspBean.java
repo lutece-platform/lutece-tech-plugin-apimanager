@@ -88,6 +88,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_HEADER_MATCHING_PREFIX = "header_matching_";
     private static final String PARAMETER_OAUTH_CONFIGURATION_PREFIX = "oauth_configuration_";
     private static final String PARAMETER_TEMPLATE_NAME = "template_name";
+    private static final String PARAMETER_VERSION = "version";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -128,6 +129,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String ACTION_MODIFY_PLAN = "modifyPlan";
     private static final String ACTION_REMOVE_PLAN = "removePlan";
     private static final String ACTION_CONFIRM_REMOVE_PLAN = "confirmRemovePlan";
+    private static final String ACTION_NEW_VERSION = "newVersion";
 
     // Infos
     private static final String INFO_PLAN_CREATED = "apimanager.info.plan.created";
@@ -415,6 +417,47 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         resetListId( );
 
         return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_UPDATED );
+    }
+
+    /**
+     * Clone a plan, and put a new version
+     *
+     * @param request
+     *            The Http request
+     * @return The Jsp URL of the process result
+     * @throws AccessDeniedException
+     */
+    @Action( ACTION_NEW_VERSION )
+    public String doNewVersion( HttpServletRequest request ) throws AccessDeniedException
+    {
+        final String uuid = request.getParameter( PARAMETER_ID_PLAN );
+        final String newVersion = request.getParameter( PARAMETER_VERSION );
+        if ( uuid == null || newVersion == null )
+        {
+            return redirect( request, "ManageApis.jsp" );
+        }
+        final Plan planToClone = PlanHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+        if ( planToClone.getVersion( ).equals( newVersion ) )
+        {
+            return redirect( request, "ManageApis.jsp" );
+        }
+
+        try
+        {
+            _plan = (Plan) BeanUtilsBean.getInstance( ).cloneBean( planToClone );
+        }
+        catch( final Exception e )
+        {
+            throw new AppException( "Error while cloning plan.", e );
+        }
+        _plan.setVersion( newVersion );
+        _plan.setUuid( null );
+
+        getService( ).create( _plan, getUser( ).getEmail( ) );
+
+        resetListId( );
+
+        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED );
     }
 
     private void populateAll( final HttpServletRequest request, final Locale locale )

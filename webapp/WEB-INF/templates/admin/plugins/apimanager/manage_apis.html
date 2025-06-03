@@ -130,3 +130,16 @@
 	</div>
   </@boxBody>
 </@box>
+<script type="application/javascript">
+	function validateNewPlanVersion(idInput, previousVersion) {
+		let newVersion = $('#' + idInput).val();
+		if(newVersion === previousVersion) {
+			$('#' + idInput).closest('form').find('.new-version-validation-msg').removeClass('d-none');
+			$('#' + idInput).focus();
+			$('#' + idInput).closest('form').find('button').attr('disabled', 'disabled');
+		} else {
+			$('#' + idInput).closest('form').find('button').removeAttr('disabled');
+			$('#' + idInput).closest('form').find('.new-version-validation-msg').addClass('d-none');
+		}
+	}
+</script>
