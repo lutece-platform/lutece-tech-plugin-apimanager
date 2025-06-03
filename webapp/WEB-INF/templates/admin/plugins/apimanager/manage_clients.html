@@ -55,7 +55,7 @@
             <th>#i18n{portal.util.labelActions}</th>
 			<th>#i18n{apimanager.manage_clients.columnSubscriptions}</th>
 			<#if show_generate_button>
-				<th>#i18n{apimanager.global.columnGenerate}</th>
+				<th>#i18n{apimanager.global.columnPublish}</th>
 			</#if>
         </tr>
         <@tableHeadBodySeparator />
@@ -92,7 +92,7 @@
 			</td>
 			<#if show_generate_button>
 				<td>
-					<@offcanvas id='generate_client_${client?index}' title='#i18n{apimanager.manage_clients.generateClientOauth2}' position='end' btnTitle='#i18n{apimanager.manage_clients.generateClientOauth2}' hideTitle=['all'] btnIcon='settings'>
+					<@offcanvas id='generate_client_${client?index}' title='#i18n{apimanager.manage_clients.publishClientOauth2}' position='end' btnTitle='#i18n{apimanager.manage_clients.publishClientOauth2}' hideTitle=['all'] btnIcon='settings'>
 						<@tform class="generate-client-form border-bottom pb-3" method="post" name="generate_client_${client?index}" action="jsp/admin/plugins/apimanager/ManageClients.jsp?action=generateOauth2" >
 								<@input type="hidden" name="uuid" value="${client.uuid}"/>
 

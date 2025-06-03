@@ -93,7 +93,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CLIENTS = "apimanager.manage_clients.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_CLIENT = "apimanager.modify_client.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_CLIENT = "apimanager.create_client.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_GENERATE_OAUTH2 = "apimanager.generate_oauth2.title";
+    private static final String PROPERTY_PAGE_TITLE_GENERATE_OAUTH2 = "apimanager.publish_oauth2.title";
 
     // Markers
     private static final String MARK_CLIENT_LIST = "client_list";
@@ -125,11 +125,11 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String INFO_CLIENT_CREATED = "apimanager.info.client.created";
     private static final String INFO_CLIENT_UPDATED = "apimanager.info.client.updated";
     private static final String INFO_CLIENT_REMOVED = "apimanager.info.client.removed";
-    private static final String INFO_CLIENT_OAUTH2_GENERATED = "apimanager.info.client.oauth2.generated";
+    private static final String INFO_CLIENT_OAUTH2_GENERATED = "apimanager.info.client.oauth2.published";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_CLIENT_OAUTH2_GENERATION = "Error generating OAuth2 Client";
+    private static final String ERROR_CLIENT_OAUTH2_GENERATION = "Error publishing OAuth2 Client";
 
     // Session variable to store working values
     private Client _client;

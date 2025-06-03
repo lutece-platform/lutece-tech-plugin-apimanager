@@ -58,7 +58,7 @@
 				<th>#i18n{apimanager.manage_subscriptions.columnApi}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{portal.util.labelActions}</th>
 				<#if show_generate_button>
-					<th>#i18n{apimanager.global.columnGenerate}</th>
+					<th>#i18n{apimanager.global.columnPublish}</th>
 				</#if>
 			</tr>
 			<@tableHeadBodySeparator />
@@ -86,7 +86,7 @@
 				</td>
 				<#if show_generate_button>
 					<td>
-						<@offcanvas id='generate_subscription_${subscription?index}' title='#i18n{apimanager.manage_subscriptions.generateApiManager}' position='end' btnTitle='#i18n{apimanager.manage_subscriptions.generateApiManager}' hideTitle=['all'] btnIcon='settings'>
+						<@offcanvas id='generate_subscription_${subscription?index}' title='#i18n{apimanager.manage_subscriptions.publishApiManager}' position='end' btnTitle='#i18n{apimanager.manage_subscriptions.publishApiManager}' hideTitle=['all'] btnIcon='settings'>
 							<@tform class="generate-subscription-form border-bottom pb-3" method="post" name="generate_subscription_${subscription?index}" action="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=generateApiManager" >
 									<@messages errors=errors />
 									<@input type="hidden" name="uuid_subscription" value="${subscription.uuid}"/>

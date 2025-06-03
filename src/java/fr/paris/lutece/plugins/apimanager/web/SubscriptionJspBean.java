@@ -121,11 +121,11 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     // Infos
     private static final String INFO_SUBSCRIPTION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_SUBSCRIPTION_REMOVED = "apimanager.info.subscription.removed";
-    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.generated";
+    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_API_MANAGER_GENERATION = "Error generating API manager";
+    private static final String ERROR_API_MANAGER_GENERATION = "Error publishing API manager";
 
     // Session variable to store working values
     private Subscription _subscription;
