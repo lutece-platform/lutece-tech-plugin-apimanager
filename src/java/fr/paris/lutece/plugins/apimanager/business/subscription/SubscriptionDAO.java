@@ -84,6 +84,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         _mapSql.remove( "plan" );
         _mapSql.remove( "client" );
         _mapSql.remove( "api" );
+        _mapSql.put( "uuid_client", "String" );
     }
 
     /**
