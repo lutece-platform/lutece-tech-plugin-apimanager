@@ -5,6 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd" >
 
     <bean id="apimanager.clientDAO" class="fr.paris.lutece.plugins.apimanager.business.client.ClientDAO" />
+    <bean id="apimanager.clientSecretDAO" class="fr.paris.lutece.plugins.apimanager.business.client.ClientSecretDAO" />
     <bean id="apimanager.subscriptionDAO" class="fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionDAO" />
     <bean id="apimanager.planDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanDAO" />
     <bean id="apimanager.resourceDAO" class="fr.paris.lutece.plugins.apimanager.business.resource.ResourceDAO" />

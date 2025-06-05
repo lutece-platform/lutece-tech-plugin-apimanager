@@ -52,6 +52,8 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "====================================" );
         AppLogService.info( "MOCK => generateOauth2Client called." );
         AppLogService.info( "client : " + client.getUuid( ) );
+        AppLogService.info( "client secrets : " + client.getSecretList( ).stream( ).map( secret -> secret.getEnvironnement( ) + " :: " + secret.getSecret( ) )
+                .collect( Collectors.toList( ) ) );
         AppLogService.info( "environment : " + environment );
         AppLogService.info( "comment : " + comment );
         AppLogService.info( "user : " + user );

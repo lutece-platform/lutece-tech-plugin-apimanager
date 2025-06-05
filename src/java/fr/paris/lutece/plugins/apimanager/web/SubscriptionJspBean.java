@@ -162,7 +162,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
-        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
+        model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS, TEMPLATE_MANAGE_SUBSCRIPTIONS, model );
@@ -248,7 +248,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_SUBSCRIPTION, _subscription );
-        model.put( MARK_ENVIRONMENT_LIST, AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
+        model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_SUBSCRIPTION ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_SUBSCRIPTION, TEMPLATE_CREATE_SUBSCRIPTION, model );

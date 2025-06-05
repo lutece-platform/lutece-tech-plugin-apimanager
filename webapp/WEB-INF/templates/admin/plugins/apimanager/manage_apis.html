@@ -95,7 +95,7 @@
 
 						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=downloadOpenapi&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.downloadOpenapi}' buttonIcon='download' hideTitle=['all']  />
 
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
+						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
 
 						<#if deleteLink!false>
 							<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveLink&uuid=${uuid_instance}&uuid_api=${api.uuid}' title='#i18n{apimanager.api.deleteLink}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />

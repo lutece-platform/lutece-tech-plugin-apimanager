@@ -48,6 +48,7 @@ import fr.paris.lutece.util.url.UrlItem;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -94,6 +95,10 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
     private String _strCurrentPageIndex;
     private int _nItemsPerPage;
     private String _strSortMode = "";
+
+    // Property enums
+    protected static final List<String> environmentList = Arrays
+            .asList( AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
 
     /**
      * Return a model that contains the list and paginator infos

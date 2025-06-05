@@ -35,10 +35,13 @@ package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
+import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
+import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ClientService extends AbstractService<Client>
 {
@@ -61,6 +64,10 @@ public class ClientService extends AbstractService<Client>
     public void create( final Client entity, final String user )
     {
         final String uuid = ClientHome.create( entity ).getUuid( );
+        entity.getSecretList( ).forEach( clientSecret -> {
+            clientSecret.setUuidClient( uuid );
+            ClientSecretHome.create( clientSecret );
+        } );
         this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
     }
 
@@ -92,4 +99,19 @@ public class ClientService extends AbstractService<Client>
         return ClientHome.getClientsListByIds( listIds );
     }
 
+    public Optional<Client> getClientById( final String clientId, final Optional<String> secretEnvToLoad )
+    {
+        final Optional<Client> clientOpt = ClientHome.findByPrimaryKey( clientId );
+        if ( secretEnvToLoad != null && secretEnvToLoad.isPresent( ) && clientOpt != null && clientOpt.isPresent( ) )
+        {
+            final ClientSecret clientSecret = ClientSecretHome.getByClientUuidAndEnv( clientId, secretEnvToLoad.get( ) );
+            if ( clientSecret != null )
+            {
+                final Client client = clientOpt.get( );
+                client.getSecretList( ).add( clientSecret );
+                return Optional.of( client );
+            }
+        }
+        return clientOpt;
+    }
 }

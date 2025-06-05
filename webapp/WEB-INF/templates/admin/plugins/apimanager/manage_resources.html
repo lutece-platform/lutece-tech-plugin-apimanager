@@ -56,7 +56,7 @@
 				<td>
 					<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?view=modifyResource&uuid=${resource.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageResources.jsp?view_manageHistory=&filter_uuid_ref=${resource.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${resource?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageResources.jsp?view_manageHistory=&filter_uuid_ref=${resource.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${resource?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
 
 					<@aButton href='jsp/admin/plugins/apimanager/ManageResources.jsp?action=confirmRemoveResource&uuid=${resource.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 

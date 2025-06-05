@@ -80,7 +80,7 @@
 					${subscription.plan.api.name!''}
 				</td>
 				<td>
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageHistory=&filter_uuid_ref=${subscription.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${subscription?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="reload" hideTitle=['all'] />
+					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageHistory=&filter_uuid_ref=${subscription.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${subscription?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
 
 					<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 				</td>

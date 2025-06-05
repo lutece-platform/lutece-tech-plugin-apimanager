@@ -38,6 +38,8 @@ import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the business class for the object Client
@@ -56,13 +58,12 @@ public class Client extends AbstractTagBean implements Serializable
     @Size( max = 50, message = "#i18n{apimanager.validation.client.ClientId.size}" )
     private String _strClientId;
 
-    @Size( max = 50, message = "#i18n{apimanager.validation.client.ClientSecret.size}" )
-    private String _strClientSecret;
-
     @Size( max = 50, message = "#i18n{apimanager.validation.client.CodeApp.size}" )
     private String _strCodeApp;
 
     private boolean _bTraceEnabled;
+
+    private List<ClientSecret> _secretList = new ArrayList<>( );
 
     /**
      * Returns the Uuid
@@ -128,27 +129,6 @@ public class Client extends AbstractTagBean implements Serializable
     }
 
     /**
-     * Returns the ClientSecret
-     * 
-     * @return The ClientSecret
-     */
-    public String getClientSecret( )
-    {
-        return _strClientSecret;
-    }
-
-    /**
-     * Sets the ClientSecret
-     * 
-     * @param strClientSecret
-     *            The ClientSecret
-     */
-    public void setClientSecret( String strClientSecret )
-    {
-        _strClientSecret = strClientSecret;
-    }
-
-    /**
      * Returns the CodeApp
      * 
      * @return The CodeApp
@@ -190,4 +170,24 @@ public class Client extends AbstractTagBean implements Serializable
         _bTraceEnabled = bTraceEnabled;
     }
 
+    /**
+     * Returns the SecretList
+     *
+     * @return The SecretList
+     */
+    public List<ClientSecret> getSecretList( )
+    {
+        return _secretList;
+    }
+
+    /**
+     * Sets the SecretList
+     *
+     * @param secretList
+     *            The SecretList
+     */
+    public void setSecretList( final List<ClientSecret> secretList )
+    {
+        _secretList = secretList;
+    }
 }
