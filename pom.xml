@@ -4,7 +4,7 @@
     <parent>
         <artifactId>lutece-global-pom</artifactId>
         <groupId>fr.paris.lutece.tools</groupId>
-        <version>6.1.0</version>
+        <version>7.0.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -44,10 +44,16 @@
             <type>lutece-core</type>
         </dependency>
     </dependencies>
-
+    
     <properties>
         <componentName>apimanager</componentName>
         <jiraProjectName>APIMANAGER</jiraProjectName>
         <jiraComponentId></jiraComponentId>
-    </properties>
+</properties>
+ <scm>
+    <connection>scm:git:https://github.com/lutece-platform/lutece-tech-plugin-apimanager.git</connection>
+    <developerConnection>scm:git:https://github.com/lutece-platform/lutece-tech-plugin-apimanager.git</developerConnection>
+    <url>https://github.com/lutece-platform/lutece-tech-plugin-apimanager.git</url>
+    <tag>HEAD</tag>
+ </scm>
 </project>
