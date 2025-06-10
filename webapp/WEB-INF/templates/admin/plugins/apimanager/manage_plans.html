@@ -77,7 +77,7 @@
 				</td>
 				<td>
 					<#if subscriptionMode!false>
-						<@button id='select-plan-button-${plan?index}' title='#i18n{apimanager.manage_subscriptions.selectPlan}' hideTitle=['all'] buttonIcon='check' params='onClick="$(\'#uuid_plan\').val(\'${plan.uuid}\'); $(\'button[data-bs-dismiss]\').click();"' />
+						<@button id='select-plan-button-${plan?index}' title='#i18n{apimanager.manage_subscriptions.selectPlan}' hideTitle=['all'] buttonIcon='check' params='onClick="$(\'#uuid_plan\').val(\'${plan.uuid}\'); $(\'#plan_name\').val(\'${plan.name}\'); $(\'button[data-bs-dismiss]\').click();"' />
 					<#else>
 						<@aButton href='jsp/admin/plugins/apimanager/ManagePlans.jsp?view=modifyPlan&uuid=${plan.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
 
