@@ -60,11 +60,11 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     // Constants
     private static final String TABLE_NAME = "apimanager_subscription";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, environnement, trace_enabled ) VALUES ( ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, environnement, trace_enabled, archived ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, environnement = ?, trace_enabled = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, environnement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_plan, environnement, trace_enabled FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_plan, environnement, trace_enabled, archived FROM apimanager_subscription";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -79,12 +79,12 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
      */
     public SubscriptionDAO( )
     {
-
         initMapSql( Subscription.class ); // Maps with name and type of each databases column associated to the business class attributes
         _mapSql.remove( "plan" );
         _mapSql.remove( "client" );
         _mapSql.remove( "api" );
         _mapSql.put( "uuid_client", "String" );
+        _mapSql.put( "uuid_plan", "String" );
     }
 
     /**
@@ -102,6 +102,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
             daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
+            daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
 
             daoUtil.executeUpdate( );
             subscription.setUuid( uuid );
@@ -157,6 +158,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
             daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
+            daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
             daoUtil.setString( nIndex, subscription.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -287,7 +289,8 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         subscription.setClient( ClientHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setEnvironnement( daoUtil.getString( nIndex++ ) );
-        subscription.setTraceEnabled( daoUtil.getBoolean( nIndex ) );
+        subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
+        subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );
 
         return subscription;
     }

@@ -38,5 +38,6 @@ public enum HistoryTypeEnum
     CREATE,
     UPDATE,
     DELETE,
+    ARCHIVE,
     GENERATE
 }

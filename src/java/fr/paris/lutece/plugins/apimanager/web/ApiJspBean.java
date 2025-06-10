@@ -42,12 +42,18 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.ApiService;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
+import fr.paris.lutece.plugins.apimanager.service.PlanService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
+import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
@@ -96,6 +102,11 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     private static final String PARAMETER_ID_INSTANCE = "uuid_instance";
     private static final String PARAMETER_SHOW_INSTANCES = "showInstances";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
+    private static final String PARAMETER_ARCHIVED = "archived";
+
+    // Filters
+    private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
+    private static final String FILTER_ARCHIVED = "archived";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_APIS = "apimanager.manage_apis.pageTitle";
@@ -110,7 +121,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     private static final String JSP_MANAGE_APIS = "jsp/admin/plugins/apimanager/ManageApis.jsp";
 
     // Properties
-    private static final String MESSAGE_CONFIRM_REMOVE_API = "apimanager.message.confirmRemoveApi";
+    private static final String MESSAGE_CONFIRM_ARCHIVE_API = "apimanager.message.confirmArchiveApi";
     private static final String MESSAGE_CONFIRM_REMOVE_LINK = "apimanager.message.confirmRemoveLink";
     private static final String TEMPLATE_NAME_PROP = "apimanager.plan.template.{i}.template.name";
 
@@ -126,9 +137,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     // Actions
     private static final String ACTION_CREATE_API = "createApi";
     private static final String ACTION_MODIFY_API = "modifyApi";
-    private static final String ACTION_REMOVE_API = "removeApi";
+    private static final String ACTION_ARCHIVE_API = "archiveApi";
     private static final String ACTION_REMOVE_LINK = "removeLink";
-    private static final String ACTION_CONFIRM_REMOVE_API = "confirmRemoveApi";
+    private static final String ACTION_CONFIRM_ARCHIVE_API = "confirmArchiveApi";
     private static final String ACTION_CONFIRM_REMOVE_LINK = "confirmRemoveLink";
     private static final String ACTION_DOWNLOAD_OPENAPI = "downloadOpenapi";
     private static final String ACTION_LINK_INSTANCE = "linkInstance";
@@ -136,7 +147,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     // Infos
     private static final String INFO_API_CREATED = "apimanager.info.api.created";
     private static final String INFO_API_UPDATED = "apimanager.info.api.updated";
-    private static final String INFO_API_REMOVED = "apimanager.info.api.removed";
+    private static final String INFO_API_ARCHIVED = "apimanager.info.api.archived";
     private static final String INFO_INSTANCE_LINKED = "apimanager.info.api.instanceLinked";
     private static final String INFO_LINK_REMOVED = "apimanager.info.api.linkRemoved";
 
@@ -149,6 +160,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
 
+    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean( IConfigGeneratorService.BEAN_NAME );
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper( ).enable( SerializationFeature.INDENT_OUTPUT );
 
     /**
@@ -188,9 +200,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                if ( _mapFilterCriteria.containsKey( PARAMETER_ID_INSTANCE ) )
+                final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
+                if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
                 {
-                    final String uuidInstance = _mapFilterCriteria.get( PARAMETER_ID_INSTANCE );
+                    criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
+                }
+                if ( criterias.containsKey( PARAMETER_ID_INSTANCE ) )
+                {
+                    final String uuidInstance = criterias.get( PARAMETER_ID_INSTANCE );
                     _listIdApis = getService( ).getIdApisListLinkedToInstanceUuid( uuidInstance );
                     model.put( PARAMETER_ID_INSTANCE, uuidInstance );
                     model.put( PARAMETER_SHOW_INSTANCES, false );
@@ -198,7 +215,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
                 }
                 else
                 {
-                    _listIdApis = getService( ).getIdEntitiesList( _mapFilterCriteria );
+                    _listIdApis = getService( ).getIdEntitiesList( criterias );
                 }
             }
 
@@ -229,7 +246,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     @Override
     List<Api> getItemsFromIds( List<String> listIds )
     {
-        List<Api> listApi = getService( ).getEntitiesListByIds( listIds );
+        final List<Api> listApi = getService( ).getEntitiesListByIds( listIds );
 
         // keep original order
         return listApi.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
@@ -319,14 +336,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
      *            The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_REMOVE_API )
-    public String getConfirmRemoveApi( HttpServletRequest request )
+    @Action( ACTION_CONFIRM_ARCHIVE_API )
+    public String getConfirmArchiveApi( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_API );
-        UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_API ) );
+        UrlItem url = new UrlItem( getActionUrl( ACTION_ARCHIVE_API ) );
         url.addParameter( PARAMETER_ID_API, uuid );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_API, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_ARCHIVE_API, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
         return redirect( request, strMessageUrl );
     }
@@ -338,13 +355,30 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
      *            The Http request
      * @return the jsp URL to display the form to manage apis
      */
-    @Action( ACTION_REMOVE_API )
-    public String doRemoveApi( HttpServletRequest request )
+    @Action( ACTION_ARCHIVE_API )
+    public String doArchiveApi( HttpServletRequest request )
     {
-        String uuid = request.getParameter( PARAMETER_ID_API );
+        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
-        getService( ).delete( uuid, getUser( ).getEmail( ) );
-        addInfo( INFO_API_REMOVED, getLocale( ) );
+        // DELETE PUBLISHED CONFIGS AND ARCHIVE SUBSCRIPTIONS
+        // get all plans linked to this API, if any
+        PlanService.getInstance( ).getIdEntitiesList( Map.of( "uuid_api", apiUuid ) ).forEach( planUuid -> {
+            // for each plan, get the subscriptions, if any
+            SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", planUuid ) ).forEach( subscriptionUuid -> {
+                SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
+                    // for each subscription, send a delete request, and archive the subscription
+                    _configGeneratorService.deleteApiManager( subscription.getClient( ), subscription.getPlan( ),
+                            ResourceService.getInstance( ).getResourcesByPlanUuid( planUuid ),
+                            InstanceService.getInstance( ).getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( apiUuid ) ),
+                            subscription.getEnvironnement( ), getUser( ).getEmail( ) );
+                    SubscriptionService.getInstance( ).archive( subscriptionUuid, getUser( ).getEmail( ) );
+                } );
+            } );
+        } );
+
+        getService( ).archive( apiUuid, getUser( ).getEmail( ) );
+        addInfo( INFO_API_ARCHIVED, getLocale( ) );
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_APIS );

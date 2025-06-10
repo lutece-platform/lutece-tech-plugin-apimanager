@@ -39,7 +39,11 @@ import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.InstanceService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.plugins.apimanager.service.utils.PasswordUtils;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -90,6 +94,10 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String PARAMETER_RELOAD = "reload";
     private static final String PARAMETER_SECRET_PREFIX = "secret_";
 
+    // Filters
+    private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
+    private static final String FILTER_ARCHIVED = "archived";
+
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CLIENTS = "apimanager.manage_clients.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_CLIENT = "apimanager.modify_client.pageTitle";
@@ -106,7 +114,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String JSP_MANAGE_CLIENTS = "jsp/admin/plugins/apimanager/ManageClients.jsp";
 
     // Properties
-    private static final String MESSAGE_CONFIRM_REMOVE_CLIENT = "apimanager.message.confirmRemoveClient";
+    private static final String MESSAGE_CONFIRM_ARCHIVE_CLIENT = "apimanager.message.confirmArchiveClient";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.client.attribute.";
@@ -120,15 +128,15 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     // Actions
     private static final String ACTION_CREATE_CLIENT = "createClient";
     private static final String ACTION_MODIFY_CLIENT = "modifyClient";
-    private static final String ACTION_REMOVE_CLIENT = "removeClient";
-    private static final String ACTION_CONFIRM_REMOVE_CLIENT = "confirmRemoveClient";
+    private static final String ACTION_ARCHIVE_CLIENT = "archiveClient";
+    private static final String ACTION_CONFIRM_ARCHIVE_CLIENT = "confirmArchiveClient";
     private static final String ACTION_GENERATE_OAUTH2 = "generateOauth2";
     private static final String ACTION_GENERATE_NEW_SECRETS = "generateNewSecrets";
 
     // Infos
     private static final String INFO_CLIENT_CREATED = "apimanager.info.client.created";
     private static final String INFO_CLIENT_UPDATED = "apimanager.info.client.updated";
-    private static final String INFO_CLIENT_REMOVED = "apimanager.info.client.removed";
+    private static final String INFO_CLIENT_ARCHIVED = "apimanager.info.client.archived";
     private static final String INFO_CLIENT_OAUTH2_GENERATED = "apimanager.info.client.oauth2.published";
 
     // Errors
@@ -184,7 +192,14 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdClients = getService( ).getIdEntitiesList( _mapFilterCriteria );
+                final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
+                if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
+                {
+                    // DEFAULT : display only non-archived clients - we copy the map to add the criteria so that the "archived" filter doesn't show up on the
+                    // page
+                    criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
+                }
+                _listIdClients = getService( ).getIdEntitiesList( criterias );
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
@@ -210,8 +225,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     @Override
     List<Client> getItemsFromIds( List<String> listIds )
     {
-        List<Client> listClient = getService( ).getEntitiesListByIds( listIds );
-
+        final List<Client> listClient = getService( ).getEntitiesListByIds( listIds );
         // keep original order
         return listClient.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
     }
@@ -307,14 +321,14 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
      *            The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_REMOVE_CLIENT )
-    public String getConfirmRemoveClient( HttpServletRequest request )
+    @Action( ACTION_CONFIRM_ARCHIVE_CLIENT )
+    public String getConfirmArchiveClient( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_CLIENT );
-        UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_CLIENT ) );
+        UrlItem url = new UrlItem( getActionUrl( ACTION_ARCHIVE_CLIENT ) );
         url.addParameter( PARAMETER_ID_CLIENT, uuid );
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_CLIENT, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_ARCHIVE_CLIENT, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
         return redirect( request, strMessageUrl );
     }
@@ -326,13 +340,33 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
      *            The Http request
      * @return the jsp URL to display the form to manage clients
      */
-    @Action( ACTION_REMOVE_CLIENT )
-    public String doRemoveClient( HttpServletRequest request )
+    @Action( ACTION_ARCHIVE_CLIENT )
+    public String doArchiveClient( HttpServletRequest request )
     {
-        String uuid = request.getParameter( PARAMETER_ID_CLIENT );
+        final String clientUuid = request.getParameter( PARAMETER_ID_CLIENT );
+        final Client client = ClientHome.findByPrimaryKey( clientUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
-        getService( ).delete( uuid, getUser( ).getEmail( ) );
-        addInfo( INFO_CLIENT_REMOVED, getLocale( ) );
+        // DELETE PUBLISHED CONFIG
+        // delete oauth2 client for all env
+        environmentList.forEach( env -> _configGeneratorService.deleteOauth2Client( client, env, getUser( ).getEmail( ) ) );
+        // get all client subscriptions
+        SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_client", clientUuid ) ).forEach( subscriptionUuid -> {
+            SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
+                // for each subscription, send a delete request and archive the subscription
+                _configGeneratorService.deleteApiManager( client, subscription.getPlan( ),
+                        ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getPlan( ).getUuid( ) ),
+                        InstanceService.getInstance( ).getEntitiesListByIds(
+                                InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( subscription.getPlan( ).getApi( ).getUuid( ) ) ),
+                        subscription.getEnvironnement( ), getUser( ).getEmail( ) );
+                if ( !subscription.getArchived( ) )
+                {
+                    SubscriptionService.getInstance( ).archive( subscriptionUuid, getUser( ).getEmail( ) );
+                }
+            } );
+        } );
+
+        getService( ).archive( clientUuid, getUser( ).getEmail( ) );
+        addInfo( INFO_CLIENT_ARCHIVED, getLocale( ) );
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_CLIENTS );

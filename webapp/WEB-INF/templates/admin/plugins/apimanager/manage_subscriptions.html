@@ -31,7 +31,10 @@
 					<@formGroup labelFor='filter_trace_enabled' >										
 						<@checkBox id='filter_trace_enabled' name='filter_trace_enabled' value='1' labelKey='#i18n{apimanager.manage_subscriptions.columnTraceEnabled}' tabIndex='3' />
 			    	</@formGroup>
-			
+					<@formGroup labelFor='filter_display_archived' >
+						<@checkBox id='filter_display_archived' name='filter_display_archived' value='1' labelKey='#i18n{apimanager.global.filter.display.archived}' tabIndex='6' />
+					</@formGroup>
+
 		<@button type='submit' title='Search' buttonIcon='search'/>							
     </@tform>
     </@offcanvas>
@@ -63,7 +66,7 @@
 			</tr>
 			<@tableHeadBodySeparator />
 			<#list subscription_list as subscription >
-			<tr>
+			<tr <#if subscription.archived!false>class="text-decoration-line-through" title='#i18n{apimanager.info.subscription.archived}'</#if>>
 				<td>
 					${subscription.environnement!''}
 				</td>
@@ -81,30 +84,35 @@
 				</td>
 				<td>
 					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view_manageHistory=&filter_uuid_ref=${subscription.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${subscription?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
-
-					<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+					<#if subscription.archived!false>
+					<#else>
+						<@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+					</#if>
 				</td>
 				<#if show_generate_button>
 					<td>
-						<@offcanvas id='generate_subscription_${subscription?index}' title='#i18n{apimanager.manage_subscriptions.publishApiManager}' position='end' btnTitle='#i18n{apimanager.manage_subscriptions.publishApiManager}' hideTitle=['all'] btnIcon='settings'>
-							<@tform class="generate-subscription-form border-bottom pb-3" method="post" name="generate_subscription_${subscription?index}" action="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=generateApiManager" >
-									<@messages errors=errors />
-									<@input type="hidden" name="uuid_subscription" value="${subscription.uuid}"/>
+						<#if subscription.archived!false>
+						<#else>
+							<@offcanvas id='generate_subscription_${subscription?index}' title='#i18n{apimanager.manage_subscriptions.publishApiManager}' position='end' btnTitle='#i18n{apimanager.manage_subscriptions.publishApiManager}' hideTitle=['all'] btnIcon='settings'>
+								<@tform class="generate-subscription-form border-bottom pb-3" method="post" name="generate_subscription_${subscription?index}" action="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=generateApiManager" >
+										<@messages errors=errors />
+										<@input type="hidden" name="uuid_subscription" value="${subscription.uuid}"/>
 
-									<@formGroup labelFor='environnement-${subscription?index}' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
-										<select id="environnement-${subscription?index}" name="environnement" class="form-control">
-											<#list environment_list as environment>
-												<option value="${environment}">${environment}</option>
-											</#list>
-										</select>
-									</@formGroup>
-									<@formGroup labelFor='comment-${subscription?index}' labelKey='#i18n{apimanager.client.labelComment}' mandatory=true>
-										<@input type='textarea' id='comment-${subscription?index}' name='comment'  maxlength=500  tabIndex='0' />
-									</@formGroup>
+										<@formGroup labelFor='environnement-${subscription?index}' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
+											<select id="environnement-${subscription?index}" name="environnement" class="form-control">
+												<#list environment_list as environment>
+													<option value="${environment}">${environment}</option>
+												</#list>
+											</select>
+										</@formGroup>
+										<@formGroup labelFor='comment-${subscription?index}' labelKey='#i18n{apimanager.client.labelComment}' mandatory=true>
+											<@input type='textarea' id='comment-${subscription?index}' name='comment'  maxlength=500  tabIndex='0' />
+										</@formGroup>
 
-									<@button id='generate-subscription-submit-btn-${subscription?index}' type='button' title='OK' buttonIcon='device-floppy' params='onclick="loadAndSubmit(\'generate-subscription-submit-btn-${subscription?index}\')"'/>
-							</@tform>
-						</@offcanvas>
+										<@button id='generate-subscription-submit-btn-${subscription?index}' type='button' title='OK' buttonIcon='device-floppy' params='onclick="loadAndSubmit(\'generate-subscription-submit-btn-${subscription?index}\')"'/>
+								</@tform>
+							</@offcanvas>
+						</#if>
 					</td>
 				</#if>
 			</tr>

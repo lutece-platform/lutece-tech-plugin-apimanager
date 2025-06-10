@@ -85,6 +85,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private static final String PARAMETER_VERB_NAME = "verb_name";
     private static final String PARAMETER_REWRITE_URL_PREFIX = "rewrite_url_";
     private static final String PARAMETER_REWRITE_URL_TYPE_NAME = "rewrite_url_type_name";
+    private static final String PARAMETER_API_ARCHIVED = "api_archived";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_RESOURCES = "apimanager.manage_resources.pageTitle";
@@ -168,7 +169,10 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         }
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_RESOURCE_LIST, _listIdResources, JSP_MANAGE_RESOURCES );
-
+        if ( request.getParameterMap( ).containsKey( PARAMETER_API_ARCHIVED ) )
+        {
+            model.put( PARAMETER_API_ARCHIVED, true );
+        }
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_RESOURCES, TEMPLATE_MANAGE_RESOURCES, model );

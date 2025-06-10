@@ -89,6 +89,10 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String PARAMETER_COMMENT = "comment";
     private static final String PARAMETER_UUID_SUBSCRIPTION = "uuid_subscription";
 
+    // Filters
+    private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
+    private static final String FILTER_ARCHIVED = "archived";
+
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS = "apimanager.manage_subscriptions.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_SUBSCRIPTION = "apimanager.create_subscription.pageTitle";
@@ -152,7 +156,12 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         {
             _optionOrderBy = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
             _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-            _listIdSubscriptions = getService( ).getIdEntitiesList( _mapFilterCriteria );
+            final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
+            if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
+            {
+                criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
+            }
+            _listIdSubscriptions = getService( ).getIdEntitiesList( criterias );
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
@@ -178,7 +187,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     @Override
     List<Subscription> getItemsFromIds( List<String> listIds )
     {
-        List<Subscription> listSubscription = getService( ).getEntitiesListByIds( listIds );
+        final List<Subscription> listSubscription = getService( ).getEntitiesListByIds( listIds );
         Comparator<Subscription> comparator = Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) );
         if ( StringUtils.isBlank( _optionOrderBy ) )
         {
@@ -203,11 +212,11 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             comparator = Comparator.comparing( Subscription::getClient, Comparator.comparing( Client::getName ) );
         }
 
-        if ( getSortMode( ).equals( SORT_ATTRIBUTES_ASC ) )
+        if ( getSortMode( ).equals( SORT_ATTRIBUTES_DESC ) )
         {
-            return listSubscription.stream( ).sorted( comparator ).collect( Collectors.toList( ) );
+            comparator = comparator.reversed( );
         }
-        return listSubscription.stream( ).sorted( comparator.reversed( ) ).collect( Collectors.toList( ) );
+        return listSubscription.stream( ).sorted( comparator ).collect( Collectors.toList( ) );
     }
 
     @Override

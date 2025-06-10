@@ -89,6 +89,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_OAUTH_CONFIGURATION_PREFIX = "oauth_configuration_";
     private static final String PARAMETER_TEMPLATE_NAME = "template_name";
     private static final String PARAMETER_VERSION = "version";
+    private static final String PARAMETER_API_ARCHIVED = "api_archived";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -211,6 +212,10 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         if ( subscriptionMode != null )
         {
             model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean( subscriptionMode ) );
+        }
+        if ( request.getParameterMap( ).containsKey( PARAMETER_API_ARCHIVED ) )
+        {
+            model.put( PARAMETER_API_ARCHIVED, true );
         }
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs

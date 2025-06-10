@@ -78,13 +78,20 @@ public class ClientService extends AbstractService<Client>
         this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
     }
 
+    /**
+     * The delete function is not available for client. This method performs the archive action. You shouldn't use this method.
+     *
+     * @param uuid
+     *            the client uuid
+     * @param user
+     *            the user
+     * @see ClientService#archive(String, String)
+     */
     @Override
+    @Deprecated
     public void delete( final String uuid, final String user )
     {
-        final List<String> clientSubscriptionIds = SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_client", uuid ) );
-        clientSubscriptionIds.forEach( subscriptionId -> SubscriptionService.getInstance( ).delete( subscriptionId, user ) );
-        ClientHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        this.archive( uuid, user );
     }
 
     @Override
@@ -113,5 +120,14 @@ public class ClientService extends AbstractService<Client>
             }
         }
         return clientOpt;
+    }
+
+    public void archive( final String uuid, final String user )
+    {
+        ClientHome.findByPrimaryKey( uuid ).ifPresent( client -> {
+            client.setArchived( true );
+            ClientHome.update( client );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+        } );
     }
 }

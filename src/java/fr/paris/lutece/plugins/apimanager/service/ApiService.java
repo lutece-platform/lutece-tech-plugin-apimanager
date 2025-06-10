@@ -72,17 +72,20 @@ public class ApiService extends AbstractService<Api>
         this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
     }
 
+    /**
+     * The delete function is not available for API. This method performs the archive action. You shouldn't use this method.
+     * 
+     * @param uuid
+     *            the api uuid
+     * @param user
+     *            the user
+     * @see ApiService#archive(String, String)
+     */
+    @Deprecated
     @Override
     public void delete( final String uuid, final String user )
     {
-        ApiHome.findByPrimaryKey( uuid ).ifPresent( api -> {
-            // Delete API plans
-            PlanService.getInstance( ).getIdEntitiesList( Map.of( "uuid_api", uuid ) ).forEach( planId -> PlanService.getInstance( ).delete( planId, user ) );
-
-            // Delete API
-            ApiHome.remove( uuid );
-            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
-        } );
+        this.archive( uuid, user );
     }
 
     @Override
@@ -136,5 +139,23 @@ public class ApiService extends AbstractService<Api>
         ApiHome.linkInstance( api, instanceUuid );
         this.addNewHistory( api.getUuid( ), HistoryTypeEnum.UPDATE, user );
         this.addNewHistory( instanceUuid, HistoryTypeEnum.UPDATE, user );
+    }
+
+    /**
+     * archives an API
+     * 
+     * @param uuid
+     *            the api uuid
+     * @param user
+     *            the user
+     */
+    public void archive( final String uuid, final String user )
+    {
+        ApiHome.findByPrimaryKey( uuid ).ifPresent( api -> {
+            api.setArchived( true );
+            ApiHome.update( api );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+        } );
+
     }
 }

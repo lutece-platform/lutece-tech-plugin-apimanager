@@ -17,7 +17,7 @@
 					<span class="badge bg-success"> ${history.type.name()!} </span>
 				<#elseif history.type.name() == "UPDATE">
 					<span class="badge bg-warning"> ${history.type.name()!} </span>
-				<#elseif history.type.name() == "DELETE">
+				<#elseif history.type.name() == "DELETE" || history.type.name() == "ARCHIVE">
 					<span class="badge bg-danger"> ${history.type.name()!} </span>
 				<#else>
 					<span class="badge bg-info"> ${history.type.name()!} </span>

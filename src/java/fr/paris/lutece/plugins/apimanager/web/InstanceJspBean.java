@@ -92,6 +92,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String PARAMETER_LINK_MODE = "linkMode";
     private static final String PARAMETER_SHOW_APIS = "showApis";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
+    private static final String PARAMETER_API_ARCHIVED = "api_archived";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_INSTANCES = "apimanager.manage_instances.pageTitle";
@@ -192,6 +193,10 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
         }
 
         model.putAll( getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES ) );
+        if ( request.getParameterMap( ).containsKey( PARAMETER_API_ARCHIVED ) )
+        {
+            model.put( PARAMETER_API_ARCHIVED, true );
+        }
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 

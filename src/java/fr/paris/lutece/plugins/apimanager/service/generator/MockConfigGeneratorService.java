@@ -112,15 +112,15 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "WAIT 2 SECONDS" );
         AppLogService.info( "====================================" );
 
-        try
-        {
-            TimeUnit.SECONDS.sleep( 2 );
-        }
-        catch( InterruptedException e )
-        {
-            throw new AppException( "Sleep failed", e );
-        }
-        throw new AppException( "Mock exception happened : you should see this on screen" );
+        // try
+        // {
+        // TimeUnit.SECONDS.sleep( 2 );
+        // }
+        // catch( InterruptedException e )
+        // {
+        // throw new AppException( "Sleep failed", e );
+        // }
+        // throw new AppException( "Mock exception happened : you should see this on screen" );
     }
 
     @Override
@@ -139,15 +139,15 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         AppLogService.info( "WAIT 2 SECONDS" );
         AppLogService.info( "====================================" );
 
-        try
-        {
-            TimeUnit.SECONDS.sleep( 2 );
-        }
-        catch( InterruptedException e )
-        {
-            throw new AppException( "Sleep failed", e );
-        }
-        throw new AppException( "Mock exception happened : you should see this on screen" );
+        // try
+        // {
+        // TimeUnit.SECONDS.sleep( 2 );
+        // }
+        // catch( InterruptedException e )
+        // {
+        // throw new AppException( "Sleep failed", e );
+        // }
+        // throw new AppException( "Mock exception happened : you should see this on screen" );
 
     }
 }

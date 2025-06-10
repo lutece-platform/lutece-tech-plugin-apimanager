@@ -65,6 +65,8 @@ public class Api extends AbstractTagBean implements Serializable
 
     private Map<String, Object> _openapi;
 
+    private boolean _bArchived;
+
     /**
      * Returns the Uuid
      * 
@@ -231,6 +233,27 @@ public class Api extends AbstractTagBean implements Serializable
     public void setOpenapi( Map<String, Object> openapi )
     {
         _openapi = openapi;
+    }
+
+    /**
+     * get the archived flag
+     * 
+     * @return the archived flag
+     */
+    public boolean getArchived( )
+    {
+        return _bArchived;
+    }
+
+    /**
+     * set the archived flag
+     * 
+     * @param bArchived
+     *            the archived flag
+     */
+    public void setArchived( final boolean bArchived )
+    {
+        _bArchived = bArchived;
     }
 
 }

@@ -63,6 +63,8 @@ public class Client extends AbstractTagBean implements Serializable
 
     private boolean _bTraceEnabled;
 
+    private boolean _bArchived;
+
     private List<ClientSecret> _secretList = new ArrayList<>( );
 
     /**
@@ -168,6 +170,27 @@ public class Client extends AbstractTagBean implements Serializable
     public void setTraceEnabled( boolean bTraceEnabled )
     {
         _bTraceEnabled = bTraceEnabled;
+    }
+
+    /**
+     * get the archived flag
+     * 
+     * @return the archived flag
+     */
+    public boolean getArchived( )
+    {
+        return _bArchived;
+    }
+
+    /**
+     * set the archived flag
+     * 
+     * @param bArchived
+     *            the archived flag
+     */
+    public void setArchived( final boolean bArchived )
+    {
+        _bArchived = bArchived;
     }
 
     /**

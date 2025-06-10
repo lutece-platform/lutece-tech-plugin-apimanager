@@ -90,4 +90,13 @@ public class SubscriptionService extends AbstractService<Subscription>
     {
         return SubscriptionHome.getSubscriptionsListByIds( listIds );
     }
+
+    public void archive( final String uuid, final String user )
+    {
+        SubscriptionHome.findByPrimaryKey( uuid ).ifPresent( subscription -> {
+            subscription.setArchived( true );
+            SubscriptionHome.update( subscription );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+        } );
+    }
 }
