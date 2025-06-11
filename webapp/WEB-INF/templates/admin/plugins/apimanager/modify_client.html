@@ -12,9 +12,6 @@
 			<@formGroup labelFor='client_id' labelKey='#i18n{apimanager.client.labelClientId}' mandatory=true>
 				<@input type='text' id='client_id' name='client_id'  maxlength=50 value=client.clientId!'' tabIndex='1' />
 			</@formGroup>
-			<@formGroup labelFor='client_secret' labelKey='#i18n{apimanager.client.labelClientSecret}' mandatory=true>
-				<@input type='password' id='client_secret' name='client_secret'  maxlength=50 value=client.clientSecret!'' tabIndex='2' />
-			</@formGroup>
 			<@formGroup labelFor='code_app' labelKey='#i18n{apimanager.client.labelCodeApp}' mandatory=true>
 				<@input type='text' id='code_app' name='code_app'  maxlength=50 value=client.codeApp!'' tabIndex='3' />
 			</@formGroup>
