@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
@@ -250,8 +251,8 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     public String getCreateSubscription( HttpServletRequest request )
     {
         _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        final Client client = new Client( );
-        client.setUuid( request.getParameter( PARAMETER_ID_CLIENT ) );
+        final Client client = ClientHome.findByPrimaryKey( request.getParameter( PARAMETER_ID_CLIENT ) )
+                .orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         _subscription.setClient( client );
         _subscription.setPlan( new Plan( ) );
 

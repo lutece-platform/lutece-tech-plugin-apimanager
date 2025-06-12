@@ -7,14 +7,29 @@
         <@input type="hidden" id="uuid" name="uuid"/>
         <@input type="hidden" value="${token}" name="token" />
 
-			<@formGroup labelFor='uuid_client' labelKey='#i18n{apimanager.subscription.labelIdClient}' mandatory=true>
-					<@input type='text' id='uuid_client' name='uuid_client'  value=subscription.client.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
-			</@formGroup>
-			<@formGroup labelFor='uuid_plan' labelKey='#i18n{apimanager.subscription.labelIdPlan}' mandatory=true>
-					<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageApis=&subscriptionMode=true" targetElement="#api-result-container" id="list-api" title=tags btnTitle="#i18n{apimanager.manage_subscriptions.selectPlan}" size="auto" bodyClass="p-3" btnIcon="arrow-right" />
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-id-badge"></i> Client</h2>
+				<div class="row gx-2">
+					<@formGroup class='col-3' labelFor='uuid_client' labelKey='#i18n{apimanager.subscription.labelIdClient}' mandatory=true>
+							<@input type='text' id='uuid_client' name='uuid_client'  value=subscription.client.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
+					</@formGroup>
+					<@formGroup class='col-3' labelFor='client_name' labelKey='#i18n{apimanager.client.labelName}'>
+							<@input type='text' id='client_name' name='client_name'  value=subscription.client.name!'' tabIndex='0' readonly=true class='form-control-plaintext' params='disabled' />
+					</@formGroup>
+				</div>
+			</div>
 
-					<@input type='text' id='uuid_plan' name='uuid_plan' tabIndex='1' readonly=true class='form-control-plaintext' />
-			</@formGroup>
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-list"></i> Plan</h2> <@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageApis=&subscriptionMode=true" targetElement="#api-result-container" id="list-api" title=tags btnTitle="#i18n{apimanager.manage_subscriptions.selectPlan}" size="auto" bodyClass="p-3" btnClass="mb-2" btnIcon="arrow-right" />
+				<div class="row gx-2">
+					<@formGroup class='col-3' labelFor='uuid_plan' labelKey='#i18n{apimanager.subscription.labelIdPlan}' mandatory=true>
+						<@input type='text' id='uuid_plan' name='uuid_plan' tabIndex='1' readonly=true class='form-control-plaintext' />
+					</@formGroup>
+					<@formGroup class='col-3' labelFor='plan_name' labelKey='#i18n{apimanager.plan.labelName}'>
+						<@input type='text' id='plan_name' name='plan_name' tabIndex='0' readonly=true class='form-control-plaintext' params='disabled' />
+					</@formGroup>
+				</div>
+			</div>
 			<@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
 				<select id="environnement" name="environnement" class="form-control">
 					<#list environment_list as environment>

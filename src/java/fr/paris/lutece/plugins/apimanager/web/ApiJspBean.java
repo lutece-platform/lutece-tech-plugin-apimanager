@@ -103,6 +103,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     private static final String PARAMETER_SHOW_INSTANCES = "showInstances";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
     private static final String PARAMETER_ARCHIVED = "archived";
+    private static final String PARAMETER_RELOAD = "reload";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -177,6 +178,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
         if ( infoMsg != null )
         {
             addInfo( infoMsg, getLocale( ) );
+            if ( "true".equals( request.getParameter( PARAMETER_RELOAD ) ) )
+            {
+                return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, Map.of( ) );
+            }
             return redirectView( request, VIEW_MANAGE_APIS );
         }
 
