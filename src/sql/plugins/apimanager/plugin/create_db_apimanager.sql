@@ -216,3 +216,61 @@ ALTER TABLE apimanager_subscription
 ALTER TABLE apimanager_subscription
     ADD CONSTRAINT fk_subscription_uuid_plan FOREIGN KEY (uuid_plan) REFERENCES apimanager_plan (uuid);
 
+
+-- LUT-30042 - [API - Plan] Suppression des champs RateLimiting
+--
+alter table apimanager_plan DROP FOREIGN KEY fk_plan_uuid_rate_limiting;
+alter table apimanager_plan drop column uuid_rate_limiting;
+drop table apimanager_plan_rate_limiting;
+
+alter table apimanager_plan add rate_limiting_enabled boolean default false;
+alter table apimanager_plan add rate_limiting_template varchar(100);
+
+
+-- LUT-30043 - [API - Plan] Suppression des champs ClientHttp
+--
+alter table apimanager_plan DROP FOREIGN KEY fk_plan_uuid_client_http_configuration;
+alter table apimanager_plan drop column uuid_client_http_configuration;
+drop table apimanager_plan_client_http_configuration;
+
+alter table apimanager_plan add client_http_template varchar(100);
+
+
+-- LUT-30053 - [Souscription] Ajout du choix d'environnement lors de la souscription d'un client sur un plan
+--
+alter table apimanager_subscription add environnement varchar(255);
+
+
+-- LUT-30047 - [API - Plan] Gestion du rewrite url
+--
+CREATE TABLE apimanager_resource_rewrite_url (
+    uuid varchar(50),
+    target varchar(50) default '' NOT NULL,
+    value varchar(50) default '' NOT NULL,
+    type varchar(50) default '' NOT NULL,
+    PRIMARY KEY (uuid)
+);
+
+ALTER TABLE apimanager_resource ADD uuid_rewrite_url varchar(50);
+ALTER TABLE apimanager_resource
+    ADD CONSTRAINT fk_plan_uuid_rewrite_url FOREIGN KEY (uuid_rewrite_url) REFERENCES apimanager_resource_rewrite_url (uuid);
+
+
+-- LUT-30052 - [OAuth2 Client] Gestion des secrets par environnement
+--
+CREATE TABLE apimanager_client_secret (
+    uuid            varchar(50),
+    uuid_client     varchar(50),
+    environnement   varchar(50),
+    secret          varchar(2000),
+    PRIMARY KEY (uuid)
+);
+
+ALTER TABLE apimanager_client DROP COLUMN client_secret;
+
+
+-- LUT-30055 - [Archivage] Cycle de vie des apis et des clients
+--
+alter table apimanager_api add archived boolean not null default false;
+alter table apimanager_client add archived boolean not null default false;
+alter table apimanager_subscription add archived boolean not null default false;
