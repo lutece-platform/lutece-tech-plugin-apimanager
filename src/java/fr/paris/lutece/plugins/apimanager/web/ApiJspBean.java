@@ -96,6 +96,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     private static final String PARAMETER_ID_INSTANCE = "uuid_instance";
     private static final String PARAMETER_SHOW_INSTANCES = "showInstances";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
+    private static final String PARAMETER_RELOAD = "reload";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_APIS = "apimanager.manage_apis.pageTitle";
@@ -165,6 +166,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
         if ( infoMsg != null )
         {
             addInfo( infoMsg, getLocale( ) );
+            if ( "true".equals( request.getParameter( PARAMETER_RELOAD ) ) )
+            {
+                return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, Map.of( ) );
+            }
             return redirectView( request, VIEW_MANAGE_APIS );
         }
 

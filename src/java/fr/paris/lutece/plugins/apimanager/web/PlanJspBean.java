@@ -39,7 +39,9 @@ import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -455,9 +457,28 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
         getService( ).create( _plan, getUser( ).getEmail( ) );
 
+        final List<Resource> resourceList = new ArrayList<>( );
+        try
+        {
+            for ( final Resource resourceToClone : ResourceService.getInstance( ).getResourcesByPlanUuid( uuid ) )
+            {
+                resourceList.add( (Resource) BeanUtilsBean.getInstance( ).cloneBean( resourceToClone ) );
+            }
+        }
+        catch( final Exception e )
+        {
+            throw new AppException( "Error while cloning resources.", e );
+        }
+
+        resourceList.forEach( resource -> {
+            resource.setUuid( null );
+            resource.setPlan( _plan );
+            ResourceService.getInstance( ).create( resource, getUser( ).getEmail( ) );
+        } );
+
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED );
+        return redirect( request, "ManageApis.jsp?reload=true&infoMsg=" + INFO_PLAN_CREATED );
     }
 
     private void populateAll( final HttpServletRequest request, final Locale locale )
