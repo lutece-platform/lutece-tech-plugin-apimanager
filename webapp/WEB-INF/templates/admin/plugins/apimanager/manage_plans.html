@@ -51,6 +51,7 @@
 				 <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.manage_plans.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{portal.util.labelActions}</th>
 				<#if subscriptionMode!false>
 				<#else>
@@ -74,6 +75,15 @@
 				</td>
 				<td>
 					${plan.traceEnabled?c!''}
+				</td>
+				<td>
+					<#if plan.status.name() == "DRAFT">
+						<span class="badge bg-warning"> ${plan.status.name()!} </span>
+					<#elseif plan.status.name() == "PUBLISHED">
+						<span class="badge bg-success"> ${plan.status.name()!} </span>
+					<#elseif plan.status.name() == "UNPUBLISHED">
+						<span class="badge bg-danger"> ${plan.status.name()!} </span>
+					</#if>
 				</td>
 				<td>
 					<#if subscriptionMode!false>

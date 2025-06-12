@@ -39,9 +39,11 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
+import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
@@ -351,12 +353,15 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         try
         {
-            _configGeneratorService.generateApiManager( subscription.getClient( ), subscription.getPlan( ),
-                    ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getPlan( ).getUuid( ) ),
-                    InstanceService.getInstance( ).getEntitiesListByIds(
-                            InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( subscription.getPlan( ).getApi( ).getUuid( ) ) ),
+            final Plan plan = subscription.getPlan( );
+            _configGeneratorService.generateApiManager( subscription.getClient( ), plan,
+                    ResourceService.getInstance( ).getResourcesByPlanUuid( plan.getUuid( ) ),
+                    InstanceService.getInstance( )
+                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( plan.getApi( ).getUuid( ) ) ),
                     env, comment, getUser( ).getEmail( ) );
             getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+            plan.setStatus( PlanStatusEnum.PUBLISHED );
+            PlanService.getInstance( ).update( plan, getUser( ).getEmail( ) );
         }
         catch( final AppException e )
         {
@@ -364,6 +369,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             addError( e.getMessage( ) );
             return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
         }
+
         addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
         return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
     }

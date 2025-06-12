@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
@@ -311,6 +312,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     public String doCreatePlan( HttpServletRequest request ) throws AccessDeniedException
     {
         populateAll( request, getLocale( ) );
+        _plan.setStatus( PlanStatusEnum.DRAFT );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_PLAN ) )
         {
@@ -359,6 +361,8 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     public String doRemovePlan( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_PLAN );
+
+        // TODO DELETE MG CONFIG + DELETE SUBSCRIPTION
 
         getService( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
@@ -458,6 +462,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             throw new AppException( "Error while cloning plan.", e );
         }
         _plan.setVersion( newVersion );
+        _plan.setStatus( PlanStatusEnum.DRAFT );
         _plan.setUuid( null );
 
         getService( ).create( _plan, getUser( ).getEmail( ) );

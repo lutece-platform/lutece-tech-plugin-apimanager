@@ -42,6 +42,8 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.ApiService;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
@@ -379,6 +381,11 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
                             subscription.getEnvironnement( ), getUser( ).getEmail( ) );
                     SubscriptionService.getInstance( ).archive( subscriptionUuid, getUser( ).getEmail( ) );
                 } );
+            } );
+            // Update plan status to unpublished if it was previously published
+            PlanHome.findByPrimaryKey( planUuid ).filter( plan -> plan.getStatus( ).equals( PlanStatusEnum.PUBLISHED ) ).ifPresent( plan -> {
+                plan.setStatus( PlanStatusEnum.UNPUBLISHED );
+                PlanService.getInstance( ).update( plan, getUser( ).getEmail( ) );
             } );
         } );
 

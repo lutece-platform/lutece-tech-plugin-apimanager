@@ -80,6 +80,8 @@ public class Plan implements Serializable
 
     private boolean _bTraceEnabled;
 
+    private PlanStatusEnum _status;
+
     /**
      * Returns the Uuid
      * 
@@ -395,4 +397,24 @@ public class Plan implements Serializable
         _bTraceEnabled = bTraceEnabled;
     }
 
+    /**
+     * Returns the Status
+     * 
+     * @return the Status
+     */
+    public PlanStatusEnum getStatus( )
+    {
+        return _status;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param status
+     *            The Status
+     */
+    public void setStatus( final PlanStatusEnum status )
+    {
+        _status = status;
+    }
 }
