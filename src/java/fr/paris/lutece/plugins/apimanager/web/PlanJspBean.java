@@ -41,12 +41,17 @@ import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.service.InstanceService;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
+import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
@@ -157,6 +162,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private final List<String> headerMatchingTypeList = Arrays.asList( AppPropertiesService.getProperty( HEADER_MATCHING_TYPE_VALUES ).split( "," ) );
 
     private final Map<String, Plan> planTemplates = new HashMap<>( );
+    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean( IConfigGeneratorService.BEAN_NAME );
 
     @Override
     public void init( HttpServletRequest request, String strRight ) throws AccessDeniedException
@@ -360,9 +366,21 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     @Action( ACTION_REMOVE_PLAN )
     public String doRemovePlan( HttpServletRequest request )
     {
-        String uuid = request.getParameter( PARAMETER_ID_PLAN );
+        final String uuid = request.getParameter( PARAMETER_ID_PLAN );
+        _plan = PlanHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
-        // TODO DELETE MG CONFIG + DELETE SUBSCRIPTION
+        // DELETE PUBLISHED CONFIG
+        SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) ).forEach( subscriptionUuid -> {
+            // Delete the subscriptions to this plan, if any
+            SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
+                // Send delete request and delete subscription
+                _configGeneratorService.deleteApiManager( subscription.getClient( ), _plan, ResourceService.getInstance( ).getResourcesByPlanUuid( uuid ),
+                        InstanceService.getInstance( )
+                                .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( _plan.getApi( ).getUuid( ) ) ),
+                        subscription.getEnvironnement( ), getUser( ).getEmail( ) );
+                SubscriptionService.getInstance( ).delete( subscriptionUuid, getUser( ).getEmail( ) );
+            } );
+        } );
 
         getService( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
