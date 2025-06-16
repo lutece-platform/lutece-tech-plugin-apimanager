@@ -92,7 +92,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String PARAMETER_ENVIRONNEMENT = "environnement";
     private static final String PARAMETER_COMMENT = "comment";
     private static final String PARAMETER_RELOAD = "reload";
-    private static final String PARAMETER_SECRET_PREFIX = "secret_";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -109,7 +108,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     private static final String MARK_CLIENT = "client";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
-    private static final String MARK_SECRET_MAP = "secret_map";
 
     private static final String JSP_MANAGE_CLIENTS = "jsp/admin/plugins/apimanager/ManageClients.jsp";
 
@@ -262,10 +260,16 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     {
         _client = ( _client != null ) ? _client : new Client( );
 
+        // We don't hash the new secrets yet, so that we can display them to the user
+        _client.setSecretList( environmentList.stream( ).map( env -> {
+            final ClientSecret clientSecret = new ClientSecret( );
+            clientSecret.setSecret( PasswordUtils.generateSecurePassword( ) );
+            clientSecret.setEnvironnement( env );
+            return clientSecret;
+        } ).collect( Collectors.toList( ) ) );
+
         Map<String, Object> model = getModel( );
         model.put( MARK_CLIENT, _client );
-        model.put( MARK_SECRET_MAP,
-                environmentList.stream( ).collect( Collectors.toMap( Function.identity( ), env -> PasswordUtils.generateSecurePassword( ) ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_CLIENT ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_CLIENT, TEMPLATE_CREATE_CLIENT, model );
@@ -285,16 +289,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         populate( _client, request, getLocale( ) );
         _client.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
                 .collect( Collectors.toList( ) ) );
-        try
-        {
-            _client.setSecretList( getAndHashSecrets( request ) );
-        }
-        catch( final Exception e )
-        {
-            this.addError( ERROR_HASHING_SECRETS );
-            this.addError( e.getMessage( ) );
-            return redirectView( request, VIEW_CREATE_CLIENT );
-        }
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_CLIENT ) )
         {
@@ -304,6 +298,21 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         // Check constraints
         if ( !validateBean( _client, VALIDATION_ATTRIBUTES_PREFIX ) )
         {
+            return redirectView( request, VIEW_CREATE_CLIENT );
+        }
+
+        // Hashing secrets
+        try
+        {
+            for ( final ClientSecret clientSecret : _client.getSecretList( ) )
+            {
+                clientSecret.setSecret( PasswordUtils.hashPassword( clientSecret.getSecret( ) ) );
+            }
+        }
+        catch( final Exception e )
+        {
+            this.addError( ERROR_HASHING_SECRETS );
+            this.addError( e.getMessage( ) );
             return redirectView( request, VIEW_CREATE_CLIENT );
         }
 
@@ -475,10 +484,16 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
             _client = optClient.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         }
 
+        // We don't hash the new secrets yet, so that we can display them to the user
+        _client.setSecretList( environmentList.stream( ).map( env -> {
+            final ClientSecret clientSecret = new ClientSecret( );
+            clientSecret.setSecret( PasswordUtils.generateSecurePassword( ) );
+            clientSecret.setEnvironnement( env );
+            return clientSecret;
+        } ).collect( Collectors.toList( ) ) );
+
         final Map<String, Object> model = getModel( );
         model.put( MARK_CLIENT, _client );
-        model.put( MARK_SECRET_MAP,
-                environmentList.stream( ).collect( Collectors.toMap( Function.identity( ), env -> PasswordUtils.generateSecurePassword( ) ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_GENERATE_NEW_SECRETS ) );
 
         return getPage( PROPERTY_PAGE_TITLE_GENERATE_NEW_SECRETS, TEMPLATE_GENERATE_NEW_SECRETS, model );
@@ -487,11 +502,18 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
     @Action( ACTION_GENERATE_NEW_SECRETS )
     public String doGenerateNewSecrets( final HttpServletRequest request ) throws AccessDeniedException
     {
-        final String clientUuid = request.getParameter( PARAMETER_ID_CLIENT );
-        final List<ClientSecret> clientSecretList;
+        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_GENERATE_NEW_SECRETS ) )
+        {
+            throw new AccessDeniedException( "Invalid security token" );
+        }
+
+        // Hashing secrets
         try
         {
-            clientSecretList = getAndHashSecrets( request );
+            for ( final ClientSecret clientSecret : _client.getSecretList( ) )
+            {
+                clientSecret.setSecret( PasswordUtils.hashPassword( clientSecret.getSecret( ) ) );
+            }
         }
         catch( final Exception e )
         {
@@ -499,42 +521,17 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
             this.addError( e.getMessage( ) );
             return redirectView( request, VIEW_CREATE_CLIENT );
         }
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_GENERATE_NEW_SECRETS ) )
-        {
-            throw new AccessDeniedException( "Invalid security token" );
-        }
 
-        ClientHome.findByPrimaryKey( clientUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        ClientSecretHome.removeByClientId( clientUuid );
-        clientSecretList.forEach( secret -> {
-            secret.setUuidClient( clientUuid );
+        ClientSecretHome.removeByClientId( _client.getUuid( ) );
+        _client.getSecretList( ).forEach( secret -> {
+            secret.setUuidClient( _client.getUuid( ) );
             ClientSecretHome.create( secret );
         } );
-        ClientService.getInstance( ).addNewHistory( clientUuid, HistoryTypeEnum.UPDATE, getUser( ).getEmail( ) );
+        ClientService.getInstance( ).addNewHistory( _client.getUuid( ), HistoryTypeEnum.UPDATE, getUser( ).getEmail( ) );
 
         addInfo( INFO_CLIENT_UPDATED, getLocale( ) );
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_CLIENTS );
     }
-
-    private List<ClientSecret> getAndHashSecrets( final HttpServletRequest request ) throws Exception
-    {
-        final List<ClientSecret> secretList = new ArrayList<>( );
-        for ( final String env : environmentList )
-        {
-            final ClientSecret clientSecret = new ClientSecret( );
-            final String secret = request.getParameter( PARAMETER_SECRET_PREFIX + env );
-            if ( StringUtils.isBlank( secret ) )
-            {
-                throw new AppException( "Invalid secret parameter" );
-            }
-            clientSecret.setSecret( PasswordUtils.hashPassword( secret ) );
-            clientSecret.setEnvironnement( env );
-            secretList.add( clientSecret );
-        }
-        return secretList;
-    }
-
 }
