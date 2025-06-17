@@ -276,6 +276,16 @@ alter table apimanager_client add archived boolean not null default false;
 alter table apimanager_subscription add archived boolean not null default false;
 
 
--- LUT-30193 - [Resource] Définition du type de matcher pour le path configuré
+-- LUT-30045 - [API - Plan] Gestion du cycle de vie d'un plan via un statut
+--
+alter table apimanager_plan add status varchar(30) default 'DRAFT';
 
+
+-- LUT-30046 - [API - Plan] Définition de la liste des environnements disponibles pour le plan
+--
+alter table apimanager_plan add environnement_list varchar(100) default 'TEST,DEV,REC,PREPROD,PROD';
+
+
+-- LUT-30193 - [Resource] Définition du type de matcher pour le path configuré
+--
 alter table apimanager_resource add matcher_type varchar(30) default 'EXACT'
