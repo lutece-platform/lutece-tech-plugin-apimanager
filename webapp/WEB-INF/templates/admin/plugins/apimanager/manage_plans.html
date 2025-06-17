@@ -87,7 +87,7 @@
 				</td>
 				<td>
 					<#if subscriptionMode!false>
-						<@button id='select-plan-button-${plan?index}' title='#i18n{apimanager.manage_subscriptions.selectPlan}' hideTitle=['all'] buttonIcon='check' params='onClick="$(\'#uuid_plan\').val(\'${plan.uuid}\'); $(\'#plan_name\').val(\'${plan.name}\'); $(\'button[data-bs-dismiss]\').click();"' />
+						<@button id='select-plan-button-${plan?index}' title='#i18n{apimanager.manage_subscriptions.selectPlan}' hideTitle=['all'] buttonIcon='check' params='onClick="updatePlanFields(\'${plan.uuid}\', \'${plan.name}\', \'${plan.availableEnvironments?join(\",\")}\' );"' />
 					<#else>
 						<#if api_archived!false>
 							<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_manageHistory=&filter_uuid_ref=${plan.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${plan?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />

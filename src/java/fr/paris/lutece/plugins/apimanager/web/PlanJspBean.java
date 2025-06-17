@@ -98,6 +98,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_TEMPLATE_NAME = "template_name";
     private static final String PARAMETER_VERSION = "version";
     private static final String PARAMETER_API_ARCHIVED = "api_archived";
+    private static final String PARAMETER_ENVIRONMENT_PREFIX = "environment_";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -107,6 +108,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     // Markers
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_PLAN = "plan";
+    private static final String MARK_ENVIRONMENT_LIST = "environment_list";
 
     private static final String MARK_LOAD_BALANCING_STRATEGY_LIST = "load_balancing_strategy_list";
     private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
@@ -300,6 +302,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
+        model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_PLAN ) );
         addValuesAndDefaultsToModel( model );
 
@@ -411,6 +414,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
         Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
+        model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_PLAN ) );
         addValuesAndDefaultsToModel( model );
 
@@ -512,6 +516,11 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private void populateAll( final HttpServletRequest request, final Locale locale )
     {
         populate( _plan, request, locale );
+
+        // ENVIRONNEMENTS
+        _plan.getAvailableEnvironments( ).clear( );
+        request.getParameterMap( ).keySet( ).stream( ).filter( key -> key.startsWith( PARAMETER_ENVIRONMENT_PREFIX ) )
+                .map( key -> key.replace( PARAMETER_ENVIRONMENT_PREFIX, "" ) ).forEach( env -> _plan.getAvailableEnvironments( ).add( env ) );
 
         // HEADER MATCHINGS
         _plan.getHeaderMatchings( ).clear( );

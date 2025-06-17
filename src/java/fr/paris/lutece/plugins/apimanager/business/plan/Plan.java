@@ -82,6 +82,8 @@ public class Plan implements Serializable
 
     private PlanStatusEnum _status;
 
+    private List<String> _availableEnvironments = new ArrayList<>( );
+
     /**
      * Returns the Uuid
      * 
@@ -416,5 +418,26 @@ public class Plan implements Serializable
     public void setStatus( final PlanStatusEnum status )
     {
         _status = status;
+    }
+
+    /**
+     * Returns the Available Environments
+     *
+     * @return the Available Environments
+     */
+    public List<String> getAvailableEnvironments( )
+    {
+        return _availableEnvironments;
+    }
+
+    /**
+     * Sets the Available Environments
+     *
+     * @param availableEnvironments
+     *            The Available Environments
+     */
+    public void setAvailableEnvironments( final List<String> availableEnvironments )
+    {
+        _availableEnvironments = availableEnvironments;
     }
 }

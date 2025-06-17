@@ -39,6 +39,18 @@
 					<@checkBox id="trace_enabled" name="trace_enabled"  value="1"  checked=plan.traceEnabled!false  tabIndex='10' />
 			</@formGroup>
 
+			<!-- AVAILABLE ENVIRONNEMENTS -->
+			<div class="col-xl-12 py-2">
+				<h2><i class="ti ti-world"></i> #i18n{apimanager.plan.labelAvailableEnvironnements}</h2>
+				<div id="environnement-container" class="row gx-2 w-50 my-4">
+					<#list environment_list as environment>
+						<div class='col fw-bold'>
+							<@checkBox labelKey=environment id="environment_${environment}" name="environment_${environment}"  checked=plan.availableEnvironments?seq_contains(environment) value="1"  tabIndex='10' />
+						</div>
+					</#list>
+				</div>
+			</div>
+
 			<!-- RATE LIMITING -->
 			<div class="col-xl-12 py-2">
 				<h2><i class="ti ti-hand-stop"></i> Rate Limiting</h2>
