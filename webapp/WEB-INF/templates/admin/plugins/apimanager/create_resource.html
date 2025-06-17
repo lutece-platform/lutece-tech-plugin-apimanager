@@ -20,6 +20,14 @@
 						</#list>
 					</select>
 			</@formGroup>
+			<@formGroup labelFor='matcher_type' labelKey='#i18n{apimanager.resource.labelMatcherType}' mandatory=true>
+					<select id="matcher_type" name="matcher_type" class="form-control">
+						<#list matcher_type_list as matcherType>
+							<option value="${matcherType}">${matcherType}</option>
+						</#list>
+					</select>
+			</@formGroup>
+
 			<!-- REWRITE URL -->
 			<div class="col-xl-12 py-2">
 				<h2><i class="ti ti-reload"></i> Rewrite URL</h2>

@@ -57,6 +57,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +98,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private static final String MARK_RESOURCE = "resource";
     private static final String MARK_VERB_LIST = "verb_list";
     private static final String MARK_REWRITE_URL_TYPE_LIST = "rewrite_url_type_list";
+    private static final String MARK_MATCHER_TYPE_LIST = "matcher_type_list";
 
     private static final String JSP_MANAGE_RESOURCES = "jsp/admin/plugins/apimanager/ManageResources.jsp";
 
@@ -130,6 +132,10 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private List<String> _listIdResources;
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
+
+    // Property enums
+    private static final List<String> matcherTypeList = Arrays
+            .asList( AppPropertiesService.getProperty( "apimanager.plan.resource.matcher.type.values" ).split( "," ) );
 
     /**
      * Build the Manage View
@@ -233,6 +239,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         model.put( MARK_RESOURCE, _resource );
         model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
         model.put( MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values( ) );
+        model.put( MARK_MATCHER_TYPE_LIST, matcherTypeList );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_RESOURCE, TEMPLATE_CREATE_RESOURCE, model );
@@ -332,6 +339,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         model.put( MARK_RESOURCE, _resource );
         model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
         model.put( MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values( ) );
+        model.put( MARK_MATCHER_TYPE_LIST, matcherTypeList );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_RESOURCE, TEMPLATE_MODIFY_RESOURCE, model );

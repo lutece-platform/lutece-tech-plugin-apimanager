@@ -55,6 +55,8 @@ public class Resource implements Serializable
 
     private ResourceVerbEnum _verb;
 
+    private String _strMatcherType;
+
     private ResourceRewriteUrl _rewriteUrl;
 
     /**
@@ -139,6 +141,27 @@ public class Resource implements Serializable
     public void setVerb( ResourceVerbEnum verb )
     {
         _verb = verb;
+    }
+
+    /**
+     * Returns the Matcher Type
+     *
+     * @return The Matcher Type
+     */
+    public String getMatcherType( )
+    {
+        return _strMatcherType;
+    }
+
+    /**
+     * Sets the Matcher Type
+     *
+     * @param matcherType
+     *            The Matcher Type
+     */
+    public void setMatcherType( final String matcherType )
+    {
+        _strMatcherType = matcherType;
     }
 
     /**

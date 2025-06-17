@@ -59,11 +59,11 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_resource";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url ) VALUES ( ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_resource WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ?, matcher_type = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url FROM apimanager_resource";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type FROM apimanager_resource";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_resource";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -94,7 +94,8 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getPlan( ) != null ? resource.getPlan( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getPath( ) );
             daoUtil.setString( nIndex++, resource.getVerb( ).name( ) );
-            daoUtil.setString( nIndex, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, resource.getMatcherType( ) );
 
             daoUtil.executeUpdate( );
             resource.setUuid( uuid );
@@ -150,7 +151,8 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getPath( ) );
             daoUtil.setString( nIndex++, resource.getVerb( ).name( ) );
             daoUtil.setString( nIndex++, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
-            daoUtil.setString( nIndex, resource.getUuid( ) );
+            daoUtil.setString( nIndex++, resource.getMatcherType( ) );
+            daoUtil.setString( nIndex++, resource.getUuid( ) );
 
             daoUtil.executeUpdate( );
         }
@@ -281,7 +283,8 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         resource.setPath( daoUtil.getString( nIndex++ ) );
         final String verbStr = daoUtil.getString( nIndex++ );
         resource.setVerb( verbStr != null ? ResourceVerbEnum.valueOf( verbStr ) : null );
-        resource.setRewriteUrl( ResourceRewriteUrlHome.findByPrimaryKey( daoUtil.getString( nIndex ) ).orElse( null ) );
+        resource.setRewriteUrl( ResourceRewriteUrlHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        resource.setMatcherType( daoUtil.getString( nIndex++ ) );
 
         return resource;
     }

@@ -4,15 +4,15 @@
 			<@button type='submit' name='view_createResource' buttonIcon='plus' title='#i18n{apimanager.manage_resources.buttonAdd}' />
 		</@tform>
 	</@boxHeader>
-	<@boxBody>    
+	<@boxBody>
     <@messages infos=infos warnings=warnings errors=errors />
     <@paginationAdmin paginator=paginator combo=1 />
     <div class="clearfix"></div>
-    
+
     <@offcanvas id='search_resource' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
     <@tform id='resource_search_form' name='resource_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageResources.jsp' >
 		<@messages errors=errors />
-    		
+
 	    			<@formGroup labelFor='filter_id_plan' labelKey='#i18n{apimanager.manage_resources.columnIdPlan}'>
 				    		<@input type='number' id='filter_id_plan' name='filter_id_plan' placeHolder='#i18n{apimanager.manage_resources.columnIdPlan}' value=mapFilterCriteria["id_plan"]!'' tabIndex='1' />
 				    </@formGroup>
@@ -22,18 +22,18 @@
 	    			<@formGroup labelFor='filter_verb' labelKey='#i18n{apimanager.manage_resources.columnVerb}'>
 				    		<@input type='text' id='filter_verb' name='filter_verb'  maxlength=50  placeHolder='#i18n{apimanager.manage_resources.columnVerb}' value=mapFilterCriteria["verb"]!'' tabIndex='3' />
 				    </@formGroup>
-			
-		<@button type='submit' title='Search' buttonIcon='search'/>							
+
+		<@button type='submit' title='Search' buttonIcon='search'/>
     </@tform>
     </@offcanvas>
-    
 
-    <#list mapFilterCriteria?keys as key> 
+
+    <#list mapFilterCriteria?keys as key>
     	<#if mapFilterCriteria[key]!="">
-	    	<span class="badge bg-primary px-2" > 
+	    	<span class="badge bg-primary px-2" >
 	 			${key} <a href='jsp/admin/plugins/apimanager/ManageResources.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
 			</span>
-		</#if> 
+		</#if>
 	</#list>
 
 	<div id="resource-result-container">
@@ -42,6 +42,7 @@
 			<tr>
 				 <th>#i18n{apimanager.manage_resources.columnPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=path'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_resources.columnVerb}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=verb'><i class='fas fa-sort'></i></a></th>
+				 <th>#i18n{apimanager.resource.labelMatcherType}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageResources.jsp?orderBy=matcher_type'><i class='fas fa-sort'></i></a></th>
 				<th>#i18n{portal.util.labelActions}</th>
 			</tr>
 			<@tableHeadBodySeparator />
@@ -53,6 +54,9 @@
 				<td>
 					${resource.verb!''}
 				</td>
+                <td>
+                    ${resource.matcherType!''}
+                </td>
 				<td>
 					<#if api_archived!false>
 						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageResources.jsp?view_manageHistory=&filter_uuid_ref=${resource.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${resource?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
