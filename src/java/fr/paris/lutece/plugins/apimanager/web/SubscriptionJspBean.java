@@ -357,7 +357,8 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             _configGeneratorService.generateApiManager( subscription.getClient( ), plan,
                     ResourceService.getInstance( ).getResourcesByPlanUuid( plan.getUuid( ) ),
                     InstanceService.getInstance( )
-                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( plan.getApi( ).getUuid( ) ) ),
+                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( plan.getApi( ).getUuid( ) ) ).stream( )
+                            .filter( instance -> env.equals( instance.getEnvironnement( ) ) ).collect( Collectors.toList( ) ),
                     env, comment, getUser( ).getEmail( ) );
             getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
             plan.setStatus( PlanStatusEnum.PUBLISHED );
