@@ -4,6 +4,7 @@
     <@tform class="form-horizontal" method="post" name="resource" action="jsp/admin/plugins/apimanager/ManageResources.jsp" >
 			<@messages errors=errors />
 			<@input type="hidden" id="uuid" name="uuid" value="${resource.uuid}"/>
+			<@input type="hidden" id="uuid_plan" name="uuid_plan" value="${uuid_plan}" />
 			<@input type="hidden" value="${token}" name="token" />
 			
 			<@formGroup labelFor='uuid_plan' labelKey='#i18n{apimanager.resource.labelIdPlan}' mandatory=true>
@@ -60,6 +61,13 @@
 				</div>
 			</div>
 
+			<@formGroup labelFor='name' labelKey='#i18n{apimanager.resource.labelName}' mandatory=true>
+					<div class="d-none" id="suggested-name-prefix">${suggested_name_prefix}</div>
+					<@input type='text' id='name' name='name'  maxlength=100 value=resource.name!'' tabIndex='1' />
+					<small class="form-text d-block w-100 text-muted m-1">#i18n{apimanager.resource.labelName.help}</small>
+					<button type="button" id="generate-name-btn" class="btn btn-secondary m-0">#i18n{apimanager.resource.buttonGenerateName}</button>
+			</@formGroup>
+
         <@actionButtons button1Name="action_modifyResource" button2Name="view_manageResource"/>
     </@tform>
 	</@boxBody>
@@ -70,5 +78,19 @@
 		$('.form-control-plaintext').each(function() {
 			$(this).removeClass('form-control');
 		});
+		$('#generate-name-btn').click(function() {
+			updateName();
+		});
+		if($('#name').val().length === 0) {
+			updateName();
+		}
 	});
+
+	function updateName() {
+		let prefix = $('#suggested-name-prefix').text();
+		let verb = $('#verb_name').val().toLowerCase();
+		let path = $('#path').val().toLowerCase().replaceAll(/[^a-z0-9\-]/g, '');
+		$('#name').val(prefix + verb + '-' + path);
+	}
+
 </script>

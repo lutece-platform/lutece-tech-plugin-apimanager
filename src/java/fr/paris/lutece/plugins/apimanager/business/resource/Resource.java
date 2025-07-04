@@ -34,7 +34,10 @@
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import org.checkerframework.common.aliasing.qual.Unique;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -58,6 +61,10 @@ public class Resource implements Serializable
     private String _strMatcherType;
 
     private ResourceRewriteUrl _rewriteUrl;
+
+    @Valid
+    @Pattern( regexp = "[a-z0-9\\-]+", message = "#i18n{apimanager.resource.labelName.help}" )
+    private String _strName;
 
     /**
      * Returns the Uuid
@@ -183,5 +190,26 @@ public class Resource implements Serializable
     public void setRewriteUrl( final ResourceRewriteUrl rewriteUrl )
     {
         _rewriteUrl = rewriteUrl;
+    }
+
+    /**
+     * get the Name
+     *
+     * @return the Name
+     */
+    public String getName( )
+    {
+        return _strName;
+    }
+
+    /**
+     * set the Name
+     *
+     * @param strName
+     *            the Name
+     */
+    public void setName( final String strName )
+    {
+        _strName = strName;
     }
 }

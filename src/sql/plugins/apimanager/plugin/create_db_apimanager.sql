@@ -288,4 +288,11 @@ alter table apimanager_plan add environnement_list varchar(100) default 'TEST,DE
 
 -- LUT-30193 - [Resource] Définition du type de matcher pour le path configuré
 --
-alter table apimanager_resource add matcher_type varchar(30) default 'EXACT'
+alter table apimanager_resource add matcher_type varchar(30) default 'EXACT';
+
+
+-- LUT-30296 - [Resource] Ajouter un champ "name"
+--
+alter table apimanager_resource add name varchar(100);
+alter table apimanager_resource add unique(name);
+update apimanager_resource set name = uuid;

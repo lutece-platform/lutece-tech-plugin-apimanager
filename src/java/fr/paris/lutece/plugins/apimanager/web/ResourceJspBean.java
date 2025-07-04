@@ -35,11 +35,13 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrl;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
+import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -99,6 +101,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private static final String MARK_VERB_LIST = "verb_list";
     private static final String MARK_REWRITE_URL_TYPE_LIST = "rewrite_url_type_list";
     private static final String MARK_MATCHER_TYPE_LIST = "matcher_type_list";
+    private static final String MARK_SUGGESTED_NAME_PREFIX = "suggested_name_prefix";
 
     private static final String JSP_MANAGE_RESOURCES = "jsp/admin/plugins/apimanager/ManageResources.jsp";
 
@@ -230,19 +233,31 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     @View( VIEW_CREATE_RESOURCE )
     public String getCreateResource( HttpServletRequest request )
     {
-        _resource = ( _resource != null ) ? _resource : new Resource( );
-        final Plan plan = new Plan( );
-        plan.setUuid( request.getParameter( PARAMETER_ID_PLAN ) );
+        if ( _resource == null )
+        {
+            _resource = new Resource( );
+            _resource.setRewriteUrl( new ResourceRewriteUrl( ) );
+        }
+        final Plan plan = PlanHome.findByPrimaryKey( request.getParameter( PARAMETER_ID_PLAN ) )
+                .orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         _resource.setPlan( plan );
 
         Map<String, Object> model = getModel( );
         model.put( MARK_RESOURCE, _resource );
+        model.put( PARAMETER_ID_PLAN, plan.getUuid( ) );
         model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
         model.put( MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values( ) );
         model.put( MARK_MATCHER_TYPE_LIST, matcherTypeList );
+        model.put( MARK_SUGGESTED_NAME_PREFIX, computeSuggestedNamePrefix( plan ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_RESOURCE, TEMPLATE_CREATE_RESOURCE, model );
+    }
+
+    private String computeSuggestedNamePrefix( final Plan plan )
+    {
+        return StringUtils.stripAccents( plan.getApi( ).getName( ) + "-" + plan.getName( ) + "-" ).toLowerCase( ).replaceAll( "\\s+", "-" )
+                .replaceAll( "[^a-z0-9\\-]", "" );
     }
 
     /**
@@ -266,12 +281,13 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         // Check constraints
         if ( !validateBean( _resource, VALIDATION_ATTRIBUTES_PREFIX ) )
         {
-            return redirectView( request, VIEW_CREATE_RESOURCE );
+            return redirect( request, VIEW_CREATE_RESOURCE, Map.of( PARAMETER_ID_PLAN, request.getParameter( PARAMETER_ID_PLAN ) ) );
         }
 
         getService( ).create( _resource, getUser( ).getEmail( ) );
 
         resetListId( );
+        _resource = null;
 
         return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_RESOURCE_CREATED );
     }
@@ -329,17 +345,15 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         {
             return redirect( request, VIEW_MANAGE_RESOURCES );
         }
-        if ( _resource == null || !uuid.equals( _resource.getUuid( ) ) )
-        {
-            Optional<Resource> optResource = ResourceHome.findByPrimaryKey( uuid );
-            _resource = optResource.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        }
+        _resource = ResourceHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
         Map<String, Object> model = getModel( );
         model.put( MARK_RESOURCE, _resource );
+        model.put( PARAMETER_ID_PLAN, _resource.getPlan( ).getUuid( ) );
         model.put( MARK_VERB_LIST, ResourceVerbEnum.values( ) );
         model.put( MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values( ) );
         model.put( MARK_MATCHER_TYPE_LIST, matcherTypeList );
+        model.put( MARK_SUGGESTED_NAME_PREFIX, computeSuggestedNamePrefix( _resource.getPlan( ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_RESOURCE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_RESOURCE, TEMPLATE_MODIFY_RESOURCE, model );
