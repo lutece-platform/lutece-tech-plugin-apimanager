@@ -70,8 +70,6 @@ public class Plan implements Serializable
 
     private Integer _nRequestTimeout;
 
-    private String _strLoadBalancingStrategy;
-
     private List<PlanHeaderMatching> _headerMatchings = new ArrayList<>( );
 
     private boolean _bOauthEnabled;
@@ -292,27 +290,6 @@ public class Plan implements Serializable
     public void setRequestTimeout( Integer nRequestTimeout )
     {
         _nRequestTimeout = nRequestTimeout;
-    }
-
-    /**
-     * Returns the LoadBalancingStrategy
-     * 
-     * @return The LoadBalancingStrategy
-     */
-    public String getLoadBalancingStrategy( )
-    {
-        return _strLoadBalancingStrategy;
-    }
-
-    /**
-     * Sets the LoadBalancingStrategy
-     * 
-     * @param strLoadBalancingStrategy
-     *            The LoadBalancingStrategy
-     */
-    public void setLoadBalancingStrategy( String strLoadBalancingStrategy )
-    {
-        _strLoadBalancingStrategy = strLoadBalancingStrategy;
     }
 
     /**

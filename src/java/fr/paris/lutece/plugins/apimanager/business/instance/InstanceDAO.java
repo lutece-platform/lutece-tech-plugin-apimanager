@@ -59,11 +59,11 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_instance";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, environnement, health_path, health_port, health_freq ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, environnement, health_path, health_port ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, health_freq = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, protocol, host, port, name, environnement, health_path, health_port, health_freq FROM apimanager_instance";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, protocol, host, port, name, environnement, health_path, health_port FROM apimanager_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_instance";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -104,7 +104,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
             daoUtil.setString( nIndex++, instance.getEnvironnement( ) );
             daoUtil.setString( nIndex++, instance.getHealthPath( ) );
             daoUtil.setString( nIndex++, instance.getHealthPort( ) );
-            daoUtil.setInt( nIndex++, instance.getHealthFreq( ) );
 
             daoUtil.executeUpdate( );
             instance.setUuid( uuid );
@@ -169,7 +168,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
             daoUtil.setString( nIndex++, instance.getEnvironnement( ) );
             daoUtil.setString( nIndex++, instance.getHealthPath( ) );
             daoUtil.setString( nIndex++, instance.getHealthPort( ) );
-            daoUtil.setInt( nIndex++, instance.getHealthFreq( ) );
             daoUtil.setString( nIndex, instance.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -376,7 +374,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
         instance.setEnvironnement( daoUtil.getString( nIndex++ ) );
         instance.setHealthPath( daoUtil.getString( nIndex++ ) );
         instance.setHealthPort( daoUtil.getString( nIndex++ ) );
-        instance.setHealthFreq( daoUtil.getInt( nIndex ) );
         instance.setTags( this.selectTags( uuid, plugin ) );
 
         return instance;

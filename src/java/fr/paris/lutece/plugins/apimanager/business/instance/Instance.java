@@ -69,8 +69,6 @@ public class Instance extends AbstractTagBean implements Serializable
     @Size( max = 50, message = "#i18n{apimanager.validation.instance.HealthPort.size}" )
     private String _strHealthPort;
 
-    private int _nHealthFreq;
-
     /**
      * Returns the Uuid
      * 
@@ -237,27 +235,6 @@ public class Instance extends AbstractTagBean implements Serializable
     public void setHealthPort( String strHealthPort )
     {
         _strHealthPort = strHealthPort;
-    }
-
-    /**
-     * Returns the HealthFreq
-     * 
-     * @return The HealthFreq
-     */
-    public int getHealthFreq( )
-    {
-        return _nHealthFreq;
-    }
-
-    /**
-     * Sets the HealthFreq
-     * 
-     * @param nHealthFreq
-     *            The HealthFreq
-     */
-    public void setHealthFreq( int nHealthFreq )
-    {
-        _nHealthFreq = nHealthFreq;
     }
 
 }

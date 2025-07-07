@@ -45,14 +45,11 @@
 			</@formGroup>
 			<div class="col-xl-12 py-2">
 				<div class="row gx-2">
-					<@formGroup class='col-8' labelFor='health_path' labelKey='#i18n{apimanager.instance.labelHealthPath}' mandatory=true>
+					<@formGroup class='col-10' labelFor='health_path' labelKey='#i18n{apimanager.instance.labelHealthPath}' mandatory=true>
 						<@input type='text' id='health_path' name='health_path'  maxlength=255 value=instance.healthPath!'' tabIndex='4' />
 					</@formGroup>
 					<@formGroup class='col-2' labelFor='health_port' labelKey='#i18n{apimanager.instance.labelHealthPort}' mandatory=true>
 						<@input type='text' id='health_port' name='health_port'  maxlength=50 value=instance.healthPort!'' tabIndex='5' />
-					</@formGroup>
-					<@formGroup class='col-2' labelFor='health_freq' labelKey='#i18n{apimanager.instance.labelHealthFreq}' mandatory=true>
-						<@input type='text' id='health_freq' name='health_freq'  value=instance.healthFreq!'' tabIndex='6' />
 					</@formGroup>
 				</div>
 			</div>

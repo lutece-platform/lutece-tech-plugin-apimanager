@@ -110,7 +110,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String MARK_PLAN = "plan";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
 
-    private static final String MARK_LOAD_BALANCING_STRATEGY_LIST = "load_balancing_strategy_list";
     private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
 
     private static final String MARK_RATE_LIMITING_TEMPLATE_MAP = "rate_limiting_template_map";
@@ -120,7 +119,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_PLAN = "apimanager.message.confirmRemovePlan";
-    private static final String LOAD_BALANCING_STRATEGY_VALUES = "apimanager.plan.loadbalancingstrategy.values";
     private static final String HEADER_MATCHING_TYPE_VALUES = "apimanager.plan.headermatching.type.values";
 
     private static final String TEMPLATE_PREFIX = "apimanager.plan.template.";
@@ -160,7 +158,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private final Map<String, String> clientHttpTemplateMap = new HashMap<>( );
     private final Map<String, String> rateLimitingTemplateMap = new HashMap<>( );
 
-    private final List<String> loadBalancingStrategyList = Arrays.asList( AppPropertiesService.getProperty( LOAD_BALANCING_STRATEGY_VALUES ).split( "," ) );
     private final List<String> headerMatchingTypeList = Arrays.asList( AppPropertiesService.getProperty( HEADER_MATCHING_TYPE_VALUES ).split( "," ) );
 
     private final Map<String, Plan> planTemplates = new HashMap<>( );
@@ -551,7 +548,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
     private void addValuesAndDefaultsToModel( final Map<String, Object> model )
     {
-        model.put( MARK_LOAD_BALANCING_STRATEGY_LIST, loadBalancingStrategyList );
         model.put( MARK_HEADER_MATCHING_TYPE_LIST, headerMatchingTypeList );
         model.put( MARK_RATE_LIMITING_TEMPLATE_MAP, rateLimitingTemplateMap );
         model.put( MARK_CLIENT_HTTP_TEMPLATE_MAP, clientHttpTemplateMap );

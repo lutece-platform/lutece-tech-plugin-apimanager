@@ -24,17 +24,6 @@
 			<@formGroup labelFor='request_timeout' labelKey='#i18n{apimanager.plan.labelRequestTimeout}' mandatory=true>
 					<@input type='text' id='request_timeout' name='request_timeout' value=plan.requestTimeout!''  tabIndex='6' />
 			</@formGroup>
-			<@formGroup labelFor='load_balancing_strategy' labelKey='#i18n{apimanager.plan.labelLoadBalancingStrategy}' mandatory=true>
-				<select id="load_balancing_strategy" name="load_balancing_strategy" class="form-control">
-					<#list load_balancing_strategy_list as strategy>
-						<#if plan.loadBalancingStrategy == strategy>
-							<option value="${strategy}" selected>${strategy}</option>
-						<#else>
-							<option value="${strategy}">${strategy}</option>
-						</#if>
-					</#list>
-				</select>
-			</@formGroup>
 			<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.plan.labelTraceEnabled}' mandatory=true>
 					<@checkBox id="trace_enabled" name="trace_enabled"  value="1"  checked=plan.traceEnabled!false  tabIndex='10' />
 			</@formGroup>

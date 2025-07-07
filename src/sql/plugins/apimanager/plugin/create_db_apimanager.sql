@@ -296,3 +296,9 @@ alter table apimanager_resource add matcher_type varchar(30) default 'EXACT';
 alter table apimanager_resource add name varchar(100);
 alter table apimanager_resource add unique(name);
 update apimanager_resource set name = uuid;
+
+
+-- LUT-30314 - [Plan - Instance] Supprimer les champs LoadBalancingStrategy et Health Freq
+--
+alter table apimanager_plan drop column load_balancing_strategy;
+alter table apimanager_instance drop column health_freq;
