@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -386,4 +387,5 @@ public abstract class AbstractFilterDao
         this.deleteTags( uuidRef, plugin );
         this.insertTags( uuidRef, tags, plugin );
     }
+
 }

@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
+import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 
 import javax.validation.constraints.Size;
@@ -43,14 +44,13 @@ import java.util.List;
 /**
  * This is the business class for the object Plan
  */
-public class Plan implements Serializable
+public class Plan extends AbstractTagBean implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
     // Variables declarations
     private String _strUuid;
 
-    private Api _api;
 
     @Size( max = 50, message = "#i18n{apimanager.validation.plan.Name.size}" )
     private String _strName;
@@ -70,13 +70,10 @@ public class Plan implements Serializable
 
     private Integer _nRequestTimeout;
 
-    private List<PlanHeaderMatching> _headerMatchings = new ArrayList<>( );
-
     private boolean _bOauthEnabled;
 
     private PlanOauthConfiguration _oauthConfiguration;
 
-    private boolean _bTraceEnabled;
 
     private PlanStatusEnum _status;
 
@@ -101,27 +98,6 @@ public class Plan implements Serializable
     public void setUuid( String strUuid )
     {
         _strUuid = strUuid;
-    }
-
-    /**
-     * Returns the Api
-     * 
-     * @return The Api
-     */
-    public Api getApi( )
-    {
-        return _api;
-    }
-
-    /**
-     * Sets the Api
-     * 
-     * @param api
-     *            The Api
-     */
-    public void setApi( final Api api )
-    {
-        _api = api;
     }
 
     /**
@@ -292,26 +268,6 @@ public class Plan implements Serializable
         _nRequestTimeout = nRequestTimeout;
     }
 
-    /**
-     * Returns the HeaderMatchings
-     * 
-     * @return The HeaderMatchings
-     */
-    public List<PlanHeaderMatching> getHeaderMatchings( )
-    {
-        return _headerMatchings;
-    }
-
-    /**
-     * Sets the HeaderMatchings
-     * 
-     * @param headerMatchings
-     *            The HeaderMatchings
-     */
-    public void setHeaderMatchings( final List<PlanHeaderMatching> headerMatchings )
-    {
-        _headerMatchings = headerMatchings;
-    }
 
     /**
      * Returns the OauthEnabled
@@ -355,26 +311,7 @@ public class Plan implements Serializable
         _oauthConfiguration = oauthConfiguration;
     }
 
-    /**
-     * Returns the TraceEnabled
-     * 
-     * @return The TraceEnabled
-     */
-    public boolean getTraceEnabled( )
-    {
-        return _bTraceEnabled;
-    }
 
-    /**
-     * Sets the TraceEnabled
-     * 
-     * @param bTraceEnabled
-     *            The TraceEnabled
-     */
-    public void setTraceEnabled( boolean bTraceEnabled )
-    {
-        _bTraceEnabled = bTraceEnabled;
-    }
 
     /**
      * Returns the Status

@@ -35,7 +35,6 @@
 package fr.paris.lutece.plugins.apimanager.business.plan;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -48,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * This class provides Data Access methods for Plan objects
@@ -58,11 +56,11 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_plan";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, uuid_api, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, trace_enabled, status, environnement_list ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, status, environnement_list ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET uuid_api = ?, name = ?, description = ?, active = ?, version = ?, rate_limiting_enabled = ?, rate_limiting_template = ?, client_http_template = ?, request_timeout = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, trace_enabled = ?, status = ?, environnement_list = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET name = ?, description = ?, active = ?, version = ?, rate_limiting_enabled = ?, rate_limiting_template = ?, client_http_template = ?, request_timeout = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, status = ?, environnement_list = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_api, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, trace_enabled, status, environnement_list FROM apimanager_plan";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, status, environnement_list FROM apimanager_plan";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -90,7 +88,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setString( nIndex++, plan.getApi( ) != null ? plan.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, plan.getName( ) );
             daoUtil.setString( nIndex++, plan.getDescription( ) );
             daoUtil.setBoolean( nIndex++, plan.getActive( ) );
@@ -101,16 +98,16 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
             daoUtil.setBoolean( nIndex++, plan.getOauthEnabled( ) );
             daoUtil.setString( nIndex++, plan.getOauthConfiguration( ) != null ? plan.getOauthConfiguration( ).getUuid( ) : null );
-            daoUtil.setBoolean( nIndex++, plan.getTraceEnabled( ) );
             daoUtil.setString( nIndex++, plan.getStatus( ).name( ) );
             daoUtil.setString( nIndex++, String.join( ",", plan.getAvailableEnvironments( ) ) );
 
+
             daoUtil.executeUpdate( );
+
+
+            this.insertTags( uuid, plan.getTags( ), plugin );
+
             plan.setUuid( uuid );
-            plan.getHeaderMatchings( ).forEach( hm -> {
-                hm.setUuidPlan( uuid );
-                PlanHeaderMatchingHome.create( hm );
-            } );
         }
 
     }
@@ -129,7 +126,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 
             if ( daoUtil.next( ) )
             {
-                plan = loadFromDaoUtil( daoUtil );
+                plan = loadFromDaoUtil( daoUtil,plugin );
             }
 
             return Optional.ofNullable( plan );
@@ -147,6 +144,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setString( 1, nKey );
             daoUtil.executeUpdate( );
         }
+        this.deleteTags( nKey, plugin );
     }
 
     /**
@@ -159,7 +157,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
         {
             int nIndex = 1;
 
-            daoUtil.setString( nIndex++, plan.getApi( ) != null ? plan.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, plan.getName( ) );
             daoUtil.setString( nIndex++, plan.getDescription( ) );
             daoUtil.setBoolean( nIndex++, plan.getActive( ) );
@@ -170,18 +167,14 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
             daoUtil.setBoolean( nIndex++, plan.getOauthEnabled( ) );
             daoUtil.setString( nIndex++, plan.getOauthConfiguration( ) != null ? plan.getOauthConfiguration( ).getUuid( ) : null );
-            daoUtil.setBoolean( nIndex++, plan.getTraceEnabled( ) );
             daoUtil.setString( nIndex++, plan.getStatus( ).name( ) );
             daoUtil.setString( nIndex++, String.join( ",", plan.getAvailableEnvironments( ) ) );
             daoUtil.setString( nIndex, plan.getUuid( ) );
 
             daoUtil.executeUpdate( );
 
-            PlanHeaderMatchingHome.getIdPlanHeaderMatchingsList( Map.of( "uuid_plan", plan.getUuid( ) ), null, null ).forEach( PlanHeaderMatchingHome::remove );
-            plan.getHeaderMatchings( ).forEach( hm -> {
-                hm.setUuidPlan( plan.getUuid( ) );
-                PlanHeaderMatchingHome.create( hm );
-            } );
+            this.deleteAndInsertTags( plan.getUuid( ), plan.getTags( ), plugin );
+
         }
     }
 
@@ -198,7 +191,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 
             while ( daoUtil.next( ) )
             {
-                planList.add( loadFromDaoUtil( daoUtil ) );
+                planList.add( loadFromDaoUtil( daoUtil,plugin ) );
             }
 
             return planList;
@@ -291,7 +284,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
                 daoUtil.executeQuery( );
                 while ( daoUtil.next( ) )
                 {
-                    planList.add( loadFromDaoUtil( daoUtil ) );
+                    planList.add( loadFromDaoUtil( daoUtil,plugin ) );
                 }
             }
         }
@@ -299,7 +292,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 
     }
 
-    private Plan loadFromDaoUtil( DAOUtil daoUtil )
+    private Plan loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin )
     {
 
         Plan plan = new Plan( );
@@ -307,7 +300,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 
         final String uuidPlan = daoUtil.getString( nIndex++ );
         plan.setUuid( uuidPlan );
-        plan.setApi( ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         plan.setName( daoUtil.getString( nIndex++ ) );
         plan.setDescription( daoUtil.getString( nIndex++ ) );
         plan.setActive( daoUtil.getBoolean( nIndex++ ) );
@@ -318,11 +310,10 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
         plan.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
         plan.setOauthEnabled( daoUtil.getBoolean( nIndex++ ) );
         plan.setOauthConfiguration( PlanOauthConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        plan.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         plan.setStatus( PlanStatusEnum.valueOf( daoUtil.getString( nIndex++ ) ) );
         Arrays.stream( daoUtil.getString( nIndex++ ).split( "," ) ).forEach( env -> plan.getAvailableEnvironments( ).add( env ) );
-        plan.setHeaderMatchings( PlanHeaderMatchingHome
-                .getPlanHeaderMatchingsListByIds( PlanHeaderMatchingHome.getIdPlanHeaderMatchingsList( Map.of( "uuid_plan", uuidPlan ), null, null ) ) );
+
+        plan.setTags( this.selectTags( uuidPlan, plugin ) );
 
         return plan;
     }

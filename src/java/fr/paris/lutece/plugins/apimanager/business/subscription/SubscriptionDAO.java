@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -60,11 +61,11 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     // Constants
     private static final String TABLE_NAME = "apimanager_subscription";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, environnement, trace_enabled, archived ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_resource, environnement, trace_enabled, archived ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, environnement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, environnement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_plan, environnement, trace_enabled, archived FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, environnement, trace_enabled, archived FROM apimanager_subscription";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -72,7 +73,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
     private static final String FILTER_CLIENT = "client";
     private static final String FILTER_API = "api";
-    private static final String FILTER_PLAN = "plan";
+    private static final String FILTER_PLAN = "resource";
 
     /**
      * Constructor
@@ -80,11 +81,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     public SubscriptionDAO( )
     {
         initMapSql( Subscription.class ); // Maps with name and type of each databases column associated to the business class attributes
-        _mapSql.remove( "plan" );
+        _mapSql.remove( "resource" );
         _mapSql.remove( "client" );
-        _mapSql.remove( "api" );
         _mapSql.put( "uuid_client", "String" );
-        _mapSql.put( "uuid_plan", "String" );
+        _mapSql.put( "uuid_resource", "String" );
     }
 
     /**
@@ -99,7 +99,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
             daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
@@ -155,7 +155,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             int nIndex = 1;
 
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
             daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
@@ -287,7 +287,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
         subscription.setUuid( daoUtil.getString( nIndex++ ) );
         subscription.setClient( ClientHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        subscription.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        subscription.setResource( ResourceHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setEnvironnement( daoUtil.getString( nIndex++ ) );
         subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );

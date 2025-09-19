@@ -37,6 +37,8 @@ package fr.paris.lutece.plugins.apimanager.business.instance;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -59,22 +61,24 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_instance";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, environnement, health_path, health_port ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, uuid_environnement, health_path, health_port ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, environnement = ?, health_path = ?, health_port = ?, WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, uuid_environnement = ?, health_path = ?, health_port = ?, WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, protocol, host, port, name, environnement, health_path, health_port FROM apimanager_instance";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, protocol, host, port, name, uuid_environement, health_path, health_port FROM apimanager_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_instance";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_API = "SELECT uuid_instance FROM apimanager_deployed WHERE uuid_api = ?";
-    private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_API = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
-            + SQL_QUERY_SELECTALL_ID_LINKED_TO_API + " )";
-    private static final String SQL_QUERY_LINK_API = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
+    private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_ENVIRONEMENT = "SELECT uuid FROM apimanager_instance WHERE uuid_environement = ?";
 
-    private static final String SQL_QUERY_DELETE_LINK_API = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_api = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_RESOURCE = "SELECT uuid_instance FROM apimanager_deployed WHERE uuid_resource = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_API = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
+            + SQL_QUERY_SELECTALL_ID_LINKED_TO_RESOURCE + " )";
+    private static final String SQL_QUERY_LINK_API = "INSERT INTO apimanager_deployed (uuid, uuid_resource, uuid_instance) VALUES ( ?, ?, ? )";
+
+    private static final String SQL_QUERY_DELETE_LINK_API = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_resource = ?";
     private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_instance = ?";
 
     /**
@@ -84,6 +88,8 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     {
 
         initMapSql( Instance.class ); // Maps with name and type of each databases column associated to the business class attributes
+        _mapSql.remove( "environnement" );
+        _mapSql.put( "uuid_environnement", "String" );
     }
 
     /**
@@ -101,7 +107,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
             daoUtil.setString( nIndex++, instance.getHost( ) );
             daoUtil.setString( nIndex++, instance.getPort( ) );
             daoUtil.setString( nIndex++, instance.getName( ) );
-            daoUtil.setString( nIndex++, instance.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, instance.getEnvironement( )  != null ? instance.getEnvironement( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, instance.getHealthPath( ) );
             daoUtil.setString( nIndex++, instance.getHealthPort( ) );
 
@@ -165,7 +171,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
             daoUtil.setString( nIndex++, instance.getHost( ) );
             daoUtil.setString( nIndex++, instance.getPort( ) );
             daoUtil.setString( nIndex++, instance.getName( ) );
-            daoUtil.setString( nIndex++, instance.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, instance.getEnvironement( ).getUuid() );
             daoUtil.setString( nIndex++, instance.getHealthPath( ) );
             daoUtil.setString( nIndex++, instance.getHealthPort( ) );
             daoUtil.setString( nIndex, instance.getUuid( ) );
@@ -312,12 +318,12 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc}
      */
     @Override
-    public List<String> getIdInstancesListLinkedToApiUuid( final String apiUuid, final Plugin plugin )
+    public List<String> getIdInstancesListLinkedToResourceUuid( final String resourceUuid, final Plugin plugin )
     {
         final List<String> idInstanceList = new ArrayList<>( );
-        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_LINKED_TO_API, plugin ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_LINKED_TO_RESOURCE, plugin ) )
         {
-            daoUtil.setString( 1, apiUuid );
+            daoUtil.setString( 1, resourceUuid );
             daoUtil.executeQuery( );
             while ( daoUtil.next( ) )
             {
@@ -331,14 +337,33 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc}
      */
     @Override
-    public void linkApi( final Instance instance, final String apiUuid, final Plugin plugin )
+    public List<String> getIdInstancesListLinkedToEnvUuid( final String envUuid, final Plugin plugin )
+    {
+        final List<String> idInstanceList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_LINKED_TO_ENVIRONEMENT, plugin ) )
+        {
+            daoUtil.setString( 1, envUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idInstanceList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idInstanceList;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void linkResource( final Instance instance, final String resourceUuid, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_LINK_API, Statement.NO_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setString( nIndex++, apiUuid );
+            daoUtil.setString( nIndex++, resourceUuid );
             daoUtil.setString( nIndex, instance.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -349,12 +374,12 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
      * {@inheritDoc}
      */
     @Override
-    public void deleteLinkApi( final Instance instance, final String apiUuid, final Plugin plugin )
+    public void deleteLinkResource( final Instance instance, final String resourceUuid, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_API, plugin ) )
         {
             daoUtil.setString( 1, instance.getUuid( ) );
-            daoUtil.setString( 2, apiUuid );
+            daoUtil.setString( 2, resourceUuid );
             daoUtil.executeUpdate( );
         }
     }
@@ -371,7 +396,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
         instance.setHost( daoUtil.getString( nIndex++ ) );
         instance.setPort( daoUtil.getString( nIndex++ ) );
         instance.setName( daoUtil.getString( nIndex++ ) );
-        instance.setEnvironnement( daoUtil.getString( nIndex++ ) );
+        instance.setEnvironement( EnvironementHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         instance.setHealthPath( daoUtil.getString( nIndex++ ) );
         instance.setHealthPort( daoUtil.getString( nIndex++ ) );
         instance.setTags( this.selectTags( uuid, plugin ) );

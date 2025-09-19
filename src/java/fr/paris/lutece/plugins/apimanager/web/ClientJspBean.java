@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
@@ -261,7 +262,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         _client = ( _client != null ) ? _client : new Client( );
 
         // We don't hash the new secrets yet, so that we can display them to the user
-        _client.setSecretList( environmentList.stream( ).map( env -> {
+        _client.setSecretList( EnvironementHome.getEnvironementsList().stream( ).map(env -> {
             final ClientSecret clientSecret = new ClientSecret( );
             clientSecret.setSecret( PasswordUtils.generateSecurePassword( ) );
             clientSecret.setEnvironnement( env );
@@ -362,10 +363,10 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_client", clientUuid ) ).forEach( subscriptionUuid -> {
             SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
                 // for each subscription, send a delete request and archive the subscription
-                _configGeneratorService.deleteApiManager( client, subscription.getPlan( ),
-                        ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getPlan( ).getUuid( ) ),
+                _configGeneratorService.deleteApiManager( client, subscription.getResource().getPlan( ),
+                        ResourceService.getInstance( ).getResourcesByPlanUuid( subscription.getResource().getPlan( ).getUuid( ) ),
                         InstanceService.getInstance( ).getEntitiesListByIds(
-                                InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( subscription.getPlan( ).getApi( ).getUuid( ) ) ),
+                                InstanceService.getInstance( ).getIdInstancesListLinkedToResourceUuid( subscription.getResource().getApi( ).getUuid( ) ) ),
                         subscription.getEnvironnement( ), getUser( ).getEmail( ) );
                 if ( !subscription.getArchived( ) )
                 {
@@ -485,7 +486,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
         }
 
         // We don't hash the new secrets yet, so that we can display them to the user
-        _client.setSecretList( environmentList.stream( ).map( env -> {
+        _client.setSecretList( EnvironementHome.getEnvironementsList().stream( ).map( env -> {
             final ClientSecret clientSecret = new ClientSecret( );
             clientSecret.setSecret( PasswordUtils.generateSecurePassword( ) );
             clientSecret.setEnvironnement( env );
@@ -524,7 +525,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client>
 
         ClientSecretHome.removeByClientId( _client.getUuid( ) );
         _client.getSecretList( ).forEach( secret -> {
-            secret.setUuidClient( _client.getUuid( ) );
+            secret.setClient( _client);
             ClientSecretHome.create( secret );
         } );
         ClientService.getInstance( ).addNewHistory( _client.getUuid( ), HistoryTypeEnum.UPDATE, getUser( ).getEmail( ) );

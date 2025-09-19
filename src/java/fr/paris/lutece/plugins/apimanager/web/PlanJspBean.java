@@ -36,16 +36,12 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatching;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
-import fr.paris.lutece.plugins.apimanager.service.InstanceService;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
-import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -75,12 +71,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
+import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEPLANS;
 
 /**
  * This class provides the user interface to manage Plan features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManagePlans.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
+@Controller( controllerJsp = "ManagePlans.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEPLANS )
 public class PlanJspBean extends AbstractJspBean<String, Plan>
 {
 
@@ -109,6 +105,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_PLAN = "plan";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_TAG_LIST = "tag_list";
 
     private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
 
@@ -189,6 +186,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     {
         _plan = null;
 
+        final Map<String, Object> model = new HashMap<>( );
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
@@ -214,7 +212,18 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             resetCurrentPageIndexOfPaginator( );
         }
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS );
+        Map<String, Object> plans = getPaginatedListModel(request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS);
+        model.putAll( plans );
+
+        ArrayList<String> tags = new ArrayList<String>();
+        for(Plan planValue : ((List<Plan>)plans.get(MARK_PLAN_LIST))){
+            tags.addAll(planValue.getTags());
+        }
+
+        model.put( MARK_ENVIRONMENT_LIST, environmentList );
+        model.put( MARK_TAG_LIST, tags.stream().distinct().collect( Collectors.toList( ) ) );
+
+        model.putAll(initPlanCreation(request));
 
         final String subscriptionMode = request.getParameter( PARAMETER_SUBSCRIPTION_MODE );
         if ( subscriptionMode != null )
@@ -276,6 +285,11 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     @View( VIEW_CREATE_PLAN )
     public String getCreatePlan( HttpServletRequest request )
     {
+        Map<String, Object> model = initPlanCreation(request);
+        return getPage( PROPERTY_PAGE_TITLE_CREATE_PLAN, TEMPLATE_CREATE_PLAN, model );
+    }
+
+    private Map<String, Object> initPlanCreation(HttpServletRequest request ){
         _plan = new Plan( );
         final String templateName = request.getParameter( PARAMETER_TEMPLATE_NAME );
         if ( StringUtils.isNotBlank( templateName ) )
@@ -295,17 +309,14 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         }
         final Api api = new Api( );
         api.setUuid( request.getParameter( PARAMETER_ID_API ) );
-        _plan.setApi( api );
 
         Map<String, Object> model = getModel( );
         model.put( MARK_PLAN, _plan );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_PLAN ) );
         addValuesAndDefaultsToModel( model );
-
-        return getPage( PROPERTY_PAGE_TITLE_CREATE_PLAN, TEMPLATE_CREATE_PLAN, model );
+        return model;
     }
-
     /**
      * Process the data capture form of a new plan
      *
@@ -370,17 +381,17 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         _plan = PlanHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
         // DELETE PUBLISHED CONFIG
-        SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) ).forEach( subscriptionUuid -> {
+   /*     SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) ).forEach( subscriptionUuid -> {
             // Delete the subscriptions to this plan, if any
             SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
                 // Send delete request and delete subscription
                 _configGeneratorService.deleteApiManager( subscription.getClient( ), _plan, ResourceService.getInstance( ).getResourcesByPlanUuid( uuid ),
                         InstanceService.getInstance( )
-                                .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( _plan.getApi( ).getUuid( ) ) ),
+                                .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToResourceUuid( _plan.getApi( ).getUuid( ) ) ),
                         subscription.getEnvironnement( ), getUser( ).getEmail( ) );
                 SubscriptionService.getInstance( ).delete( subscriptionUuid, getUser( ).getEmail( ) );
             } );
-        } );
+        } );*/
 
         getService( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
@@ -518,23 +529,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         _plan.getAvailableEnvironments( ).clear( );
         request.getParameterMap( ).keySet( ).stream( ).filter( key -> key.startsWith( PARAMETER_ENVIRONMENT_PREFIX ) )
                 .map( key -> key.replace( PARAMETER_ENVIRONMENT_PREFIX, "" ) ).forEach( env -> _plan.getAvailableEnvironments( ).add( env ) );
-
-        // HEADER MATCHINGS
-        _plan.getHeaderMatchings( ).clear( );
-        final List<Integer> headerMatchingIndexes = request.getParameterMap( ).keySet( ).stream( )
-                .filter( key -> key.startsWith( PARAMETER_HEADER_MATCHING_PREFIX ) ).map( key -> key.replace( PARAMETER_HEADER_MATCHING_PREFIX, "" ) )
-                .map( key -> Integer.parseInt( key.substring( 0, key.indexOf( '_' ) ) ) ).distinct( ).collect( Collectors.toList( ) );
-        for ( final int index : headerMatchingIndexes )
-        {
-            final String prefix = PARAMETER_HEADER_MATCHING_PREFIX + index + "_";
-            final Map<String, String [ ]> headerMatchingParams = request.getParameterMap( ).entrySet( ).stream( )
-                    .filter( entry -> entry.getKey( ).startsWith( prefix ) )
-                    .collect( Collectors.toMap( entry -> entry.getKey( ).replace( prefix, "" ), Map.Entry::getValue ) );
-            final PlanHeaderMatching planHeaderMatching = new PlanHeaderMatching( );
-            final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest( request, Map.of( ), headerMatchingParams );
-            populate( planHeaderMatching, headerMatchingRequest, locale );
-            _plan.getHeaderMatchings( ).add( planHeaderMatching );
-        }
 
         // OAUTH CONFIGURATION
         final PlanOauthConfiguration planOauthConfiguration = new PlanOauthConfiguration( );

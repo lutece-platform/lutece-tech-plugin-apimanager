@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.apimanager.business.subscription;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
 import java.io.Serializable;
 
@@ -50,7 +51,7 @@ public class Subscription implements Serializable
 
     private Client _client;
 
-    private Plan _plan;
+    private Resource _resource;
 
     private String _strEnvironnement;
 
@@ -101,24 +102,24 @@ public class Subscription implements Serializable
     }
 
     /**
-     * Returns the Plan
+     * Returns the Resource
      * 
-     * @return The Plan
+     * @return The Resource
      */
-    public Plan getPlan( )
+    public Resource getResource( )
     {
-        return _plan;
+        return _resource;
     }
 
     /**
-     * Sets the Plan
+     * Sets the Create new scratch file from selection
      * 
-     * @param plan
-     *            The Plan
+     * @param resource
+     *            The Resource
      */
-    public void setPlan( Plan plan )
+    public void setResource( Resource resource )
     {
-        _plan = plan;
+        _resource = resource;
     }
 
     /**

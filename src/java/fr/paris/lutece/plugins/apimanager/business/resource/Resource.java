@@ -33,13 +33,17 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the business class for the object Resource
@@ -52,6 +56,8 @@ public class Resource implements Serializable
     private String _strUuid;
 
     private Plan _plan;
+    private Api _api;
+    private Environement _environement;
 
     @Size( max = 255, message = "#i18n{apimanager.validation.resource.Path.size}" )
     private String _strPath;
@@ -59,8 +65,13 @@ public class Resource implements Serializable
     private ResourceVerbEnum _verb;
 
     private String _strMatcherType;
+    private String _strStatus;
 
     private ResourceRewriteUrl _rewriteUrl;
+    private boolean _bTraceEnabled;
+
+    private List<ResourceHeaderMatching> _headerMatchings = new ArrayList<>( );
+    private List<Instance> _instances = new ArrayList<>( );
 
     @Valid
     @Pattern( regexp = "[a-z0-9\\-]+", message = "#i18n{apimanager.resource.labelName.help}" )
@@ -106,6 +117,104 @@ public class Resource implements Serializable
     public void setPlan( Plan plan )
     {
         _plan = plan;
+    }
+
+    /**
+     * Returns the Status
+     *
+     * @return The Status
+     */
+    public String getStatus( )
+    {
+        return _strStatus;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param status
+     *            The Status
+     */
+    public void setStatus( String status )
+    {
+        _strStatus = status;
+    }
+
+    /**
+     * Returns the Api
+     *
+     * @return The Api
+     */
+    public Api getApi( )
+    {
+        return _api;
+    }
+
+    /**
+     * Sets the Api
+     *
+     * @param api
+     *            The Api
+     */
+    public void setApi( Api api )
+    {
+        _api = api;
+    }
+
+    public Environement getEnvironement() {
+        return _environement;
+    }
+
+    public void setEnvironement(Environement environement) {
+        this._environement = environement;
+    }
+    /**
+     * Returns the TraceEnabled
+     *
+     * @return The TraceEnabled
+     */
+    public boolean getTraceEnabled( )
+    {
+        return _bTraceEnabled;
+    }
+
+    /**
+     * Sets the TraceEnabled
+     *
+     * @param bTraceEnabled
+     *            The TraceEnabled
+     */
+    public void setTraceEnabled( boolean bTraceEnabled )
+    {
+        _bTraceEnabled = bTraceEnabled;
+    }
+    /**
+     * Returns the HeaderMatchings
+     *
+     * @return The HeaderMatchings
+     */
+    public List<ResourceHeaderMatching> getHeaderMatchings( )
+    {
+        return _headerMatchings;
+    }
+
+    /**
+     * Sets the HeaderMatchings
+     *
+     * @param headerMatchings
+     *            The HeaderMatchings
+     */
+    public void setHeaderMatchings( final List<ResourceHeaderMatching> headerMatchings )
+    {
+        _headerMatchings = headerMatchings;
+    }
+
+    public List<Instance> getInstances() {
+        return _instances;
+    }
+
+    public void setInstances(List<Instance> _instances) {
+        this._instances = _instances;
     }
 
     /**

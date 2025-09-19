@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS apimanager_plan;
 DROP TABLE IF EXISTS apimanager_deployed;
 DROP TABLE IF EXISTS apimanager_instance;
 DROP TABLE IF EXISTS apimanager_api;
+DROP TABLE IF EXISTS apimanager_meecrogate_instance;
 DROP TABLE IF EXISTS apimanager_plan_oauth_configuration;
 DROP TABLE IF EXISTS apimanager_plan_client_http_configuration;
 DROP TABLE IF EXISTS apimanager_plan_rate_limiting;
@@ -13,292 +14,194 @@ DROP TABLE IF EXISTS apimanager_tag;
 DROP TABLE IF EXISTS apimanager_history;
 DROP TABLE IF EXISTS apimanager_client;
 
---
--- Structure for table apimanager_client
---
-CREATE TABLE apimanager_client (
-uuid varchar(50),
-name varchar(50) default '' NOT NULL,
-client_id varchar(50) default '',
-client_secret varchar(50) default '',
-code_app varchar(50) default '',
-trace_enabled SMALLINT,
-PRIMARY KEY (uuid)
+create table apimanager_api
+(
+    uuid           varchar(50)                  not null
+        primary key,
+    name           varchar(255) default ''      null,
+    description    mediumtext                   null,
+    path           varchar(255) default ''      null,
+    active         tinyint(1)   default 0       null,
+    in_maintenance tinyint(1)   default 0       null,
+    wait           int          default 0       null,
+    openapi        longtext collate utf8mb4_bin null,
+    archived       tinyint(1)   default 0       not null
 );
 
---
--- Structure for table apimanager_history
---
-CREATE TABLE apimanager_history (
-uuid varchar(50),
-uuid_ref varchar(50),
-date timestamp(3),
-type varchar(50) default '',
-user varchar(50) default '',
-PRIMARY KEY (uuid)
+create table apimanager_client
+(
+    uuid          varchar(50)            not null
+        primary key,
+    name          varchar(50) default '' not null,
+    client_id     varchar(50) default '' null,
+    code_app      varchar(50) default '' null,
+    trace_enabled smallint               null,
+    archived      tinyint(1)  default 0  not null
 );
 
---
--- Structure for table apimanager_tag
---
-
-CREATE TABLE apimanager_tag (
-uuid varchar(50),
-uuid_ref varchar(50),
-value varchar(50),
-PRIMARY KEY (uuid)
+create table apimanager_environement
+(
+    uuid        varchar(50)             not null
+        primary key,
+    name        varchar(255) default '' null,
+    description mediumtext              null
 );
 
---
--- Structure for table apimanager_plan_rate_limiting
---
-
-CREATE TABLE apimanager_plan_rate_limiting (
-uuid varchar(50),
-max_requests int default '0',
-time_window int default '0',
-decrement SMALLINT,
-criteria varchar(50) default '',
-implementation varchar(50) default '',
-backend varchar(50) default '',
-PRIMARY KEY (uuid)
+create table apimanager_client_secret
+(
+    uuid               varchar(50)   not null
+        primary key,
+    uuid_client        varchar(50)   null,
+    uuid_environnement varchar(50)   null,
+    secret             varchar(2000) null,
+    constraint apimanager_client_secret_apimanager_client_uuid_fk
+        foreign key (uuid_client) references apimanager_client (uuid),
+    constraint apimanager_client_secret_apimanager_environement_uuid_fk
+        foreign key (uuid_environnement) references apimanager_environement (uuid)
 );
 
---
--- Structure for table apimanager_plan_client_http_configuration
---
-CREATE TABLE apimanager_plan_client_http_configuration (
-uuid varchar(50),
-connection_ttl int default '0',
-connect_timeout int default '0',
-read_timeout int default '0',
-request_timeout int default '0',
-codec_max_chunk_size int default '0',
-codec_initial_buffer_size int default '0',
-codec_max_header_size int default '0',
-codec_max_initial_line_length int default '0',
-PRIMARY KEY (uuid)
+create table apimanager_history
+(
+    uuid     varchar(50)            not null
+        primary key,
+    uuid_ref varchar(50)            null,
+    date     timestamp(3)           null,
+    type     varchar(50) default '' null,
+    user     varchar(50) default '' null
 );
 
---
--- Structure for table apimanager_plan_oauth_configuration
---
-CREATE TABLE apimanager_plan_oauth_configuration (
-uuid varchar(50),
-jwt_issuer varchar(50) default '',
-jwt_validity int default '0',
-PRIMARY KEY (uuid)
+create table apimanager_instance
+(
+    uuid              varchar(50)             not null
+        primary key,
+    protocol          varchar(5)              null,
+    host              varchar(255) default '' null,
+    port              varchar(50)  default '' null,
+    name              varchar(255) default '' null,
+    uuid_environement varchar(50)             null,
+    health_path       varchar(255) default '' null,
+    health_port       varchar(50)  default '' null,
+    constraint apimanager_instance_apimanager_environement_uuid_fk
+        foreign key (uuid_environement) references apimanager_environement (uuid)
 );
 
---
--- Structure for table apimanager_api
---
-CREATE TABLE apimanager_api (
-uuid varchar(50),
-name varchar(255) default '',
-description long varchar,
-path varchar(255) default '',
-active boolean default false,
-in_maintenance boolean default false,
-wait int default '0',
-openapi json,
-PRIMARY KEY (uuid)
+create table apimanager_meecrogate_instance
+(
+    uuid        varchar(50)             not null
+        primary key,
+    description varchar(255) default '' null,
+    base_url    varchar(255) default '' null,
+    name        varchar(255) default '' null
 );
 
---
--- Structure for table apimanager_instance
---
-CREATE TABLE apimanager_instance (
-uuid varchar(50),
-protocol varchar(5),
-host varchar(255) default '',
-port varchar(50) default '',
-name varchar(255) default '',
-environnement varchar(255) default '',
-health_path varchar(255) default '',
-health_port varchar(50) default '',
-health_freq int default '0',
-PRIMARY KEY (uuid)
+create table apimanager_plan_oauth_configuration
+(
+    uuid         varchar(50)            not null
+        primary key,
+    jwt_issuer   varchar(50) default '' null,
+    jwt_validity int         default 0  null
 );
 
---
--- Structure for table apimanager_deployed
---
-CREATE TABLE apimanager_deployed (
-uuid varchar(50),
-uuid_api varchar(50),
-uuid_instance varchar(50),
-PRIMARY KEY (uuid)
+create table apimanager_plan
+(
+    uuid                     varchar(50)                                      not null
+        primary key,
+    name                     varchar(50)  default ''                          null,
+    description              mediumtext                                       null,
+    active                   smallint                                         null,
+    version                  varchar(50)  default ''                          null,
+    request_timeout          int          default 0                           null,
+    oauth_enabled            smallint                                         null,
+    uuid_oauth_configuration varchar(50)                                      null,
+    rate_limiting_enabled    tinyint(1)                                       null,
+    rate_limiting_template   varchar(100)                                     null,
+    client_http_template     varchar(100)                                     null,
+    status                   varchar(30)  default 'DRAFT'                     null,
+    environnement_list       varchar(100) default 'TEST,DEV,REC,PREPROD,PROD' null,
+    constraint fk_plan_uuid_oauth_configuration
+        foreign key (uuid_oauth_configuration) references apimanager_plan_oauth_configuration (uuid)
 );
 
-ALTER TABLE apimanager_deployed
-    ADD CONSTRAINT fk_deployed_uuid_api FOREIGN KEY (uuid_api) REFERENCES apimanager_api (uuid);
-ALTER TABLE apimanager_deployed
-    ADD CONSTRAINT fk_deployed_uuid_instance FOREIGN KEY (uuid_instance) REFERENCES apimanager_instance (uuid);
-
-
---
--- Structure for table apimanager_plan
---
-
-CREATE TABLE apimanager_plan (
-uuid varchar(50),
-uuid_api varchar(50),
-name varchar(50) default '',
-description long varchar,
-active SMALLINT,
-version varchar(50) default '',
-uuid_rate_limiting varchar(50),
-uuid_client_http_configuration varchar(50),
-request_timeout int default '0',
-load_balancing_strategy long varchar,
-oauth_enabled SMALLINT,
-uuid_oauth_configuration varchar(50),
-trace_enabled SMALLINT,
-PRIMARY KEY (uuid)
+create table apimanager_resource_rewrite_url
+(
+    uuid   varchar(50)            not null
+        primary key,
+    target varchar(50) default '' not null,
+    value  varchar(50) default '' not null,
+    type   varchar(50) default '' not null
 );
 
-ALTER TABLE apimanager_plan
-    ADD CONSTRAINT fk_plan_uuid_api FOREIGN KEY (uuid_api) REFERENCES apimanager_api (uuid);
-ALTER TABLE apimanager_plan
-    ADD CONSTRAINT fk_plan_uuid_rate_limiting FOREIGN KEY (uuid_rate_limiting) REFERENCES apimanager_plan_rate_limiting (uuid);
-ALTER TABLE apimanager_plan
-    ADD CONSTRAINT fk_plan_uuid_client_http_configuration FOREIGN KEY (uuid_client_http_configuration) REFERENCES apimanager_plan_client_http_configuration (uuid);
-ALTER TABLE apimanager_plan
-    ADD CONSTRAINT fk_plan_uuid_oauth_configuration FOREIGN KEY (uuid_oauth_configuration) REFERENCES apimanager_plan_oauth_configuration (uuid);
-
-
---
--- Structure for table apimanager_plan_header_matching
---
-CREATE TABLE apimanager_plan_header_matching (
-uuid varchar(50),
-uuid_plan varchar(50),
-name varchar(50) default '',
-value varchar(255) default '',
-type varchar(50) default '',
-PRIMARY KEY (uuid)
+create table apimanager_resource
+(
+    uuid                     varchar(50)                  not null
+        primary key,
+    uuid_plan                varchar(50)                  null,
+    uuid_environement        varchar(50)                  null,
+    path                     varchar(255) default ''      null,
+    verb                     varchar(50)  default ''      null,
+    status                   varchar(50)  default ''      null,
+    uuid_rewrite_url         varchar(50)                  null,
+    matcher_type             varchar(30)  default 'EXACT' null,
+    name                     varchar(100)                 null,
+    uuid_api                 varchar(50)                  null,
+    trace_enabled            smallint                     null,
+    uuid_meecrogate_instance varchar(50)                  null,
+    constraint apimanager_resource_apimanager_meecrogate_instance_uuid_fk
+        foreign key (uuid_meecrogate_instance) references apimanager_meecrogate_instance (uuid),
+    constraint fk_plan_uuid_rewrite_url
+        foreign key (uuid_rewrite_url) references apimanager_resource_rewrite_url (uuid),
+    constraint fk_resource_uuid_api
+        foreign key (uuid_api) references apimanager_api (uuid),
+    constraint fk_resource_uuid_environement
+        foreign key (uuid_environement) references apimanager_environement (uuid),
+    constraint fk_resource_uuid_plan
+        foreign key (uuid_plan) references apimanager_plan (uuid)
 );
 
-ALTER TABLE apimanager_plan_header_matching
-    ADD CONSTRAINT fk_plan_header_matching_uuid_plan FOREIGN KEY (uuid_plan) REFERENCES apimanager_plan (uuid);
-
-
---
--- Structure for table apimanager_resource
---
-CREATE TABLE apimanager_resource (
-uuid varchar(50),
-uuid_plan varchar(50),
-path varchar(255) default '',
-verb varchar(50) default '',
-PRIMARY KEY (uuid)
+create table apimanager_deployed
+(
+    uuid          varchar(50) not null
+        primary key,
+    uuid_resource varchar(50) null,
+    uuid_instance varchar(50) null,
+    status        varchar(50) null,
+    constraint fk_deployed_uuid_instance
+        foreign key (uuid_instance) references apimanager_instance (uuid),
+    constraint fk_deployed_uuid_resource
+        foreign key (uuid_resource) references apimanager_resource (uuid)
 );
 
-ALTER TABLE apimanager_resource
-    ADD CONSTRAINT fk_resource_uuid_plan FOREIGN KEY (uuid_plan) REFERENCES apimanager_plan (uuid);
-
---
--- Structure for table apimanager_subscription
---
-
-CREATE TABLE apimanager_subscription (
-uuid varchar(50),
-uuid_client varchar(50),
-uuid_plan varchar(50),
-trace_enabled SMALLINT,
-PRIMARY KEY (uuid)
+create table apimanager_resource_header_matching
+(
+    uuid          varchar(50)             not null
+        primary key,
+    uuid_resource varchar(50)             null,
+    name          varchar(50)  default '' null,
+    value         varchar(255) default '' null,
+    type          varchar(50)  default '' null,
+    constraint apimanager_resource_header_matching_apimanager_resource_uuid_fk
+        foreign key (uuid_resource) references apimanager_resource (uuid)
 );
 
-ALTER TABLE apimanager_subscription
-    ADD CONSTRAINT fk_subscription_uuid_client FOREIGN KEY (uuid_client) REFERENCES apimanager_client (uuid);
-
-ALTER TABLE apimanager_subscription
-    ADD CONSTRAINT fk_subscription_uuid_plan FOREIGN KEY (uuid_plan) REFERENCES apimanager_plan (uuid);
-
-
--- LUT-30042 - [API - Plan] Suppression des champs RateLimiting
---
-alter table apimanager_plan DROP FOREIGN KEY fk_plan_uuid_rate_limiting;
-alter table apimanager_plan drop column uuid_rate_limiting;
-drop table apimanager_plan_rate_limiting;
-
-alter table apimanager_plan add rate_limiting_enabled boolean default false;
-alter table apimanager_plan add rate_limiting_template varchar(100);
-
-
--- LUT-30043 - [API - Plan] Suppression des champs ClientHttp
---
-alter table apimanager_plan DROP FOREIGN KEY fk_plan_uuid_client_http_configuration;
-alter table apimanager_plan drop column uuid_client_http_configuration;
-drop table apimanager_plan_client_http_configuration;
-
-alter table apimanager_plan add client_http_template varchar(100);
-
-
--- LUT-30053 - [Souscription] Ajout du choix d'environnement lors de la souscription d'un client sur un plan
---
-alter table apimanager_subscription add environnement varchar(255);
-
-
--- LUT-30047 - [API - Plan] Gestion du rewrite url
---
-CREATE TABLE apimanager_resource_rewrite_url (
-    uuid varchar(50),
-    target varchar(50) default '' NOT NULL,
-    value varchar(50) default '' NOT NULL,
-    type varchar(50) default '' NOT NULL,
-    PRIMARY KEY (uuid)
+create table apimanager_subscription
+(
+    uuid          varchar(50)            not null
+        primary key,
+    uuid_client   varchar(50)            null,
+    uuid_resource varchar(50)            null,
+    trace_enabled smallint               null,
+    archived      tinyint(1)  default 0  not null,
+    status        varchar(50) default '' null,
+    constraint fk_subscription_uuid_client
+        foreign key (uuid_client) references apimanager_client (uuid),
+    constraint fk_subscription_uuid_resource
+        foreign key (uuid_resource) references apimanager_resource (uuid)
 );
 
-ALTER TABLE apimanager_resource ADD uuid_rewrite_url varchar(50);
-ALTER TABLE apimanager_resource
-    ADD CONSTRAINT fk_plan_uuid_rewrite_url FOREIGN KEY (uuid_rewrite_url) REFERENCES apimanager_resource_rewrite_url (uuid);
-
-
--- LUT-30052 - [OAuth2 Client] Gestion des secrets par environnement
---
-CREATE TABLE apimanager_client_secret (
-    uuid            varchar(50),
-    uuid_client     varchar(50),
-    environnement   varchar(50),
-    secret          varchar(2000),
-    PRIMARY KEY (uuid)
+create table apimanager_tag
+(
+    uuid     varchar(50) not null
+        primary key,
+    uuid_ref varchar(50) null,
+    value    varchar(50) null
 );
-
-ALTER TABLE apimanager_client DROP COLUMN client_secret;
-
-
--- LUT-30055 - [Archivage] Cycle de vie des apis et des clients
---
-alter table apimanager_api add archived boolean not null default false;
-alter table apimanager_client add archived boolean not null default false;
-alter table apimanager_subscription add archived boolean not null default false;
-
-
--- LUT-30045 - [API - Plan] Gestion du cycle de vie d'un plan via un statut
---
-alter table apimanager_plan add status varchar(30) default 'DRAFT';
-
-
--- LUT-30046 - [API - Plan] Définition de la liste des environnements disponibles pour le plan
---
-alter table apimanager_plan add environnement_list varchar(100) default 'TEST,DEV,REC,PREPROD,PROD';
-
-
--- LUT-30193 - [Resource] Définition du type de matcher pour le path configuré
---
-alter table apimanager_resource add matcher_type varchar(30) default 'EXACT';
-
-
--- LUT-30296 - [Resource] Ajouter un champ "name"
---
-alter table apimanager_resource add name varchar(100);
-alter table apimanager_resource add unique(name);
-update apimanager_resource set name = uuid;
-
-
--- LUT-30314 - [Plan - Instance] Supprimer les champs LoadBalancingStrategy et Health Freq
---
-alter table apimanager_plan drop column load_balancing_strategy;
-alter table apimanager_instance drop column health_freq;

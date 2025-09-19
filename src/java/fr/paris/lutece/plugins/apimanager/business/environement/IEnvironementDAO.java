@@ -31,13 +31,14 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.web.right;
 
-public class Constants
+package fr.paris.lutece.plugins.apimanager.business.environement;
+
+import fr.paris.lutece.plugins.apimanager.business.IDAO;
+
+/**
+ * IHistoryDAO Interface
+ */
+public interface IEnvironementDAO extends IDAO<Environement>
 {
-    public static final String RIGHT_MANAGEAPIS = "APIMANAGER_API_MANAGEMENT";
-    public static final String RIGHT_MANAGEPLANS = "APIMANAGER_PLAN_MANAGEMENT";
-    public static final String RIGHT_MANAGECLIENTS = "APIMANAGER_CLIENT_MANAGEMENT";
-    public static final String RIGHT_MANAGEINSTANCES = "APIMANAGER_INSTANCE_MANAGEMENT";
-    public static final String RIGHT_MANAGESUBSCRIPTIONS = "APIMANAGER_SUBSCRIPTION_MANAGEMENT";
 }

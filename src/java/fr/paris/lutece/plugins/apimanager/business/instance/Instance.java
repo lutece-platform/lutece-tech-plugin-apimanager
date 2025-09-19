@@ -34,16 +34,17 @@
 package fr.paris.lutece.plugins.apimanager.business.instance;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
-import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This is the business class for the object Instance
  */
-public class Instance extends AbstractTagBean implements Serializable
-{
+public class Instance extends AbstractTagBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // Variables declarations
@@ -51,42 +52,41 @@ public class Instance extends AbstractTagBean implements Serializable
 
     private InstanceProtocolEnum _protocol;
 
-    @Size( max = 255, message = "#i18n{apimanager.validation.instance.Host.size}" )
+    @Size(max = 255, message = "#i18n{apimanager.validation.instance.Host.size}")
     private String _strHost;
 
-    @Size( max = 50, message = "#i18n{apimanager.validation.instance.Port.size}" )
+    @Size(max = 50, message = "#i18n{apimanager.validation.instance.Port.size}")
     private String _strPort;
 
-    @Size( max = 255, message = "#i18n{apimanager.validation.instance.Name.size}" )
+    @Size(max = 255, message = "#i18n{apimanager.validation.instance.Name.size}")
     private String _strName;
 
-    @Size( max = 255, message = "#i18n{apimanager.validation.instance.Environnement.size}" )
-    private String _strEnvironnement;
+    private Environement _environement;
 
-    @Size( max = 255, message = "#i18n{apimanager.validation.instance.HealthPath.size}" )
+    @Size(max = 255, message = "#i18n{apimanager.validation.instance.HealthPath.size}")
     private String _strHealthPath;
 
-    @Size( max = 50, message = "#i18n{apimanager.validation.instance.HealthPort.size}" )
+    @Size(max = 50, message = "#i18n{apimanager.validation.instance.HealthPort.size}")
     private String _strHealthPort;
+
+
+    private List<Resource> _deployedResourceList;
 
     /**
      * Returns the Uuid
-     * 
+     *
      * @return The Uuid
      */
-    public String getUuid( )
-    {
+    public String getUuid() {
         return _strUuid;
     }
 
     /**
      * Sets the Uuid
-     * 
-     * @param strUuid
-     *            The Uuid
+     *
+     * @param strUuid The Uuid
      */
-    public void setUuid( String strUuid )
-    {
+    public void setUuid(String strUuid) {
         _strUuid = strUuid;
     }
 
@@ -95,145 +95,132 @@ public class Instance extends AbstractTagBean implements Serializable
      *
      * @return The Protocol
      */
-    public InstanceProtocolEnum getProtocol( )
-    {
+    public InstanceProtocolEnum getProtocol() {
         return _protocol;
     }
 
     /**
      * Sets the Protocol
      *
-     * @param protocol
-     *            The Protocol
+     * @param protocol The Protocol
      */
-    public void setProtocol( final InstanceProtocolEnum protocol )
-    {
+    public void setProtocol(final InstanceProtocolEnum protocol) {
         _protocol = protocol;
     }
 
     /**
      * Returns the Host
-     * 
+     *
      * @return The Host
      */
-    public String getHost( )
-    {
+    public String getHost() {
         return _strHost;
     }
 
     /**
      * Sets the Host
-     * 
-     * @param strHost
-     *            The Host
+     *
+     * @param strHost The Host
      */
-    public void setHost( String strHost )
-    {
+    public void setHost(String strHost) {
         _strHost = strHost;
     }
 
     /**
      * Returns the Port
-     * 
+     *
      * @return The Port
      */
-    public String getPort( )
-    {
+    public String getPort() {
         return _strPort;
     }
 
     /**
      * Sets the Port
-     * 
-     * @param strPort
-     *            The Port
+     *
+     * @param strPort The Port
      */
-    public void setPort( String strPort )
-    {
+    public void setPort(String strPort) {
         _strPort = strPort;
     }
 
     /**
      * Returns the Name
-     * 
+     *
      * @return The Name
      */
-    public String getName( )
-    {
+    public String getName() {
         return _strName;
     }
 
     /**
      * Sets the Name
-     * 
-     * @param strName
-     *            The Name
+     *
+     * @param strName The Name
      */
-    public void setName( String strName )
-    {
+    public void setName(String strName) {
         _strName = strName;
     }
 
     /**
      * Returns the Environnement
-     * 
+     *
      * @return The Environnement
      */
-    public String getEnvironnement( )
-    {
-        return _strEnvironnement;
+    public Environement getEnvironement() {
+        return _environement;
     }
 
     /**
      * Sets the Environnement
-     * 
-     * @param strEnvironnement
-     *            The Environnement
+     *
+     * @param environement The Environnement
      */
-    public void setEnvironnement( String strEnvironnement )
-    {
-        _strEnvironnement = strEnvironnement;
+    public void setEnvironement(Environement environement) {
+        _environement = environement;
+    }
+
+    public List<Resource> getDeployedResourceList() {
+        return _deployedResourceList;
+    }
+
+    public void setDeployedResourceList(List<Resource> deployedResourceList) {
+        _deployedResourceList = deployedResourceList;
     }
 
     /**
      * Returns the HealthPath
-     * 
+     *
      * @return The HealthPath
      */
-    public String getHealthPath( )
-    {
+    public String getHealthPath() {
         return _strHealthPath;
     }
 
     /**
      * Sets the HealthPath
-     * 
-     * @param strHealthPath
-     *            The HealthPath
+     *
+     * @param strHealthPath The HealthPath
      */
-    public void setHealthPath( String strHealthPath )
-    {
+    public void setHealthPath(String strHealthPath) {
         _strHealthPath = strHealthPath;
     }
 
     /**
      * Returns the HealthPort
-     * 
+     *
      * @return The HealthPort
      */
-    public String getHealthPort( )
-    {
+    public String getHealthPort() {
         return _strHealthPort;
     }
 
     /**
      * Sets the HealthPort
-     * 
-     * @param strHealthPort
-     *            The HealthPort
+     *
+     * @param strHealthPort The HealthPort
      */
-    public void setHealthPort( String strHealthPort )
-    {
+    public void setHealthPort(String strHealthPort) {
         _strHealthPort = strHealthPort;
     }
 

@@ -34,9 +34,12 @@
 package fr.paris.lutece.plugins.apimanager.business.api;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,6 +69,8 @@ public class Api extends AbstractTagBean implements Serializable
     private Map<String, Object> _openapi;
 
     private boolean _bArchived;
+
+    private List<Resource> _resourceList;
 
     /**
      * Returns the Uuid
@@ -256,4 +261,11 @@ public class Api extends AbstractTagBean implements Serializable
         _bArchived = bArchived;
     }
 
+    public List<Resource> get_resourceList() {
+        return _resourceList;
+    }
+
+    public void set_resourceList(List<Resource> _resourceList) {
+        this._resourceList = _resourceList;
+    }
 }

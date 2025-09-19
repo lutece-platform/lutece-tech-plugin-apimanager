@@ -40,16 +40,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
+import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
+import fr.paris.lutece.plugins.apimanager.business.resource.*;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
-import fr.paris.lutece.plugins.apimanager.service.ApiService;
-import fr.paris.lutece.plugins.apimanager.service.InstanceService;
-import fr.paris.lutece.plugins.apimanager.service.PlanService;
-import fr.paris.lutece.plugins.apimanager.service.ResourceService;
-import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
+import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -77,15 +77,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
 /**
  * This class provides the user interface to manage Api features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageApis.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS )
-public class ApiJspBean extends AbstractJspBean<String, Api>
-{
+@Controller(controllerJsp = "ManageApis.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS)
+public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Templates
     private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/manage_apis.html";
     private static final String TEMPLATE_CREATE_API = "/admin/plugins/apimanager/create_api.html";
@@ -104,8 +104,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     private static final String PARAMETER_ID_INSTANCE = "uuid_instance";
     private static final String PARAMETER_SHOW_INSTANCES = "showInstances";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
+    private static final String PARAMETER_ACTIVE_TAB = "activeTab";
     private static final String PARAMETER_ARCHIVED = "archived";
     private static final String PARAMETER_RELOAD = "reload";
+    private static final String PARAMETER_ENVIRONEMENT_PREFIX = "environement-";
+    private static final String PARAMETER_RESOURCE_PREFIX = "resource-";
+    private static final String PARAMETER_RESOURCE_ROW ="-resource-row-";
+    private static final String PARAMETER_PLAN ="-plan-";
+    private static final String PARAMETER_PLAN_RESOURCES ="-resources";
+    private static final String PARAMETER_VERB_NAME = "verb_name";
+    private static final String PARAMETER_UUID_INSTANCES = "uuid_instances";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -118,7 +126,15 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
 
     // Markers
     private static final String MARK_API_LIST = "api_list";
+    private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_INSTANCE_LIST = "instance_list";
+    private static final String MARK_PLAN_LIST = "plan_list";
+    private static final String MARK_TAG_LIST = "tag_list";
+    private static final String MARK_VERB_LIST = "verb_list";
+    private static final String MARK_REWRITE_URL_TYPE_LIST = "rewrite_url_type_list";
+    private static final String MARK_MATCHER_TYPE_LIST = "matcher_type_list";
     private static final String MARK_API = "api";
+    private static final String MARK_RESOURCE = "resource";
     private static final String MARK_PLAN_TEMPLATE_NAMES = "plan_template_names";
 
     private static final String JSP_MANAGE_APIS = "jsp/admin/plugins/apimanager/ManageApis.jsp";
@@ -160,430 +176,485 @@ public class ApiJspBean extends AbstractJspBean<String, Api>
     // Session variable to store working values
     private Api _api;
     private List<String> _listIdApis;
-    private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
+    private List<String> _listResources;
+    private HashMap<String, String> _mapFilterCriteria = new HashMap<>();
     private String _optionOrderBy;
 
-    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean( IConfigGeneratorService.BEAN_NAME );
-    private static final ObjectMapper JSON_MAPPER = new ObjectMapper( ).enable( SerializationFeature.INDENT_OUTPUT );
+    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean(IConfigGeneratorService.BEAN_NAME);
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    private Resource _resource;
+    private List<Resource> _resources;
+
+    // Property enums
+    private static final List<String> matcherTypeList = Arrays
+            .asList(AppPropertiesService.getProperty("apimanager.plan.resource.matcher.type.values").split(","));
+
+    private List<Environement> environements;
+    private List<Instance> instances;
 
     /**
      * Build the Manage View
-     * 
-     * @param request
-     *            The HTTP request
+     *
+     * @param request The HTTP request
      * @return The page
      */
-    @View( value = VIEW_MANAGE_APIS, defaultView = true )
-    public String getManageApis( HttpServletRequest request )
-    {
-        final String infoMsg = request.getParameter( PARAMETER_INFO_MSG );
-        if ( infoMsg != null )
-        {
-            addInfo( infoMsg, getLocale( ) );
-            if ( "true".equals( request.getParameter( PARAMETER_RELOAD ) ) )
-            {
-                return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, Map.of( ) );
+    @View(value = VIEW_MANAGE_APIS, defaultView = true)
+    public String getManageApis(HttpServletRequest request) {
+        final String infoMsg = request.getParameter(PARAMETER_INFO_MSG);
+        if (infoMsg != null) {
+            addInfo(infoMsg, getLocale());
+            if ("true".equals(request.getParameter(PARAMETER_RELOAD))) {
+                return getPage(PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, Map.of());
             }
-            return redirectView( request, VIEW_MANAGE_APIS );
+            return redirectView(request, VIEW_MANAGE_APIS);
         }
 
         _api = null;
-        final Map<String, Object> model = new HashMap<>( );
+        final Map<String, Object> model = new HashMap<>();
         // new search only if in pagination mode
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
-        {
+        if (request.getParameter(AbstractPaginator.PARAMETER_PAGE_INDEX) == null) {
             // if sorting request : new search with the existing filter criteria, ordered
             // example of order by parameter : orderby=name
-            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
-            {
+            if (StringUtils.isNotBlank((String) request.getParameter(PARAMETER_SEARCH_ORDER_BY))) {
 
-                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
-                String strSortMode = getSortMode( );
+                String strOrderByColumn = (String) request.getParameter(PARAMETER_SEARCH_ORDER_BY);
+                String strSortMode = getSortMode();
 
-                _listIdApis = getService( ).getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+                _listIdApis = getService().getIdEntitiesList(_mapFilterCriteria, strOrderByColumn, strSortMode);
 
-            }
-            else
-            {
+
+            } else {
                 // reload the filter criteria and search
-                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
-                if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
-                {
-                    criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
+                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest(request);
+                final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
+                if (!_mapFilterCriteria.containsKey(FILTER_DISPLAY_ARCHIVED)) {
+                    criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
                 }
-                if ( criterias.containsKey( PARAMETER_ID_INSTANCE ) )
-                {
-                    final String uuidInstance = criterias.get( PARAMETER_ID_INSTANCE );
-                    _listIdApis = getService( ).getIdApisListLinkedToInstanceUuid( uuidInstance );
-                    model.put( PARAMETER_ID_INSTANCE, uuidInstance );
-                    model.put( PARAMETER_SHOW_INSTANCES, false );
-                    model.put( PARAMETER_DELETE_LINK, true );
-                }
-                else
-                {
-                    _listIdApis = getService( ).getIdEntitiesList( criterias );
+                if (criterias.containsKey(PARAMETER_ID_INSTANCE)) {
+                    final String uuidInstance = criterias.get(PARAMETER_ID_INSTANCE);
+                    _listIdApis = getService().getIdApisListLinkedToInstanceUuid(uuidInstance);
+                    model.put(PARAMETER_ID_INSTANCE, uuidInstance);
+                    model.put(PARAMETER_SHOW_INSTANCES, false);
+                    model.put(PARAMETER_DELETE_LINK, true);
+                } else {
+                    _listIdApis = getService().getIdEntitiesList(criterias);
                 }
             }
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
-            resetCurrentPageIndexOfPaginator( );
+            resetCurrentPageIndexOfPaginator();
         }
 
-        model.putAll( getPaginatedListModel( request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS ) );
 
-        final String subscriptionMode = request.getParameter( PARAMETER_SUBSCRIPTION_MODE );
-        if ( subscriptionMode != null )
-        {
-            model.put( PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean( subscriptionMode ) );
+        Map<String, Object> apis = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
+        model.putAll(apis);
+
+        ArrayList<String> tags = new ArrayList<String>();
+        for (Api apiValue : ((List<Api>) apis.get(MARK_API_LIST))) {
+            tags.addAll(apiValue.getTags());
         }
-        addPlanTemplateNamesToModel( model );
+        model.put(MARK_TAG_LIST, tags.stream().distinct().collect(Collectors.toList()));
 
-        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+        environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+        instances = new ArrayList<>();
+        for(Environement envir : environements){
+            List<Instance> envInstances = InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToEnvironementUuid(envir.getUuid()));
+            instances.addAll(envInstances);
+            envir.setInstances(envInstances);
+        }
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model );
+        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
+
+        model.put(MARK_ENVIRONMENT_LIST, environements);
+        model.put(MARK_INSTANCE_LIST, instances);
+        model.put(MARK_PLAN_LIST, plans);
+
+        final String subscriptionMode = request.getParameter(PARAMETER_SUBSCRIPTION_MODE);
+        if (subscriptionMode != null) {
+            model.put(PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean(subscriptionMode));
+        }
+        addPlanTemplateNamesToModel(model);
+
+        addSearchParameters(model, _mapFilterCriteria); // allow the persistence of search values in inputs search bar inputs
+
+        _api = (_api != null) ? _api : new Api();
+        _resource = (_resource != null) ? _resource : new Resource();
+        _resources = (_resources != null) ? _resources : new ArrayList<Resource>();
+        _resource.setRewriteUrl(new ResourceRewriteUrl());
+
+        model.put(MARK_API, _api);
+        model.put(MARK_RESOURCE, _resource);
+        model.put(MARK_VERB_LIST, ResourceVerbEnum.values());
+        model.put(MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values());
+        model.put(MARK_MATCHER_TYPE_LIST, matcherTypeList);
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
+        model.put(PARAMETER_ACTIVE_TAB, 1);
+
+        return getPage(PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model);
     }
 
     /**
      * Get Items from Ids list
-     * 
+     *
      * @param listIds
      * @return the populated list of items corresponding to the id List
      */
     @Override
-    List<Api> getItemsFromIds( List<String> listIds )
-    {
-        final List<Api> listApi = getService( ).getEntitiesListByIds( listIds );
+    List<Api> getItemsFromIds(List<String> listIds) {
+        final List<Api> listApi = getService().getEntitiesListByIds(listIds);
 
         // keep original order
-        return listApi.stream( ).sorted( Comparator.comparingInt( notif -> listIds.indexOf( notif.getUuid( ) ) ) ).collect( Collectors.toList( ) );
+        return listApi.stream().sorted(Comparator.comparingInt(notif -> listIds.indexOf(notif.getUuid()))).collect(Collectors.toList());
     }
 
     @Override
-    protected ApiService getService( )
-    {
-        return ApiService.getInstance( );
+    protected ApiService getService() {
+        return ApiService.getInstance();
     }
 
     @Override
-    int getPluginDefaultNumberOfItemPerPage( )
-    {
-        return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
+    int getPluginDefaultNumberOfItemPerPage() {
+        return AppPropertiesService.getPropertyInt(PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50);
     }
 
     /**
      * reset the _listIdApis list
      */
-    public void resetListId( )
-    {
-        _listIdApis = new ArrayList<>( );
+    public void resetListId() {
+        _listIdApis = new ArrayList<>();
     }
 
     /**
      * Returns the form to create a api
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the html code of the api form
      */
-    @View( VIEW_CREATE_API )
-    public String getCreateApi( HttpServletRequest request )
-    {
-        _api = ( _api != null ) ? _api : new Api( );
+    @View(VIEW_CREATE_API)
+    public String getCreateApi(HttpServletRequest request) {
+        _api = (_api != null) ? _api : new Api();
 
-        Map<String, Object> model = getModel( );
-        model.put( MARK_API, _api );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_API ) );
+        Map<String, Object> model = getModel();
+        model.put(MARK_API, _api);
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
 
-        return getPage( PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API, model );
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API, model);
     }
 
     /**
      * Process the data capture form of a new api
      *
-     * @param request
-     *            The Http Request
+     * @param request The Http Request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
-    @Action( ACTION_CREATE_API )
-    public String doCreateApi( HttpServletRequest request ) throws AccessDeniedException
-    {
-        try
-        {
-            populateApi( _api, request, getLocale( ) );
+    @Action(ACTION_CREATE_API)
+    public String doCreateApi(HttpServletRequest request) throws AccessDeniedException {
+        try {
+            populateApi(_api, request, getLocale());
+        } catch (JsonProcessingException e) {
+            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+            return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
         }
-        catch( JsonProcessingException e )
-        {
-            this.addError( "Error while parsing the openapi file. Please select a valid JSON file." );
-            return redirectView( request, VIEW_CREATE_API );
-        }
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_API ) )
-        {
-            throw new AccessDeniedException( "Invalid security token" );
+
+        if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
+            throw new AccessDeniedException("Invalid security token");
         }
 
         // Check constraints
-        if ( !validateBean( _api, VALIDATION_ATTRIBUTES_PREFIX ) )
-        {
-            return redirectView( request, VIEW_CREATE_API );
+        if (!validateBean(_api, VALIDATION_ATTRIBUTES_PREFIX)) {
+            return redirectView(request, VIEW_CREATE_API);
         }
 
-        getService( ).create( _api, getUser( ).getEmail( ) );
-        addInfo( INFO_API_CREATED, getLocale( ) );
-        resetListId( );
+        getService().create(_api, getUser().getEmail());
+        addInfo(INFO_API_CREATED, getLocale());
+        resetListId();
 
-        return redirectView( request, VIEW_MANAGE_APIS );
+        return redirectView(request, VIEW_MANAGE_APIS);
     }
 
     /**
      * Manages the removal form of a api whose identifier is in the http request
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_ARCHIVE_API )
-    public String getConfirmArchiveApi( HttpServletRequest request )
-    {
-        String uuid = request.getParameter( PARAMETER_ID_API );
-        UrlItem url = new UrlItem( getActionUrl( ACTION_ARCHIVE_API ) );
-        url.addParameter( PARAMETER_ID_API, uuid );
+    @Action(ACTION_CONFIRM_ARCHIVE_API)
+    public String getConfirmArchiveApi(HttpServletRequest request) {
+        String uuid = request.getParameter(PARAMETER_ID_API);
+        UrlItem url = new UrlItem(getActionUrl(ACTION_ARCHIVE_API));
+        url.addParameter(PARAMETER_ID_API, uuid);
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_ARCHIVE_API, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl(request, MESSAGE_CONFIRM_ARCHIVE_API, url.getUrl(), AdminMessage.TYPE_CONFIRMATION);
 
-        return redirect( request, strMessageUrl );
+        return redirect(request, strMessageUrl);
     }
 
     /**
      * Handles the removal form of a api
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the jsp URL to display the form to manage apis
      */
-    @Action( ACTION_ARCHIVE_API )
-    public String doArchiveApi( HttpServletRequest request )
-    {
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
-        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+    @Action(ACTION_ARCHIVE_API)
+    public String doArchiveApi(HttpServletRequest request) {
+        final String apiUuid = request.getParameter(PARAMETER_ID_API);
+        final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
         // DELETE PUBLISHED CONFIGS AND ARCHIVE SUBSCRIPTIONS
         // get all plans linked to this API, if any
-        PlanService.getInstance( ).getIdEntitiesList( Map.of( "uuid_api", apiUuid ) ).forEach( planUuid -> {
+        PlanService.getInstance().getIdEntitiesList(Map.of("uuid_api", apiUuid)).forEach(planUuid -> {
             // for each plan, get the subscriptions, if any
-            SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", planUuid ) ).forEach( subscriptionUuid -> {
-                SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
+            SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_plan", planUuid)).forEach(subscriptionUuid -> {
+                SubscriptionHome.findByPrimaryKey(subscriptionUuid).ifPresent(subscription -> {
                     // for each subscription, send a delete request, and archive the subscription
-                    _configGeneratorService.deleteApiManager( subscription.getClient( ), subscription.getPlan( ),
-                            ResourceService.getInstance( ).getResourcesByPlanUuid( planUuid ),
-                            InstanceService.getInstance( ).getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( apiUuid ) ),
-                            subscription.getEnvironnement( ), getUser( ).getEmail( ) );
-                    SubscriptionService.getInstance( ).archive( subscriptionUuid, getUser( ).getEmail( ) );
-                } );
-            } );
+                    _configGeneratorService.deleteApiManager(subscription.getClient(), subscription.getResource().getPlan(),
+                            ResourceService.getInstance().getResourcesByPlanUuid(planUuid),
+                            InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(apiUuid)),
+                            subscription.getEnvironnement(), getUser().getEmail());
+                    SubscriptionService.getInstance().archive(subscriptionUuid, getUser().getEmail());
+                });
+            });
             // Update plan status to unpublished if it was previously published
-            PlanHome.findByPrimaryKey( planUuid ).filter( plan -> plan.getStatus( ).equals( PlanStatusEnum.PUBLISHED ) ).ifPresent( plan -> {
-                plan.setStatus( PlanStatusEnum.UNPUBLISHED );
-                PlanService.getInstance( ).update( plan, getUser( ).getEmail( ) );
-            } );
-        } );
+            PlanHome.findByPrimaryKey(planUuid).filter(plan -> plan.getStatus().equals(PlanStatusEnum.PUBLISHED)).ifPresent(plan -> {
+                plan.setStatus(PlanStatusEnum.UNPUBLISHED);
+                PlanService.getInstance().update(plan, getUser().getEmail());
+            });
+        });
 
-        getService( ).archive( apiUuid, getUser( ).getEmail( ) );
-        addInfo( INFO_API_ARCHIVED, getLocale( ) );
-        resetListId( );
+        getService().archive(apiUuid, getUser().getEmail());
+        addInfo(INFO_API_ARCHIVED, getLocale());
+        resetListId();
 
-        return redirectView( request, VIEW_MANAGE_APIS );
+        return redirectView(request, VIEW_MANAGE_APIS);
     }
 
     /**
      * Manages the removal form of an instance link to an API whose identifiers is in the http request
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_REMOVE_LINK )
-    public String getConfirmRemoveLink( HttpServletRequest request )
-    {
-        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
-        final UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_LINK ) );
-        url.addParameter( PARAMETER_ID_INSTANCE, instanceUuid );
-        url.addParameter( PARAMETER_ID_API, apiUuid );
+    @Action(ACTION_CONFIRM_REMOVE_LINK)
+    public String getConfirmRemoveLink(HttpServletRequest request) {
+        final String instanceUuid = request.getParameter(PARAMETER_ID_INSTANCE);
+        final String apiUuid = request.getParameter(PARAMETER_ID_API);
+        final UrlItem url = new UrlItem(getActionUrl(ACTION_REMOVE_LINK));
+        url.addParameter(PARAMETER_ID_INSTANCE, instanceUuid);
+        url.addParameter(PARAMETER_ID_API, apiUuid);
 
-        final String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_LINK, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+        final String strMessageUrl = AdminMessageService.getMessageUrl(request, MESSAGE_CONFIRM_REMOVE_LINK, url.getUrl(), AdminMessage.TYPE_CONFIRMATION);
 
-        return redirect( request, strMessageUrl );
+        return redirect(request, strMessageUrl);
     }
 
     /**
      * Handles the removal form of an instance link to an API
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the jsp URL to display the form to manage instances
      */
-    @Action( ACTION_REMOVE_LINK )
-    public String doRemoveLink( HttpServletRequest request )
-    {
-        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
-        final Instance instance = InstanceHome.findByPrimaryKey( instanceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+    @Action(ACTION_REMOVE_LINK)
+    public String doRemoveLink(HttpServletRequest request) {
+        final String instanceUuid = request.getParameter(PARAMETER_ID_INSTANCE);
+        final String apiUuid = request.getParameter(PARAMETER_ID_API);
+        final Instance instance = InstanceHome.findByPrimaryKey(instanceUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        InstanceService.getInstance( ).deleteLinkApi( instance, apiUuid, getUser( ).getEmail( ) );
+        //InstanceService.getInstance( ).deleteLinkResource( instance, resourceUuid, getUser( ).getEmail( ) );
 
-        addInfo( INFO_LINK_REMOVED, getLocale( ) );
-        return redirectView( request, VIEW_MANAGE_APIS );
+        addInfo(INFO_LINK_REMOVED, getLocale());
+        return redirectView(request, VIEW_MANAGE_APIS);
     }
 
     /**
      * Returns the form to update info about a api
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return The HTML form to update info
      */
-    @View( VIEW_MODIFY_API )
-    public String getModifyApi( HttpServletRequest request )
-    {
-        String uuid = request.getParameter( PARAMETER_ID_API );
-        if ( uuid == null )
-        {
-            return redirectView( request, VIEW_MANAGE_APIS );
+    @View(VIEW_MODIFY_API)
+    public String getModifyApi(HttpServletRequest request) {
+        String uuid = request.getParameter(PARAMETER_ID_API);
+        if (uuid == null) {
+            return redirectView(request, VIEW_MANAGE_APIS);
         }
-        if ( _api == null || !uuid.equals( _api.getUuid( ) ) )
-        {
-            Optional<Api> optApi = ApiHome.findByPrimaryKey( uuid );
-            _api = optApi.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+        if (_api == null || !uuid.equals(_api.getUuid())) {
+            Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
+            _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
 
-        Map<String, Object> model = getModel( );
-        model.put( MARK_API, _api );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_API ) );
+        Map<String, Object> model = getModel();
+        model.put(MARK_API, _api);
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_API));
 
-        return getPage( PROPERTY_PAGE_TITLE_MODIFY_API, TEMPLATE_MODIFY_API, model );
+        return getPage(PROPERTY_PAGE_TITLE_MODIFY_API, TEMPLATE_MODIFY_API, model);
     }
 
     /**
      * Process the change form of a api
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
-    @Action( ACTION_MODIFY_API )
-    public String doModifyApi( MultipartHttpServletRequest request ) throws AccessDeniedException
-    {
-        try
-        {
-            populateApi( _api, request, getLocale( ) );
-        }
-        catch( JsonProcessingException e )
-        {
-            this.addError( "Error while parsing the openapi file. Please select a valid JSON file." );
-            return redirect( request, VIEW_MODIFY_API, Map.of( PARAMETER_ID_API, _api.getUuid( ) ) );
+    @Action(ACTION_MODIFY_API)
+    public String doModifyApi(MultipartHttpServletRequest request) throws AccessDeniedException {
+        try {
+            populateApi(_api, request, getLocale());
+        } catch (JsonProcessingException e) {
+            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+            return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
         }
 
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_API ) )
-        {
-            throw new AccessDeniedException( "Invalid security token" );
+        if (!SecurityTokenService.getInstance().validate(request, ACTION_MODIFY_API)) {
+            throw new AccessDeniedException("Invalid security token");
         }
 
         // Check constraints
-        if ( !validateBean( _api, VALIDATION_ATTRIBUTES_PREFIX ) )
-        {
-            return redirect( request, VIEW_MODIFY_API, Map.of( PARAMETER_ID_API, _api.getUuid( ) ) );
+        if (!validateBean(_api, VALIDATION_ATTRIBUTES_PREFIX)) {
+            return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
         }
 
-        getService( ).update( _api, getUser( ).getEmail( ) );
-        addInfo( INFO_API_UPDATED, getLocale( ) );
-        resetListId( );
+        getService().update(_api, getUser().getEmail());
+        addInfo(INFO_API_UPDATED, getLocale());
+        resetListId();
 
-        return redirectView( request, VIEW_MANAGE_APIS );
+        return redirectView(request, VIEW_MANAGE_APIS);
     }
 
-    @Action( ACTION_DOWNLOAD_OPENAPI )
-    public void doDownloadOpenapi( HttpServletRequest request ) throws JsonProcessingException
-    {
-        final String uuid = request.getParameter( PARAMETER_ID_API );
-        if ( uuid == null )
-        {
-            redirectView( request, VIEW_MANAGE_APIS );
+    @Action(ACTION_DOWNLOAD_OPENAPI)
+    public void doDownloadOpenapi(HttpServletRequest request) throws JsonProcessingException {
+        final String uuid = request.getParameter(PARAMETER_ID_API);
+        if (uuid == null) {
+            redirectView(request, VIEW_MANAGE_APIS);
         }
 
-        final Api api = ApiHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        this.download( JSON_MAPPER.writeValueAsBytes( api.getOpenapi( ) ), api.getName( ).replace( " ", "-" ) + "_openapi.json", "application/json" );
+        final Api api = ApiHome.findByPrimaryKey(uuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+        this.download(JSON_MAPPER.writeValueAsBytes(api.getOpenapi()), api.getName().replace(" ", "-") + "_openapi.json", "application/json");
     }
 
-    @View( VIEW_LINK_API )
-    public String getLinkApi( HttpServletRequest request )
-    {
-        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        _listIdApis = getService( ).getIdApisListNotLinkedToInstanceUuid( instanceUuid );
-        final Map<String, Object> model = getPaginatedListModel( request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS );
+    @View(VIEW_LINK_API)
+    public String getLinkApi(HttpServletRequest request) {
+        final String instanceUuid = request.getParameter(PARAMETER_ID_INSTANCE);
+        _listIdApis = getService().getIdApisListNotLinkedToInstanceUuid(instanceUuid);
+        final Map<String, Object> model = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
 
-        final String linkMode = request.getParameter( PARAMETER_LINK_MODE );
-        if ( linkMode != null )
-        {
-            model.put( PARAMETER_LINK_MODE, Boolean.parseBoolean( linkMode ) );
+        final String linkMode = request.getParameter(PARAMETER_LINK_MODE);
+        if (linkMode != null) {
+            model.put(PARAMETER_LINK_MODE, Boolean.parseBoolean(linkMode));
         }
-        model.put( PARAMETER_ID_INSTANCE, instanceUuid );
-        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+        model.put(PARAMETER_ID_INSTANCE, instanceUuid);
+        addSearchParameters(model, _mapFilterCriteria); // allow the persistence of search values in inputs search bar inputs
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model );
+        return getPage(PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model);
     }
 
-    @Action( ACTION_LINK_INSTANCE )
-    public String doLinkApi( HttpServletRequest request )
-    {
-        final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
-        if ( StringUtils.isAnyBlank( instanceUuid, apiUuid ) )
-        {
-            return redirectView( request, VIEW_MANAGE_APIS );
+    @Action(ACTION_LINK_INSTANCE)
+    public String doLinkApi(HttpServletRequest request) {
+        final String instanceUuid = request.getParameter(PARAMETER_ID_INSTANCE);
+        final String apiUuid = request.getParameter(PARAMETER_ID_API);
+        if (StringUtils.isAnyBlank(instanceUuid, apiUuid)) {
+            return redirectView(request, VIEW_MANAGE_APIS);
         }
-        final Instance instance = InstanceHome.findByPrimaryKey( instanceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+        final Instance instance = InstanceHome.findByPrimaryKey(instanceUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+        final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        getService( ).linkInstance( api, instanceUuid, getUser( ).getEmail( ) );
+        getService().linkInstance(api, instanceUuid, getUser().getEmail());
 
-        addInfo( INFO_INSTANCE_LINKED, getLocale( ) );
+        addInfo(INFO_INSTANCE_LINKED, getLocale());
 
-        return redirectView( request, VIEW_MANAGE_APIS );
+        return redirectView(request, VIEW_MANAGE_APIS);
     }
 
-    protected void populateApi( Object bean, HttpServletRequest request, Locale locale ) throws JsonProcessingException
-    {
-        super.populate( bean, request, locale );
+    protected void populateApi(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
+        super.populate(bean, request, locale);
 
-        if ( request instanceof MultipartHttpServletRequest )
-        {
-            final FileItem openapiFile = ( (MultipartHttpServletRequest) request ).getFile( PARAMETER_OPENAPI );
-            if ( openapiFile != null && openapiFile.getSize( ) > 0 )
-            {
-                _api.setOpenapi( JSON_MAPPER.readValue( openapiFile.getString( ), new TypeReference<Map<String, Object>>( )
-                {
-                } ) );
+        if (request instanceof MultipartHttpServletRequest) {
+            final FileItem openapiFile = ((MultipartHttpServletRequest) request).getFile(PARAMETER_OPENAPI);
+            if (openapiFile != null && openapiFile.getSize() > 0) {
+                _api.setOpenapi(JSON_MAPPER.readValue(openapiFile.getString(), new TypeReference<Map<String, Object>>() {
+                }));
             }
         }
-        _api.setTags( Arrays.stream( Optional.ofNullable( request.getParameterValues( PARAMETER_SELECTED_TAGS ) ).orElse( new String [ 0] ) )
-                .collect( Collectors.toList( ) ) );
+        _api.setTags(Arrays.stream(Optional.ofNullable(request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse(new String[0]))
+                .collect(Collectors.toList()));
+
+        //environement
+
+        final List<String> configuredEnvironements = request.getParameterMap().entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(PARAMETER_ENVIRONEMENT_PREFIX))
+                .map(envEntry -> {
+                    String key = envEntry.getKey().replace(PARAMETER_ENVIRONEMENT_PREFIX, "");
+                    return key.substring(0, key.indexOf("-"));
+                }).distinct()
+                .collect(Collectors.toList());
+
+        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
+
+        for (String environement : configuredEnvironements) {
+
+            // Resources
+            final List<Integer> resourceIndexes = request.getParameterMap().keySet().stream()
+                    .filter(key -> key.startsWith(PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_RESOURCE_ROW))
+                    .map(key -> key.replace(PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_RESOURCE_ROW, ""))
+                    .map(key -> Integer.parseInt(key.substring(0, key.indexOf('-')))).distinct().collect(Collectors.toList());
+
+            Resource currentResource = new Resource();
+            for (final int index : resourceIndexes) {
+                final String prefix = PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_RESOURCE_ROW + index + "-";
+                final Map<String, String[]> resourceParams = request.getParameterMap().entrySet().stream()
+                        .filter(entry -> entry.getKey().startsWith(prefix))
+                        .collect(Collectors.toMap(entry -> entry.getKey().replace(prefix, ""), Map.Entry::getValue));
+
+                final MultipartHttpServletRequest resourceRequest = new MultipartHttpServletRequest(request, Map.of(), resourceParams);
+                populate(currentResource, resourceRequest, locale);
+                currentResource.setEnvironement(environements.stream().filter(s -> s.getName().equals(environement)).findFirst().orElse(null));
+
+                String verbName = resourceRequest.getParameter(PARAMETER_VERB_NAME);
+                if(verbName != null)
+                    currentResource.setVerb( ResourceVerbEnum.valueOf( resourceRequest.getParameter( PARAMETER_VERB_NAME ) ) );
+
+                //get plans
+                final String plan_prefix = PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_PLAN;
+                final Map<String, String[]> envPlanResources = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(plan_prefix))
+                        .collect(Collectors.toMap(entry -> entry.getKey().replace(plan_prefix, ""), Map.Entry::getValue));;
+
+                        for(String envPlanResource : envPlanResources.keySet()){
+
+                            String[] planResources = envPlanResources.get(envPlanResource);
+                            if(planResources != null && planResources.length > 0){
+                                if(Arrays.stream(planResources).anyMatch(s -> s.equals(currentResource.getVerb().name()+"|"+currentResource.getName()))){
+                                    Plan currentPlan = plans.stream().filter(plan -> plan.getName().equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
+                                    if(currentPlan != null){
+                                        currentResource.setPlan(currentPlan);
+                                    }
+                                }
+                            }
+                        }
+
+                //instances
+
+                List<String> uuid_instance = List.of(resourceRequest.getParameterValues(PARAMETER_UUID_INSTANCES));
+                currentResource.setInstances(InstanceService.getInstance().getEntitiesListByIds( uuid_instance) );
+
+                _resources.add(currentResource);
+            }
+
+        }
+        _api.set_resourceList(_resources);
+
     }
 
-    private void addPlanTemplateNamesToModel( final Map<String, Object> model )
-    {
-        final List<String> templateNameList = new ArrayList<>( );
-        for ( int i = 0;; i++ )
-        {
-            final String templateName = AppPropertiesService.getProperty( TEMPLATE_NAME_PROP.replace( "{i}", String.valueOf( i ) ), null );
-            if ( templateName == null )
-            {
+
+    private void addPlanTemplateNamesToModel(final Map<String, Object> model) {
+        final List<String> templateNameList = new ArrayList<>();
+        for (int i = 0; ; i++) {
+            final String templateName = AppPropertiesService.getProperty(TEMPLATE_NAME_PROP.replace("{i}", String.valueOf(i)), null);
+            if (templateName == null) {
                 break;
             }
-            templateNameList.add( templateName );
+            templateNameList.add(templateName);
         }
-        model.put( MARK_PLAN_TEMPLATE_NAMES, templateNameList );
+        model.put(MARK_PLAN_TEMPLATE_NAMES, templateNameList);
     }
 }

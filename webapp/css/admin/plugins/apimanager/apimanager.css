@@ -2,3 +2,12 @@
     height:100% !important;
     max-height:100% !important;
 }
+
+.auto-height{
+    height: auto !important;
+    max-height: fit-content !important;
+}
+
+.display-content{
+    display: contents !important;
+}

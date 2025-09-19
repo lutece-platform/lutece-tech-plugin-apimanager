@@ -31,19 +31,65 @@
  *
  * License 1.0
  */
+package fr.paris.lutece.plugins.apimanager.business.environement;
 
-package fr.paris.lutece.plugins.apimanager.business.plan;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.ReferenceList;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
- * IPlanHeaderMatchingDAO Interface
+ * This is the business class for the object History
  */
-public interface IPlanHeaderMatchingDAO extends IDAO<PlanHeaderMatching>
+public class Environement implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
+    // Variables declarations
+    private String _strUuid;
+
+    private String _strName;
+
+    private List<Instance> _instanceList;
+    /**
+     * Returns the Uuid
+     * 
+     * @return The Uuid
+     */
+    public String getUuid( )
+    {
+        return _strUuid;
+    }
+
+    /**
+     * Sets the Uuid
+     * 
+     * @param strUuid
+     *            The Uuid
+     */
+    public void setUuid( final String strUuid )
+    {
+        _strUuid = strUuid;
+    }
+
+    public String getName() {
+        return _strName;
+    }
+
+    public void setName(String name) {
+        this._strName = name;
+    }
+
+    public List<Instance> getInstances( )
+    {
+        return _instanceList;
+    }
+
+    public void setInstances( List<Instance> instances )
+    {
+        this._instanceList = instances;
+    }
 }

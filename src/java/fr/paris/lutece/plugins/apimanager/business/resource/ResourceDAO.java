@@ -35,7 +35,8 @@
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
@@ -59,15 +60,24 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_resource";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name,uuid_environement,uuid_api,status, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?,?,?,?,? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_resource WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ?, matcher_type = ?, name = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ?, matcher_type = ?, name = ?, uuid_environement = ?, uuid_api = ?, status = ? , trace_enabled = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name FROM apimanager_resource";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name ,uuid_environement,uuid_api,status, trace_enabled FROM apimanager_resource";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_resource";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+
+
+    private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE = "SELECT uuid_resource FROM apimanager_deployed WHERE uuid_instance = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
+            + SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE + " )";
+    private static final String SQL_QUERY_LINK_RESOURCE = "INSERT INTO apimanager_deployed (uuid, uuid_resource, uuid_instance) VALUES ( ?, ?, ? )";
+
+    private static final String SQL_QUERY_DELETE_LINK_RESOURCE = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_resource = ?";
+    private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_resource = ?";
 
     /**
      * Constructor
@@ -77,7 +87,11 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
 
         initMapSql( Resource.class ); // Maps with name and type of each databases column associated to the business class attributes
         _mapSql.remove( "plan" );
+        _mapSql.remove( "environement" );
+        _mapSql.remove( "api" );
         _mapSql.put( "uuid_plan", "String" );
+        _mapSql.put( "uuid_environement", "String" );
+        _mapSql.put( "uuid_api", "String" );
     }
 
     /**
@@ -97,9 +111,18 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getMatcherType( ) );
             daoUtil.setString( nIndex++, resource.getName( ) );
+            daoUtil.setString( nIndex++, resource.getEnvironement( )!=null?resource.getEnvironement().getUuid( ):null );
+            daoUtil.setString( nIndex++, resource.getApi( )!=null?resource.getApi().getUuid( ):null );
+            daoUtil.setString( nIndex++, resource.getStatus( ));
+            daoUtil.setBoolean( nIndex++, resource.getTraceEnabled( ));
 
             daoUtil.executeUpdate( );
             resource.setUuid( uuid );
+
+            resource.getHeaderMatchings( ).forEach( hm -> {
+                hm.setUuidResource( uuid );
+                ResourceHeaderMatchingHome.create( hm );
+            } );
         }
 
     }
@@ -155,8 +178,19 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getMatcherType( ) );
             daoUtil.setString( nIndex++, resource.getName( ) );
             daoUtil.setString( nIndex++, resource.getUuid( ) );
+            daoUtil.setString( nIndex++, resource.getEnvironement( ) != null ? resource.getEnvironement( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, resource.getApi( ) != null ? resource.getApi( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, resource.getStatus( ) );
+            daoUtil.setBoolean( nIndex++, resource.getTraceEnabled( ) );
 
             daoUtil.executeUpdate( );
+
+
+            ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList( Map.of( "uuid_resource", resource.getUuid( ) ), null, null ).forEach( ResourceHeaderMatchingHome::remove );
+            resource.getHeaderMatchings( ).forEach( hm -> {
+                hm.setUuidResource( resource.getUuid( ) );
+                ResourceHeaderMatchingHome.create( hm );
+            } );
         }
     }
 
@@ -280,7 +314,8 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         Resource resource = new Resource( );
         int nIndex = 1;
 
-        resource.setUuid( daoUtil.getString( nIndex++ ) );
+        final String uuidResource = daoUtil.getString( nIndex++ );
+        resource.setUuid( uuidResource );
         resource.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         resource.setPath( daoUtil.getString( nIndex++ ) );
         final String verbStr = daoUtil.getString( nIndex++ );
@@ -288,6 +323,14 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         resource.setRewriteUrl( ResourceRewriteUrlHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         resource.setMatcherType( daoUtil.getString( nIndex++ ) );
         resource.setName( daoUtil.getString( nIndex++ ) );
+        resource.setEnvironement(EnvironementHome.findByPrimaryKey( daoUtil.getString( nIndex++ )).orElse( null ) );
+        resource.setApi(ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ )).orElse( null ) );
+        resource.setStatus( daoUtil.getString( nIndex++ ) );
+        resource.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
+
+        resource.setHeaderMatchings( ResourceHeaderMatchingHome
+                .getResourceHeaderMatchingsListByIds( ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList( Map.of( "uuid_resource", uuidResource ), null, null ) ) );
+
 
         return resource;
     }

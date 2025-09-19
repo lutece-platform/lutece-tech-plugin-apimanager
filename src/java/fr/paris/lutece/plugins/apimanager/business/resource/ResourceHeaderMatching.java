@@ -31,30 +31,30 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.business.plan;
+package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
- * This is the business class for the object PlanHeaderMatching
+ * This is the business class for the object ResourceHeaderMatching
  */
-public class PlanHeaderMatching implements Serializable
+public class ResourceHeaderMatching implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
     // Variables declarations
     private String _strUuid;
 
-    private String _strUuidPlan;
+    private String _strUuidResource;
 
-    @Size( max = 50, message = "#i18n{apimanager.validation.planheadermatching.Name.size}" )
+    @Size( max = 50, message = "#i18n{apimanager.validation.resourceheadermatching.Name.size}" )
     private String _strName;
 
-    @Size( max = 255, message = "#i18n{apimanager.validation.planheadermatching.Value.size}" )
+    @Size( max = 255, message = "#i18n{apimanager.validation.resourceheadermatching.Value.size}" )
     private String _strValue;
 
-    @Size( max = 50, message = "#i18n{apimanager.validation.planheadermatching.Type.size}" )
+    @Size( max = 50, message = "#i18n{apimanager.validation.resourceheadermatching.Type.size}" )
     private String _strType;
 
     /**
@@ -79,24 +79,24 @@ public class PlanHeaderMatching implements Serializable
     }
 
     /**
-     * Returns the Plan Uuid
+     * Returns the Resource Uuid
      *
-     * @return The Plan Uuid
+     * @return The Resource Uuid
      */
-    public String getUuidPlan( )
+    public String getUuidResource( )
     {
-        return _strUuidPlan;
+        return _strUuidResource;
     }
 
     /**
-     * Sets the Plan Uuid
+     * Sets the Resource Uuid
      * 
-     * @param strUuidPlan
-     *            The Plan Uuid
+     * @param strUuidResource
+     *            The Resource Uuid
      */
-    public void setUuidPlan( final String strUuidPlan )
+    public void setUuidResource( final String strUuidResource )
     {
-        _strUuidPlan = strUuidPlan;
+        _strUuidResource = strUuidResource;
     }
 
     /**

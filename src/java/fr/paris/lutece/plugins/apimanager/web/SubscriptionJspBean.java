@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.InstanceService;
@@ -198,9 +199,9 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             return listSubscription.stream( ).sorted( comparator ).collect( Collectors.toList( ) );
         }
 
-        if ( "plan".equals( _optionOrderBy ) )
+        if ( "resource".equals( _optionOrderBy ) )
         {
-            comparator = Comparator.comparing( Subscription::getPlan, Comparator.comparing( Plan::getName ) );
+            comparator = Comparator.comparing( Subscription::getResource, Comparator.comparing( Resource::getName ) );
         }
         if ( "environment".equals( _optionOrderBy ) )
         {
@@ -208,7 +209,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         }
         if ( "api".equals( _optionOrderBy ) )
         {
-            comparator = Comparator.comparing( sub -> sub.getPlan( ).getApi( ), Comparator.comparing( Api::getName ) );
+            comparator = Comparator.comparing( sub -> sub.getResource().getApi(), Comparator.comparing( Api::getName ) );
         }
         if ( "client".equals( _optionOrderBy ) )
         {
@@ -256,7 +257,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         final Client client = ClientHome.findByPrimaryKey( request.getParameter( PARAMETER_ID_CLIENT ) )
                 .orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         _subscription.setClient( client );
-        _subscription.setPlan( new Plan( ) );
+        _subscription.setResource( new Resource( ) );
 
         Map<String, Object> model = getModel( );
         model.put( MARK_SUBSCRIPTION, _subscription );
@@ -278,7 +279,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
     {
         populate( _subscription, request, getLocale( ) );
-        _subscription.getPlan( ).setUuid( request.getParameter( PARAMETER_ID_PLAN ) );
+        _subscription.getResource().getPlan( ).setUuid( request.getParameter( PARAMETER_ID_PLAN ) );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_SUBSCRIPTION ) )
         {
@@ -353,12 +354,12 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         try
         {
-            final Plan plan = subscription.getPlan( );
+            final Plan plan = subscription.getResource().getPlan( );
             _configGeneratorService.generateApiManager( subscription.getClient( ), plan,
                     ResourceService.getInstance( ).getResourcesByPlanUuid( plan.getUuid( ) ),
                     InstanceService.getInstance( )
-                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( plan.getApi( ).getUuid( ) ) ).stream( )
-                            .filter( instance -> env.equals( instance.getEnvironnement( ) ) ).collect( Collectors.toList( ) ),
+                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToResourceUuid( subscription.getResource().getApi( ).getUuid( ) ) ).stream( )
+                            .filter( instance -> env.equals( instance.getEnvironement( ).getUuid() ) ).collect( Collectors.toList( ) ),
                     env, comment, getUser( ).getEmail( ) );
             getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
             plan.setStatus( PlanStatusEnum.PUBLISHED );

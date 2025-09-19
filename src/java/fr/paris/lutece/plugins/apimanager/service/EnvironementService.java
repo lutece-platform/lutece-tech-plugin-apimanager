@@ -31,103 +31,73 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.business.client;
+package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 
-import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
-public class ClientSecret implements Serializable
+public class EnvironementService extends AbstractService<Environement>
 {
-    private static final long serialVersionUID = 1L;
 
-    private String _strUuid;
-    private Client _client;
-    private Environement _environnement;
-    private String _strSecret;
+    private static EnvironementService _instance;
 
-    /**
-     * get the uuid
-     * 
-     * @return the uuid
-     */
-    public String getUuid( )
+    private EnvironementService( )
     {
-        return _strUuid;
+    }
+
+    public static EnvironementService getInstance( )
+    {
+        if ( _instance == null )
+        {
+            _instance = new EnvironementService( );
+        }
+        return _instance;
+    }
+
+    @Override
+    public void create( final Environement entity, final String user )
+    {
+        final String uuid = EnvironementHome.create( entity ).getUuid( );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+    }
+
+    @Override
+    public void update( final Environement entity, final String user )
+    {
+        EnvironementHome.update( entity );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
     }
 
     /**
-     * set the uuid
+     * The delete function is not available for API. This method performs the archive action. You shouldn't use this method.
      * 
-     * @param strUuid
-     *            the uuid
+     * @param uuid
+     *            the api uuid
+     * @param user
+     *            the user
+     * @see EnvironementService#archive(String, String)
      */
-    public void setUuid( final String strUuid )
+    @Deprecated
+    @Override
+    public void delete( final String uuid, final String user )
     {
-        _strUuid = strUuid;
+        this.delete( uuid, user );
     }
 
-    /**
-     * get the client
-     * 
-     * @return the client uuid
-     */
-    public Client getClient( )
+    @Override
+    public List<String> getIdEntitiesList( final Map<String, String> mapFilterCriteria, final String columnToOrder, final String orderBy )
     {
-        return _client;
+        return EnvironementHome.getIdEnvironementsList( mapFilterCriteria, columnToOrder, orderBy );
     }
 
-    /**
-     * set the client
-     * 
-     * @param client
-     *            the client uuid
-     */
-    public void setClient( final Client client )
+    @Override
+    public List<Environement> getEntitiesListByIds( final List<String> listIds )
     {
-        _client = client;
+        return EnvironementHome.getEnvironementsListByIds( listIds );
     }
 
-    /**
-     * get the environnement
-     * 
-     * @return the environnement
-     */
-    public Environement getEnvironnement( )
-    {
-        return _environnement;
-    }
-
-    /**
-     * set the environnement
-     * 
-     * @param environnement
-     *            the environnement
-     */
-    public void setEnvironnement( final Environement environnement )
-    {
-        _environnement = environnement;
-    }
-
-    /**
-     * get the secret
-     * 
-     * @return the secret
-     */
-    public String getSecret( )
-    {
-        return _strSecret;
-    }
-
-    /**
-     * set the secret
-     * 
-     * @param strSecret
-     *            the secret
-     */
-    public void setSecret( final String strSecret )
-    {
-        _strSecret = strSecret;
-    }
 }

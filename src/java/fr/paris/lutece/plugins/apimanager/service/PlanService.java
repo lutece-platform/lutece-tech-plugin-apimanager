@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatchingHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationHome;
 
@@ -88,8 +87,6 @@ public class PlanService extends AbstractService<Plan>
             ResourceService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) )
                     .forEach( resourceId -> ResourceService.getInstance( ).delete( resourceId, user ) );
 
-            // Delete header matching
-            PlanHeaderMatchingHome.getIdPlanHeaderMatchingsList( Map.of( "uuid_plan", uuid ), null, null ).forEach( PlanHeaderMatchingHome::remove );
 
             // Delete plan
             PlanHome.remove( uuid );
@@ -113,4 +110,5 @@ public class PlanService extends AbstractService<Plan>
     {
         return PlanHome.getPlansListByIds( listIds );
     }
+
 }

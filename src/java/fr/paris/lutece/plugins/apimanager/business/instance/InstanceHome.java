@@ -174,38 +174,49 @@ public final class InstanceHome
     /**
      * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
      * 
+     * @param envUuid
+     *            the API uuid
+     * @return the list which contains the uuid of all the instances
+     */
+    public static List<String> getIdInstancesListLinkedToEnvironementUuid( String envUuid )
+    {
+        return _dao.getIdInstancesListLinkedToEnvUuid( envUuid, _plugin );
+    }
+    /**
+     * Load the uuid of all the instances that are NOT linked to the specified API UUID, and returns them as a list
+     *
      * @param apiUuid
      *            the API uuid
      * @return the list which contains the uuid of all the instances
      */
-    public static List<String> getIdInstancesListLinkedToApiUuid( String apiUuid )
+    public static List<String> getIdInstancesListLinkedToResourceUuid( String apiUuid )
     {
-        return _dao.getIdInstancesListLinkedToApiUuid( apiUuid, _plugin );
+        return _dao.getIdInstancesListLinkedToResourceUuid( apiUuid, _plugin );
     }
 
     /**
-     * Link the specified instance to the specified API UUID.
+     * Link the specified instance to the specified Resource UUID.
      * 
      * @param instance
      *            the instance
-     * @param apiUuid
+     * @param resourceUuid
      *            the API UUID
      */
-    public static void linkApi( final Instance instance, final String apiUuid )
+    public static void linkResource( final Instance instance, final String resourceUuid )
     {
-        _dao.linkApi( instance, apiUuid, _plugin );
+        _dao.linkResource( instance, resourceUuid, _plugin );
     }
 
     /**
-     * Deletes the link between the specified instance and the specified API UUID.
+     * Deletes the link between the specified instance and the specified Resource UUID.
      * 
      * @param instance
      *            the instance
-     * @param apiUuid
+     * @param resourceUuid
      *            the API UUID
      */
-    public static void deleteLinkApi( final Instance instance, final String apiUuid )
+    public static void deleteLinkResource( final Instance instance, final String resourceUuid )
     {
-        _dao.deleteLinkApi( instance, apiUuid, _plugin );
+        _dao.deleteLinkResource( instance, resourceUuid, _plugin );
     }
 }

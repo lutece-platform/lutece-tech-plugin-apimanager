@@ -88,7 +88,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String PARAMETER_ID_INSTANCE = "uuid";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_PROTOCOL_NAME = "protocol_name";
-    private static final String PARAMETER_ID_API = "uuid_api";
+    private static final String PARAMETER_ID_RESOURCE = "uuid_resource";
     private static final String PARAMETER_LINK_MODE = "linkMode";
     private static final String PARAMETER_SHOW_APIS = "showApis";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
@@ -174,11 +174,11 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                if ( _mapFilterCriteria.containsKey( PARAMETER_ID_API ) )
+                if ( _mapFilterCriteria.containsKey( PARAMETER_ID_RESOURCE ) )
                 {
-                    final String apiUuid = _mapFilterCriteria.get( PARAMETER_ID_API );
-                    _listIdInstances = getService( ).getIdInstancesListLinkedToApiUuid( apiUuid );
-                    model.put( PARAMETER_ID_API, apiUuid );
+                    final String apiUuid = _mapFilterCriteria.get( PARAMETER_ID_RESOURCE );
+                    _listIdInstances = getService( ).getIdInstancesListLinkedToResourceUuid( apiUuid );
+                    model.put( PARAMETER_ID_RESOURCE, apiUuid );
                     model.put( PARAMETER_SHOW_APIS, false );
                     model.put( PARAMETER_DELETE_LINK, true );
                 }
@@ -342,10 +342,10 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String getConfirmRemoveLink( HttpServletRequest request )
     {
         final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        final String resourceUuid = request.getParameter( PARAMETER_ID_RESOURCE );
         final UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_LINK ) );
         url.addParameter( PARAMETER_ID_INSTANCE, instanceUuid );
-        url.addParameter( PARAMETER_ID_API, apiUuid );
+        url.addParameter( PARAMETER_ID_RESOURCE, resourceUuid );
 
         final String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_LINK, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
 
@@ -363,10 +363,10 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String doRemoveLink( HttpServletRequest request )
     {
         final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
+        final String resourceUuid = request.getParameter( PARAMETER_ID_RESOURCE );
         final Instance instance = InstanceHome.findByPrimaryKey( instanceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
-        getService( ).deleteLinkApi( instance, apiUuid, getUser( ).getEmail( ) );
+        getService( ).deleteLinkResource( instance, resourceUuid, getUser( ).getEmail( ) );
 
         addInfo( INFO_LINK_REMOVED, getLocale( ) );
         return redirectView( request, VIEW_MANAGE_INSTANCES );
@@ -437,8 +437,8 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     @View( VIEW_LINK_INSTANCE )
     public String getLinkInstance( HttpServletRequest request )
     {
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
-        _listIdInstances = getService( ).getIdInstancesListNotLinkedToApiUuid( apiUuid );
+        final String resourceUuid = request.getParameter( PARAMETER_ID_RESOURCE );
+        _listIdInstances = getService( ).getIdInstancesListNotLinkedToApiUuid( resourceUuid );
 
         final Map<String, Object> model = getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES );
 
@@ -447,7 +447,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
         {
             model.put( PARAMETER_LINK_MODE, Boolean.parseBoolean( linkMode ) );
         }
-        model.put( PARAMETER_ID_API, apiUuid );
+        model.put( PARAMETER_ID_RESOURCE, resourceUuid );
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_INSTANCES, TEMPLATE_MANAGE_INSTANCES, model );
@@ -457,15 +457,15 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     public String doLinkApi( HttpServletRequest request )
     {
         final String instanceUuid = request.getParameter( PARAMETER_ID_INSTANCE );
-        final String apiUuid = request.getParameter( PARAMETER_ID_API );
-        if ( StringUtils.isAnyBlank( instanceUuid, apiUuid ) )
+        final String resourceUuid = request.getParameter( PARAMETER_ID_RESOURCE );
+        if ( StringUtils.isAnyBlank( instanceUuid, resourceUuid ) )
         {
             return redirectView( request, VIEW_MANAGE_INSTANCES );
         }
         final Instance instance = InstanceHome.findByPrimaryKey( instanceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+        final Api api = ApiHome.findByPrimaryKey( resourceUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
-        getService( ).linkApi( instance, apiUuid, getUser( ).getEmail( ) );
+        getService( ).linkResource( instance, resourceUuid, getUser( ).getEmail( ) );
         addInfo( INFO_API_LINKED, getLocale( ) );
 
         return redirectView( request, VIEW_MANAGE_INSTANCES );

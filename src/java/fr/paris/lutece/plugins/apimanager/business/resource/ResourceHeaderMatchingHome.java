@@ -32,7 +32,7 @@
  * License 1.0
  */
 
-package fr.paris.lutece.plugins.apimanager.business.plan;
+package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -44,54 +44,54 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * This class provides instances management methods (create, find, ...) for PlanHeaderMatching objects
+ * This class provides instances management methods (create, find, ...) for ResourceHeaderMatching objects
  */
-public final class PlanHeaderMatchingHome
+public final class ResourceHeaderMatchingHome
 {
     // Static variable pointed at the DAO instance
-    private static IPlanHeaderMatchingDAO _dao = SpringContextService.getBean( "apimanager.planHeaderMatchingDAO" );
+    private static IResourceHeaderMatchingDAO _dao = SpringContextService.getBean( "apimanager.resourceHeaderMatchingDAO" );
     private static Plugin _plugin = PluginService.getPlugin( "apimanager" );
 
     /**
      * Private constructor - this class need not be instantiated
      */
-    private PlanHeaderMatchingHome( )
+    private ResourceHeaderMatchingHome( )
     {
     }
 
     /**
-     * Create an instance of the planHeaderMatching class
+     * Create an instance of the resourceHeaderMatching class
      * 
-     * @param planHeaderMatching
-     *            The instance of the PlanHeaderMatching which contains the informations to store
-     * @return The instance of planHeaderMatching which has been created with its primary key.
+     * @param resourceHeaderMatching
+     *            The instance of the ResourceHeaderMatching which contains the informations to store
+     * @return The instance of resourceHeaderMatching which has been created with its primary key.
      */
-    public static PlanHeaderMatching create( PlanHeaderMatching planHeaderMatching )
+    public static ResourceHeaderMatching create( ResourceHeaderMatching resourceHeaderMatching )
     {
-        _dao.insert( planHeaderMatching, _plugin );
+        _dao.insert( resourceHeaderMatching, _plugin );
 
-        return planHeaderMatching;
+        return resourceHeaderMatching;
     }
 
     /**
-     * Update of the planHeaderMatching which is specified in parameter
+     * Update of the resourceHeaderMatching which is specified in parameter
      * 
-     * @param planHeaderMatching
-     *            The instance of the PlanHeaderMatching which contains the data to store
-     * @return The instance of the planHeaderMatching which has been updated
+     * @param resourceHeaderMatching
+     *            The instance of the ResourceHeaderMatching which contains the data to store
+     * @return The instance of the resourceHeaderMatching which has been updated
      */
-    public static PlanHeaderMatching update( PlanHeaderMatching planHeaderMatching )
+    public static ResourceHeaderMatching update( ResourceHeaderMatching resourceHeaderMatching )
     {
-        _dao.store( planHeaderMatching, _plugin );
+        _dao.store( resourceHeaderMatching, _plugin );
 
-        return planHeaderMatching;
+        return resourceHeaderMatching;
     }
 
     /**
-     * Remove the planHeaderMatching whose identifier is specified in parameter
+     * Remove the resourceHeaderMatching whose identifier is specified in parameter
      * 
      * @param nKey
-     *            The planHeaderMatching Id
+     *            The resourceHeaderMatching Id
      */
     public static void remove( String nKey )
     {
@@ -99,29 +99,29 @@ public final class PlanHeaderMatchingHome
     }
 
     /**
-     * Returns an instance of a planHeaderMatching whose identifier is specified in parameter
+     * Returns an instance of a resourceHeaderMatching whose identifier is specified in parameter
      * 
      * @param nKey
-     *            The planHeaderMatching primary key
-     * @return an instance of PlanHeaderMatching
+     *            The resourceHeaderMatching primary key
+     * @return an instance of ResourceHeaderMatching
      */
-    public static Optional<PlanHeaderMatching> findByPrimaryKey( String nKey )
+    public static Optional<ResourceHeaderMatching> findByPrimaryKey( String nKey )
     {
         return _dao.load( nKey, _plugin );
     }
 
     /**
-     * Load the data of all the planHeaderMatching objects and returns them as a list
+     * Load the data of all the resourceHeaderMatching objects and returns them as a list
      * 
-     * @return the list which contains the data of all the planHeaderMatching objects
+     * @return the list which contains the data of all the resourceHeaderMatching objects
      */
-    public static List<PlanHeaderMatching> getPlanHeaderMatchingsList( )
+    public static List<ResourceHeaderMatching> getResourceHeaderMatchingsList( )
     {
         return _dao.selectEntitiesList( _plugin );
     }
 
     /**
-     * Load the id of all the planHeaderMatching objects and returns them as a list
+     * Load the id of all the resourceHeaderMatching objects and returns them as a list
      * 
      * @param mapFilterCriteria
      *            contains search bar names/values inputs
@@ -131,17 +131,17 @@ public final class PlanHeaderMatchingHome
      *            contains the sortMode in case of sorting request : ASC or DESC (must be null)
      * @return the list which contains the id of all the project objects
      */
-    public static List<String> getIdPlanHeaderMatchingsList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
+    public static List<String> getIdResourceHeaderMatchingsList( Map<String, String> mapFilterCriteria, String strColumnToOrder, String strSortMode )
     {
         return _dao.selectIdEntitiesList( _plugin, mapFilterCriteria, strColumnToOrder, strSortMode );
     }
 
     /**
-     * Load the data of all the planHeaderMatching objects and returns them as a referenceList
+     * Load the data of all the resourceHeaderMatching objects and returns them as a referenceList
      * 
-     * @return the referenceList which contains the data of all the planHeaderMatching objects
+     * @return the referenceList which contains the data of all the resourceHeaderMatching objects
      */
-    public static ReferenceList getPlanHeaderMatchingsReferenceList( )
+    public static ReferenceList getResourceHeaderMatchingsReferenceList( )
     {
         return _dao.selectEntitiesReferenceList( _plugin );
     }
@@ -153,7 +153,7 @@ public final class PlanHeaderMatchingHome
      *            liste of ids
      * @return the list which contains the data of all the avant objects
      */
-    public static List<PlanHeaderMatching> getPlanHeaderMatchingsListByIds( List<String> listIds )
+    public static List<ResourceHeaderMatching> getResourceHeaderMatchingsListByIds( List<String> listIds )
     {
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }

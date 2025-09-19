@@ -63,9 +63,10 @@ public class ClientService extends AbstractService<Client>
     @Override
     public void create( final Client entity, final String user )
     {
-        final String uuid = ClientHome.create( entity ).getUuid( );
+        final Client client = ClientHome.create( entity );
+        final String uuid = client.getUuid( );
         entity.getSecretList( ).forEach( clientSecret -> {
-            clientSecret.setUuidClient( uuid );
+            clientSecret.setClient( client );
             ClientSecretHome.create( clientSecret );
         } );
         this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );

@@ -38,6 +38,14 @@
             <feature-icon-url></feature-icon-url>
         </admin-feature>
         <admin-feature>
+            <feature-id>APIMANAGER_PLAN_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManagePlans.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManagePlans.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManagePlans.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
+        <admin-feature>
             <feature-id>APIMANAGER_INSTANCE_MANAGEMENT</feature-id>
             <feature-title>apimanager.adminFeature.ManageInstances.name</feature-title>
             <feature-description>apimanager.adminFeature.ManageInstances.description</feature-description>
@@ -93,7 +101,7 @@
         <javascript-files-scope>xpage|portal</javascript-files-scope>
         <javascript-file>...</javascript-file>
     </javascript-files>
-    -->    
+    -->
     
     <!-- RBAC Resources -->
     <!--

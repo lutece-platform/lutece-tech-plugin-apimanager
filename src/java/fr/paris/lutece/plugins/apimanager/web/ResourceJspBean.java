@@ -36,11 +36,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
-import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrl;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceVerbEnum;
+import fr.paris.lutece.plugins.apimanager.business.resource.*;
 import fr.paris.lutece.plugins.apimanager.service.PlanService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -89,6 +85,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
     private static final String PARAMETER_REWRITE_URL_PREFIX = "rewrite_url_";
     private static final String PARAMETER_REWRITE_URL_TYPE_NAME = "rewrite_url_type_name";
     private static final String PARAMETER_API_ARCHIVED = "api_archived";
+    private static final String PARAMETER_HEADER_MATCHING_PREFIX = "header_matching_";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_RESOURCES = "apimanager.manage_resources.pageTitle";
@@ -256,7 +253,7 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
 
     private String computeSuggestedNamePrefix( final Plan plan )
     {
-        return StringUtils.stripAccents( plan.getApi( ).getName( ) + "-" + plan.getName( ) + "-" ).toLowerCase( ).replaceAll( "\\s+", "-" )
+        return StringUtils.stripAccents( plan.getName( ) + "-" ).toLowerCase( ).replaceAll( "\\s+", "-" )
                 .replaceAll( "[^a-z0-9\\-]", "" );
     }
 
@@ -405,5 +402,22 @@ public class ResourceJspBean extends AbstractJspBean<String, Resource>
         super.populate( resourceRewriteUrl, rewriteUrlRequest, locale );
         resourceRewriteUrl.setType( ResourceRewriteUrlTypeEnum.valueOf( request.getParameter( PARAMETER_REWRITE_URL_TYPE_NAME ) ) );
         _resource.setRewriteUrl( resourceRewriteUrl );
+
+        // HEADER MATCHINGS
+        _resource.getHeaderMatchings( ).clear( );
+        final List<Integer> headerMatchingIndexes = request.getParameterMap( ).keySet( ).stream( )
+                .filter( key -> key.startsWith( PARAMETER_HEADER_MATCHING_PREFIX ) ).map( key -> key.replace( PARAMETER_HEADER_MATCHING_PREFIX, "" ) )
+                .map( key -> Integer.parseInt( key.substring( 0, key.indexOf( '_' ) ) ) ).distinct( ).collect( Collectors.toList( ) );
+        for ( final int index : headerMatchingIndexes )
+        {
+            final String prefix = PARAMETER_HEADER_MATCHING_PREFIX + index + "_";
+            final Map<String, String [ ]> headerMatchingParams = request.getParameterMap( ).entrySet( ).stream( )
+                    .filter( entry -> entry.getKey( ).startsWith( prefix ) )
+                    .collect( Collectors.toMap( entry -> entry.getKey( ).replace( prefix, "" ), Map.Entry::getValue ) );
+            final ResourceHeaderMatching planHeaderMatching = new ResourceHeaderMatching( );
+            final MultipartHttpServletRequest headerMatchingRequest = new MultipartHttpServletRequest( request, Map.of( ), headerMatchingParams );
+            populate( planHeaderMatching, headerMatchingRequest, locale );
+            _resource.getHeaderMatchings( ).add( planHeaderMatching );
+        }
     }
 }

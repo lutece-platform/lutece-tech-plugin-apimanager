@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHeaderMatchingHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlHome;
 
@@ -83,6 +84,10 @@ public class ResourceService extends AbstractService<Resource>
             ResourceHome.remove( uuid );
 
             Optional.ofNullable( resource.getRewriteUrl( ) ).ifPresent( ru -> ResourceRewriteUrlHome.remove( ru.getUuid( ) ) );
+
+
+            // Delete header matching
+            ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList( Map.of( "uuid_resource", uuid ), null, null ).forEach( ResourceHeaderMatchingHome::remove );
 
             this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
         } );
