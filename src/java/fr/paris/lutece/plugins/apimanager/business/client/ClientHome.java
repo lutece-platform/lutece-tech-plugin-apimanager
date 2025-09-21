@@ -34,7 +34,6 @@
 
 package fr.paris.lutece.plugins.apimanager.business.client;
 
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -159,4 +158,7 @@ public final class ClientHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+    public static List<String> getAvailableTags(List<String> listIds) {
+        return _dao.getAvailableTags( listIds, _plugin );
+    }
 }

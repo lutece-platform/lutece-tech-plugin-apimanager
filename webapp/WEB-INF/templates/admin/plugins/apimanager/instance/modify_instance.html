@@ -1,4 +1,16 @@
-
+<div class="container my-5">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="manage-tab" href="jsp/admin/plugins/apimanager/ManageInstances.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_instances.viewInstance}</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="create-tab" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_instances.createInstance}</a>
+        </li>
+    </ul>
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade " id="manage" role="tabpanel" aria-labelledby="manage-tab">
+        </div>
+        <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
 <@box>
 	<@boxHeader title='#i18n{apimanager.modify_instance.title}' />
 	<@boxBody>
@@ -33,12 +45,12 @@
 				<@input type='text' id='name' name='name'  maxlength=255 value=instance.name!'' tabIndex='2' />
 			</@formGroup>
 			<@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
-				<select id="environnement" name="environnement" class="form-control">
+				<select id="environement_uuid" name="environement_uuid" class="form-control">
 					<#list environment_list as environment>
-						<#if instance.environnement == environment>
-							<option value="${environment}" selected>${environment}</option>
+						<#if environement.uuid == environment.uuid>
+							<option value="${environment.uuid}" selected>${environment.name}</option>
 						<#else>
-							<option value="${environment}">${environment}</option>
+							<option value="${environment.uuid}">${environment.name}</option>
 						</#if>
 					</#list>
 				</select>
@@ -69,6 +81,10 @@
     </@tform>
 	</@boxBody>
 </@box>
+
+</div>
+</div>
+</div>
 
 <script type="text/javascript">
 	$(function() {

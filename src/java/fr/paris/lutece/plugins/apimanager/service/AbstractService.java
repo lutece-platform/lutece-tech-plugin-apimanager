@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.apimanager.service;
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -151,5 +152,6 @@ public abstract class AbstractService<T>
     {
         return HistoryHome.getHistoryListByUuidRef( uuidRef );
     }
+
 
 }

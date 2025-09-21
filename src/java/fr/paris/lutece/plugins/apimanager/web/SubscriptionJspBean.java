@@ -37,6 +37,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
@@ -205,7 +206,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         }
         if ( "environment".equals( _optionOrderBy ) )
         {
-            comparator = Comparator.comparing( Subscription::getEnvironnement );
+            comparator = Comparator.comparing( Subscription::getEnvironement, Comparator.comparing( Environement::getUuid ) );
         }
         if ( "api".equals( _optionOrderBy ) )
         {

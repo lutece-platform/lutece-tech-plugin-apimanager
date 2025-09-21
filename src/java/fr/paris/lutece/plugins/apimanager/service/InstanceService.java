@@ -159,4 +159,15 @@ public class InstanceService extends AbstractService<Instance>
         this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
         this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user );
     }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getAvailableTags(List<String> listIds )
+    {
+        return InstanceHome.getAvailableTags( listIds );
+    }
 }

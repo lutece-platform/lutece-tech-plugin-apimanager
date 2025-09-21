@@ -219,4 +219,12 @@ public final class InstanceHome
     {
         _dao.deleteLinkResource( instance, resourceUuid, _plugin );
     }
+
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getAvailableTags( List<String> listIds  )
+    {
+        return _dao.getAvailableTags(listIds, _plugin );
+    }
 }

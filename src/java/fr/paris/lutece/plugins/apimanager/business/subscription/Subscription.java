@@ -33,7 +33,9 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
@@ -53,7 +55,9 @@ public class Subscription implements Serializable
 
     private Resource _resource;
 
-    private String _strEnvironnement;
+    private Plan _plan;
+    private Api _api;
+    private Environement _environement;
 
     private boolean _bTraceEnabled;
 
@@ -127,21 +131,66 @@ public class Subscription implements Serializable
      *
      * @return The Environnement
      */
-    public String getEnvironnement( )
+    public Environement getEnvironement( )
     {
-        return _strEnvironnement;
+        return _environement;
     }
 
     /**
      * Sets the Environnement
      *
-     * @param strEnvironnement
+     * @param environnement
      *            The Environnement
      */
-    public void setEnvironnement( final String strEnvironnement )
+    public void setEnvironement( final Environement environnement )
     {
-        _strEnvironnement = strEnvironnement;
+        _environement = environnement;
     }
+
+
+    /**
+     * Returns the Plan
+     *
+     * @return The Plan
+     */
+    public Plan getPlan( )
+    {
+        return _plan;
+    }
+
+    /**
+     * Sets the Plan
+     *
+     * @param plan
+     *            The Plan
+     */
+    public void setPlan( Plan plan )
+    {
+        _plan = plan;
+    }
+
+    /**
+     * Returns the Api
+     *
+     * @return The Api
+     */
+    public Api getApi( )
+    {
+        return _api;
+    }
+
+    /**
+     * Sets the Api
+     *
+     * @param api
+     *            The Api
+     */
+    public void setApi( Api api )
+    {
+        _api = api;
+    }
+
+
 
     /**
      * Returns the TraceEnabled

@@ -35,10 +35,7 @@
 package fr.paris.lutece.plugins.apimanager.business.instance;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
-import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -61,9 +58,9 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_instance";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, uuid_environnement, health_path, health_port ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_instance ( uuid, protocol, host, port, name, uuid_environement, health_path, health_port ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_instance WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, uuid_environnement = ?, health_path = ?, health_port = ?, WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_instance SET protocol = ?, host = ?, port = ?, name = ?, uuid_environement = ?, health_path = ?, health_port = ? WHERE uuid = ?";
 
     private static final String SQL_QUERY_SELECTALL = "SELECT uuid, protocol, host, port, name, uuid_environement, health_path, health_port FROM apimanager_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_instance";
@@ -81,6 +78,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     private static final String SQL_QUERY_DELETE_LINK_API = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_resource = ?";
     private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_instance = ?";
 
+
     /**
      * Constructor
      */
@@ -88,8 +86,8 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
     {
 
         initMapSql( Instance.class ); // Maps with name and type of each databases column associated to the business class attributes
-        _mapSql.remove( "environnement" );
-        _mapSql.put( "uuid_environnement", "String" );
+        _mapSql.remove( "environement" );
+        _mapSql.put( "uuid_environement", "String" );
     }
 
     /**
@@ -384,6 +382,7 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
         }
     }
 
+
     private Instance loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin )
     {
 
@@ -403,5 +402,6 @@ public final class InstanceDAO extends AbstractFilterDao implements IInstanceDAO
 
         return instance;
     }
+
 
 }

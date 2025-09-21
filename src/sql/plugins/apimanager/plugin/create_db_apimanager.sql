@@ -1,20 +1,4 @@
-
-DROP TABLE IF EXISTS apimanager_subscription;
-DROP TABLE IF EXISTS apimanager_resource;
-DROP TABLE IF EXISTS apimanager_plan_header_matching;
-DROP TABLE IF EXISTS apimanager_plan;
-DROP TABLE IF EXISTS apimanager_deployed;
-DROP TABLE IF EXISTS apimanager_instance;
-DROP TABLE IF EXISTS apimanager_api;
-DROP TABLE IF EXISTS apimanager_meecrogate_instance;
-DROP TABLE IF EXISTS apimanager_plan_oauth_configuration;
-DROP TABLE IF EXISTS apimanager_plan_client_http_configuration;
-DROP TABLE IF EXISTS apimanager_plan_rate_limiting;
-DROP TABLE IF EXISTS apimanager_tag;
-DROP TABLE IF EXISTS apimanager_history;
-DROP TABLE IF EXISTS apimanager_client;
-
-create table apimanager_api
+create table apim.apimanager_api
 (
     uuid           varchar(50)                  not null
         primary key,
@@ -25,10 +9,11 @@ create table apimanager_api
     in_maintenance tinyint(1)   default 0       null,
     wait           int          default 0       null,
     openapi        longtext collate utf8mb4_bin null,
-    archived       tinyint(1)   default 0       not null
+    archived       tinyint(1)   default 0       not null,
+    version        varchar(50)                  null
 );
 
-create table apimanager_client
+create table apim.apimanager_client
 (
     uuid          varchar(50)            not null
         primary key,
@@ -39,7 +24,7 @@ create table apimanager_client
     archived      tinyint(1)  default 0  not null
 );
 
-create table apimanager_environement
+create table apim.apimanager_environement
 (
     uuid        varchar(50)             not null
         primary key,
@@ -47,7 +32,7 @@ create table apimanager_environement
     description mediumtext              null
 );
 
-create table apimanager_client_secret
+create table apim.apimanager_client_secret
 (
     uuid               varchar(50)   not null
         primary key,
@@ -55,12 +40,12 @@ create table apimanager_client_secret
     uuid_environnement varchar(50)   null,
     secret             varchar(2000) null,
     constraint apimanager_client_secret_apimanager_client_uuid_fk
-        foreign key (uuid_client) references apimanager_client (uuid),
+        foreign key (uuid_client) references apim.apimanager_client (uuid),
     constraint apimanager_client_secret_apimanager_environement_uuid_fk
-        foreign key (uuid_environnement) references apimanager_environement (uuid)
+        foreign key (uuid_environnement) references apim.apimanager_environement (uuid)
 );
 
-create table apimanager_history
+create table apim.apimanager_history
 (
     uuid     varchar(50)            not null
         primary key,
@@ -70,7 +55,7 @@ create table apimanager_history
     user     varchar(50) default '' null
 );
 
-create table apimanager_instance
+create table apim.apimanager_instance
 (
     uuid              varchar(50)             not null
         primary key,
@@ -82,10 +67,10 @@ create table apimanager_instance
     health_path       varchar(255) default '' null,
     health_port       varchar(50)  default '' null,
     constraint apimanager_instance_apimanager_environement_uuid_fk
-        foreign key (uuid_environement) references apimanager_environement (uuid)
+        foreign key (uuid_environement) references apim.apimanager_environement (uuid)
 );
 
-create table apimanager_meecrogate_instance
+create table apim.apimanager_meecrogate_instance
 (
     uuid        varchar(50)             not null
         primary key,
@@ -94,7 +79,7 @@ create table apimanager_meecrogate_instance
     name        varchar(255) default '' null
 );
 
-create table apimanager_plan_oauth_configuration
+create table apim.apimanager_plan_oauth_configuration
 (
     uuid         varchar(50)            not null
         primary key,
@@ -102,7 +87,7 @@ create table apimanager_plan_oauth_configuration
     jwt_validity int         default 0  null
 );
 
-create table apimanager_plan
+create table apim.apimanager_plan
 (
     uuid                     varchar(50)                                      not null
         primary key,
@@ -119,10 +104,10 @@ create table apimanager_plan
     status                   varchar(30)  default 'DRAFT'                     null,
     environnement_list       varchar(100) default 'TEST,DEV,REC,PREPROD,PROD' null,
     constraint fk_plan_uuid_oauth_configuration
-        foreign key (uuid_oauth_configuration) references apimanager_plan_oauth_configuration (uuid)
+        foreign key (uuid_oauth_configuration) references apim.apimanager_plan_oauth_configuration (uuid)
 );
 
-create table apimanager_resource_rewrite_url
+create table apim.apimanager_resource_rewrite_url
 (
     uuid   varchar(50)            not null
         primary key,
@@ -131,7 +116,7 @@ create table apimanager_resource_rewrite_url
     type   varchar(50) default '' not null
 );
 
-create table apimanager_resource
+create table apim.apimanager_resource
 (
     uuid                     varchar(50)                  not null
         primary key,
@@ -147,18 +132,18 @@ create table apimanager_resource
     trace_enabled            smallint                     null,
     uuid_meecrogate_instance varchar(50)                  null,
     constraint apimanager_resource_apimanager_meecrogate_instance_uuid_fk
-        foreign key (uuid_meecrogate_instance) references apimanager_meecrogate_instance (uuid),
+        foreign key (uuid_meecrogate_instance) references apim.apimanager_meecrogate_instance (uuid),
     constraint fk_plan_uuid_rewrite_url
-        foreign key (uuid_rewrite_url) references apimanager_resource_rewrite_url (uuid),
+        foreign key (uuid_rewrite_url) references apim.apimanager_resource_rewrite_url (uuid),
     constraint fk_resource_uuid_api
-        foreign key (uuid_api) references apimanager_api (uuid),
+        foreign key (uuid_api) references apim.apimanager_api (uuid),
     constraint fk_resource_uuid_environement
-        foreign key (uuid_environement) references apimanager_environement (uuid),
+        foreign key (uuid_environement) references apim.apimanager_environement (uuid),
     constraint fk_resource_uuid_plan
-        foreign key (uuid_plan) references apimanager_plan (uuid)
+        foreign key (uuid_plan) references apim.apimanager_plan (uuid)
 );
 
-create table apimanager_deployed
+create table apim.apimanager_deployed
 (
     uuid          varchar(50) not null
         primary key,
@@ -166,12 +151,12 @@ create table apimanager_deployed
     uuid_instance varchar(50) null,
     status        varchar(50) null,
     constraint fk_deployed_uuid_instance
-        foreign key (uuid_instance) references apimanager_instance (uuid),
+        foreign key (uuid_instance) references apim.apimanager_instance (uuid),
     constraint fk_deployed_uuid_resource
-        foreign key (uuid_resource) references apimanager_resource (uuid)
+        foreign key (uuid_resource) references apim.apimanager_resource (uuid)
 );
 
-create table apimanager_resource_header_matching
+create table apim.apimanager_resource_header_matching
 (
     uuid          varchar(50)             not null
         primary key,
@@ -180,28 +165,32 @@ create table apimanager_resource_header_matching
     value         varchar(255) default '' null,
     type          varchar(50)  default '' null,
     constraint apimanager_resource_header_matching_apimanager_resource_uuid_fk
-        foreign key (uuid_resource) references apimanager_resource (uuid)
+        foreign key (uuid_resource) references apim.apimanager_resource (uuid)
 );
 
-create table apimanager_subscription
+create table apim.apimanager_subscription
 (
-    uuid          varchar(50)            not null
+    uuid              varchar(50)            not null
         primary key,
-    uuid_client   varchar(50)            null,
-    uuid_resource varchar(50)            null,
-    trace_enabled smallint               null,
-    archived      tinyint(1)  default 0  not null,
-    status        varchar(50) default '' null,
+    uuid_client       varchar(50)            null,
+    uuid_resource     varchar(50)            null,
+    trace_enabled     smallint               null,
+    archived          tinyint(1)  default 0  not null,
+    status            varchar(50) default '' null,
+    uuid_environement varchar(50)            null,
+    constraint apimanager_subscription_apimanager_environement_uuid_fk
+        foreign key (uuid_environement) references apim.apimanager_environement (uuid),
     constraint fk_subscription_uuid_client
-        foreign key (uuid_client) references apimanager_client (uuid),
+        foreign key (uuid_client) references apim.apimanager_client (uuid),
     constraint fk_subscription_uuid_resource
-        foreign key (uuid_resource) references apimanager_resource (uuid)
+        foreign key (uuid_resource) references apim.apimanager_resource (uuid)
 );
 
-create table apimanager_tag
+create table apim.apimanager_tag
 (
     uuid     varchar(50) not null
         primary key,
     uuid_ref varchar(50) null,
     value    varchar(50) null
 );
+

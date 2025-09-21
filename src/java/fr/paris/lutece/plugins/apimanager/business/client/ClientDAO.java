@@ -68,6 +68,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
+
     /**
      * Constructor
      */
@@ -289,4 +290,5 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 
         return client;
     }
+
 }

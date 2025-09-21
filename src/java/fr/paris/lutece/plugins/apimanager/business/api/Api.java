@@ -56,6 +56,7 @@ public class Api extends AbstractTagBean implements Serializable
     private String _strName;
 
     private String _strDescription;
+    private String _strVersion;
 
     @Size( max = 255, message = "#i18n{apimanager.validation.api.Path.size}" )
     private String _strPath;
@@ -134,6 +135,28 @@ public class Api extends AbstractTagBean implements Serializable
     {
         _strDescription = strDescription;
     }
+
+    /**
+     * Returns the Version
+     *
+     * @return The Version
+     */
+    public String getVersion( )
+    {
+        return _strVersion;
+    }
+
+    /**
+     * Sets the Version
+     *
+     * @param strVersion
+     *            The Version
+     */
+    public void setVersion( String strVersion )
+    {
+        _strVersion = strVersion;
+    }
+
 
     /**
      * Returns the Path

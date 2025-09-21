@@ -1,8 +1,18 @@
+
+<div class="container my-5">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="manage-tab" href="#"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_instances.viewInstances}</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="create-tab" href="jsp/admin/plugins/apimanager/ManageInstances.jsp?view=createInstance"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_instances.createInstance}</a>
+        </li>
+    </ul>
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+
 <@box>
 	<@boxHeader title='#i18n{apimanager.manage_instances.title}' boxTools=true>
-		<@tform class='form-inline pull-right' name='manage_instance' action='jsp/admin/plugins/apimanager/ManageInstances.jsp'>
-			<@button type='submit' name='view_createInstance' buttonIcon='plus' title='#i18n{apimanager.manage_instances.buttonAdd}' />
-		</@tform>
 	</@boxHeader>
 	<@boxBody>    
     <@messages infos=infos warnings=warnings errors=errors />
@@ -54,28 +64,67 @@
 		</#if> 
 	</#list>
 
+    <div class="clearfix"></div>
+         <div class="container">
+            <div class="row">
+               <div class="col-sm">
+                  <div id="filter-tags-container">
+
+                      <#if tag_list?has_content>
+                         <div class="form-group mb-3">
+                            <label class="form-label form-label ">
+                            #i18n{apimanager.global.filter.labelTag}
+                            </label>
+                            <div class="form-control">
+                               <#list tag_list as tag>
+                               <span class="badge bg-primary px-2 me-1" id="tag-${tag?index}">
+                               ${tag}
+                               <input type="hidden" name="selected_tags" value="${tag}">
+                               </span>
+                               </#list>
+                            </div>
+                         </div>
+                    </#if>
+                  </div>
+               </div>
+               <div class="col-sm">
+                  <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.global.filter.labelEnvironnement}' mandatory=false>
+                  <select id="filter_environement" name="filter_environement" class="form-control" >
+                      <option value="">-- environements --</option>
+                     <#list environment_list as environment>
+                      <#if ((mapFilterCriteria["uuid_environement"]!'')!="") && environment.uuid == mapFilterCriteria["uuid_environement"]>
+                      <option value="${environment.uuid}" selected>${environment.name}</option>
+                    <#else>
+                     <option value="${environment.uuid}">${environment.name}</option>
+                        </#if>
+                     </#list>
+                  </select>
+                  </@formGroup>
+               </div>
+            </div>
+         </div>
 	<div id="instance-result-container">
 		<div class="clearfix"></div>
 		<@table>
 			<tr>
+                <th>#i18n{apimanager.manage_instances.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.instance.labelProtocol}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=protocol'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnHost}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=host'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=port'><i class='fas fa-sort'></i></a></th>
-				 <th>#i18n{apimanager.manage_instances.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnEnvironnement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnHealthPath}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_path'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnHealthPort}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_port'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_instances.columnHealthFreq}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=health_freq'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.global.labelTags}</th>
 				<th>#i18n{portal.util.labelActions}</th>
-				<#if linkMode!false>
-				<#elseif showApis!true>
-					<th>#i18n{apimanager.manage_instances.columnApis}</th>
-				</#if>
+
 			</tr>
 			<@tableHeadBodySeparator />
 			<#list instance_list as instance >
 			<tr>
+                <td>
+                    ${instance.name!''}
+                </td>
 				<td>
 					${instance.protocol.name()!''}
 				</td>
@@ -84,9 +133,6 @@
 				</td>
 				<td>
 					${instance.port!''}
-				</td>
-				<td>
-					${instance.name!''}
 				</td>
 				<td>
 					${instance.environnement!''}
@@ -106,31 +152,9 @@
 					</#list>
 				</td>
 				<td>
-					<#if linkMode!false>
-						<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=linkInstance&uuid=${uuid_api}&uuid_instance=${instance.uuid}' title='#i18n{apimanager.manage_apis.linkInstance}' buttonIcon='link' hideTitle=['all']  />
-					<#else>
-						<#if api_archived!false>
-							<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageHistory=&filter_uuid_ref=${instance.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
-						<#else>
-							<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-
-							<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageInstances.jsp?view_manageHistory=&filter_uuid_ref=${instance.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
-
-							<#if deleteLink!false>
-								<@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmRemoveLink&uuid=${uuid_api}&uuid_instance=${instance.uuid}' title='#i18n{apimanager.instance.deleteLink}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-							<#else>
-								<@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-							</#if>
-						</#if>
-					</#if>
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 				</td>
-				<#if linkMode!false>
-				<#elseif showApis!true>
-					<td>
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageApis=&filter_uuid_instance=${instance.uuid}" targetElement="#api-result-container" id="list-api-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_instances.viewApis}" size="auto" bodyClass="p-3" btnIcon="eye" hideTitle=['all'] />
-						<@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_linkApi=&uuid_instance=${instance.uuid}&linkMode=true" targetElement="#api-result-container" id="list-link-api-${instance?index}" title=tags btnTitle="#i18n{apimanager.manage_instances.linkApi}" size="auto" bodyClass="p-3" btnIcon="link" hideTitle=['all'] />
-					</td>
-				</#if>
 			</tr>
 			</#list>
 		</@table>
@@ -139,3 +163,22 @@
 	</div>
   </@boxBody>
 </@box>
+
+</div>
+<div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+
+</div>
+</div>
+</div>
+
+
+<script type="text/javascript">
+    $( "#filter_environement" ).on( "change", function() {
+        const selectedEnvironement =$(this).find(":selected").val();
+        if(selectedEnvironement){
+            window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp?filter_uuid_environement='+selectedEnvironement ;
+        }else{
+            window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp' ;
+        }
+    } );
+</script>

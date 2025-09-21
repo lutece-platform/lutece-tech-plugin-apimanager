@@ -49,9 +49,9 @@ public class ClientSecretDAO extends AbstractFilterDao implements IClientSecretD
     // Constants
     private static final String TABLE_NAME = "apimanager_client_secret";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO " + TABLE_NAME + " ( uuid, uuid_client, environnement, secret ) VALUES ( ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_SELECT_BY_CLIENT_ID_AND_ENV = "SELECT uuid, uuid_client, environnement, secret FROM " + TABLE_NAME
-            + " WHERE uuid_client = ? AND environnement = ? ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO " + TABLE_NAME + " ( uuid, uuid_client, uuid_environnement, secret ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECT_BY_CLIENT_ID_AND_ENV = "SELECT uuid, uuid_client, uuid_environnement, secret FROM " + TABLE_NAME
+            + " WHERE uuid_client = ? AND uuid_environnement = ? ";
     private static final String SQL_QUERY_DELETE_BY_CLIENT_ID = "DELETE FROM " + TABLE_NAME + " WHERE uuid_client = ? ";
 
     /**

@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 
 import java.util.List;
 import java.util.Map;
@@ -131,4 +132,15 @@ public class ClientService extends AbstractService<Client>
             this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
         } );
     }
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getAvailableTags(List<String> listIds )
+    {
+        return ClientHome.getAvailableTags( listIds );
+    }
+
 }

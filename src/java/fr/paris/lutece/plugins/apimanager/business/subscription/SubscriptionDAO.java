@@ -37,6 +37,8 @@ package fr.paris.lutece.plugins.apimanager.business.subscription;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -61,11 +63,11 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     // Constants
     private static final String TABLE_NAME = "apimanager_subscription";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_resource, environnement, trace_enabled, archived ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_resource, uuid_environement, trace_enabled, archived ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, environnement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, uuid_environement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, environnement, trace_enabled, archived FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, trace_enabled, archived, uuid_environement FROM apimanager_subscription";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -100,7 +102,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             daoUtil.setString( nIndex++, uuid );
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, subscription.getEnvironement( ) != null ? subscription.getEnvironement( ).getUuid( ) : null );
             daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
 
@@ -156,7 +158,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, subscription.getEnvironement( ).getUuid() );
             daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
             daoUtil.setString( nIndex, subscription.getUuid( ) );
@@ -288,7 +290,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         subscription.setUuid( daoUtil.getString( nIndex++ ) );
         subscription.setClient( ClientHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setResource( ResourceHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        subscription.setEnvironnement( daoUtil.getString( nIndex++ ) );
+        subscription.setEnvironement(EnvironementHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );
 

@@ -411,7 +411,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     _configGeneratorService.deleteApiManager(subscription.getClient(), subscription.getResource().getPlan(),
                             ResourceService.getInstance().getResourcesByPlanUuid(planUuid),
                             InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(apiUuid)),
-                            subscription.getEnvironnement(), getUser().getEmail());
+                            subscription.getEnvironement().getUuid(), getUser().getEmail());
                     SubscriptionService.getInstance().archive(subscriptionUuid, getUser().getEmail());
                 });
             });

@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
@@ -66,6 +67,7 @@ public class Client extends AbstractTagBean implements Serializable
     private boolean _bArchived;
 
     private List<ClientSecret> _secretList = new ArrayList<>( );
+    private List<Subscription> _subscriptionList = new ArrayList<>( );
 
     /**
      * Returns the Uuid
@@ -213,4 +215,13 @@ public class Client extends AbstractTagBean implements Serializable
     {
         _secretList = secretList;
     }
+
+    public void setSubscriptionList(List<Subscription> subscriptions) {
+        _subscriptionList = subscriptions;
+    }
+    public List<Subscription> getSubscriptionList( )
+    {
+        return _subscriptionList;
+    }
+
 }

@@ -102,4 +102,5 @@ public interface IInstanceDAO extends IDAO<Instance>
      *            the plugin
      */
     void deleteLinkResource( Instance instance, String resourceUuid, Plugin plugin );
+
 }

@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHeaderMatchi
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlHome;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -115,6 +116,45 @@ public class ResourceService extends AbstractService<Resource>
     public List<Resource> getResourcesByPlanUuid( final String planUuid )
     {
         final List<String> resourceIds = this.getIdEntitiesList( Map.of( "uuid_plan", planUuid ) );
+        if ( resourceIds.isEmpty( ) )
+        {
+            return List.of( );
+        }
+        return this.getEntitiesListByIds( resourceIds );
+    }
+
+    /**
+     * Get Resources by plan UUID
+     *
+     * @param planUuid
+     *            the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByAPIUiidPlanUuidEnvironementUUID( final String apiUuid,final String planUuid,final String environementUuid )
+    {
+        Map<String, String> args = new HashMap<>();
+        args.put("uuid_plan", planUuid);
+        args.put("uuid_api",apiUuid);
+        args.put("uuid_environement",environementUuid);
+        final List<String> resourceIds = this.getIdEntitiesList( args );
+
+        if ( resourceIds.isEmpty( ) )
+        {
+            return List.of( );
+        }
+        return this.getEntitiesListByIds( resourceIds );
+    }
+
+    /**
+     * Get Resources by plan UUID
+     *
+     * @param apiUuid
+     *            the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByApiUuid( final String apiUuid )
+    {
+        final List<String> resourceIds = this.getIdEntitiesList( Map.of( "uuid_api", apiUuid ) );
         if ( resourceIds.isEmpty( ) )
         {
             return List.of( );
