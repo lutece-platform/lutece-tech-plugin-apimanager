@@ -87,9 +87,9 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
 @Controller(controllerJsp = "ManageApis.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEAPIS)
 public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Templates
-    private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/manage_apis.html";
-    private static final String TEMPLATE_CREATE_API = "/admin/plugins/apimanager/create_api.html";
-    private static final String TEMPLATE_MODIFY_API = "/admin/plugins/apimanager/modify_api.html";
+    private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/api/manage_apis.html";
+    private static final String TEMPLATE_CREATE_API = "/admin/plugins/apimanager/api/create_api.html";
+    private static final String TEMPLATE_MODIFY_API = "/admin/plugins/apimanager/api/modify_api.html";
 
     // Parameters
     private static final String PARAMETER_ID_API = "uuid";

@@ -44,10 +44,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
-import fr.paris.lutece.plugins.apimanager.service.InstanceService;
-import fr.paris.lutece.plugins.apimanager.service.PlanService;
-import fr.paris.lutece.plugins.apimanager.service.ResourceService;
-import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
+import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
@@ -64,12 +61,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGESUBSCRIPTIONS;
@@ -82,8 +75,8 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 {
 
     // Templates
-    private static final String TEMPLATE_MANAGE_SUBSCRIPTIONS = "/admin/plugins/apimanager/manage_subscriptions.html";
-    private static final String TEMPLATE_CREATE_SUBSCRIPTION = "/admin/plugins/apimanager/create_subscription.html";
+    private static final String TEMPLATE_MANAGE_SUBSCRIPTIONS = "/admin/plugins/apimanager/subscription/manage_subscriptions.html";
+    private static final String TEMPLATE_CREATE_SUBSCRIPTION = "/admin/plugins/apimanager/subscription/create_subscription.html";
 
     // Parameters
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
@@ -172,7 +165,16 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             resetCurrentPageIndexOfPaginator( );
         }
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, _listIdSubscriptions, JSP_MANAGE_SUBSCRIPTIONS );
+
+        // recuperation des souscription a chaque resource pour reduire a api/environement
+        List<Subscription> fullSubscriptionList = getService().getEntitiesListByIds(_listIdSubscriptions);
+        Collection<Subscription> uniqueByApiAndEnvironement = fullSubscriptionList
+                .stream()
+                .collect(Collectors.toMap(usr -> Set.of(usr.getResource().getApi().getUuid(), usr.getEnvironement().getUuid(), usr.getClient().getUuid(), usr.getResource().getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
+                .values();
+
+
+        Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, uniqueByApiAndEnvironement.stream().map(Subscription::getUuid).collect(Collectors.toList()), JSP_MANAGE_SUBSCRIPTIONS );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
@@ -255,14 +257,13 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     public String getCreateSubscription( HttpServletRequest request )
     {
         _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        final Client client = ClientHome.findByPrimaryKey( request.getParameter( PARAMETER_ID_CLIENT ) )
-                .orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        _subscription.setClient( client );
+        _subscription.setClient( new Client( ) );
         _subscription.setResource( new Resource( ) );
 
         Map<String, Object> model = getModel( );
         model.put( MARK_SUBSCRIPTION, _subscription );
-        model.put( MARK_ENVIRONMENT_LIST, environmentList );
+        List<Environement> environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+        model.put( MARK_ENVIRONMENT_LIST, environements );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_SUBSCRIPTION ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_SUBSCRIPTION, TEMPLATE_CREATE_SUBSCRIPTION, model );
@@ -330,8 +331,15 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     public String doRemoveSubscription( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
+        Subscription subscription = getService().getEntitiesListByIds(Collections.singletonList(uuid)).stream().findFirst().orElse(null);
+        List<Resource> resources = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getResource().getApi().getUuid(),subscription.getResource().getPlan().getUuid(),subscription.getResource().getEnvironement().getUuid());
 
-        getService( ).delete( uuid, getUser( ).getEmail( ) );
+        List<String> clientResourceSubscriptionIds = null;
+        for(Resource resource : resources){
+            clientResourceSubscriptionIds = getService().getIdSubscriptionsByResourceAndEnvironementAndClient(resource.getUuid(), resource.getEnvironement().getUuid(),subscription.getClient().getUuid());
+            for (String clientResourceSubscriptionId : clientResourceSubscriptionIds)
+                getService( ).delete( clientResourceSubscriptionId, getUser( ).getEmail( ) );
+        }
 
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale( ) );
         resetListId( );

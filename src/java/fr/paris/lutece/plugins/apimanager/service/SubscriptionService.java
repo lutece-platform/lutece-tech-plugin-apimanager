@@ -91,6 +91,11 @@ public class SubscriptionService extends AbstractService<Subscription>
         return SubscriptionHome.getSubscriptionsListByIds( listIds );
     }
 
+    public List<String> getIdSubscriptionsByResourceAndEnvironementAndClient(final String resourceUuid, final String environementUuid, final String clientUuid)
+    {
+        return SubscriptionHome.getIdSubscriptionsByResourceAndEnvironementAndClient( resourceUuid, environementUuid,clientUuid );
+    }
+
     public void archive( final String uuid, final String user )
     {
         SubscriptionHome.findByPrimaryKey( uuid ).ifPresent( subscription -> {

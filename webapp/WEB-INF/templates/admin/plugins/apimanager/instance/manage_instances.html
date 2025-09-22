@@ -59,7 +59,7 @@
     <#list mapFilterCriteria?keys as key> 
     	<#if mapFilterCriteria[key]!="">
 	    	<span class="badge bg-primary px-2" > 
-	 			${key} <a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
+	 			${key} <a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
 			</span>
 		</#if> 
 	</#list>

@@ -159,4 +159,15 @@ public final class SubscriptionHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     *
+     *            liste of ids
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<String> getIdSubscriptionsByResourceAndEnvironementAndClient( String resourceUuid, String environementUuid,String clientUuid)
+    {
+        return _dao.getIdSubscriptionsByResourceAndEnvironementAndClient( resourceUuid, environementUuid, clientUuid, _plugin  );
+    }
+
 }

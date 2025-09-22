@@ -99,6 +99,7 @@ public abstract class AbstractService<T>
         return getIdEntitiesList( Map.of( ) );
     }
 
+
     /**
      * search for entities according to the provided criterias, and returns their uuid, unordered
      * 
@@ -152,6 +153,5 @@ public abstract class AbstractService<T>
     {
         return HistoryHome.getHistoryListByUuidRef( uuidRef );
     }
-
 
 }

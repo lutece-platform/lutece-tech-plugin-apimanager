@@ -3,7 +3,7 @@ create table apim.apimanager_api
     uuid           varchar(50)                  not null
         primary key,
     name           varchar(255) default ''      null,
-    description    mediumtext                   null,
+    description    varchar(255)                   null,
     path           varchar(255) default ''      null,
     active         tinyint(1)   default 0       null,
     in_maintenance tinyint(1)   default 0       null,
@@ -29,7 +29,7 @@ create table apim.apimanager_environement
     uuid        varchar(50)             not null
         primary key,
     name        varchar(255) default '' null,
-    description mediumtext              null
+    description varchar(255)              null
 );
 
 create table apim.apimanager_client_secret
@@ -92,7 +92,7 @@ create table apim.apimanager_plan
     uuid                     varchar(50)                                      not null
         primary key,
     name                     varchar(50)  default ''                          null,
-    description              mediumtext                                       null,
+    description              varchar(255)                                       null,
     active                   smallint                                         null,
     version                  varchar(50)  default ''                          null,
     request_timeout          int          default 0                           null,

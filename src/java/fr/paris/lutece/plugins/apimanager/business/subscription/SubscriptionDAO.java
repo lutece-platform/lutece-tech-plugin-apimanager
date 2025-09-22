@@ -67,11 +67,14 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, uuid_environement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, trace_enabled, archived, uuid_environement FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, uuid_environement , trace_enabled, archived FROM apimanager_subscription";
+
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+
+    private static final String SQL_QUERY_SELECTALL_ID_BY_API_AND_ENVIRONEMENT = SQL_QUERY_SELECTALL_ID + " WHERE uuid_resource = ? AND uuid_environement = ? AND uuid_client = ?";
 
     private static final String FILTER_CLIENT = "client";
     private static final String FILTER_API = "api";
@@ -327,5 +330,23 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             }
         }
         return whereClauses + additionalClauses.toString( );
+    }
+
+    @Override
+    public List<String> getIdSubscriptionsByResourceAndEnvironementAndClient(String resourceUuid, String environementUuid, String clientUuid,Plugin plugin) {
+
+        final List<String> idSubscriptionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_API_AND_ENVIRONEMENT, plugin ) )
+        {
+            daoUtil.setString( 1, resourceUuid );
+            daoUtil.setString( 2, environementUuid );
+            daoUtil.setString( 3 , clientUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idSubscriptionList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idSubscriptionList;
     }
 }
