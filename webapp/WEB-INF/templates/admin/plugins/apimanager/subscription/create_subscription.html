@@ -1,88 +1,139 @@
 <div class="container my-5">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_subscriptions.viewSubscriptions}</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="create-tab" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_subscriptions.createSubscription}</a>
-        </li>
-    </ul>
-    <div class="tab-content mt-3" id="myTabContent">
-        <div class="tab-pane fade " id="manage" role="tabpanel" aria-labelledby="manage-tab">
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_subscriptions.viewSubscriptions}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link active" id="create-tab" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_subscriptions.createSubscription}</a>
+      </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade " id="manage" role="tabpanel" aria-labelledby="manage-tab"></div>
+      <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+         <@box>
+         <@boxHeader title='#i18n{apimanager.create_subscription.title}' />
+         <@boxBody>
+         <@tform name='subscription' action='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp' >
+         <@messages errors=errors />
+         <@input type="hidden" id="uuid" name="uuid"/>
+         <@input type="hidden" value="${token}" name="token" />
+         <div class="col-xl-12 py-2">
+            <div class="row gx-2">
+               <h2>Application</h2>
+               <div class="row gx-2">
+                  <!-- application -->
+                  <@formGroup labelFor='application_selection' labelKey='#i18n{apimanager.manage_subscriptions.create.labelApplication}' mandatory=false>
+                  <select id="application_selection" name="uuid_application" class="form-control" onchange="updateSubscription()">
+                     <option value="">-- application --</option>
+                     <#list client_list as client>
+                     <#if uuid_application?? && uuid_application==client.uuid>
+                     <option value="${client.uuid}" selected>${client.name}</option>
+                     <#else>
+                     <option value="${client.uuid}">${client.name}</option>
+                     </#if>
+                     </#list>
+                  </select>
+                  </@formGroup>
+               </div>
+               <div class="row gx-2">
+                  <h2>Environement</h2>
+                  <!-- environement -->
+                  <@formGroup labelFor='environement_selection' labelKey='#i18n{apimanager.manage_subscriptions.create.labelEnvironement}' mandatory=false>
+                  <select id="environement_selection" name="uuid_environement" class="form-control" onchange="updateSubscription()">
+                     <option value="">-- environement --</option>
+                     <#list environment_list as environement>
+                     <#if uuid_environement?? && uuid_environement==environement.uuid>
+                     <option value="${environement.uuid}" selected>${environement.name}</option>
+                     <#else>
+                     <option value="${environement.uuid}">${environement.name}</option>
+                     </#if>
+                     </#list>
+                  </select>
+                  </@formGroup>
+               </div>
+               <div class="row gx-2">
+                  <h2>Api</h2>
+                  <div class="row gx-2">
+                     <!-- api -->
+                     <@formGroup labelFor='api_selection' labelKey='#i18n{apimanager.manage_subscriptions.create.labelApi}' mandatory=false>
+                     <select id="api_selection" name="uuid_api" class="form-control" onchange="updateSubscription()">
+                        <option value="">-- api --</option>
+                        <#if api_list??>
+                        <#list api_list as api>
+                        <#if uuid_api?? && uuid_api==api.uuid>
+                        <option value="${api.uuid}" selected>${api.name} - ${api.version}</option>
+                        <#else>
+                        <option value="${api.uuid}">${api.name} - ${api.version}</option>
+                        </#if>
+                        </#list>
+                        </#if>
+                     </select>
+                     </@formGroup>
+                  </div>
+               </div>
+                <div class="row gx-2">
+                  <h2>Plan</h2>
+                  <div class="row gx-2">
+                     <!-- plan -->
+                     <@formGroup labelFor='plan_selection' labelKey='#i18n{apimanager.manage_subscriptions.create.labelPlan}' mandatory=false>
+                     <select id="plan_selection" name="uuid_plan" class="form-control" onchange="updateSubscription()">
+                        <option value="">-- plan --</option>
+                        <#if plan_list??>
+                        <#list plan_list as plan>
+                        <#if uuid_plan?? && uuid_plan==plan.uuid>
+                        <option value="${plan.uuid}" selected>${plan.name}</option>
+                        <#else>
+                        <option value="${plan.uuid}">${plan.name}</option>
+                        </#if>
+                        </#list>
+                        </#if>
+                     </select>
+                     </@formGroup>
+                  </div>
+               </div>
+            </div>
+         </div>
 
-
+        <@actionButtons button1Name="action_createSubscription" button2Name="view_manageSubscription"/>
+      </div>
+      </@tform>
+      </@boxBody>
+      </@box>
+   </div>
 </div>
-<div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
-
-    <@box>
-    <@boxHeader title='#i18n{apimanager.create_subscription.title}' />
-    <@boxBody>
-    <@tform name='subscription' action='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp' >
-
-    <@messages errors=errors />
-    <@input type="hidden" id="uuid" name="uuid"/>
-    <@input type="hidden" value="${token}" name="token" />
-
-    <div class="col-xl-12 py-2">
-        <h2><i class="ti ti-id-badge"></i> Client</h2>
-        <div class="row gx-2">
-            <@formGroup class='col-3' labelFor='uuid_client' labelKey='#i18n{apimanager.subscription.labelIdClient}' mandatory=true>
-            <@input type='text' id='uuid_client' name='uuid_client'  value=subscription.client.uuid!'' tabIndex='0' readonly=true class='form-control-plaintext' />
-        </@formGroup>
-        <@formGroup class='col-3' labelFor='client_name' labelKey='#i18n{apimanager.client.labelName}'>
-        <@input type='text' id='client_name' name='client_name'  value=subscription.client.name!'' tabIndex='0' readonly=true class='form-control-plaintext' params='disabled' />
-    </@formGroup>
 </div>
-    </div>
-
-    <div class="col-xl-12 py-2">
-        <h2><i class="ti ti-list"></i> Plan</h2> <@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageApis=&subscriptionMode=true" targetElement="#api-result-container" id="list-api" title=tags btnTitle="#i18n{apimanager.manage_subscriptions.selectPlan}" size="auto" bodyClass="p-3" btnClass="mb-2" btnIcon="arrow-right" />
-        <div class="row gx-2">
-            <@formGroup class='col-3' labelFor='uuid_plan' labelKey='#i18n{apimanager.subscription.labelIdPlan}' mandatory=true>
-            <@input type='text' id='uuid_plan' name='uuid_plan' tabIndex='1' readonly=true class='form-control-plaintext' />
-        </@formGroup>
-        <@formGroup class='col-3' labelFor='plan_name' labelKey='#i18n{apimanager.plan.labelName}'>
-        <@input type='text' id='plan_name' name='plan_name' tabIndex='0' readonly=true class='form-control-plaintext' params='disabled' />
-    </@formGroup>
-</div>
-</div>
-<@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironement}' mandatory=true>
-<select id="environnement" name="environnement" class="form-control">
-    <#list environment_list as environment>
-    <option value="${environment.uuid}">${environment.name}</option>
-</#list>
-</select>
-</@formGroup>
-<@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.subscription.labelTraceEnabled}' mandatory=true>
-<@checkBox id="trace_enabled" name="trace_enabled"  value="1" checked=subscription.traceEnabled!false tabIndex='2' />
-</@formGroup>
-
-<@actionButtons button1Name="action_createSubscription" button2Name="view_manageSubscription"/>
-</@tform>
-</@boxBody>
-</@box>
-</div>
-</div>
-</div>
-
-
 <script type="text/javascript">
-	$(function() {
-		$('.form-control-plaintext').each(function() {
-			$(this).removeClass('form-control');
-		});
-	});
-	function updatePlanFields(planUuid, planName, planEnvs) {
-		$('#uuid_plan').val(planUuid);
-		$('#plan_name').val(planName);
-		$('#environnement').empty();
-		$('button[data-bs-dismiss]').click();
-		let envList = planEnvs.split(',');
-		envList.forEach((env) => {
-			$('#environnement').append($('<option>', {
-				value: env,
-				text: env
-			}));
-		});
-	}
+   $(function() {
+   	$('.form-control-plaintext').each(function() {
+   		$(this).removeClass('form-control');
+   	});
+   });
+   function updatePlanFields(planUuid, planName, planEnvs) {
+   	$('#uuid_plan').val(planUuid);
+   	$('#plan_name').val(planName);
+   	$('#environnement').empty();
+   	$('button[data-bs-dismiss]').click();
+   	let envList = planEnvs.split(',');
+   	envList.forEach((env) => {
+   		$('#environnement').append($('<option>', {
+   			value: env,
+   			text: env
+   		}));
+   	});
+   }
+
+
+      function updateSubscription(){
+
+          const selectedApplication = $("#application_selection").val();
+          const selectedEnvironement = $("#environement_selection").val();
+          const selectedApi = $("#api_selection").val();
+          const selectedPlan = $("#plan_selection").val();
+          const endpoint = 'jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription';
+          window.location.href= endpoint+
+              (selectedApplication?'&uuid_application='+selectedApplication:'')+
+              (selectedEnvironement?'&uuid_environement='+selectedEnvironement:'')+
+              (selectedApi?'&uuid_api='+selectedApi:'')+
+          (selectedPlan?'&uuid_plan='+selectedPlan:'');
+      }
 </script>
