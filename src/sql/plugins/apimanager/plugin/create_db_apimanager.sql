@@ -3,6 +3,7 @@ CREATE TABLE apimanager_api
     uuid           varchar(50)                  not null primary key,
     name           varchar(255) default ''      null,
     description    varchar(255)                 null,
+    status         varchar(50)                 null,
     path           varchar(255) default ''      null,
     active         tinyint(1)   default 0       null,
     in_maintenance tinyint(1)   default 0       null,

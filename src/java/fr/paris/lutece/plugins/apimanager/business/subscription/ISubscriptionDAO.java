@@ -57,4 +57,6 @@ public interface ISubscriptionDAO extends IDAO<Subscription>
      * @return the list which contains the uuid of all the instances
      */
     List<String> getIdSubscriptionsByResourceAndEnvironementAndClient( String resourceUuid, String environementUuid,String clientUuid, Plugin plugin );
+    List<String> getIdSubscriptionsByResource( String resourceUuid, Plugin plugin );
+
 }

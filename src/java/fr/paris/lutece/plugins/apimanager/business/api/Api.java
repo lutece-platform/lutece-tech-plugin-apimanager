@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.business.api;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
@@ -57,6 +58,7 @@ public class Api extends AbstractTagBean implements Serializable
 
     private String _strDescription;
     private String _strVersion;
+    private String _strStatus;
 
     @Size( max = 255, message = "#i18n{apimanager.validation.api.Path.size}" )
     private String _strPath;
@@ -72,6 +74,12 @@ public class Api extends AbstractTagBean implements Serializable
     private boolean _bArchived;
 
     private List<Resource> _resourceList;
+
+
+    private List<Environement> _environementList;
+
+
+    private List<Plan> _planList;
 
     /**
      * Returns the Uuid
@@ -136,6 +144,51 @@ public class Api extends AbstractTagBean implements Serializable
         _strDescription = strDescription;
     }
 
+
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Environement> getEnvironementList( )
+    {
+        return _environementList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param environementList
+     *            The Description
+     */
+    public void setEnvironementList( List<Environement> environementList )
+    {
+        _environementList = environementList;
+    }
+
+
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Plan> getPlanList( )
+    {
+        return _planList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param planList
+     *            The Description
+     */
+    public void setPlantList( List<Plan> planList )
+    {
+        _planList = planList;
+    }
+
+
     /**
      * Returns the Version
      *
@@ -157,6 +210,26 @@ public class Api extends AbstractTagBean implements Serializable
         _strVersion = strVersion;
     }
 
+    /**
+     * Returns the Status
+     *
+     * @return The Status
+     */
+    public String getStatus( )
+    {
+        return _strStatus;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param strStatus
+     *            The Status
+     */
+    public void setStatus( String strStatus )
+    {
+        _strStatus = strStatus;
+    }
 
     /**
      * Returns the Path

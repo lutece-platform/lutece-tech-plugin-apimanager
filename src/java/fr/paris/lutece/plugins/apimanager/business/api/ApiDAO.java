@@ -62,11 +62,11 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_api";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_api WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, active = ?, in_maintenance = ?, wait = ?, openapi = ?, archived = ?, version= ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, active = ?, in_maintenance = ?, wait = ?, openapi = ?, archived = ?, version= ?, status= ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version FROM apimanager_api";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status  FROM apimanager_api";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_api";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -109,6 +109,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.setString( nIndex++, objectMapper.writeValueAsString( api.getOpenapi( ) ) );
             daoUtil.setBoolean( nIndex++, api.getArchived( ) );
             daoUtil.setString( nIndex++, api.getVersion( ) );
+            daoUtil.setString( nIndex++, api.getStatus( ) );
 
             daoUtil.executeUpdate( );
             api.setUuid( uuid );
@@ -183,6 +184,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.setString( nIndex++, objectMapper.writeValueAsString( api.getOpenapi( ) ) );
             daoUtil.setBoolean( nIndex++, api.getArchived( ) );
             daoUtil.setString( nIndex, api.getVersion( ) );
+            daoUtil.setString( nIndex, api.getStatus( ) );
             daoUtil.setString( nIndex, api.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -392,6 +394,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
         }
         api.setArchived( daoUtil.getBoolean( nIndex++ ) );
         api.setVersion( daoUtil.getString( nIndex++ ) );
+        api.setStatus( daoUtil.getString( nIndex++ ) );
         api.setTags( this.selectTags( uuid, plugin ) );
 
         return api;

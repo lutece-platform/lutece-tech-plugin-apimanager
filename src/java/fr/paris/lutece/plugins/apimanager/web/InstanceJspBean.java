@@ -72,7 +72,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 
-import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEINSTANCES;
 
 /**
