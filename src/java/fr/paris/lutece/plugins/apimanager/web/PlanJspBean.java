@@ -328,6 +328,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     @Action( ACTION_CREATE_PLAN )
     public String doCreatePlan( HttpServletRequest request ) throws AccessDeniedException
     {
+        _plan = new Plan( );
         populateAll( request, getLocale( ) );
         _plan.setStatus( PlanStatusEnum.DRAFT );
 
@@ -345,7 +346,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         getService( ).create( _plan, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_CREATED );
+        return redirect( request, "ManagePlans.jsp?infoMsg=" + INFO_PLAN_CREATED );
     }
 
     /**

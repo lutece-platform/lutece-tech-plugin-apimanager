@@ -56,7 +56,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_plan";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, status, environnement_list ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, status, environnement_list ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET name = ?, description = ?, active = ?, version = ?, rate_limiting_enabled = ?, rate_limiting_template = ?, client_http_template = ?, request_timeout = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, status = ?, environnement_list = ? WHERE uuid = ?";
 
