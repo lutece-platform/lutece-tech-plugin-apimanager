@@ -46,6 +46,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.*;
@@ -424,16 +425,16 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                         String planUuid = planSubscription.getKey();
                         List<Subscription> subscriptions = planSubscription.getValue();
 
-                        List<Instance> instances = new ArrayList<>();
-                        List<Resource> resourcesToDeploy = ResourceService.getInstance().getEntitiesListByIds(subscriptions.stream().map(subscription -> subscription.getResource().getUuid()).collect(Collectors.toList()));
-                        for (Resource resource : resourcesToDeploy){
-                            instances.addAll(InstanceHome.getInstancesListByIds(InstanceHome.getIdInstancesListLinkedToResourceUuid(resource.getUuid())));
+
+                        for(Subscription sub : subscriptions){
+                            List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
+                            sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
+
                         }
 
-                        _configGeneratorService.generateApiManager(ClientHome.findByPrimaryKey(clientUuid).orElse(null), PlanHome.findByPrimaryKey(planUuid).orElse(null),
-                                resourcesToDeploy,
-                                instances.stream().filter(instance -> instance.getEnvironement().getUuid().equals(environemenbtUuid)).collect(Collectors.toList()),
-                                environemenbtUuid, comment, getUser( ).getEmail( ) );
+                        _configGeneratorService.generateSubscriptions(ClientHome.findByPrimaryKey(clientUuid).orElse(null),
+                                subscriptions, comment, getUser( ).getEmail( ) );
+
                     }
                 }
 

@@ -477,7 +477,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_client", clientUuid)).forEach(subscriptionUuid -> {
             SubscriptionHome.findByPrimaryKey(subscriptionUuid).ifPresent(subscription -> {
                 // for each subscription, send a delete request and archive the subscription
-                _configGeneratorService.deleteApiManager(client, subscription.getResource().getPlan(),
+                _configGeneratorService.deleteSubscription(client, subscription.getResource().getPlan(),
                         ResourceService.getInstance().getResourcesByPlanUuid(subscription.getResource().getPlan().getUuid()),
                         InstanceService.getInstance().getEntitiesListByIds(
                                 InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(subscription.getResource().getApi().getUuid())),

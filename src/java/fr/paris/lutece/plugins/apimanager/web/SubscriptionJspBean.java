@@ -424,12 +424,12 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         try
         {
             final Plan plan = subscription.getResource().getPlan( );
-            _configGeneratorService.generateApiManager( subscription.getClient( ), plan,
+           /* _configGeneratorService.get( subscription.getClient( ), plan,
                     ResourceService.getInstance( ).getResourcesByPlanUuid( plan.getUuid( ) ),
                     InstanceService.getInstance( )
                             .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToResourceUuid( subscription.getResource().getApi( ).getUuid( ) ) ).stream( )
                             .filter( instance -> env.equals( instance.getEnvironement( ).getUuid() ) ).collect( Collectors.toList( ) ),
-                    env, comment, getUser( ).getEmail( ) );
+                    env, comment, getUser( ).getEmail( ) );*/
             getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
             plan.setStatus( PlanStatusEnum.PUBLISHED );
             PlanService.getInstance( ).update( plan, getUser( ).getEmail( ) );
