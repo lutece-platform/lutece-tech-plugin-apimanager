@@ -40,6 +40,8 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
@@ -422,10 +424,15 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                         String planUuid = planSubscription.getKey();
                         List<Subscription> subscriptions = planSubscription.getValue();
 
+                        List<Instance> instances = new ArrayList<>();
+                        List<Resource> resourcesToDeploy = ResourceService.getInstance().getEntitiesListByIds(subscriptions.stream().map(subscription -> subscription.getResource().getUuid()).collect(Collectors.toList()));
+                        for (Resource resource : resourcesToDeploy){
+                            instances.addAll(InstanceHome.getInstancesListByIds(InstanceHome.getIdInstancesListLinkedToResourceUuid(resource.getUuid())));
+                        }
+
                         _configGeneratorService.generateApiManager(ClientHome.findByPrimaryKey(clientUuid).orElse(null), PlanHome.findByPrimaryKey(planUuid).orElse(null),
-                                ResourceService.getInstance( ).getEntitiesListByIds( subscriptions.stream().map(subscription -> subscription.getResource().getUuid()).collect(Collectors.toList()) ),
-                                InstanceService.getInstance().getEntitiesListByIds( InstanceService.getInstance( )
-                                        .getIdInstancesListLinkedToEnvironementUuid( environemenbtUuid)),
+                                resourcesToDeploy,
+                                instances.stream().filter(instance -> instance.getEnvironement().getUuid().equals(environemenbtUuid)).collect(Collectors.toList()),
                                 environemenbtUuid, comment, getUser( ).getEmail( ) );
                     }
                 }

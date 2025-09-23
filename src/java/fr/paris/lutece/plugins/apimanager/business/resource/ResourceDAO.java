@@ -35,8 +35,10 @@
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
+import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
@@ -78,6 +80,8 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
 
     private static final String SQL_QUERY_DELETE_LINK_RESOURCE = "DELETE FROM apimanager_deployed WHERE uuid_instance = ? AND uuid_resource = ?";
     private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_resource = ?";
+
+    private static final String SQL_QUERY_SELECTALL_INSTANCES_OF_RESOURCE = "SELECT uuid_instance FROM apimanager_deployed WHERE uuid_resource = ?";
 
     /**
      * Constructor
@@ -154,6 +158,13 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     @Override
     public void delete( String nKey, Plugin plugin )
     {
+
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINKS, plugin ) )
+        {
+            daoUtil.setString( 1, nKey );
+            daoUtil.executeUpdate( );
+        }
+
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
             daoUtil.setString( 1, nKey );
@@ -306,6 +317,23 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         }
         return resourceList;
 
+    }
+
+
+
+    @Override
+    public void linkInstance(final Resource resource, final String instanceUuid, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_LINK_RESOURCE, Statement.NO_GENERATED_KEYS, plugin ) )
+        {
+            int nIndex = 1;
+            final String uuid = UUID.randomUUID( ).toString( );
+            daoUtil.setString( nIndex++, uuid );
+            daoUtil.setString( nIndex++, resource.getUuid( ) );
+            daoUtil.setString( nIndex, instanceUuid );
+
+            daoUtil.executeUpdate( );
+        }
     }
 
     private Resource loadFromDaoUtil( DAOUtil daoUtil )

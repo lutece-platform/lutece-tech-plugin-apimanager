@@ -34,6 +34,7 @@
 
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -158,4 +159,17 @@ public final class ResourceHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+
+    /**
+     * Link the specified Resource to the specified instance UUID.
+     *
+     * @param resource
+     *            the Resource
+     * @param instanceUuid
+     *            the instance UUID
+     */
+    public static void linkInstance(final Resource resource, final String instanceUuid )
+    {
+        _dao.linkInstance( resource, instanceUuid, _plugin );
+    }
 }

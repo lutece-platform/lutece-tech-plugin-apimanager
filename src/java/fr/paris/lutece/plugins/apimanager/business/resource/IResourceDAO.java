@@ -35,6 +35,7 @@
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
@@ -46,4 +47,13 @@ import java.util.Optional;
  */
 public interface IResourceDAO extends IDAO<Resource>
 {
+    /**
+     * Link the specified Resource to the specified instance UUID.
+     *
+     * @param resource
+     *            the Resource
+     * @param instanceUuid
+     *            the instance UUID
+     */
+    void linkInstance(Resource resource, String instanceUuid, Plugin plugin );
 }
