@@ -81,9 +81,9 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 {
 
     // Templates
-    private static final String TEMPLATE_MANAGE_PLANS = "/admin/plugins/apimanager/manage_plans.html";
-    private static final String TEMPLATE_CREATE_PLAN = "/admin/plugins/apimanager/create_plan.html";
-    private static final String TEMPLATE_MODIFY_PLAN = "/admin/plugins/apimanager/modify_plan.html";
+    private static final String TEMPLATE_MANAGE_PLANS = "/admin/plugins/apimanager/plan/manage_plans.html";
+    private static final String TEMPLATE_CREATE_PLAN = "/admin/plugins/apimanager/plan/create_plan.html";
+    private static final String TEMPLATE_MODIFY_PLAN = "/admin/plugins/apimanager/plan/modify_plan.html";
 
     // Parameters
     private static final String PARAMETER_ID_PLAN = "uuid";
