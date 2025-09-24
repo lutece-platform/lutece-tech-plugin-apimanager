@@ -1,17 +1,20 @@
 <div class="container my-5">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="manage-tab" href="#"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_subscriptions.viewSubscriptions}</a>
+            <a class="nav-link" id="manage-api" href="jsp/admin/plugins/apimanager/ManageOperations.jsp" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_operations.api.tab.name}</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link" id="create-tab" href="jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_subscriptions.createSubscription}</a>
+            <a class="nav-link active" id="manage-client" href="#"   role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.client.tab.name}</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="history" href="jsp/admin/plugins/apimanager/HistoryOperations.jsp"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.history.tab.name}</a>
         </li>
     </ul>
     <div class="tab-content mt-3" id="myTabContent">
         <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
 
         <@box>
-	<@boxHeader title='#i18n{apimanager.manage_subscriptions.title}' boxTools=true>
+	<@boxHeader title='#i18n{apimanager.manage_clients.title}' boxTools=true>
 	</@boxHeader>
 	<@boxBody>
     <@messages infos=infos warnings=warnings errors=errors />
@@ -63,44 +66,41 @@
 		<div class="clearfix"></div>
 		<@table>
 			<tr>
-                <th>#i18n{apimanager.manage_subscriptions.columnClient}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_subscriptions.columnEnvironnement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
-				<th>#i18n{apimanager.manage_subscriptions.columnPlan}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=plan'><i class='fas fa-sort'></i></a></th>
-				<th>#i18n{apimanager.manage_subscriptions.columnApi}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_subscriptions.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api_version'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_subscriptions.columnStatusClient}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client_status'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_subscriptions.columnStatusApi}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api_status'><i class='fas fa-sort'></i></a></th>
-				<th>#i18n{portal.util.labelActions}</th>
+                <th>#i18n{apimanager.manage_clients.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_clients.columnClientId}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_clients.columnCodeApp}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_clients.columnSubscribers}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=plan'><i class='fas fa-sort'></i></a></th>
+				<th>#i18n{apimanager.manage_clients.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api'><i class='fas fa-sort'></i></a></th>
+               <th>#i18n{portal.util.labelActions}</th>
 			</tr>
 			<@tableHeadBodySeparator />
-			<#list subscription_list as subscription >
-			<tr <#if subscription.archived!false>class="text-decoration-line-through" title='#i18n{apimanager.info.subscription.archived}'</#if>>
+			<#list client_list as client >
+			<tr >
 
                 <td>
-                    ${subscription.client.name!''}
+                    ${client.name!''}
                 </td>
                 <td>
-					${subscription.environement.name!''}
+					${client.clientId!''}
 				</td>
 				<td>
-					${subscription.resource.plan.name!''}
+					${client.codeApp!''}
 				</td>
 				<td>
-					${subscription.resource.api.name!''}
+                <#if client.subscriptionList??>
+                <#list client.subscriptionList as subscription>
+                <span class="badge bg-primary px-2 me-1" id="env-${subscription?index}">
+                           ${subscription.api.name}
+                           <input type="hidden" name="environement-${subscription?index}" value="${subscription.api.name}">
+                           </span>
+                </#list>
+                </#if>
 				</td>
                 <td>
-                    ${subscription.resource.api.version!''}
-                </td>
-
-                <td>
-                    ${subscription.status!''}
-                </td>
-
-                <td>
-                    ${subscription.status!''}
+                    ${client.status!''}
                 </td>
 				<td>
-                    <@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=confirmRemoveClient&uuid=${client.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
                 </td>
 			</tr>
 			</#list>

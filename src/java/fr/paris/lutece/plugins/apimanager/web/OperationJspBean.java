@@ -104,8 +104,8 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
     private static final String FILTER_ARCHIVED = "archived";
 
     // Properties for page titles
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS = "apimanager.manage_subscriptions.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_CREATE_OPERATION = "apimanager.create_subscription.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS = "apimanager.manage_operations.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_CREATE_OPERATION = "apimanager.manage_operations.pageTitle";
 
     // Markers
     private static final String MARK_OPERATION_LIST = "subscription_list";
@@ -183,11 +183,24 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
 
 
         _apiList = ApiService.getInstance().getEntitiesListByIds(ApiService.getInstance().getIdEntitiesList());
+
         for(Api api : _apiList){
+            Map<String, Client> subscribers = new HashMap<>();
             List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(api.getUuid());
             api.setEnvironementList(resources.stream().map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
             api.setPlantList(resources.stream().map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
             api.set_resourceList(resources);
+            for(Resource resource : resources){
+                List<Subscription> subscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(resource.getUuid()));
+
+                for(Subscription subscription : subscriptions){
+                    Client currentClient = ClientHome.findByPrimaryKey(subscription.getClient().getUuid()).orElse(null);
+                    if(currentClient != null && !subscribers.containsKey(currentClient.getUuid())){
+                        subscribers.put(subscription.getClient().getUuid(),currentClient);
+                    }
+                }
+            }
+            api.setSubscriberList(new ArrayList<>(subscribers.values()));
         }
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_API_LIST, _apiList.stream().map(Api::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );

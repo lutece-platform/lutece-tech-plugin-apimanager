@@ -4,10 +4,10 @@
          <a class="nav-link active " id="manage-api" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_operations.api.tab.name}</a>
       </li>
       <li class="nav-item" role="presentation">
-         <a class="nav-link" id="manage-client" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.client.tab.name}</a>
+         <a class="nav-link" id="manage-client" href="jsp/admin/plugins/apimanager/ManageClientOperations.jsp"   role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.client.tab.name}</a>
       </li>
        <li class="nav-item" role="presentation">
-           <a class="nav-link" id="history" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.history.tab.name}</a>
+           <a class="nav-link" id="history" href="jsp/admin/plugins/apimanager/HistoryOperations.jsp"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.history.tab.name}</a>
        </li>
    </ul>
    <div class="tab-content mt-3" id="myTabContent">
@@ -88,6 +88,14 @@
             </td>
             <td>
 
+                <#if api.subscriberList??>
+                <#list api.subscriberList as subscriber>
+                <span class="badge bg-primary px-2 me-1" id="subscriber-${subscriber?index}">
+                           ${subscriber.name}
+                           <input type="hidden" name="subscriber-${subscriber?index}" value="${subscriber.name}">
+                           </span>
+                </#list>
+                </#if>
             </td>
             <td>
                ${api.status!''}

@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.business.api;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
@@ -80,6 +81,7 @@ public class Api extends AbstractTagBean implements Serializable
 
 
     private List<Plan> _planList;
+    private List<Client> _subscriberList;
 
     /**
      * Returns the Uuid
@@ -188,6 +190,27 @@ public class Api extends AbstractTagBean implements Serializable
         _planList = planList;
     }
 
+
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Client> getSubscriberList( )
+    {
+        return _subscriberList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param subscriberList
+     *            The Description
+     */
+    public void setSubscriberList( List<Client> subscriberList )
+    {
+        _subscriberList = subscriberList;
+    }
 
     /**
      * Returns the Version

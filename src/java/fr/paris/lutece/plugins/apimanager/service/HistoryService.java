@@ -31,34 +31,63 @@
  *
  * License 1.0
  */
+package fr.paris.lutece.plugins.apimanager.service;
 
-package fr.paris.lutece.plugins.apimanager.business.subscription;
+import fr.paris.lutece.plugins.apimanager.business.history.History;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.ReferenceList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-/**
- * ISubscriptionDAO Interface
- */
-public interface ISubscriptionDAO extends IDAO<Subscription>
+public class HistoryService extends AbstractService<History>
 {
 
-    /**
-     * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
-     *
-     * @param apiUuid
-     *            the API uuid
-     * @param plugin
-     *            the plugin
-     * @return the list which contains the uuid of all the instances
-     */
-    List<String> getIdSubscriptionsByResourceAndEnvironementAndClient( String resourceUuid, String environementUuid,String clientUuid, Plugin plugin );
-    List<String> getIdSubscriptionsByResource( String resourceUuid, Plugin plugin );
-    List<String> getIdSubscriptionsByClient( String clientUuid, Plugin plugin );
+    private static HistoryService _instance;
 
+    private HistoryService( )
+    {
+    }
+
+    public static HistoryService getInstance( )
+    {
+        if ( _instance == null )
+        {
+            _instance = new HistoryService( );
+        }
+        return _instance;
+    }
+
+    @Override
+    public void create(final History entity, final String user )
+    {
+        final String uuid = HistoryHome.create( entity ).getUuid( );
+    }
+
+    @Override
+    public void update( final History entity, final String user )
+    {
+        HistoryHome.update( entity );
+    }
+
+    @Override
+    public void delete( final String uuid, final String user )
+    {
+        HistoryHome.remove( uuid );
+    }
+
+    @Override
+    public List<String> getIdEntitiesList( final Map<String, String> mapFilterCriteria, final String columnToOrder, final String orderBy )
+    {
+        return HistoryHome.getIdHistorysList( mapFilterCriteria, columnToOrder, orderBy );
+    }
+
+    @Override
+    public List<History> getEntitiesListByIds( final List<String> listIds )
+    {
+        return HistoryHome.getHistorysListByIds( listIds );
+    }
 
 }
