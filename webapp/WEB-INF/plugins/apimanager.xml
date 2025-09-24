@@ -63,8 +63,16 @@
         </admin-feature>
         <admin-feature>
             <feature-id>APIMANAGER_OPERATION_MANAGEMENT</feature-id>
-            <feature-title>apimanager.adminFeature.ManageOperations.name</feature-title>
-            <feature-description>apimanager.adminFeature.ManageOperations.description</feature-description>
+            <feature-title>apimanager.adminFeature.ManageMeecrogate.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageMeecrogate.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/apimanager/ManageMeecrogates.jsp</feature-url>
+            <feature-icon-url></feature-icon-url>
+        </admin-feature>
+        <admin-feature>
+            <feature-id>APIMANAGER_MEECROGATE_INSTANCE_MANAGEMENT</feature-id>
+            <feature-title>apimanager.adminFeature.ManageMeecrogates.name</feature-title>
+            <feature-description>apimanager.adminFeature.ManageMeecrogates.description</feature-description>
             <feature-level>1</feature-level>
             <feature-url>jsp/admin/plugins/apimanager/ManageOperations.jsp</feature-url>
             <feature-icon-url></feature-icon-url>

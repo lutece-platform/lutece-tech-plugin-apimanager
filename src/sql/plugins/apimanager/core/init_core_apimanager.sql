@@ -84,3 +84,18 @@ DELETE FROM core_user_right WHERE id_right = 'APIMANAGER_OPERATION_MANAGEMENT';
 INSERT INTO core_user_right (id_right,id_user) VALUES ('APIMANAGER_OPERATION_MANAGEMENT',1);
 
 
+
+--
+-- Data for table core_admin_right
+--
+DELETE FROM core_admin_right WHERE id_right = 'APIMANAGER_MEECROGATE_MANAGEMENT';
+INSERT INTO core_admin_right (id_right,name,level_right,admin_url,description,is_updatable,plugin_name,id_feature_group,icon_url,documentation_url, id_order ) VALUES
+    ('APIMANAGER_MEECROGATE_MANAGEMENT','apimanager.adminFeature.ManageMeecrogates.name',1,'jsp/admin/plugins/apimanager/ManageMeecrogates.jsp','apimanager.adminFeature.ManageMeecrogates.description',0,'apimanager',NULL,NULL,NULL,6);
+
+
+--
+-- Data for table core_user_right
+--
+DELETE FROM core_user_right WHERE id_right = 'APIMANAGER_MEECROGATE_MANAGEMENT';
+INSERT INTO core_user_right (id_right,id_user) VALUES ('APIMANAGER_MEECROGATE_MANAGEMENT',1);
+
