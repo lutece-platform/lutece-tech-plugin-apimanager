@@ -16,6 +16,7 @@
     <bean id="apimanager.environementDAO" class="fr.paris.lutece.plugins.apimanager.business.environement.EnvironementDAO" />
     <bean id="apimanager.resourceHeaderMatchingDAO" class="fr.paris.lutece.plugins.apimanager.business.resource.ResourceHeaderMatchingDAO" />
     <bean id="apimanager.planOauthConfigurationDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationDAO" />
+    <bean id="apimanager.meecrogateDAO" class="fr.paris.lutece.plugins.apimanager.business.meecrogate.MeecrogateDAO" />
 
     <bean id="apimanager.configGeneratorService" class="fr.paris.lutece.plugins.apimanager.service.generator.MockConfigGeneratorService" />
 
