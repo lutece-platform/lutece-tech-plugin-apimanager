@@ -187,16 +187,18 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
         for(Api api : _apiList){
             Map<String, Client> subscribers = new HashMap<>();
             List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(api.getUuid());
-            api.setEnvironementList(resources.stream().filter(resource -> resource.getEnvironement()!=null).map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
-            api.setPlantList(resources.stream().filter(resource -> resource.getPlan()!=null).map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
+            api.setEnvironementList(resources.stream().filter(resource -> resource.getEnvironement()!=null&& resource.getEnvironement().getUuid()!=null).map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
+            api.setPlantList(resources.stream().filter(resource -> resource.getPlan()!=null && resource.getPlan().getUuid()!=null).map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
             api.set_resourceList(resources);
             for(Resource resource : resources){
                 List<Subscription> subscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(resource.getUuid()));
 
                 for(Subscription subscription : subscriptions){
-                    Client currentClient = ClientHome.findByPrimaryKey(subscription.getClient().getUuid()).orElse(null);
-                    if(currentClient != null && !subscribers.containsKey(currentClient.getUuid())){
-                        subscribers.put(subscription.getClient().getUuid(),currentClient);
+                    if(subscription.getClient()!=null && subscription.getClient().getUuid()!=null){
+                        Client currentClient = ClientHome.findByPrimaryKey(subscription.getClient().getUuid()).orElse(null);
+                        if(currentClient != null && !subscribers.containsKey(currentClient.getUuid())){
+                            subscribers.put(subscription.getClient().getUuid(),currentClient);
+                        }
                     }
                 }
             }
