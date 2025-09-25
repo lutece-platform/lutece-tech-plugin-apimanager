@@ -88,6 +88,7 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     // Parameters
     private static final String PARAMETER_ID_INSTANCE = "uuid";
     private static final String PARAMETER_CREATE_SELECTED_ENVIRONEMENT = "environement_uuid";
+    private static final String PARAMETER_CREATE_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_PROTOCOL_NAME = "protocol_name";
     private static final String PARAMETER_ID_RESOURCE = "uuid_resource";
@@ -106,7 +107,9 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String MARK_INSTANCE = "instance";
     private static final String MARK_PROTOCOL_LIST = "protocol_list";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
     private static final String MARK_TAG_LIST = "tag_list";
+    private static final String MARK_SELECTED_TAG_LIST = "selected_tag_list";
 
     private static final String JSP_MANAGE_INSTANCES = "jsp/admin/plugins/apimanager/ManageInstances.jsp";
 
@@ -196,6 +199,23 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
             resetCurrentPageIndexOfPaginator( );
         }
 
+
+        // new search only if in pagination mode
+        if ( request.getParameter( PARAMETER_SELECTED_TAGS ) != null ){
+            String selectedStringTags = request.getParameter(PARAMETER_SELECTED_TAGS);
+            List<String> selectedTags =  new ArrayList<>( );
+            if(selectedStringTags != null && !selectedStringTags.isEmpty() && selectedStringTags.contains(",")){
+                selectedTags.addAll( Arrays.asList(selectedStringTags.split(",")));
+            }else{
+                selectedTags.add(selectedStringTags);
+            }
+            model.put(MARK_ENVIRONMENT_LIST, environements);
+
+            _listIdInstances = getService( ).getInstancesByTags(selectedTags);
+            model.put(MARK_SELECTED_TAG_LIST, selectedTags);
+        }
+
+
         environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
         model.putAll( getPaginatedListModel( request, MARK_INSTANCE_LIST, _listIdInstances, JSP_MANAGE_INSTANCES ) );
@@ -209,6 +229,11 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
             model.put( PARAMETER_API_ARCHIVED, true );
         }
 
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        //exlude some filters from the returned list
+        for(String exclusion: getExcludedSearchParameters()){
+            _mapFilterCriteria.remove(exclusion);
+        }
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_INSTANCES, TEMPLATE_MANAGE_INSTANCES, model );

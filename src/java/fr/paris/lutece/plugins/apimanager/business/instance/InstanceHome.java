@@ -227,4 +227,13 @@ public final class InstanceHome
     {
         return _dao.getAvailableTags(listIds, _plugin );
     }
+
+
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getInstancesByTags( List<String> tags  )
+    {
+        return _dao.getInstancesByTags(tags, _plugin );
+    }
 }

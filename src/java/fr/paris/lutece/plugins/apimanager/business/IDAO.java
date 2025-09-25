@@ -132,4 +132,5 @@ public interface IDAO<T>
     List<T> selectEntitiesListByIds( Plugin plugin, List<String> listIds );
 
     List<String> getAvailableTags(List<String> listIds, Plugin plugin);
+    List<String> getInstancesByTags(List<String> tags, Plugin plugin);
 }

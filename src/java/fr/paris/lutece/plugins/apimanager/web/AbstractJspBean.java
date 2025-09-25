@@ -88,6 +88,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
 
     // Search
     private static final String FILTER_ATTRIBUTES_PREFIX = "filter_";
+    private static final String[] FILTER_ATTRIBUTES_TO_EXCLUDE_IN_RETURNED_LIST = new String[]{"uuid_environement"};
     protected static final String SORT_ATTRIBUTES_ASC = " ASC ";
     protected static final String SORT_ATTRIBUTES_DESC = " DESC ";
 
@@ -204,6 +205,16 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
         model.put( PARAMETER_MAP_FILTER_CRITERIA, mapFilterCriteria );
     }
 
+
+    /**
+     * get _strSortMode At each sort request, the sort mode switches (ASC to DESC and vice versa)
+     */
+    protected String[] getExcludedSearchParameters( )
+    {
+        return
+                FILTER_ATTRIBUTES_TO_EXCLUDE_IN_RETURNED_LIST;
+
+    }
     /**
      * get _strSortMode At each sort request, the sort mode switches (ASC to DESC and vice versa)
      */

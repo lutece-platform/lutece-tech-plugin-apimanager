@@ -170,4 +170,15 @@ public class InstanceService extends AbstractService<Instance>
     {
         return InstanceHome.getAvailableTags( listIds );
     }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getInstancesByTags(List<String> tags )
+    {
+        return InstanceHome.getInstancesByTags( tags );
+    }
 }
