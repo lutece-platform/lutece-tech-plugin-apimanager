@@ -187,8 +187,8 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
         for(Api api : _apiList){
             Map<String, Client> subscribers = new HashMap<>();
             List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(api.getUuid());
-            api.setEnvironementList(resources.stream().map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
-            api.setPlantList(resources.stream().map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
+            api.setEnvironementList(resources.stream().filter(resource -> resource.getEnvironement()!=null).map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
+            api.setPlantList(resources.stream().filter(resource -> resource.getPlan()!=null).map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
             api.set_resourceList(resources);
             for(Resource resource : resources){
                 List<Subscription> subscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(resource.getUuid()));
