@@ -232,8 +232,8 @@ public final class InstanceHome
     /**
      * Get the available tags among all instances
      */
-    public static List<String>  getInstancesByTags( List<String> tags  )
+    public static List<String>  getuuidsByTags( List<String> tags  )
     {
-        return _dao.getInstancesByTags(tags, _plugin );
+        return _dao.getuuidsByTags(tags, _plugin );
     }
 }

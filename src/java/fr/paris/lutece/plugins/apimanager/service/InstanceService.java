@@ -179,6 +179,6 @@ public class InstanceService extends AbstractService<Instance>
      */
     public List<String> getInstancesByTags(List<String> tags )
     {
-        return InstanceHome.getInstancesByTags( tags );
+        return InstanceHome.getuuidsByTags( tags );
     }
 }

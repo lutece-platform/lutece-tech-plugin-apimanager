@@ -95,7 +95,7 @@ public abstract class AbstractFilterDao
     private final static String VALUE_COLUMN = "value";
 
     private static final String SQL_QUERY_SELECTALL_TAGS = "SELECT  distinct(value) FROM apimanager_tag WHERE uuid_ref IN (  ";
-    private static final String SQL_QUERY_SELECTALL_INSTANCES_BY_TAGS = "SELECT  distinct(uuid_ref) FROM apimanager_tag WHERE value IN (  ";
+    private static final String SQL_QUERY_SELECTALL_UUIDS_BY_TAGS = "SELECT  distinct(uuid_ref) FROM apimanager_tag WHERE value IN (  ";
     /**
      * Preparation of filterStatement
      * 
@@ -419,7 +419,7 @@ public abstract class AbstractFilterDao
     }
 
 
-    public List<String> getInstancesByTags( List<String> tags, Plugin plugin) {
+    public List<String> getuuidsByTags( List<String> tags, Plugin plugin) {
 
         List<String> tagList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
@@ -430,7 +430,7 @@ public abstract class AbstractFilterDao
             }
 
             String placeHolders = builder.deleteCharAt(builder.length() - 1).toString();
-            String stmt = SQL_QUERY_SELECTALL_INSTANCES_BY_TAGS + placeHolders + ")";
+            String stmt = SQL_QUERY_SELECTALL_UUIDS_BY_TAGS + placeHolders + ")";
 
             try (DAOUtil daoUtil = new DAOUtil(stmt, plugin)) {
                 int index = 1;

@@ -226,11 +226,11 @@ values  ('30b2a419-ce6e-4a1b-983d-611760f9121c', 'HTTP', '192.168.52.31', '8080'
 insert into apimanager_meecrogate_instance (uuid, description, base_url, name)
 values  ('1', 'meecrogate oauth2 server 01 - test', 'http://mg-oauth2-server-01:8080/oauth2', 'mg-oauth2-server-01');
 insert into apimanager_meecrogate_instance (uuid, description, base_url, name)
-values  ('1', 'meecrogate oauth2 server 02 - test', 'http://mg-oauth2-server-02:8080/oauth2', 'mg-oauth2-server-02');
+values  ('2', 'meecrogate oauth2 server 02 - test', 'http://mg-oauth2-server-02:8080/oauth2', 'mg-oauth2-server-02');
 insert into apimanager_meecrogate_instance (uuid, description, base_url, name)
-values  ('1', 'meecrogate gateway 01 - test', 'http://mg-gateway-01:8080/gateway', 'mg-gateway-01');
+values  ('3', 'meecrogate gateway 01 - test', 'http://mg-gateway-01:8080/gateway', 'mg-gateway-01');
 insert into apimanager_meecrogate_instance (uuid, description, base_url, name)
-values  ('1', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02');
+values  ('4', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02');
 
 insert into apimanager_plan (uuid, name, description, active, version, request_timeout, oauth_enabled, uuid_oauth_configuration, rate_limiting_enabled, rate_limiting_template, client_http_template, status, environnement_list)
 values  ('0d21847f-dcb4-4d82-8412-d1aee8a9f922', 'Plan SSE', 'Plan pour acces SSE', 1, '4', 4, 0, '68b19b22-f694-49e3-a61c-8d7707314ee1', 1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),

@@ -95,6 +95,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_VERSION = "version";
     private static final String PARAMETER_API_ARCHIVED = "api_archived";
     private static final String PARAMETER_ENVIRONMENT_PREFIX = "environment_";
+    private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_PLANS = "apimanager.manage_plans.pageTitle";
@@ -106,6 +107,8 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String MARK_PLAN = "plan";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
     private static final String MARK_TAG_LIST = "tag_list";
+    private static final String MARK_SELECTED_TAG_LIST = "selected_tag_list";
+    private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
 
     private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
 
@@ -212,6 +215,21 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             resetCurrentPageIndexOfPaginator( );
         }
 
+        // new search only if in pagination mode
+        if ( request.getParameter( PARAMETER_SELECTED_TAGS ) != null ){
+            String selectedStringTags = request.getParameter(PARAMETER_SELECTED_TAGS);
+            List<String> selectedTags =  new ArrayList<>( );
+            if(selectedStringTags != null && !selectedStringTags.isEmpty() && selectedStringTags.contains(",")){
+                selectedTags.addAll( Arrays.asList(selectedStringTags.split(",")));
+            }else{
+                selectedTags.add(selectedStringTags);
+            }
+
+            _listIdPlans = getService( ).getPlansByTags(selectedTags);
+
+            model.put(MARK_SELECTED_TAG_LIST, selectedTags);
+        }
+
         Map<String, Object> plans = getPaginatedListModel(request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS);
         model.putAll( plans );
 
@@ -233,6 +251,13 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         if ( request.getParameterMap( ).containsKey( PARAMETER_API_ARCHIVED ) )
         {
             model.put( PARAMETER_API_ARCHIVED, true );
+        }
+
+
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        //exlude some filters from the returned list
+        for(String exclusion: getExcludedSearchParameters()){
+            _mapFilterCriteria.remove(exclusion);
         }
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs

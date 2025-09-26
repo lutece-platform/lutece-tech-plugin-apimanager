@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationHome;
@@ -109,6 +110,17 @@ public class PlanService extends AbstractService<Plan>
     public List<Plan> getEntitiesListByIds( final List<String> listIds )
     {
         return PlanHome.getPlansListByIds( listIds );
+    }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getPlansByTags(List<String> tags )
+    {
+        return PlanHome.getuuidsByTags( tags );
     }
 
 }

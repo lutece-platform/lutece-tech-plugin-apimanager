@@ -88,7 +88,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     // Parameters
     private static final String PARAMETER_ID_INSTANCE = "uuid";
     private static final String PARAMETER_CREATE_SELECTED_ENVIRONEMENT = "environement_uuid";
-    private static final String PARAMETER_CREATE_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
     private static final String PARAMETER_PROTOCOL_NAME = "protocol_name";
     private static final String PARAMETER_ID_RESOURCE = "uuid_resource";
