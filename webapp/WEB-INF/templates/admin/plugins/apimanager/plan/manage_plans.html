@@ -123,7 +123,8 @@
 				 <th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
-				 <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_plans.columnEnvironement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=environement'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
 				 <th>#i18n{apimanager.manage_plans.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>
                 <th>#i18n{apimanager.global.labelTags}</th>
                 <th>#i18n{portal.util.labelActions}</th>
@@ -143,6 +144,11 @@
 				<td>
 					${plan.version!''}
 				</td>
+                <td>
+                    <#list plan.availableEnvironments as env>
+                    <span class="badge bg-primary px-2 me-1" id="env-${plan?index}-${env?index}">${env}</span>
+                </#list>
+                </td>
 				<td>
 					<#if plan.traceEnabled!false>
                     <span class="badge bg-warning"> oui </span>
