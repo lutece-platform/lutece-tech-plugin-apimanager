@@ -63,8 +63,11 @@ insert into apimanager_deployed (uuid, uuid_resource, uuid_instance, status)
 values  ('a79ea45b-d7c9-42b4-8852-4d15baf87c11', 'adf74b03-c16d-49c2-9256-3e6810d97544', 'bff5fb61-6093-4396-a070-18a2cedaf7ec', null);
 
 insert into apimanager_environement (uuid, name, description)
-values  ('1df5eee8-038b-4f12-86fc-dba73352ddcf', 'PRODUCTION', null),
-        ('3747f054-e562-4839-8886-d0b7099c1aba', 'QA', null);
+values  ('1df5eee8-038b-4f12-86fc-dba73352ddcf', 'REC', null),
+        ('3747f054-e562-4839-8886-d0b7099c1aba', 'DEV', null),
+        ('3747f054-e562-4839-8886-d0b7099c1gdf', 'TEST', null),
+        ('3747f054-e562-4839-8886-d0b7099c1hgf', 'PREPROD', null),
+        ('3747f054-e562-4839-8886-d0b7099c1klm', 'PROD', null);
 
 insert into apimanager_history (uuid, uuid_ref, date, type, user)
 values  ('005b66b1-6fc7-4276-89d2-44d42597c9dc', '2883e119-ab3d-4935-841a-498ec4cce11d', '2025-07-03 17:38:33.228', 'CREATE', 'admin@lutece.fr'),
