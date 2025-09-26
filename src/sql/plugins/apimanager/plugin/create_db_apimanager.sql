@@ -67,7 +67,8 @@ CREATE TABLE apimanager_meecrogate_instance
     uuid        varchar(50)             not null primary key,
     description varchar(255) default '' null,
     base_url    varchar(255) default '' null,
-    name        varchar(255) default '' null
+    name        varchar(255) default '' null,
+    type        varchar(50) default '' null
 );
 
 CREATE TABLE apimanager_plan_oauth_configuration

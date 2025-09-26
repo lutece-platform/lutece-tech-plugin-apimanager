@@ -59,6 +59,9 @@ public class Meecrogate extends AbstractTagBean implements Serializable {
     @Size(max = 255, message = "#i18n{apimanager.validation.instance.Name.size}")
     private String _strBaseUrl;
 
+    @Size(max = 255, message = "#i18n{apimanager.validation.instance.Name.size}")
+    private String _strType;
+
     /**
      * Returns the Uuid
      *
@@ -132,5 +135,25 @@ public class Meecrogate extends AbstractTagBean implements Serializable {
      */
     public void setBaseUrl(String strBaseUrl) {
         _strBaseUrl= strBaseUrl;
+    }
+
+
+
+    /**
+     * Returns the Type
+     *
+     * @return The Type
+     */
+    public String getType() {
+        return _strType;
+    }
+
+    /**
+     * Sets the Type
+     *
+     * @param strType The Type
+     */
+    public void setType(String strType) {
+        _strType= strType;
     }
 }

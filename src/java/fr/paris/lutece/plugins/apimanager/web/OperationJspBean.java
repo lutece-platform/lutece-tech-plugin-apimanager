@@ -138,7 +138,9 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
     // Infos
     private static final String INFO_OPERATION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.removed";
+    private static final String INFO_API_MANAGER_DELETED = "apimanager.info.subscription.api.manager.unpublished";
     private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
+
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
@@ -391,11 +393,64 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
     @Action( ACTION_REMOVE_OPERATION )
     public String doRemoveSubscription( HttpServletRequest request )
     {
-        String uuid = request.getParameter( PARAMETER_ID_OPERATION );
-        addInfo( INFO_OPERATION_REMOVED, getLocale( ) );
-        resetListId( );
+        final String apiUuid = request.getParameter( PARAMETER_UUID_OPERATION );
+        if ( apiUuid == null )
+        {
+            addError( ERROR_RESOURCE_NOT_FOUND );
+            return redirectView( request, VIEW_MANAGE_OPERATIONS );
+        }
+        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_OPERATION_REMOVED );
+        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
+        final String comment = request.getParameter( PARAMETER_COMMENT );
+
+        try
+        {
+
+            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
+            List<Resource> apiResources = resources.stream()
+                    .filter(resource -> resource.getApi() != null)
+                    .filter(resource -> resource.getApi().getUuid().equals( apiUuid ) ).collect(Collectors.toList());
+            List<Subscription> resourceSubscription =new ArrayList<>();
+            for(Resource apiResource : apiResources){
+                resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
+            }
+
+            Map<String,Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
+                    .collect(
+                            Collectors.groupingBy(o -> o.getClient().getUuid(),
+                                    Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
+                                            (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
+
+            for(Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()){
+                Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
+                for(Map.Entry<String, Map<String, List<Subscription>>> environementSubscription :  clientEnvironements.entrySet()){
+                    Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
+                    for(Map.Entry<String, List<Subscription>> planSubscription :  clientPlans.entrySet()) {
+                        List<Subscription> subscriptions = planSubscription.getValue();
+                        for(Subscription sub : subscriptions){
+                            List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
+                            sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
+                        }
+                        _configGeneratorService.deleteSubscriptions(
+                                subscriptions, comment, getUser( ).getEmail( ) );
+                    }
+                }
+            }
+
+            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+            api.setStatus( PlanStatusEnum.UNPUBLISHED.name() );
+            ApiService.getInstance( ).update( api, getUser( ).getEmail( ) );
+        }
+        catch( final AppException e )
+        {
+            addError( ERROR_API_MANAGER_GENERATION );
+            addError( e.getMessage( ) );
+            return redirectView( request, VIEW_MANAGE_OPERATIONS );
+        }
+
+        addInfo( INFO_API_MANAGER_DELETED, getLocale( ) );
+        return redirect( request, "ManageOperations.jsp?infoMsg=" + INFO_OPERATION_REMOVED );
     }
 
     @Action( ACTION_GENERATE_API_MANAGER )
@@ -431,22 +486,15 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                                             (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
 
             for(Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()){
-                String clientUuid = clientSubscriptionByEnvironementAndPlan.getKey();
                 Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
                 for(Map.Entry<String, Map<String, List<Subscription>>> environementSubscription :  clientEnvironements.entrySet()){
-                    String environemenbtUuid = environementSubscription.getKey();
                     Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
                     for(Map.Entry<String, List<Subscription>> planSubscription :  clientPlans.entrySet()) {
-                        String planUuid = planSubscription.getKey();
                         List<Subscription> subscriptions = planSubscription.getValue();
-
-
                         for(Subscription sub : subscriptions){
                             List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                             sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
-
                         }
-
                         _configGeneratorService.generateSubscriptions(
                                 subscriptions, comment, getUser( ).getEmail( ) );
 

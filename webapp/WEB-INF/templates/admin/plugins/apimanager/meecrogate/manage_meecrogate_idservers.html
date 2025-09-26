@@ -5,67 +5,37 @@
             <a class="nav-link" id="manage-tab"  href="jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=manageGateways" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_meecrogates.tabs.gateway.title}</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="create-tab"  href="#"   role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_meecrogates.tabs.idserver.title}</a>
+            <a class="nav-link active" id="create-tab"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_meecrogates.tabs.idserver.title}</a>
         </li>
     </ul>
     <div class="tab-content mt-3" id="myTabContent">
         <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
 
-<@box>
-	<@boxHeader title='#i18n{apimanager.manage_instances.title}' boxTools=true>
-	</@boxHeader>
-	<@boxBody>    
-    <@messages infos=infos warnings=warnings errors=errors />
-    <@paginationAdmin paginator=paginator combo=1 />
-    <div class="clearfix"></div>
-    
-    <@offcanvas id='search_instance' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
-    <@tform id='instance_search_form' name='instance_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageInstances.jsp' >
-		<@messages errors=errors />
+      <div class="container">
+                   <@box>
+         <@boxHeader title='#i18n{apimanager.create_instance.title}' />
+         <@boxBody>
+         <@tform name='meecrogate' action='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp' >
+         <@messages errors=errors />
+                <@input type="hidden" id="type" name="type" value="ID" />
+                <@input type="hidden" value="${token}" name="token" />
 
-					<@formGroup labelFor='filter_protocol' labelKey='#i18n{apimanager.instance.labelProtocol}'>
-						<@input type='text' id='filter_protocol' name='filter_protocol'  maxlength=255  placeHolder='#i18n{apimanager.instance.labelProtocol}' value=mapFilterCriteria["protocol"]!'' tabIndex='1' />
-					</@formGroup>
-	    			<@formGroup labelFor='filter_host' labelKey='#i18n{apimanager.manage_instances.columnHost}'>
-				    		<@input type='text' id='filter_host' name='filter_host'  maxlength=255  placeHolder='#i18n{apimanager.manage_instances.columnHost}' value=mapFilterCriteria["host"]!'' tabIndex='1' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_port' labelKey='#i18n{apimanager.manage_instances.columnPort}'>
-				    		<@input type='text' id='filter_port' name='filter_port'  maxlength=50  placeHolder='#i18n{apimanager.manage_instances.columnPort}' value=mapFilterCriteria["port"]!'' tabIndex='2' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_name' labelKey='#i18n{apimanager.manage_instances.columnName}'>
-				    		<@input type='text' id='filter_name' name='filter_name'  maxlength=255  placeHolder='#i18n{apimanager.manage_instances.columnName}' value=mapFilterCriteria["name"]!'' tabIndex='3' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_environnement' labelKey='#i18n{apimanager.manage_instances.columnEnvironnement}'>
-				    		<@input type='text' id='filter_environnement' name='filter_environnement'  maxlength=255  placeHolder='#i18n{apimanager.manage_instances.columnEnvironnement}' value=mapFilterCriteria["environnement"]!'' tabIndex='4' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_health_path' labelKey='#i18n{apimanager.manage_instances.columnHealthPath}'>
-				    		<@input type='text' id='filter_health_path' name='filter_health_path'  maxlength=255  placeHolder='#i18n{apimanager.manage_instances.columnHealthPath}' value=mapFilterCriteria["health_path"]!'' tabIndex='5' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_health_port' labelKey='#i18n{apimanager.manage_instances.columnHealthPort}'>
-				    		<@input type='text' id='filter_health_port' name='filter_health_port'  maxlength=50  placeHolder='#i18n{apimanager.manage_instances.columnHealthPort}' value=mapFilterCriteria["health_port"]!'' tabIndex='6' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_health_freq' labelKey='#i18n{apimanager.manage_instances.columnHealthFreq}'>
-				    		<@input type='number' id='filter_health_freq' name='filter_health_freq' placeHolder='#i18n{apimanager.manage_instances.columnHealthFreq}' value=mapFilterCriteria["health_freq"]!'' tabIndex='7' />
-				    </@formGroup>
-	    			<@formGroup labelFor='filter_tag' labelKey='#i18n{apimanager.global.labelTags}'>
-				    		<@input type='text' id='filter_tag' name='filter_tag'  maxlength=50  placeHolder='#i18n{apimanager.global.labelTags}' value=mapFilterCriteria["tag"]!'' tabIndex='4' />
-				    </@formGroup>
-
-		<@button type='submit' title='Search' buttonIcon='search'/>							
-    </@tform>
-    </@offcanvas>
-    
-
-    <#list mapFilterCriteria?keys as key> 
-    	<#if mapFilterCriteria[key]!="">
-	    	<span class="badge bg-primary px-2" > 
-	 			${key} <a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
-			</span>
-		</#if> 
-	</#list>
-
-    <div class="clearfix"></div>
-
+         <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelName}' mandatory=true>
+         <@input type='text' id='name' name='name'  maxlength=255 value='' tabIndex='2' />
+         </@formGroup>
+            <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelDescription}' mandatory=true>
+            <@input type='text' id='name' name='description'  maxlength=255 value='' tabIndex='2' />
+        </@formGroup>
+        <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelBaseurl}' mandatory=true>
+        <@input type='text' id='name' name='base_url'  maxlength=255 value=name!'' tabIndex='2' />
+        </@formGroup>
+         <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
+         <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
+         <div id="tags-container" class="mt-2"></div>
+         </@formGroup>
+         <@actionButtons button1Name="action_createMeecrogate" />
+         </@tform>
+            </div>
 	<div id="instance-result-container">
 		<div class="clearfix"></div>
 		<@table>
@@ -89,8 +59,8 @@
 					${instance.baseUrl!''}
 				</td>
 				<td>
-                    <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=modifyInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-                    <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveInstance&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+                    <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=modifyMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 				</td>
 			</tr>
 			</#list>
@@ -118,4 +88,29 @@
             window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp' ;
         }
     } );
+
+
+    $(function() {
+        $('#tags-input').keypress(function (e) {
+            if(e.which == 13)  // the enter key code
+            {
+                let tag = $('#tags-input').val();
+                if(tag.length > 0)
+                {
+                    tag = tag.replace(/\s/g, '-');
+                    let tagNum = $('#tags-container').children().length;
+                    $('#tags-container').append('<span class="badge bg-primary px-2 me-1" id="tag-' + tagNum + '">'
+                        + tag
+                        + ' <a id="delete-tag-' + tagNum + '" class="icon-block"><i class="fas fa-times-circle" style="color:white"></i></a>'
+                        + '<input type="hidden" name="selected_tags" value="' + tag + '">'
+                        + '</span>');
+                    $('#delete-tag-' + tagNum).click(function() {
+                        $('#tag-' + tagNum).remove();
+                    });
+                    $('#tags-input').val('');
+                }
+                return false;
+            }
+        });
+    });
 </script>

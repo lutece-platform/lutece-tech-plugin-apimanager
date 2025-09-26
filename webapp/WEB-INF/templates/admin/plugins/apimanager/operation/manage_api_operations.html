@@ -101,7 +101,11 @@
                ${api.status!''}
             </td>
             <td>
-               <@aButton href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api=${api.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='wifi' hideTitle=['all'] color='btn-danger'  />
+                <#if api.status?? && api.status=='PUBLISHED'>
+                <@aButton href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api=${api.uuid}' title='unpublish' buttonIcon='zeppelin' hideTitle=['all'] color='danger'  />
+                <#else>
+                <@aButton href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api=${api.uuid}' title='publish' buttonIcon='wifi' hideTitle=['all'] color='success'  />
+            </#if>
             </td>
             </tr>
             </#list>

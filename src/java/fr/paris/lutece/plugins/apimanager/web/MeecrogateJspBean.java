@@ -42,6 +42,7 @@ import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.meecrogate.Meecrogate;
+import fr.paris.lutece.plugins.apimanager.business.meecrogate.MeecrogateHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
@@ -125,17 +126,16 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     // Views
     private static final String VIEW_MANAGE_GATEWAYS = "manageGateways";
     private static final String VIEW_MANAGE_IDSERVERS = "manageIDServers";
-    private static final String VIEW_CREATE_OPERATION = "createOperation";
 
     // Actions
-    private static final String ACTION_CREATE_OPERATION = "createOperation";
-    private static final String ACTION_REMOVE_OPERATION = "removeOperation";
-    private static final String ACTION_CONFIRM_REMOVE_OPERATION = "confirmRemoveOperation";
+    private static final String ACTION_CREATE_MEECROGATE = "createMeecrogate";
+    private static final String ACTION_REMOVE_MEECROGATE = "removeMeecrogate";
+    private static final String ACTION_CONFIRM_REMOVE_MEECROGATE = "confirmRemoveMeecrogate";
     private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
 
     // Infos
     private static final String INFO_OPERATION_CREATED = "apimanager.info.subscription.created";
-    private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.removed";
+    private static final String INFO_MEECROGATE_REMOVED = "apimanager.info.meecrogate.removed";
     private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
 
     // Errors
@@ -143,9 +143,9 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     private static final String ERROR_API_MANAGER_GENERATION = "Error publishing API manager";
 
     // Session variable to store working values
-    private Subscription _subscription;
+    private Meecrogate _meecrogate;
     private List<Meecrogate> _meecrogateList;
-    private List<String> _listIdResources;
+    private List<String> _listIdMeecrogates;
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
     private String _optionOrderBy;
 
@@ -161,26 +161,28 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     @View( value = VIEW_MANAGE_GATEWAYS, defaultView = true )
     public String getManageGateways( HttpServletRequest request )
     {
-        _subscription = null;
+        _meecrogate = (_meecrogate != null) ? _meecrogate : new Meecrogate();
 
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
             _optionOrderBy = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
             _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+            _mapFilterCriteria.put("type","GATEWAY");
+
             final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
             if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
             {
                 criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
             }
-            _listIdResources = ResourceService.getInstance().getIdEntitiesList( criterias );
+            _listIdMeecrogates = MeecrogateService.getInstance().getIdEntitiesList( criterias );
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
         }
 
 
-        _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(MeecrogateService.getInstance().getIdEntitiesList());
+        _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(_listIdMeecrogates);
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_GATEWAY_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
 
@@ -188,6 +190,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_MEECROGATE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS, TEMPLATE_MANAGE_MEECROGATE_GATEWAYS, model );
 
@@ -205,26 +208,27 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     @View( value = VIEW_MANAGE_IDSERVERS, defaultView = true )
     public String getManageIDServers( HttpServletRequest request )
     {
-        _subscription = null;
+        _meecrogate = null;
 
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
             _optionOrderBy = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
             _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+            _mapFilterCriteria.put("type","ID");
             final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
             if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
             {
                 criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
             }
-            _listIdResources = ResourceService.getInstance().getIdEntitiesList( criterias );
+            _listIdMeecrogates = MeecrogateService.getInstance().getIdEntitiesList( criterias );
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
         }
 
 
-        _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(MeecrogateService.getInstance().getIdEntitiesList());
+        _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(_listIdMeecrogates);
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_ID_SERVER_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
 
@@ -232,6 +236,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
+        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_MEECROGATE ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS, TEMPLATE_MANAGE_MEECROGATE_ID_SERVERS, model );
 
@@ -281,64 +286,9 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
      */
     public void resetListId( )
     {
-        _listIdResources = new ArrayList<>( );
+        _listIdMeecrogates = new ArrayList<>( );
     }
 
-    /**
-     * Returns the form to create a subscription
-     *
-     * @param request
-     *            The Http request
-     * @return the html code of the subscription form
-     */
-    @View( VIEW_CREATE_OPERATION )
-    public String getCreateSubscription( HttpServletRequest request )
-    {
-        _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        _subscription.setClient( new Client( ) );
-        _subscription.setResource( new Resource( ) );
-
-        String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
-        String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
-        String apiUuid = request.getParameter(PARAMETER_UUID_API);
-        String planUuid = request.getParameter(PARAMETER_UUID_PLAN);
-        Map<String, Object> model = getModel( );
-        model.put(PARAMETER_UUID_APPLICATION,clientUuid );
-        model.put(PARAMETER_UUID_ENVIRONEMENT,environementUuid );
-        model.put(PARAMETER_UUID_API,apiUuid );
-        model.put(PARAMETER_UUID_PLAN,planUuid );
-        model.put( MARK_OPERATION, _subscription );
-        List<Environement> environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
-        model.put( MARK_ENVIRONMENT_LIST, environements );
-        model.put(MARK_CLIENT_LIST, ClientService.getInstance().getEntitiesListByIds(ClientService.getInstance().getIdEntitiesList()));
-
-        if(clientUuid!=null && environementUuid!=null){
-            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
-            List<Resource> environementResources = resources.stream()
-                    .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) ).collect(Collectors.toList());
-            Collection<Resource> uniqueByApi = environementResources
-                    .stream()
-                    .filter(resource -> resource.getApi() != null)
-                    .collect(Collectors.toMap(usr -> Set.of(usr.getApi().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
-                    .values();
-            model.put( MARK_API_LIST, uniqueByApi.stream().map(resource -> resource.getApi()).collect(Collectors.toList()) );
-            if(apiUuid!=null){
-                List<Resource> environementAndApiResources = resources.stream()
-                        .filter(resource -> resource.getApi() != null)
-                        .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) && resource.getApi().getUuid().equals(apiUuid) ).collect(Collectors.toList());
-                Collection<Resource> uniqueByPlan = environementAndApiResources
-                        .stream()
-                        .collect(Collectors.toMap(usr -> Set.of(usr.getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
-                        .values();
-                model.put( MARK_PLAN_LIST, uniqueByPlan.stream().map(resource -> resource.getPlan()).collect(Collectors.toList()) );
-            }
-        }
-
-
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_OPERATION ) );
-
-        return getPage( PROPERTY_PAGE_TITLE_CREATE_OPERATION, VIEW_MANAGE_GATEWAYS, model );
-    }
 
     /**
      * Process the data capture form of a new subscription
@@ -348,38 +298,21 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
      * @return The Jsp URL of the process result
      * @throws AccessDeniedException
      */
-    @Action( ACTION_CREATE_OPERATION )
+    @Action( ACTION_CREATE_MEECROGATE )
     public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
     {
-        Map<String, String[]> test = request.getParameterMap();
-        String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
-        String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
-        String apiUuid = request.getParameter(PARAMETER_UUID_API);
-        String planUuid = request.getParameter(PARAMETER_UUID_PLAN);
+        _meecrogate = (_meecrogate != null) ? _meecrogate : new Meecrogate();
 
-        _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        _subscription.setClient( new Client( ) );
-        _subscription.getClient().setUuid(clientUuid);
-        _subscription.setEnvironement( new Environement( ) );
-        _subscription.getEnvironement().setUuid(environementUuid);
-        _subscription.setPlan( new Plan( ) );
-        _subscription.getPlan().setUuid(planUuid);
+        populate(_meecrogate, request, getLocale());
 
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_OPERATION ) )
+        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_MEECROGATE ) )
         {
             throw new AccessDeniedException( "Invalid security token" );
         }
 
-        // Check constraints
-        if ( clientUuid == null || environementUuid == null || apiUuid == null || planUuid == null )
-        {
-            return redirectView( request, VIEW_CREATE_OPERATION );
-        }
+        getService().create(_meecrogate, getUser().getEmail());
 
-
-        resetListId( );
-
-        return redirect( request, "ManageSubscriptions.jsp?infoMsg=" + INFO_OPERATION_CREATED );
+        return redirect( request, "ManageMeecrogates.jsp?infoMsg=" + INFO_OPERATION_CREATED+((_meecrogate.getType()!=null && _meecrogate.getType().equals("ID"))?("&view="+VIEW_MANAGE_IDSERVERS):"") );
     }
 
     /**
@@ -389,11 +322,11 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
      *            The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_REMOVE_OPERATION )
+    @Action( ACTION_CONFIRM_REMOVE_MEECROGATE )
     public String getConfirmRemoveSubscription( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_OPERATION );
-        UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_OPERATION ) );
+        UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_MEECROGATE ) );
         url.addParameter( PARAMETER_ID_OPERATION, uuid );
 
         String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_OPERATION, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
@@ -408,14 +341,19 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
      *            The Http request
      * @return the jsp URL to display the form to manage subscriptions
      */
-    @Action( ACTION_REMOVE_OPERATION )
+    @Action( ACTION_REMOVE_MEECROGATE )
     public String doRemoveSubscription( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_OPERATION );
-        addInfo( INFO_OPERATION_REMOVED, getLocale( ) );
+
+        _meecrogate = MeecrogateHome.findByPrimaryKey( uuid ).orElse(null);
+
+        getService( ).delete( uuid, getUser( ).getEmail( ) );
+
+        addInfo( INFO_MEECROGATE_REMOVED, getLocale( ) );
         resetListId( );
 
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_OPERATION_REMOVED );
+        return redirect( request, "ManageMeecrogates.jsp?infoMsg=" + INFO_MEECROGATE_REMOVED+((_meecrogate.getType()!=null && _meecrogate.getType().equals("ID"))?("&view="+VIEW_MANAGE_IDSERVERS):"")  );
     }
 
     @Action( ACTION_GENERATE_API_MANAGER )

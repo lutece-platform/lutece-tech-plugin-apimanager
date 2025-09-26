@@ -82,24 +82,8 @@
                      <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="card-title">${api.name!''} ${api.version!''}</div>
                         <div class="card-tools">
-                           <#if linkMode!false>
-                           <@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=linkApi&uuid=${uuid_instance}&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_instances.linkApi}' buttonIcon='link' hideTitle=['all'] />
-                           <#elseif subscriptionMode!false>
-                           <@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManagePlans.jsp?view_managePlans=&filter_uuid_api=${api.uuid}&filter_active=1&subscriptionMode=true" targetElement="#plan-result-container" id="list-plan-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_apis.viewPlans}" size="auto" bodyClass="p-3" btnIcon="arrow-right" hideTitle=['all'] />
-                           <#else>
-                           <#if api.archived!false>
-                           <@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
-                           <#else>
-                           <@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-                           <@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=downloadOpenapi&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.downloadOpenapi}' buttonIcon='download' hideTitle=['all'] />
-                           <@offcanvas targetUrl="jsp/admin/plugins/apimanager/ManageApis.jsp?view_manageHistory=&filter_uuid_ref=${api.uuid}&orderBy=date" targetElement="#history-result-container" id="list-history-${api?index}" title=tags btnTitle="#i18n{apimanager.manage_history.viewHistory}" size="auto" bodyClass="p-3" btnIcon="list" hideTitle=['all'] />
-                           <#if deleteLink!false>
-                           <@aButton href='jsp/admin/plugins/apimanager/ManageInstances.jsp?action=confirmRemoveLink&uuid=${uuid_instance}&uuid_api=${api.uuid}' title='#i18n{apimanager.api.deleteLink}' buttonIcon='trash' hideTitle=['all'] color='btn-danger' />
-                           <#else>
-                           <@aButton href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmArchiveApi&uuid=${api.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] color='btn-danger' />
-                           </#if>
-                           </#if>
-                           </#if>
+                            <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                             <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmArchiveApi&uuid=${api.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] color='btn-danger' />
                         </div>
                      </div>
                   </div>
