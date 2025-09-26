@@ -36,12 +36,12 @@
                                        <div class="form-control">
                                           <#list tag_list as tag>
                                            <#if selected_tag_list?? && selected_tag_list?seq_contains(tag)>
-                                           <span  class="badge bg-success px-2 me-1" id="tag-${tag?index}" >
+                                           <span  class="badge bg-success px-2 me-1 clickable" id="tag-${tag?index}" >
                                           ${tag}
                                           <input type="hidden" name="selected_tag" value="${tag}">
                                           </span>
                                            <#else>
-                                           <span class="badge bg-primary px-2 me-1" id="tag-${tag?index}">
+                                           <span class="badge bg-primary px-2 me-1 clickable" id="tag-${tag?index}">
                                           ${tag}
                                           <input type="hidden"  name="selectable_tag" value="${tag}">
                                           </span>
@@ -190,6 +190,57 @@
 
 
 <script type="text/javascript">
+
+
+    $( "#filter_environement" ).on( "change", function() {
+        updateSearch();
+    } );
+
+    $('input[name="selectable_tag"]').each(function () {
+        intputElement = $(this);
+        intputElement.parent().click(function() {
+            updateSearch(intputElement);
+        } );
+    });
+
+    $('input[name="selected_tag"]').each(function () {
+        intputElement = $(this);
+        intputElement.parent().click(function() {
+            intputElement.attr('name','selectable_tag');
+            updateSearch();
+        } );
+    });
+
+    $('#btn-search_instance').css('float','right');
+
+
+    function updateSearch(tagElement){
+
+        const selectedEnvironement =$('#filter_environement').find(":selected").val();
+        const selected_tags=[];
+        if(tagElement){
+            if( tagElement.attr('name')=== 'selectable_tag'){
+                tagElement.attr('name','selected_tag');
+            }
+        }
+
+        $('input[name="selected_tag"]').each(function(){
+            selected_tags.push($(this).val());
+        });
+
+        let destination = 'jsp/admin/plugins/apimanager/ManagePlans.jsp'
+        if(selected_tags.length > 0){
+            destination = destination+'?selected_tags='+selected_tags.join(",") ;
+        }
+
+        if(selectedEnvironement){
+            destination = (destination.indexOf('?')!== -1?destination+'&':(destination+'?'))+'filter_uuid_environement='+selectedEnvironement ;
+        }
+
+        window.location.href = destination ;
+
+    }
+
     $(function() {
         if($('#rate_limiting_enabled').is(":checked")) {
             $('#rate_limiting_template').removeAttr('disabled');
@@ -211,8 +262,6 @@
                 $('#rate_limiting_template').hide();
             }
         });
-
-        $('#btn-search_instance').css('float','right');
 
         $('#add-hm').click(function() {
             let newRow = $('.header-matching-row').last().clone();

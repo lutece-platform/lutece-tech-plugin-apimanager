@@ -11,3 +11,7 @@
 .display-content{
     display: contents !important;
 }
+
+.clickable{
+    cursor: pointer;
+}
