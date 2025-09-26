@@ -189,9 +189,9 @@
    } );
 
    $('input[name="selectable_tag"]').each(function () {
-      intputElement = $(this);
-       intputElement.parent().click(function() {
-           updateSearch(intputElement);
+       $(this).parent().click(function() {
+           const inputChild= $(this).find('input[name="selectable_tag"]');
+           updateSearch(inputChild);
        } );
    });
 

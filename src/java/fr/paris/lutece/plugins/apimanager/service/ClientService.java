@@ -143,4 +143,14 @@ public class ClientService extends AbstractService<Client>
         return ClientHome.getAvailableTags( listIds );
     }
 
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getClientsByTags(List<String> tags )
+    {
+        return ClientHome.getuuidsByTags( tags );
+    }
 }

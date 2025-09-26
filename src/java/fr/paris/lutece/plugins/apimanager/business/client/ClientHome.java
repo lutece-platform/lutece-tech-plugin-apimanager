@@ -161,4 +161,12 @@ public final class ClientHome
     public static List<String> getAvailableTags(List<String> listIds) {
         return _dao.getAvailableTags( listIds, _plugin );
     }
+
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getuuidsByTags( List<String> tags  )
+    {
+        return _dao.getuuidsByTags(tags, _plugin );
+    }
 }

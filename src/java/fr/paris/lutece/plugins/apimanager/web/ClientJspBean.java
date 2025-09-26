@@ -122,6 +122,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
     private static final String MARK_TAG_LIST = "tag_list";
+    private static final String MARK_SELECTED_TAG_LIST = "selected_tag_list";
 
     private static final String JSP_MANAGE_CLIENTS = "jsp/admin/plugins/apimanager/ManageClients.jsp";
 
@@ -174,6 +175,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
     @View(value = VIEW_MANAGE_CLIENTS, defaultView = true)
     public String getManageClients(HttpServletRequest request) {
         final String infoMsg = request.getParameter(PARAMETER_INFO_MSG);
+        final Map<String, Object> model = new HashMap<>( );
         if (infoMsg != null) {
             addInfo(infoMsg, getLocale());
             return redirectView(request, VIEW_MANAGE_CLIENTS);
@@ -210,7 +212,23 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             resetCurrentPageIndexOfPaginator();
         }
 
-        Map<String, Object> model = getPaginatedListModel(request, MARK_CLIENT_LIST, _listIdClients, JSP_MANAGE_CLIENTS);
+
+        // new search only if in pagination mode
+        if ( request.getParameter( PARAMETER_SELECTED_TAGS ) != null ){
+            String selectedStringTags = request.getParameter(PARAMETER_SELECTED_TAGS);
+            List<String> selectedTags =  new ArrayList<>( );
+            if(selectedStringTags != null && !selectedStringTags.isEmpty() && selectedStringTags.contains(",")){
+                selectedTags.addAll( Arrays.asList(selectedStringTags.split(",")));
+            }else{
+                selectedTags.add(selectedStringTags);
+            }
+
+            _listIdClients = getService( ).getClientsByTags(selectedTags);
+            model.put(MARK_SELECTED_TAG_LIST, selectedTags);
+        }
+
+
+        model.putAll(getPaginatedListModel(request, MARK_CLIENT_LIST, _listIdClients, JSP_MANAGE_CLIENTS));
 
         model.put(MARK_TAG_LIST, getService().getAvailableTags(_listIdClients));
 
