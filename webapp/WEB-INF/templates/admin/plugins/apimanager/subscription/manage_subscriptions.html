@@ -100,7 +100,7 @@
                     ${subscription.status!''}
                 </td>
 				<td>
-                    <@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{apimanager.manage_subscriptions.labelUnsubscribe}' color='danger'  />
                 </td>
 			</tr>
 			</#list>
