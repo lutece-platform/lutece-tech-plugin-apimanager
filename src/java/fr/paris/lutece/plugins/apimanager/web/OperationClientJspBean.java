@@ -431,7 +431,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
 
                         }
 
-                        _configGeneratorService.generateSubscriptions(ClientHome.findByPrimaryKey(clientUuid).orElse(null),
+                        _configGeneratorService.generateSubscriptions(
                                 subscriptions, comment, getUser( ).getEmail( ) );
 
                     }

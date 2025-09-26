@@ -67,9 +67,9 @@
 		<div class="clearfix"></div>
 		<@table>
 			<tr>
-                <th>#i18n{apimanager.manage_clients.columnDate}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_clients.columnType}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_clients.columnUser}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_operations.columnDate}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_operations.columnType}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_operations.columnUser}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
                <th>#i18n{portal.util.labelActions}</th>
 			</tr>
 			<@tableHeadBodySeparator />
@@ -92,6 +92,8 @@
                 </td>
                 <td>
                     ${history.user!''}
+                </td>
+                <td>
                 </td>
 			</tr>
 			</#list>

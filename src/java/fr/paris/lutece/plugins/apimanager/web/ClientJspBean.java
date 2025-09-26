@@ -472,16 +472,16 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
 
         // DELETE PUBLISHED CONFIG
         // delete oauth2 client for all env
-        environmentList.forEach(env -> _configGeneratorService.deleteOauth2Client(client, env.getUuid(), getUser().getEmail()));
+        //environmentList.forEach(env -> _configGeneratorService.deleteOauth2Client(client, env.getUuid(), getUser().getEmail()));
         // get all client subscriptions
         SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_client", clientUuid)).forEach(subscriptionUuid -> {
             SubscriptionHome.findByPrimaryKey(subscriptionUuid).ifPresent(subscription -> {
                 // for each subscription, send a delete request and archive the subscription
-                _configGeneratorService.deleteSubscription(client, subscription.getResource().getPlan(),
+               /* _configGeneratorService.deleteSubscription(client, subscription.getResource().getPlan(),
                         ResourceService.getInstance().getResourcesByPlanUuid(subscription.getResource().getPlan().getUuid()),
                         InstanceService.getInstance().getEntitiesListByIds(
                                 InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(subscription.getResource().getApi().getUuid())),
-                        subscription.getEnvironement().getUuid(), getUser().getEmail());
+                        subscription.getEnvironement().getUuid(), getUser().getEmail());*/
                 if (!subscription.getArchived()) {
                     SubscriptionService.getInstance().archive(subscriptionUuid, getUser().getEmail());
                 }
@@ -559,7 +559,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         final String comment = request.getParameter(PARAMETER_COMMENT);
         _client = ClientService.getInstance().getClientById(uuid, Optional.of(env)).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         try {
-            _configGeneratorService.generateOauth2Client(_client, env, comment, getUser().getEmail());
+           // _configGeneratorService.generateOauth2Client(_client, env, comment, getUser().getEmail());
             getService().addNewHistory(_client.getUuid(), HistoryTypeEnum.GENERATE, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_CLIENT_OAUTH2_GENERATION);

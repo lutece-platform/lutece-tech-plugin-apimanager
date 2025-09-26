@@ -467,7 +467,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
 
                         }
 
-                        _configGeneratorService.generateSubscriptions(ClientHome.findByPrimaryKey(clientUuid).orElse(null),
+                        _configGeneratorService.generateSubscriptions(
                                 subscriptions, comment, getUser( ).getEmail( ) );
 
                     }

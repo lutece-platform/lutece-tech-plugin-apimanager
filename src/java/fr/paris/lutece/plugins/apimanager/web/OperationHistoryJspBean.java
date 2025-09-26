@@ -423,7 +423,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
 
                         }
 
-                        _configGeneratorService.generateSubscriptions(ClientHome.findByPrimaryKey(clientUuid).orElse(null),
+                        _configGeneratorService.generateSubscriptions(
                                 subscriptions, comment, getUser( ).getEmail( ) );
 
                     }
