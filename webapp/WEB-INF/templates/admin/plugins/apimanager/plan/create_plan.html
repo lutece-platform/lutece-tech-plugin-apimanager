@@ -1,10 +1,10 @@
 <div class="container my-5">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link" id="manage-tab" href="jsp/admin/plugins/apimanager/ManagePlans.jsp" role="tab" aria-controls="manage" aria-selected="true">Gerer les plans existantes</a>
+            <a class="nav-link" id="manage-tab" href="jsp/admin/plugins/apimanager/ManagePlans.jsp" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_plans.viewPlans}</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="create-tab" href="#" role="tab" aria-controls="create" aria-selected="false">Creer un plan</a>
+            <a class="nav-link active" id="create-tab" href="#" role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_plans.createPlan}</a>
         </li>
     </ul>
     <div class="tab-content mt-3" id="myTabContent">
@@ -30,7 +30,7 @@
 				<div id="environnement-container" class="row gx-2 w-50 my-4">
 					<#list environment_list as environment>
 						<div class='col fw-bold'>
-							<@checkBox labelKey=environment id="environment_${environment}" name="environment_${environment}"  checked=true value="1"  tabIndex='10' />
+							<@checkBox labelKey=environment.name id="environment_${environment.name}" name="environment_${environment.name}"  checked=true value="1"  tabIndex='10' />
 						</div>
 					</#list>
 				</div>

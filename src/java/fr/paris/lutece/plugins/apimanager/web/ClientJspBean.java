@@ -472,7 +472,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
 
         // DELETE PUBLISHED CONFIG
         // delete oauth2 client for all env
-        environmentList.forEach(env -> _configGeneratorService.deleteOauth2Client(client, env, getUser().getEmail()));
+        environmentList.forEach(env -> _configGeneratorService.deleteOauth2Client(client, env.getUuid(), getUser().getEmail()));
         // get all client subscriptions
         SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_client", clientUuid)).forEach(subscriptionUuid -> {
             SubscriptionHome.findByPrimaryKey(subscriptionUuid).ifPresent(subscription -> {

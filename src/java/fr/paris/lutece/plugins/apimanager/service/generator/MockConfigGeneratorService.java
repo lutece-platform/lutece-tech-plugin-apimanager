@@ -99,7 +99,6 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         {
             throw new AppException( "Sleep failed", e );
         }
-        throw new AppException( "Mock exception happened : you should see this on screen" );
     }
 
     @Override

@@ -183,8 +183,8 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.setInt( nIndex++, api.getWait( ) );
             daoUtil.setString( nIndex++, objectMapper.writeValueAsString( api.getOpenapi( ) ) );
             daoUtil.setBoolean( nIndex++, api.getArchived( ) );
-            daoUtil.setString( nIndex, api.getVersion( ) );
-            daoUtil.setString( nIndex, api.getStatus( ) );
+            daoUtil.setString( nIndex++, api.getVersion( ) );
+            daoUtil.setString( nIndex++, api.getStatus( ) );
             daoUtil.setString( nIndex, api.getUuid( ) );
 
             daoUtil.executeUpdate( );

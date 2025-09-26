@@ -34,10 +34,12 @@
 
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.service.AbstractService;
+import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -98,8 +100,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
     private String _strSortMode = "";
 
     // Property enums
-    protected static final List<String> environmentList = Arrays
-            .asList( AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
+    protected static final List<Environement> environmentList = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
     /**
      * Return a model that contains the list and paginator infos
