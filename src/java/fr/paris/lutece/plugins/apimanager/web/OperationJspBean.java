@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
@@ -104,8 +105,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
     private static final String FILTER_ARCHIVED = "archived";
 
     // Properties for page titles
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS = "apimanager.manage_operations.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_CREATE_OPERATION = "apimanager.manage_operations.pageTitle";
+    private static final String PROPERTY_PAGE_API_OPERATIONS = "apimanager.manage_operations.pageTitle";
 
     // Markers
     private static final String MARK_OPERATION_LIST = "subscription_list";
@@ -116,6 +116,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
     private static final String MARK_API_LIST = "api_list";
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
+    private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
 
     private static final String JSP_MANAGE_OPERATIONS = "jsp/admin/plugins/apimanager/ManageOperations.jsp";
 
@@ -207,14 +208,24 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
             api.setSubscriberList(new ArrayList<>(subscribers.values()));
         }
 
+        String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
+        if(selectedEnvironementUuid != null){
+            _apiList = _apiList.stream().filter(api -> api.get_resourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(selectedEnvironementUuid))).collect(Collectors.toList());
+        }
+
         Map<String, Object> model = getPaginatedListModel( request, MARK_API_LIST, _apiList.stream().map(Api::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
 
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        //exlude some filters from the returned list
+        for(String exclusion: getExcludedSearchParameters()){
+            _mapFilterCriteria.remove(exclusion);
+        }
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS, TEMPLATE_MANAGE_API_OPERATIONS, model );
+        return getPage( PROPERTY_PAGE_API_OPERATIONS, TEMPLATE_MANAGE_API_OPERATIONS, model );
 
     }
 
@@ -319,7 +330,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
 
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_OPERATION ) );
 
-        return getPage( PROPERTY_PAGE_TITLE_CREATE_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
+        return getPage( PROPERTY_PAGE_API_OPERATIONS, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
     }
 
     /**

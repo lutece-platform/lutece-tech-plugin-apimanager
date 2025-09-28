@@ -35,6 +35,8 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
@@ -230,11 +232,20 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
             model.put(MARK_SELECTED_TAG_LIST, selectedTags);
         }
 
-        Map<String, Object> plans = getPaginatedListModel(request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS);
-        model.putAll( plans );
+        Map<String, Object> planModel = getPaginatedListModel(request, MARK_PLAN_LIST, _listIdPlans, JSP_MANAGE_PLANS);
+        List<Plan> planList = ((List<Plan>) planModel.get(MARK_PLAN_LIST));
+        String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
+        if(selectedEnvironementUuid != null){
+            Environement environement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
+            if(environement != null){
+                planModel.put(MARK_PLAN_LIST, planList.stream().filter(plan -> plan.getAvailableEnvironments().contains(environement.getName()) ).collect(Collectors.toList()));            }
+            model.put(MARK_SELECTED_ENVIRONMENT_UUID,selectedEnvironementUuid);
+        }
+
+        model.putAll( planModel );
 
         ArrayList<String> tags = new ArrayList<String>();
-        for(Plan planValue : ((List<Plan>)plans.get(MARK_PLAN_LIST))){
+        for(Plan planValue : ((List<Plan>)planModel.get(MARK_PLAN_LIST))){
             tags.addAll(planValue.getTags());
         }
 
@@ -259,7 +270,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         for(String exclusion: getExcludedSearchParameters()){
             _mapFilterCriteria.remove(exclusion);
         }
-
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_PLANS, TEMPLATE_MANAGE_PLANS, model );

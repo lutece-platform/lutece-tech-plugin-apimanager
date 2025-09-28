@@ -1,115 +1,115 @@
-
 <div class="container my-5">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="manage-tab" href="#"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_meecrogates.tabs.gateway.title}</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="create-tab" href="jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=manageIDServers"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_meecrogates.tabs.idserver.title}</a>
-        </li>
-    </ul>
-    <div class="tab-content mt-3" id="myTabContent">
-        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
-            <div class="container">
-                   <@box>
-         <@boxHeader title='#i18n{apimanager.create_instance.title}' />
-         <@boxBody>
-         <@tform name='meecrogate' action='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp' >
-         <@messages errors=errors />
-                <@input type="hidden" id="type" name="type" value="GATEWAY" />
-                <@input type="hidden" value="${token}" name="token" />
-
-         <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelName}' mandatory=true>
-         <@input type='text' id='name' name='name'  maxlength=255 value='' tabIndex='2' />
-         </@formGroup>
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <a class="nav-link active" id="manage-tab" href="#"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_meecrogates.tabs.gateway.title}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link" id="create-tab" href="jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=manageIDServers"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_meecrogates.tabs.idserver.title}</a>
+      </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+         <div class="container">
+            <@box>
+            <@boxHeader title='#i18n{apimanager.create_instance.title}' />
+            <@boxBody>
+            <@tform name='meecrogate' action='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp' >
+            <@messages errors=errors />
+            <@input type="hidden" id="type" name="type" value="GATEWAY" />
+            <@input type="hidden" value="${token}" name="token" />
+            <@input type="hidden" id="uuid" name="uuid" value=instance.uuid!'' />
+            <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelName}' mandatory=true>
+            <@input type='text' id='name' name='name'  maxlength=255 value=instance.name!'' tabIndex='2' />
+            </@formGroup>
             <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelDescription}' mandatory=true>
-            <@input type='text' id='name' name='description'  maxlength=255 value='' tabIndex='2' />
-        </@formGroup>
-        <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelBaseurl}' mandatory=true>
-        <@input type='text' id='name' name='base_url'  maxlength=255 value=name!'' tabIndex='2' />
-        </@formGroup>
-         <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
-         <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
-         <div id="tags-container" class="mt-2"></div>
-         </@formGroup>
-         <@actionButtons button1Name="action_createMeecrogate" />
-         </@tform>
+            <@input type='text' id='description' name='description'  maxlength=255 value=instance.description!'' tabIndex='2' />
+            </@formGroup>
+            <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelBaseurl}' mandatory=true>
+            <@input type='text' id='base_url' name='base_url'  maxlength=255 value=instance.baseUrl!'' tabIndex='2' />
+            </@formGroup>
+            <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
+            <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
+            <div id="tags-container" class="mt-2">
+               <#list instance.tags as tag>
+               <span class="badge bg-primary px-2 me-1" id="tag-${tag?index}">
+               ${tag}
+               <a id="delete-tag-${tag?index}" class="icon-block"><i class="fas fa-times-circle" style="color:white"></i></a>
+               <input type="hidden" name="selected_tags" value="${tag}">
+               </span>
+               </#list>
             </div>
-
-	<div id="instance-result-container">
-		<div class="clearfix"></div>
-		<@table>
-			<tr>
-                <th>#i18n{apimanager.manage_operations.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_operations.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
-                <th>#i18n{apimanager.manage_operations.columnBaseUrl}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
-				<th>#i18n{portal.util.labelActions}</th>
-
-			</tr>
-			<@tableHeadBodySeparator />
-			<#list gateway_list as instance >
-			<tr>
-                <td>
-                    ${instance.name!''}
-                </td>
-				<td>
-					${instance.description!''}
-				</td>
-				<td>
-					${instance.baseUrl!''}
-				</td>
-				<td>
-                    <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=modifyMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-                    <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-				</td>
-			</tr>
-			</#list>
-		</@table>
-
-		<@paginationAdmin paginator=paginator />
-	</div>
-  </@boxBody>
-</@box>
-
+            </@formGroup>
+            <@actionButtons button1Name="action_createMeecrogate" />
+            </@tform>
+         </div>
+         <div id="instance-result-container">
+            <div class="clearfix"></div>
+            <@table>
+            <tr>
+               <th>#i18n{apimanager.manage_operations.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+               <th>#i18n{apimanager.manage_operations.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+               <th>#i18n{apimanager.manage_operations.columnBaseUrl}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageInstances.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+               <th>#i18n{portal.util.labelActions}</th>
+            </tr>
+            <@tableHeadBodySeparator />
+            <#list gateway_list as instance >
+            <tr>
+               <td>
+                  ${instance.name!''}
+               </td>
+               <td>
+                  ${instance.description!''}
+               </td>
+               <td>
+                  ${instance.baseUrl!''}
+               </td>
+               <td>
+                  <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                  <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+               </td>
+            </tr>
+            </#list>
+            </@table>
+            <@paginationAdmin paginator=paginator />
+         </div>
+         </@boxBody>
+         </@box>
+      </div>
+      <div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+      </div>
+   </div>
 </div>
-<div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
-
-</div>
-</div>
-</div>
-
-
 <script type="text/javascript">
-    $( "#filter_environement" ).on( "change", function() {
-        const selectedEnvironement =$(this).find(":selected").val();
-        if(selectedEnvironement){
-            window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp?filter_uuid_environement='+selectedEnvironement ;
-        }else{
-            window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp' ;
-        }
-    } );
+   $( "#filter_environement" ).on( "change", function() {
+       const selectedEnvironement =$(this).find(":selected").val();
+       if(selectedEnvironement){
+           window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp?filter_uuid_environement='+selectedEnvironement ;
+       }else{
+           window.location.href = 'jsp/admin/plugins/apimanager/ManageInstances.jsp' ;
+       }
+   } );
 
-    $(function() {
-        $('#tags-input').keypress(function (e) {
-            if(e.which == 13)  // the enter key code
-            {
-                let tag = $('#tags-input').val();
-                if(tag.length > 0)
-                {
-                    tag = tag.replace(/\s/g, '-');
-                    let tagNum = $('#tags-container').children().length;
-                    $('#tags-container').append('<span class="badge bg-primary px-2 me-1" id="tag-' + tagNum + '">'
-                        + tag
-                        + ' <a id="delete-tag-' + tagNum + '" class="icon-block"><i class="fas fa-times-circle" style="color:white"></i></a>'
-                        + '<input type="hidden" name="selected_tags" value="' + tag + '">'
-                        + '</span>');
-                    $('#delete-tag-' + tagNum).click(function() {
-                        $('#tag-' + tagNum).remove();
-                    });
-                    $('#tags-input').val('');
-                }
-                return false;
-            }
-        });
-    });
+   $(function() {
+       $('#tags-input').keypress(function (e) {
+           if(e.which == 13)  // the enter key code
+           {
+               let tag = $('#tags-input').val();
+               if(tag.length > 0)
+               {
+                   tag = tag.replace(/\s/g, '-');
+                   let tagNum = $('#tags-container').children().length;
+                   $('#tags-container').append('<span class="badge bg-primary px-2 me-1" id="tag-' + tagNum + '">'
+                       + tag
+                       + ' <a id="delete-tag-' + tagNum + '" class="icon-block"><i class="fas fa-times-circle" style="color:white"></i></a>'
+                       + '<input type="hidden" name="selected_tags" value="' + tag + '">'
+                       + '</span>');
+                   $('#delete-tag-' + tagNum).click(function() {
+                       $('#tag-' + tagNum).remove();
+                   });
+                   $('#tags-input').val('');
+               }
+               return false;
+           }
+       });
+   });
 </script>

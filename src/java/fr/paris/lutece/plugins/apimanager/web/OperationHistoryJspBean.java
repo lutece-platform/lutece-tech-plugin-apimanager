@@ -100,8 +100,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
     private static final String FILTER_ARCHIVED = "archived";
 
     // Properties for page titles
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS = "apimanager.manage_history.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_CREATE_OPERATION = "apimanager.manage_history.pageTitle";
+    private static final String PROPERTY_PAGE_HISTORY_OPERATION = "apimanager.manage_operations.history.pageTitle";
 
     // Markers
     private static final String MARK_OPERATION_LIST = "subscription_list";
@@ -188,7 +187,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS, TEMPLATE_HISTORY_OPERATIONS, model );
+        return getPage( PROPERTY_PAGE_HISTORY_OPERATION, TEMPLATE_HISTORY_OPERATIONS, model );
 
     }
 
@@ -293,7 +292,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
 
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_OPERATION ) );
 
-        return getPage( PROPERTY_PAGE_TITLE_CREATE_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
+        return getPage( PROPERTY_PAGE_HISTORY_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
     }
 
     /**

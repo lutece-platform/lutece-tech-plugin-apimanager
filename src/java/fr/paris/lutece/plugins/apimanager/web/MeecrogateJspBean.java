@@ -100,8 +100,8 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     private static final String FILTER_ARCHIVED = "archived";
 
     // Properties for page titles
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS = "apimanager.manage_meecrogates.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_CREATE_OPERATION = "apimanager.create_subscription.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_GATEWAYS = "apimanager.manage_meecrogate_gateways.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_IDSERVERS = "apimanager.manage_meecrogate_id_servers.pageTitle";
 
     // Markers
     private static final String MARK_OPERATION_LIST = "subscription_list";
@@ -114,6 +114,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     private static final String MARK_API_LIST = "api_list";
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
+    private static final String MARK_INSTANCE = "instance";
 
     private static final String JSP_MANAGE_OPERATIONS = "jsp/admin/plugins/apimanager/ManageOperations.jsp";
 
@@ -161,6 +162,10 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     @View( value = VIEW_MANAGE_GATEWAYS, defaultView = true )
     public String getManageGateways( HttpServletRequest request )
     {
+        String uuid = request.getParameter( PARAMETER_ID_OPERATION );
+
+        _meecrogate = MeecrogateHome.findByPrimaryKey( uuid ).orElse(null);
+
         _meecrogate = (_meecrogate != null) ? _meecrogate : new Meecrogate();
 
         // new search only if in pagination mode
@@ -186,13 +191,14 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_GATEWAY_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
 
+        model.put( MARK_INSTANCE, _meecrogate );
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_MEECROGATE ) );
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS, TEMPLATE_MANAGE_MEECROGATE_GATEWAYS, model );
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_GATEWAYS, TEMPLATE_MANAGE_MEECROGATE_GATEWAYS, model );
 
     }
 
@@ -208,7 +214,11 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     @View( value = VIEW_MANAGE_IDSERVERS, defaultView = true )
     public String getManageIDServers( HttpServletRequest request )
     {
-        _meecrogate = null;
+        String uuid = request.getParameter( PARAMETER_ID_OPERATION );
+
+        _meecrogate = MeecrogateHome.findByPrimaryKey( uuid ).orElse(null);
+
+        _meecrogate = (_meecrogate != null) ? _meecrogate : new Meecrogate();
 
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
@@ -233,12 +243,13 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
         Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_ID_SERVER_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
+        model.put( MARK_INSTANCE, _meecrogate );
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_MEECROGATE ) );
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_OPERATIONS, TEMPLATE_MANAGE_MEECROGATE_ID_SERVERS, model );
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_IDSERVERS, TEMPLATE_MANAGE_MEECROGATE_ID_SERVERS, model );
 
     }
 
@@ -310,7 +321,11 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
             throw new AccessDeniedException( "Invalid security token" );
         }
 
-        getService().create(_meecrogate, getUser().getEmail());
+        if(_meecrogate.getUuid() != null ){
+            getService().update(_meecrogate, getUser().getEmail());
+        }else{
+            getService().create(_meecrogate, getUser().getEmail());
+        }
 
         return redirect( request, "ManageMeecrogates.jsp?infoMsg=" + INFO_OPERATION_CREATED+((_meecrogate.getType()!=null && _meecrogate.getType().equals("ID"))?("&view="+VIEW_MANAGE_IDSERVERS):"") );
     }

@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
@@ -108,6 +109,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String MARK_API_LIST = "api_list";
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
+    private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
 
     private static final String JSP_MANAGE_SUBSCRIPTIONS = "jsp/admin/plugins/apimanager/ManageSubscriptions.jsp";
 
@@ -175,6 +177,11 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         // recuperation des souscription a chaque resource pour reduire a api/environement
         List<Subscription> fullSubscriptionList = getService().getEntitiesListByIds(_listIdSubscriptions);
+        String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
+        if(selectedEnvironementUuid != null){
+            fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getEnvironement().getUuid().equals(selectedEnvironementUuid)).collect(Collectors.toList());
+        }
+
         Collection<Subscription> uniqueByApiAndEnvironement = fullSubscriptionList
                 .stream()
                 .collect(Collectors.toMap(usr -> Set.of(usr.getResource().getApi().getUuid(), usr.getEnvironement().getUuid(), usr.getClient().getUuid(), usr.getResource().getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
@@ -183,6 +190,11 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, uniqueByApiAndEnvironement.stream().map(Subscription::getUuid).collect(Collectors.toList()), JSP_MANAGE_SUBSCRIPTIONS );
 
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        //exlude some filters from the returned list
+        for(String exclusion: getExcludedSearchParameters()){
+            _mapFilterCriteria.remove(exclusion);
+        }
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
