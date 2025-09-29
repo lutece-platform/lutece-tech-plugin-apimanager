@@ -1,0 +1,365 @@
+<div class="container my-5">
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <button class="nav-link active" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab" aria-controls="manage" aria-selected="false">#i18n{apimanager.manage_apis.viewApi}</button>
+      </li>
+      <li class="nav-item" role="presentation">
+         <button class="nav-link" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="true">#i18n{apimanager.manage_apis.createApi}</button>
+      </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+         <@box>
+         <@boxBody>
+         <@messages infos=infos warnings=warnings errors=errors />
+         <@paginationAdmin paginator=paginator combo=1 />
+         <@offcanvas id='search_api' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
+         <@tform id='api_search_form' name='api_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageApis.jsp'>
+         <@messages errors=errors />
+         <@formGroup labelFor='filter_name' labelKey='#i18n{apimanager.manage_apis.columnName}'>
+         <@input type='text' id='filter_name' name='filter_name' maxlength=255 placeHolder='#i18n{apimanager.manage_apis.columnName}' value=mapFilterCriteria["name"]!'' tabIndex='1' />
+         </@formGroup>
+         <@formGroup labelFor='filter_description' labelKey='#i18n{apimanager.manage_apis.columnDescription}'>
+         <@input type='text' id='filter_description' name='filter_description' placeHolder='#i18n{apimanager.manage_apis.columnDescription}' value=mapFilterCriteria["description"]!'' tabIndex='2' />
+         </@formGroup>
+         <@formGroup labelFor='filter_path' labelKey='#i18n{apimanager.manage_apis.columnPath}'>
+         <@input type='text' id='filter_path' name='filter_path' maxlength=255 placeHolder='#i18n{apimanager.manage_apis.columnPath}' value=mapFilterCriteria["path"]!'' tabIndex='3' />
+         </@formGroup>
+         <@formGroup labelFor='filter_tag' labelKey='#i18n{apimanager.global.labelTags}'>
+         <@input type='text' id='filter_tag' name='filter_tag' maxlength=50 placeHolder='#i18n{apimanager.global.labelTags}' value=mapFilterCriteria["tag"]!'' tabIndex='4' />
+         </@formGroup>
+         <@formGroup labelFor='filter_display_archived'>
+         <@checkBox id='filter_display_archived' name='filter_display_archived' value='1' labelKey='#i18n{apimanager.global.filter.display.archived}' tabIndex='5' />
+         </@formGroup>
+         <@button type='submit' title='Search' buttonIcon='search' />
+         </@tform>
+         </@offcanvas>
+         <#list mapFilterCriteria?keys as key>
+         <#if mapFilterCriteria[key]!="">
+         <span class="badge bg-primary px-2">
+         ${mapFilterCriteria[key]} <a href='jsp/admin/plugins/apimanager/ManageApis.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white"></i></a>
+         </span>
+         </#if>
+         </#list>
+         <div class="clearfix"></div>
+         <div class="container">
+            <div class="row">
+               <div class="col-sm">
+                  <div id="filter-tags-container">
+                     <div class="form-group mb-3">
+                        <label class="form-label form-label ">
+                        #i18n{apimanager.manage_apis.filter.labelTag}
+                        </label>
+                        <div class="form-control">
+                           <#list tag_list as tag>
+                           <span class="badge bg-primary px-2 me-1" id="tag-${tag?index}">
+                           ${tag}
+                           <input type="hidden" name="selected_tags" value="${tag}">
+                           </span>
+                           </#list>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-sm">
+                  <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.manage_apis.filter.labelEnvironnement}' mandatory=false>
+                  <select id="environnement" name="environnement" class="form-control">
+                     <#list environment_list as environment>
+                     <option value="${environment.uuid}">${environment.name}</option>
+                     </#list>
+                  </select>
+                  </@formGroup>
+               </div>
+            </div>
+         </div>
+         <div class="clearfix"></div>
+         <div id="api-result-container">
+            <div class="clearfix"></div>
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+               <#list api_list as api>
+               <div class="col">
+                  <div class="card">
+                     <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-title">${api.name!''} ${api.version!''}</div>
+                        <div class="card-tools">
+                            <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                             <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmArchiveApi&uuid=${api.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] color='btn-danger' />
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               </#list>
+            </div>
+            <@paginationAdmin paginator=paginator />
+         </div>
+         </@boxBody>
+         </@box>
+      </div>
+      <div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+         <@box>
+         <@boxHeader title='#i18n{apimanager.create_api.title}' />
+         <@boxBody>
+         <div class="bs-stepper" id="stepper">
+            <div class="bs-stepper-header" role="tablist">
+               <!-- your steps here -->
+               <div class="step" data-target="#logins-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="logins-part" id="logins-part-trigger">
+                  <span class="bs-stepper-circle">1</span>
+                  <span class="bs-stepper-label">Information de base</span>
+                  </button>
+               </div>
+               <div class="line"></div>
+               <div class="step" data-target="#information-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="information-part" id="information-part-trigger">
+                  <span class="bs-stepper-circle">2</span>
+                  <span class="bs-stepper-label">Ressources</span>
+                  </button>
+               </div>
+               <div class="line"></div>
+               <div class="step" data-target="#plan-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="plan-part" id="plan-part-trigger">
+                  <span class="bs-stepper-circle">3</span>
+                  <span class="bs-stepper-label">Plans</span>
+                  </button>
+               </div>
+            </div>
+            <div class="bs-stepper-content">
+               <@tform name='api' action='jsp/admin/plugins/apimanager/ManageApis.jsp' params='enctype="multipart/form-data"'>
+               <@messages errors=errors />
+               <@input type="hidden" id="uuid" name="uuid" />
+               <@input type="hidden" value="${token}" name="token" />
+               <!-- your steps content here -->
+               <div id="logins-part" role="tabpanel" aria-labelledby="logins-part-trigger" class="content auto-height">
+                  <div class="row">
+                     <div class="col">
+                        <@formGroup labelFor='name' labelKey='#i18n{apimanager.api.labelName}' mandatory=true>
+                        <@input type='text' id='name' name='name' maxlength=255 value=api.name!'' tabIndex='1' />
+                        </@formGroup>
+                     </div>
+                     <div class="col">
+                        <@formGroup labelFor='path' labelKey='#i18n{apimanager.api.labelPath}' mandatory=true>
+                        <@input type='text' id='path' name='path' maxlength=255 value=api.path!'' tabIndex='2' />
+                        </@formGroup>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col">
+                        <@formGroup labelFor='description' labelKey='#i18n{apimanager.api.labelDescription}' mandatory=true>
+                        <@input type='text' id='description' name='description' value=api.description!'' tabIndex='3' />
+                        </@formGroup>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col">
+                        <@formGroup labelFor='version' labelKey='#i18n{apimanager.api.versionName}' mandatory=true>
+                        <@input type='text' id='version' name='version' maxlength=255 value=api.version!'' tabIndex='4' />
+                        </@formGroup>
+                     </div>
+                     <div class="col">
+                        <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
+                        <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='5' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
+                        <div id="tags-container" class="mt-2"></div>
+                        </@formGroup>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col">
+                        <@formGroup labelFor='openapi' labelKey='#i18n{apimanager.api.labelOpenapi}' mandatory=true>
+                        <@input type='file' id='openapi' name='openapi' value=api.openapi!'' tabIndex='6' params='accept=".json"' />
+                        </@formGroup>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col">
+                        <@formGroup labelFor='active' labelKey='#i18n{apimanager.manage_apis.columnActive}' mandatory=true>
+                        <@checkBox id="active" name="active" value="1" checked=false tabIndex='7' />
+                        </@formGroup>
+                     </div>
+                     <div class="col">
+                        <@formGroup labelFor='inMaintenance' labelKey='#i18n{apimanager.manage_apis.columnInMaintenance}' mandatory=true>
+                        <@checkBox id="inMaintenance" name="inMaintenance" value="1" checked=false tabIndex='8' />
+                        </@formGroup>
+                     </div>
+                  </div>
+                  <button class="btn btn-primary" type="button" e tabIndex='8' onclick="stepper.next()">Next</button>
+               </div>
+               <div id="information-part" class="content auto-height" role="tabpanel" aria-labelledby="information-part-trigger">
+                  <div>
+                     <@formGroup labelFor='resourceEnvironnement' labelKey='#i18n{apimanager.api.resource.labelEnvironement}' mandatory=false>
+                     <select id="resourceEnvironnement" name="environnement" class="form-control">
+                        <#list environment_list as environment>
+                        <option value="${environment.name}">${environment.name}</option>
+                        </#list>
+                     </select>
+                     </@formGroup>
+                     <button type="button" class="btn btn-primary" id="addTabBtn">Ajouter</button>
+                     <!-- Nav tabs -->
+                     <ul class="nav nav-tabs bg-light" id="myTabs" role="tablist">
+                        <li class="nav-item d-none" role="presentation">
+                        </li>
+                     </ul>
+                     <!-- Tab panes -->
+                     <div class="tab-content " id="tabContent">
+
+                     </div>
+                     <button class="btn btn-primary" type="button" onclick="stepper.next()">Next</button>
+                     <button class="btn btn-primary" type="button" onclick="stepper.previous()">Previous</button>
+                  </div>
+               </div>
+               <div id="plan-part" class="content auto-height"  aria-labelledby="plan-part-trigger">
+
+                   <!-- plan panes -->
+                   <div id="plan-creation-container">
+
+
+                    </div>
+
+
+                  <button class="btn btn-primary" type="button" onclick="stepper.previous()">Previous</button>
+
+                   <@actionButtons button1Name="action_createApi"/>
+               </div>
+            </@tform>
+            </div>
+         </div>
+         </@boxBody>
+         </@box>
+      </div>
+   </div>
+</div>
+
+<!-- resource environement tab template  ---->
+
+<div class="tab-pane container border border-1 rounded p-4 mt-4 shadow text-success d-none" id="template-tab-container" role="tabpanel">
+<button type="button" class="btn btn-primary" id="add-resource">Ajouter une resource</button>
+<div id="resource-container" class="col-xl-12 py-2">
+  <div id="resource-row-0" class="row resource-row" data-index="0">
+     <div id="resource-card-container">
+        <div class="clearfix"></div>
+        <div class="row ">
+           <div class="col">
+              <div class="card">
+                 <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-tools">
+                    </div>
+                    <div class="card-body">
+                       <div class="mb-3 col-1 align-content-end">
+                          <@button id='delete-resource-row-0' buttonIcon='trash' color='light' />
+                       </div>
+                        <@formGroup labelFor='name' labelKey='#i18n{apimanager.resource.labelName}' mandatory=true>
+                            <div class="d-none" id="suggested-name-prefix"></div>
+                            <@input type='text' id='name' name='name' maxlength=100 value=resource.name!'' tabIndex='1' />
+                            <small class="form-text text-muted">#i18n{apimanager.resource.labelName.help}</small>
+                        </@formGroup>
+                       <@formGroup labelFor='path' labelKey='#i18n{apimanager.resource.labelPath}' mandatory=true>
+                       <@input type='text' id='path' name='path' maxlength=255 value=resource.path!'' tabIndex='1' />
+                       </@formGroup>
+                       <@formGroup labelFor='verb_name' labelKey='#i18n{apimanager.resource.labelVerb}' mandatory=true>
+                       <select id="verb_name" name="verb_name" class="form-control">
+                          <#list verb_list as verb>
+                          <#if resource.verb?? && resource.verb.name()==verb.name()>
+                          <option value="${verb.name()}" selected>${verb.name()}</option>
+                          <#else>
+                          <option value="${verb.name()}">${verb.name()}</option>
+                          </#if>
+                          </#list>
+                       </select>
+                       </@formGroup>
+                       <@formGroup labelFor='matcher_type' labelKey='#i18n{apimanager.resource.labelMatcherType}' mandatory=true>
+                       <select id="matcher_type" name="matcher_type" class="form-control">
+                          <#list matcher_type_list as matcherType>
+                          <#if resource.matcherType?? && resource.matcherType==matcherType>
+                          <option value="${matcherType}" selected>${matcherType}</option>
+                          <#else>
+                          <option value="${matcherType}">${matcherType}</option>
+                          </#if>
+                          </#list>
+                       </select>
+                       </@formGroup>
+                       <!-- REWRITE URL -->
+                       <div class="col-xl-12 py-2">
+                          <h2><i class="ti ti-reload"></i> Rewrite URL</h2>
+                          <div id="rewrite-url-container" class="row gx-2">
+                             <@formGroup class='col-3' labelFor='rewrite_url_value' labelKey='#i18n{apimanager.resource.labelRewriteUrlValue}' mandatory=true>
+                             <@input type='text' id='rewrite_url_value' name='rewrite_url_value' value=resource.rewriteUrl.value!'' tabIndex='0' />
+                             </@formGroup>
+                             <@formGroup class='col-3' labelFor='rewrite_url_target' labelKey='#i18n{apimanager.resource.labelRewriteUrlTarget}' mandatory=true>
+                             <@input type='text' id='rewrite_url_target' name='rewrite_url_target' value=resource.rewriteUrl.target!'' tabIndex='0' />
+                             </@formGroup>
+                             <@formGroup class='col-6' labelFor='rewrite_url_type_name' labelKey='#i18n{apimanager.resource.labelRewriteUrlType}' mandatory=true>
+                             <select id="rewrite_url_type_name" name="rewrite_url_type_name" class="form-control">
+                                <#list rewrite_url_type_list as type>
+                                <#if (resource.rewriteUrl.type)?? && resource.rewriteUrl.type.name()==type.name()>
+                                <option value="${type.name()}" selected>${type.name()} - ${type.description}</option>
+                                <#else>
+                                <option value="${type.name()}">${type.name()} - ${type.description}</option>
+                                </#if>
+                                </#list>
+                             </select>
+                             </@formGroup>
+                          </div>
+                       </div>
+                        <@formGroup labelFor='trace_enabled' >
+                        <@checkBox id='trace_enabled' name='trace_enabled' value='1' labelKey='#i18n{apimanager.resource.columnTraceEnabled}' tabIndex='11' />
+                        </@formGroup>
+
+                        <@formGroup labelFor='instances' labelKey='#i18n{apimanager.resource.labelInstance}' mandatory=true>
+                           <select multiple id="uuid_instances" name="uuid_instances" class="form-control instances">
+                              <#list instance_list as instance>
+                               <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}">${instance.name}</option>
+                              </#list>
+                           </select>
+                       </@formGroup>
+
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+     </div>
+  </div>
+</div>
+</div>
+
+
+<!-- plan environement template -->
+
+<div class="my-4 p-6 border rounded-md d-none" id="plan_template" data-index="0">
+    <h4 class="font-bold text-gray-800 mb-4" id="template-environement-name">Développement</h4>
+    <div class="flex items-center space-x-4 mb-4">
+        <@formGroup labelFor='instances-template' labelKey='#i18n{apimanager.plan.addLabel}' mandatory=true>
+        <select multiple id="plans" name="plans" class="form-control instances">
+            <#list plan_list as plan>
+            <option value="${plan.name}" id="${plan.name}">${plan.name}</option>
+        </#list>
+        </select>
+    </@formGroup>
+        <button type="button" id="add-plan-button" class="btn btn-primary">Ajouter</button>
+    </div>
+    <div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs bg-light" id="planTabs" role="tablist">
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content" id="planTabContent">
+
+        </div>
+    </div>
+</div>
+
+<!-- plan tab content -->
+<div class="tab-pane container border border-1 rounded p-4 mt-4 shadow d-none" id="template-plan-tab-container" role="tabpanel">
+    <div class="plan-resources sub-tab-content" id="plan-resources-template" style="display: block;">
+        <div class="flex items-center space-x-4 mb-4">
+            <div class="form-group mb-3">
+                <label for="add-resource-select-template" class="form-label form-label">Ajouter des ressources :</label>
+                <select id="add-resource-select-template" multiple class="form-control">
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="css/admin/plugins/stepper/bs-stepper.min.css" rel="stylesheet">
+<script src="javascript/stepper/bs-stepper.min.js"></script>
+<script src="javascript/api/api.js"></script>

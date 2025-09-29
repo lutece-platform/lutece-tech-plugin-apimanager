@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
@@ -136,6 +137,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String MARK_API = "api";
     private static final String MARK_RESOURCE = "resource";
     private static final String MARK_PLAN_TEMPLATE_NAMES = "plan_template_names";
+    private static final String MARK_SELECTED_TAG_LIST = "selected_tag_list";
+    private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
 
     private static final String JSP_MANAGE_APIS = "jsp/admin/plugins/apimanager/ManageApis.jsp";
 
@@ -246,13 +249,37 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
 
 
-        Map<String, Object> apis = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
-        model.putAll(apis);
+        // new search only if in pagination mode
+        if ( request.getParameter( PARAMETER_SELECTED_TAGS ) != null ){
+            String selectedStringTags = request.getParameter(PARAMETER_SELECTED_TAGS);
+            List<String> selectedTags =  new ArrayList<>( );
+            if(selectedStringTags != null && !selectedStringTags.isEmpty() && selectedStringTags.contains(",")){
+                selectedTags.addAll( Arrays.asList(selectedStringTags.split(",")));
+            }else{
+                selectedTags.add(selectedStringTags);
+            }
+
+            _listIdApis = getService( ).getApisByTags(selectedTags);
+            model.put(MARK_SELECTED_TAG_LIST, selectedTags);
+        }
+
+
+        Map<String, Object> apiModel = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
+        List<Api> apiList = ((List<Api>) apiModel.get(MARK_API_LIST));
+        String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
+        if(selectedEnvironementUuid != null){
+            Environement environement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
+            if(environement != null){
+                apiModel.put(MARK_PLAN_LIST, apiList.stream().filter(api -> api.get_resourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(environement.getUuid())) ).collect(Collectors.toList()));            }
+            model.put(MARK_SELECTED_ENVIRONMENT_UUID,selectedEnvironementUuid);
+        }
+        model.putAll(apiModel);
 
         ArrayList<String> tags = new ArrayList<String>();
-        for (Api apiValue : ((List<Api>) apis.get(MARK_API_LIST))) {
+        for (Api apiValue : ((List<Api>) apiModel.get(MARK_API_LIST))) {
             tags.addAll(apiValue.getTags());
         }
+
         model.put(MARK_TAG_LIST, tags.stream().distinct().collect(Collectors.toList()));
 
         environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
@@ -274,6 +301,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             model.put(PARAMETER_SUBSCRIPTION_MODE, Boolean.parseBoolean(subscriptionMode));
         }
         addPlanTemplateNamesToModel(model);
+
+
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        //exlude some filters from the returned list
+        for(String exclusion: getExcludedSearchParameters()){
+            _mapFilterCriteria.remove(exclusion);
+        }
 
         addSearchParameters(model, _mapFilterCriteria); // allow the persistence of search values in inputs search bar inputs
 

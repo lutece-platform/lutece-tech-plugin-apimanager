@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
@@ -170,5 +171,16 @@ public class ApiService extends AbstractService<Api>
             this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
         } );
 
+    }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getApisByTags(List<String> tags )
+    {
+        return ApiHome.getuuidsByTags( tags );
     }
 }

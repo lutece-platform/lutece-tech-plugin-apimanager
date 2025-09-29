@@ -88,7 +88,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
     private static final String PARAMETER_ENVIRONNEMENT = "environnement";
     private static final String PARAMETER_COMMENT = "comment";
-    private static final String PARAMETER_UUID_OPERATION = "uuid_api";
     private static final String PARAMETER_UUID_APPLICATION = "uuid_application";
     private static final String PARAMETER_UUID_ENVIRONEMENT = "uuid_environement";
     private static final String PARAMETER_UUID_API = "uuid_api";
@@ -127,7 +126,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
     private static final String ACTION_CREATE_OPERATION = "createOperation";
     private static final String ACTION_REMOVE_OPERATION = "removeOperation";
     private static final String ACTION_CONFIRM_REMOVE_OPERATION = "confirmRemoveOperation";
-    private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
+    private static final String ACTION_GENERATE_CLIENT = "generateClient";
 
     // Infos
     private static final String INFO_OPERATION_CREATED = "apimanager.info.subscription.created";
@@ -136,7 +135,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_API_MANAGER_GENERATION = "Error publishing API manager";
+    private static final String ERROR_CLIENT_GENERATION = "Error publishing Client";
 
     // Session variable to store working values
     private Subscription _subscription;
@@ -304,48 +303,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
     }
 
     /**
-     * Process the data capture form of a new subscription
-     *
-     * @param request
-     *            The Http Request
-     * @return The Jsp URL of the process result
-     * @throws AccessDeniedException
-     */
-    @Action( ACTION_CREATE_OPERATION )
-    public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
-    {
-        Map<String, String[]> test = request.getParameterMap();
-        String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
-        String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
-        String apiUuid = request.getParameter(PARAMETER_UUID_API);
-        String planUuid = request.getParameter(PARAMETER_UUID_PLAN);
-
-        _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        _subscription.setClient( new Client( ) );
-        _subscription.getClient().setUuid(clientUuid);
-        _subscription.setEnvironement( new Environement( ) );
-        _subscription.getEnvironement().setUuid(environementUuid);
-        _subscription.setPlan( new Plan( ) );
-        _subscription.getPlan().setUuid(planUuid);
-
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_OPERATION ) )
-        {
-            throw new AccessDeniedException( "Invalid security token" );
-        }
-
-        // Check constraints
-        if ( clientUuid == null || environementUuid == null || apiUuid == null || planUuid == null )
-        {
-            return redirectView( request, VIEW_CREATE_OPERATION );
-        }
-
-
-        resetListId( );
-
-        return redirect( request, "ManageSubscriptions.jsp?infoMsg=" + INFO_OPERATION_CREATED );
-    }
-
-    /**
      * Manages the removal form of a subscription whose identifier is in the http request
      *
      * @param request
@@ -375,22 +332,52 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
     public String doRemoveSubscription( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_OPERATION );
+
+        try {
+        final Client client = ClientHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+
+        List<Subscription> subscriptions =new ArrayList<>();
+        subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
+
+        ArrayList<Environement> environments = new ArrayList<Environement>();
+        for(Subscription sub : subscriptions){
+            if(!environments.stream().anyMatch(environement -> environement.getUuid().equals(sub.getEnvironement().getUuid()))){
+                environments.add(sub.getResource().getEnvironement());
+            }
+        }
+
+        for(Environement envir : environments){
+            _configGeneratorService.deleteOauth2Client(client,
+                    envir, getUser( ).getEmail( ) );
+        }
+
+            getService( ).addNewHistory( client.getUuid( ), HistoryTypeEnum.DELETE, getUser( ).getEmail( ) );
+            client.setStatus( PlanStatusEnum.UNPUBLISHED.name() );
+            ClientService.getInstance( ).update( client, getUser( ).getEmail( ) );
+        }
+        catch( final AppException e )
+        {
+            addError( ERROR_CLIENT_GENERATION );
+            addError( e.getMessage( ) );
+            return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
+        }
+
         addInfo( INFO_OPERATION_REMOVED, getLocale( ) );
         resetListId( );
 
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_OPERATION_REMOVED );
+        return redirect( request, "ManageClientOperations.jsp?infoMsg=" + INFO_OPERATION_REMOVED );
     }
 
-    @Action( ACTION_GENERATE_API_MANAGER )
-    public String doGenerateApiManager( final HttpServletRequest request )
+    @Action( ACTION_GENERATE_CLIENT )
+    public String doGenerateClient( final HttpServletRequest request )
     {
-        final String apiUuid = request.getParameter( PARAMETER_UUID_OPERATION );
-        if ( apiUuid == null )
+        final String clientUuid = request.getParameter( PARAMETER_ID_OPERATION );
+        if ( clientUuid == null )
         {
             addError( ERROR_RESOURCE_NOT_FOUND );
             return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
         }
-        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+        final Client client = ClientHome.findByPrimaryKey( clientUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
         final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
         final String comment = request.getParameter( PARAMETER_COMMENT );
@@ -398,54 +385,28 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
         try
         {
 
-            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
-            List<Resource> apiResources = resources.stream()
-                    .filter(resource -> resource.getApi() != null)
-                    .filter(resource -> resource.getApi().getUuid().equals( apiUuid ) ).collect(Collectors.toList());
-            List<Subscription> resourceSubscription =new ArrayList<>();
-            for(Resource apiResource : apiResources){
-                resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
-            }
+            List<Subscription> subscriptions =new ArrayList<>();
+            subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
 
-            Map<String,Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
-                    .collect(
-                            Collectors.groupingBy(o -> o.getClient().getUuid(),
-                                    Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
-                                            (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
-
-            for(Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()){
-                String clientUuid = clientSubscriptionByEnvironementAndPlan.getKey();
-                Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
-                for(Map.Entry<String, Map<String, List<Subscription>>> environementSubscription :  clientEnvironements.entrySet()){
-                    String environemenbtUuid = environementSubscription.getKey();
-                    Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
-                    for(Map.Entry<String, List<Subscription>> planSubscription :  clientPlans.entrySet()) {
-                        String planUuid = planSubscription.getKey();
-                        List<Subscription> subscriptions = planSubscription.getValue();
-
-
-                        for(Subscription sub : subscriptions){
-                            List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
-                            sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
-
-                        }
-
-                        _configGeneratorService.generateSubscriptions(
-                                subscriptions, comment, getUser( ).getEmail( ) );
-
-                    }
+            ArrayList<Environement> environments = new ArrayList<Environement>();
+            for(Subscription sub : subscriptions){
+                if(!environments.stream().anyMatch(environement -> environement.getUuid().equals(sub.getEnvironement().getUuid()))){
+                    environments.add(sub.getResource().getEnvironement());
                 }
-
-
+            }
+            for(Environement envir : environments){
+                _configGeneratorService.generateOauth2Client(client,
+                        envir, comment, getUser( ).getEmail( ) );
             }
 
-            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-            api.setStatus( PlanStatusEnum.PUBLISHED.name() );
-            ApiService.getInstance( ).update( api, getUser( ).getEmail( ) );
+
+            getService( ).addNewHistory( client.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+            client.setStatus( PlanStatusEnum.PUBLISHED.name() );
+            ClientService.getInstance( ).update( client, getUser( ).getEmail( ) );
         }
         catch( final AppException e )
         {
-            addError( ERROR_API_MANAGER_GENERATION );
+            addError( ERROR_CLIENT_GENERATION );
             addError( e.getMessage( ) );
             return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
         }

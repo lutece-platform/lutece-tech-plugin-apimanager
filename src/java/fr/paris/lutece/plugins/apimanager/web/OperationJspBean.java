@@ -449,7 +449,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                 }
             }
 
-            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
+            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.DELETE, getUser( ).getEmail( ) );
             api.setStatus( PlanStatusEnum.UNPUBLISHED.name() );
             ApiService.getInstance( ).update( api, getUser( ).getEmail( ) );
         }

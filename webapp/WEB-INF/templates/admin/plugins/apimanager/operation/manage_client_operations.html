@@ -100,7 +100,10 @@
                     ${client.status!''}
                 </td>
 				<td>
-                    <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=confirmRemoveClient&uuid=${client.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+                    <#if client.status?? && client.status=='PUBLISHED'>
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' color='danger'  />
+                    <#else>
+                    <@aButton href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=generateClient&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' color='success'  />
                 </td>
 			</tr>
 			</#list>

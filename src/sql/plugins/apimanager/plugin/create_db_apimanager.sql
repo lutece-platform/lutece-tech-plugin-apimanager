@@ -19,6 +19,7 @@ CREATE TABLE apimanager_client
     name          varchar(50) default '' not null,
     client_id     varchar(50) default '' null,
     code_app      varchar(50) default '' null,
+    status      varchar(50) default '' null,
     trace_enabled smallint               null,
     archived      tinyint(1)  default 0  not null
 );

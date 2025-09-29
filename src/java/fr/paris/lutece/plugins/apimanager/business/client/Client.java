@@ -66,6 +66,8 @@ public class Client extends AbstractTagBean implements Serializable
 
     private boolean _bArchived;
 
+    private String _strStatus;
+
     private List<ClientSecret> _secretList = new ArrayList<>( );
     private List<Subscription> _subscriptionList = new ArrayList<>( );
 
@@ -110,6 +112,29 @@ public class Client extends AbstractTagBean implements Serializable
     {
         _strName = strName;
     }
+
+
+    /**
+     * Returns the Status
+     *
+     * @return The Status
+     */
+    public String getStatus( )
+    {
+        return _strStatus;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param status
+     *            The Status
+     */
+    public void setStatus( String status )
+    {
+        _strStatus = status;
+    }
+
 
     /**
      * Returns the ClientId

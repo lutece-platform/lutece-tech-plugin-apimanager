@@ -32,6 +32,48 @@ $(function () {
         }
     });
 });
+
+
+
+   $('input[name="selectable_tag"]').each(function () {
+       $(this).parent().click(function() {
+           const inputChild= $(this).find('input[name="selectable_tag"]');
+           updateSearch(inputChild);
+       } );
+   });
+
+   $('input[name="selected_tag"]').each(function () {
+       intputElement = $(this);
+       intputElement.parent().click(function() {
+           intputElement.attr('name','selectable_tag');
+           updateSearch();
+       } );
+   });
+
+   $('#btn-search_api').css('float','right');
+
+   function updateSearch(tagElement){
+
+       const selected_tags=[];
+       if(tagElement){
+           if( tagElement.attr('name')=== 'selectable_tag'){
+               tagElement.attr('name','selected_tag');
+           }
+       }
+
+        $('input[name="selected_tag"]').each(function(){
+                    selected_tags.push($(this).val());
+                 });
+
+        let destination = 'jsp/admin/plugins/apimanager/ManageApis.jsp'
+        if(selected_tags.length > 0){
+            destination = destination+'?selected_tags='+selected_tags.join(",") ;
+        }
+
+       window.location.href = destination ;
+
+   }
+
 $("#create-tab").on("click", function () {
     $("#manage-tab").removeClass("active");
     $("#create-tab").addClass("active");
