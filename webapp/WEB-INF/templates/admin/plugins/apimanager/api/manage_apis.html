@@ -106,7 +106,7 @@
                <div class="col">
                   <div class="card">
                      <div class="card-header d-flex justify-content-between align-items-center">
-                        <div class="card-title">${api.name!''} ${api.version!''}</div>
+                         <div class="card-title"><b>${api.name!''}</b> - v${api.version!''}</div>
                         <div class="card-tools">
                            <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
                            <@aButton class="disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmArchiveApi&uuid=${api.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] color='btn-danger' />
