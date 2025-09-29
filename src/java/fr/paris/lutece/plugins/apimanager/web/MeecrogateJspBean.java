@@ -321,7 +321,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
             throw new AccessDeniedException( "Invalid security token" );
         }
 
-        if(_meecrogate.getUuid() != null ){
+        if(_meecrogate.getUuid() != null && !_meecrogate.getUuid().isEmpty() ){
             getService().update(_meecrogate, getUser().getEmail());
         }else{
             getService().create(_meecrogate, getUser().getEmail());
