@@ -62,7 +62,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_api";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_api WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, active = ?, in_maintenance = ?, wait = ?, openapi = ?, archived = ?, version= ?, status= ? WHERE uuid = ?";
 
