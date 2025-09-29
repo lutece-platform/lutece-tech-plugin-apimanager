@@ -104,6 +104,7 @@
                     <@aButton href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' color='danger'  />
                     <#else>
                     <@aButton href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=generateClient&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' color='success'  />
+                    </#if>
                 </td>
 			</tr>
 			</#list>
