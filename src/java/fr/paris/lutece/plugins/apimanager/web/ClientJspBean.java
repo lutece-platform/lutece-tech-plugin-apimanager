@@ -111,6 +111,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
     private static final String MARK_CLIENT = "client";
     private static final String MARK_CURRENT_SUBSCRIPTION_ROW = "current_subscription_row";
     private static final String MARK_PREFIX_API_SUBSCRIPTION_ROW = "api_selection_";
+    private static final String MARK_PREFIX_SUBSCRIPTION_ROW = "subscription_uuid_";
     private static final String MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW = "environement_selection_";
     private static final String MARK_PREFIX_PLAN_SUBSCRIPTION_ROW = "plan_selection_";
     private static final String MARK_SUBSCRIPTION_LIST = "subscription_list";
@@ -354,39 +355,35 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
 
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
         final Map<String, String[]> subscriptionApis;
+        final Map<String, String[]> subscriptionUuids;
         final Map<String, String[]> subscriptionEnvironements;
         final Map<String, String[]> subscriptionPlans;
 
         if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty()) {
+            subscriptionUuids = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_SUBSCRIPTION_ROW))
+                    .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
+
+            subscriptionApis = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_API_SUBSCRIPTION_ROW))
+                    .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_API_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
+
+            subscriptionEnvironements = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW))
+                    .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
+
+            subscriptionPlans = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_PLAN_SUBSCRIPTION_ROW))
+                    .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_PLAN_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
+
             if (usecase != null && usecase.equals("delete_subscription")) {
-                subscriptionApis = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_API_SUBSCRIPTION_ROW))
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_API_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
-
-                subscriptionEnvironements = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW) )
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
-
-                subscriptionPlans = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_PLAN_SUBSCRIPTION_ROW))
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_PLAN_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
+                subscriptionUuids.remove(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
                 subscriptionApis.remove(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
                 subscriptionEnvironements.remove(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
                 subscriptionPlans.remove(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
-
-            } else {
-                subscriptionApis = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_API_SUBSCRIPTION_ROW))
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_API_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
-
-                subscriptionEnvironements = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW))
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
-
-                subscriptionPlans = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_PLAN_SUBSCRIPTION_ROW))
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_PLAN_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
-
             }
 
 
             Subscription currentSubscription = null;
             for (String apiIndex : subscriptionApis.keySet()) {
                 currentSubscription = new Subscription();
+                currentSubscription.setUuid(subscriptionUuids.get(apiIndex)[0]);
                 currentSubscription.setApi(ApiService.getInstance().getEntitiesListByIds(List.of(subscriptionApis.get(apiIndex))).stream().findFirst().orElse(null));
                 if (subscriptionEnvironements.get(apiIndex) != null) {
                     currentSubscription.setEnvironement(EnvironementService.getInstance().getEntitiesListByIds(List.of(subscriptionEnvironements.get(apiIndex))).stream().findFirst().orElse(null));
@@ -522,6 +519,10 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
     @View(VIEW_MODIFY_CLIENT)
     public String getModifyClient(HttpServletRequest request) {
         String uuid = request.getParameter(PARAMETER_ID_CLIENT);
+        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
+
+        Map<String, String[]> parameters = request.getParameterMap();
+
         if (uuid == null) {
             return redirectView(request, VIEW_MANAGE_CLIENTS);
         }
@@ -531,8 +532,52 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             _client = optClient.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
 
+        if (usecase == null || usecase.isEmpty()){
+            _subscriptions =  new ArrayList<Subscription>();
+            _subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(uuid)));
+        }else{
+            _subscriptions = (_subscriptions != null) ? _subscriptions : new ArrayList<Subscription>();
+            populateSubscriptions(request);
+        }
+
+
+
+        if (usecase != null && usecase.equals("add_subscription"))
+            _subscriptions.add(new Subscription());
+
+
         Map<String, Object> model = getModel();
+
+        model.putAll(parameters);
+
+
+        Integer subscriptionIndex = null;
+
+        if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty())
+            subscriptionIndex = Integer.parseInt(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
+
         model.put(MARK_CLIENT, _client);
+        model.put(MARK_SUBSCRIPTION_LIST, _subscriptions);
+        if (subscriptionIndex == null || usecase.equals("delete_subscription")) {
+            model.put(MARK_CURRENT_SUBSCRIPTION_ROW, !_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0);
+            Api selectedSubscriptionApi = _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getApi();
+            Api selectedApi = ApiService.getInstance().getEntitiesListByIds(Arrays.asList(selectedSubscriptionApi.getUuid())).stream().findFirst().orElse(null);
+            model.put(MARK_SELECTED_API, selectedApi);
+            List<Resource> selectedResources = ResourceService.getInstance().getResourcesByApiUuid(selectedApi.getUuid());
+            List<String> availableEnvironementUuids = selectedResources.stream().map(selectedResource -> selectedResource.getEnvironement().getUuid()).distinct().collect(Collectors.toList());
+
+            List<String> availablePLANUuids = selectedResources.stream().map(selectedResource -> selectedResource.getPlan().getUuid()).distinct().collect(Collectors.toList());
+
+            model.put(MARK_PLAN_LIST, PlanService.getInstance().getEntitiesListByIds(availablePLANUuids));
+
+            model.put(MARK_ENVIRONMENT_LIST, EnvironementService.getInstance().getEntitiesListByIds(availableEnvironementUuids));
+            model.put(MARK_SELECTED_ENVIRONEMENT, _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getEnvironement());
+            model.put(MARK_SELECTED_PLAN, _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getPlan());
+
+        } else {
+            model.put(MARK_CURRENT_SUBSCRIPTION_ROW, subscriptionIndex);
+        }
+        model.put(MARK_API_LIST, ApiService.getInstance().getEntitiesListByIds(ApiService.getInstance().getIdEntitiesList()));
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_CLIENT));
 
         return getPage(PROPERTY_PAGE_TITLE_MODIFY_CLIENT, TEMPLATE_MODIFY_CLIENT, model);
@@ -547,24 +592,60 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
      */
     @Action(ACTION_MODIFY_CLIENT)
     public String doModifyClient(HttpServletRequest request) throws AccessDeniedException {
-        populate(_client, request, getLocale());
-        _client.setTags(Arrays.stream(Optional.ofNullable(request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse(new String[0]))
-                .collect(Collectors.toList()));
+        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
 
-        if (!SecurityTokenService.getInstance().validate(request, ACTION_MODIFY_CLIENT)) {
-            throw new AccessDeniedException("Invalid security token");
+        if (usecase != null && usecase.equals("create")) {
+            populate(_client, request, getLocale());
+            populateSubscriptions(request);
+
+            _client.setTags(Arrays.stream(Optional.ofNullable(request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse(new String[0]))
+                    .collect(Collectors.toList()));
+            _client.setSubscriptionList(_subscriptions);
+
+            if (!SecurityTokenService.getInstance().validate(request, ACTION_MODIFY_CLIENT)) {
+                throw new AccessDeniedException("Invalid security token");
+            }
+
+            // Check constraints
+            if (!validateBean(_client, VALIDATION_ATTRIBUTES_PREFIX)) {
+                return getModifyClient(request);
+            }
+
+            // Hashing secrets
+            try {
+                for (final ClientSecret clientSecret : _client.getSecretList()) {
+                    clientSecret.setSecret(PasswordUtils.hashPassword(clientSecret.getSecret()));
+                }
+            } catch (final Exception e) {
+                this.addError(ERROR_HASHING_SECRETS);
+                this.addError(e.getMessage());
+                return getModifyClient(request);
+            }
+
+            getService().update(_client, getUser().getEmail());
+
+            if(!_client.getSubscriptionList().isEmpty()){
+                for (final Subscription subscription : _subscriptions) {
+                    subscription.setClient(_client);
+                    List<Resource> resources = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getApi().getUuid(), subscription.getPlan().getUuid(), subscription.getEnvironement().getUuid());
+                    for(Resource resource : resources){
+                        subscription.setResource(resource);
+                        if(subscription.getUuid() != null && !subscription.getUuid().isEmpty()){
+                            SubscriptionService.getInstance().update(subscription,getUser().getEmail());
+                        }else{
+                            SubscriptionService.getInstance().create(subscription,getUser().getEmail());
+                        }
+                    }
+                }
+            }
+
+            addInfo(INFO_CLIENT_UPDATED, getLocale());
+            resetListId();
+
+            return redirectView(request, VIEW_MANAGE_CLIENTS);
+        } else {
+            return getModifyClient(request);
         }
-
-        // Check constraints
-        if (!validateBean(_client, VALIDATION_ATTRIBUTES_PREFIX)) {
-            return redirect(request, VIEW_MODIFY_CLIENT, Map.of(PARAMETER_ID_CLIENT, _client.getUuid()));
-        }
-
-        getService().update(_client, getUser().getEmail());
-        addInfo(INFO_CLIENT_UPDATED, getLocale());
-        resetListId();
-
-        return redirectView(request, VIEW_MANAGE_CLIENTS);
     }
 
     @Action(ACTION_GENERATE_OAUTH2)

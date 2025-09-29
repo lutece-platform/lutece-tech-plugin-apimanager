@@ -400,6 +400,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             return redirectView(request, VIEW_CREATE_API);
         }
 
+        _api.setStatus("NEW");
         getService().create(_api, getUser().getEmail());
         addInfo(INFO_API_CREATED, getLocale());
         resetListId();

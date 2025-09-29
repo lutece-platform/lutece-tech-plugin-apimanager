@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
@@ -294,11 +295,13 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
         subscription.setUuid( daoUtil.getString( nIndex++ ) );
         subscription.setClient( ClientHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        subscription.setResource( ResourceHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
+        Resource resource = ResourceHome.findByPrimaryKey(daoUtil.getString(nIndex++)).orElse(null);
+        subscription.setResource(resource);
         subscription.setEnvironement(EnvironementHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );
-
+        subscription.setApi(resource.getApi());
+        subscription.setPlan(resource.getPlan());
         return subscription;
     }
 
