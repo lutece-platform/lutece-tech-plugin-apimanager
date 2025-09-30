@@ -299,6 +299,25 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty())
             subscriptionIndex = Integer.parseInt(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
 
+        populateRow(request,subscriptionIndex,model);
+
+        model.put(MARK_CLIENT, _client);
+        model.put(MARK_SUBSCRIPTION_LIST, _subscriptions);
+        if (subscriptionIndex == null || usecase.equals("delete_subscription")) {
+            model.put(MARK_CURRENT_SUBSCRIPTION_ROW, !_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0);
+        } else {
+            model.put(MARK_CURRENT_SUBSCRIPTION_ROW, subscriptionIndex);
+        }
+        model.put(MARK_API_LIST, ApiService.getInstance().getEntitiesListByIds(ApiService.getInstance().getIdEntitiesList()));
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_CLIENT));
+
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_CLIENT, TEMPLATE_CREATE_CLIENT, model);
+    }
+
+    private void populateRow(HttpServletRequest request,Integer subscriptionIndex,Map<String, Object> model ){
+        if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty())
+            subscriptionIndex = Integer.parseInt(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
+
         if (subscriptionIndex != null) {
             String selectedApiUuid = request.getParameter(MARK_PREFIX_API_SUBSCRIPTION_ROW + subscriptionIndex);
             String selectedEnvironementUuid = request.getParameter(MARK_PREFIX_ENVIRONEMENT_SUBSCRIPTION_ROW + subscriptionIndex);
@@ -336,18 +355,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             clientSecret.setEnvironnement(env);
             return clientSecret;
         }).collect(Collectors.toList()));
-
-        model.put(MARK_CLIENT, _client);
-        model.put(MARK_SUBSCRIPTION_LIST, _subscriptions);
-        if (subscriptionIndex == null || usecase.equals("delete_subscription")) {
-            model.put(MARK_CURRENT_SUBSCRIPTION_ROW, !_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0);
-        } else {
-            model.put(MARK_CURRENT_SUBSCRIPTION_ROW, subscriptionIndex);
-        }
-        model.put(MARK_API_LIST, ApiService.getInstance().getEntitiesListByIds(ApiService.getInstance().getIdEntitiesList()));
-        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_CLIENT));
-
-        return getPage(PROPERTY_PAGE_TITLE_CREATE_CLIENT, TEMPLATE_CREATE_CLIENT, model);
     }
 
     private void populateSubscriptions(HttpServletRequest request) {
@@ -532,14 +539,12 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             _client = optClient.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
 
-        if (usecase == null || usecase.isEmpty()){
-            _subscriptions =  new ArrayList<Subscription>();
-            _subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(uuid)));
-        }else{
-            _subscriptions = (_subscriptions != null) ? _subscriptions : new ArrayList<Subscription>();
-            populateSubscriptions(request);
-        }
+        _subscriptions = new ArrayList<Subscription>();
+        populateSubscriptions(request);
 
+        if(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) == null || request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty()){
+            _subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(uuid)));
+        }
 
 
         if (usecase != null && usecase.equals("add_subscription"))
@@ -555,6 +560,8 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
 
         if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty())
             subscriptionIndex = Integer.parseInt(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW));
+
+        populateRow(request,subscriptionIndex,model);
 
         model.put(MARK_CLIENT, _client);
         model.put(MARK_SUBSCRIPTION_LIST, _subscriptions);
@@ -624,6 +631,8 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
 
             getService().update(_client, getUser().getEmail());
 
+            // check the current subscriptions
+            List<String> currentClientSubscriptionUuids = SubscriptionService.getInstance().getIdSubscriptionsByClient(_client.getUuid());
             if(!_client.getSubscriptionList().isEmpty()){
                 for (final Subscription subscription : _subscriptions) {
                     subscription.setClient(_client);
@@ -636,6 +645,16 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                             SubscriptionService.getInstance().create(subscription,getUser().getEmail());
                         }
                     }
+                }
+                // check if some subscriptions have been deleted
+                currentClientSubscriptionUuids.removeAll(_client.getSubscriptionList().stream().map(Subscription::getUuid).collect(Collectors.toList()));
+                for(String subscriptionUuid : currentClientSubscriptionUuids){
+                    SubscriptionService.getInstance().delete(subscriptionUuid,getUser().getEmail());
+                }
+
+            }else{
+                for(String subscriptionUuid : currentClientSubscriptionUuids){
+                    SubscriptionService.getInstance().delete(subscriptionUuid,getUser().getEmail());
                 }
             }
 

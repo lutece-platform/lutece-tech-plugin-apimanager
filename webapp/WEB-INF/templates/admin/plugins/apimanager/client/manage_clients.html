@@ -99,7 +99,8 @@
                      <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="card-title">${client.name!''}</div>
                         <div class="card-tools">
-                           <@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=modifyClient&uuid=${client.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                            <@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=generateNewSecrets&uuid=${client.uuid}' title='#i18n{apimanager.client.button.generate.new.secrets}' buttonIcon='reload' hideTitle=['all']  />
+                            <@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=modifyClient&uuid=${client.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
                            <@aButton href='jsp/admin/plugins/apimanager/ManageClients.jsp?action=confirmArchiveClient&uuid=${client.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] color='btn-danger'  />
                         </div>
                      </div>
