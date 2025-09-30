@@ -376,6 +376,7 @@ INSERT INTO core_admin_security_header(id_security_header,name,value,description
 (14,'Content-Security-Policy','frame-ancestors ''none''','The HTTP Strict-Transport-Security response header (often abbreviated as HSTS) informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. The value recommended by OWASP for this header when used as a response of an API call is ''max-age=31536000; includeSubDomains'' and this is the value retained for Lutece. This setting means that the browser should remember that this site and all of his subdomains are only to be accessed using HTTPS for 31536000 seconds (1 year).','rest_api',NULL,1);
 
 UPDATE core_admin_user SET password_max_valid_date='2028-01-21 16:54:14' WHERE id_user=1;
+DELETE FROM core_datastore WHERE entity_key='core.templates.currentCommonsInclude';
 INSERT INTO core_datastore(entity_key,entity_value) VALUES
 ('core.templates.currentCommonsInclude', 'Corporate'),
 ('core.plugins.status.apimanager.installed', 'true'),
