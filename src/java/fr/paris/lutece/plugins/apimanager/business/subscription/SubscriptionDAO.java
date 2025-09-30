@@ -300,8 +300,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         subscription.setEnvironement(EnvironementHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );
-        subscription.setApi(resource.getApi());
-        subscription.setPlan(resource.getPlan());
+        if(resource != null){
+            subscription.setApi(resource.getApi());
+            subscription.setPlan(resource.getPlan());
+        }
         return subscription;
     }
 

@@ -417,7 +417,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         _plan = PlanHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
 
         // DELETE PUBLISHED CONFIG
-   /*     SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) ).forEach( subscriptionUuid -> {
+   /*  SubscriptionService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) ).forEach( subscriptionUuid -> {
             // Delete the subscriptions to this plan, if any
             SubscriptionHome.findByPrimaryKey( subscriptionUuid ).ifPresent( subscription -> {
                 // Send delete request and delete subscription
@@ -432,7 +432,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         getService( ).delete( uuid, getUser( ).getEmail( ) );
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_REMOVED );
+        return redirect( request, "ManagePlans.jsp?infoMsg=" + INFO_PLAN_REMOVED );
     }
 
     /**
