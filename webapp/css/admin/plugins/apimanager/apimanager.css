@@ -22,3 +22,46 @@
 .page-header{
     display: none !important;
 }
+
+.apim-plugin .card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    margin-bottom: 1.5rem;
+    padding: .9rem;
+}
+
+.apim-plugin .result-cards-container {
+    margin-bottom: 1.5em;
+}
+
+.apim-plugin .result-cards-container .card {
+    margin-bottom: 0.2em;
+    height: 100%;
+}
+
+.apim-plugin .badge {
+    background-color: #dbeafe !important;
+    color: #1d4ed8;
+    padding: 0.25rem 0.75rem;
+    margin: 0.2em 0;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.apim-plugin .card-tools .btn {
+    background-color: transparent !important;
+    border: none;
+    font-size: 1.4em;
+    padding: 0.1em;
+    margin: 0;
+}
+
+.apim-plugin .card-tools .btn-edit {
+    color: rgb(37 99 235) !important;
+}
+
+.apim-plugin .card-tools .btn-delete {
+    color: rgb(220 38 38) !important;
+}
