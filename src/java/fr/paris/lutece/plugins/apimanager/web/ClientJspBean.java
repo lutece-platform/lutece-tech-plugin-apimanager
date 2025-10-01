@@ -431,17 +431,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                 return getCreateClient(request);
             }
 
-            // Hashing secrets
-            try {
-                for (final ClientSecret clientSecret : _client.getSecretList()) {
-                    clientSecret.setSecret(PasswordUtils.hashPassword(clientSecret.getSecret()));
-                }
-            } catch (final Exception e) {
-                this.addError(ERROR_HASHING_SECRETS);
-                this.addError(e.getMessage());
-                return getCreateClient(request);
-            }
-
             getService().create(_client, getUser().getEmail());
 
             if(!_client.getSubscriptionList().isEmpty()){
@@ -458,7 +447,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             addInfo(INFO_CLIENT_CREATED, getLocale());
             resetListId();
 
-            return redirectView(request, VIEW_MANAGE_CLIENTS);
+            return generateSecrets(request);
         } else {
             return getCreateClient(request);
         }
@@ -567,19 +556,25 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         model.put(MARK_SUBSCRIPTION_LIST, _subscriptions);
         if (subscriptionIndex == null || usecase.equals("delete_subscription")) {
             model.put(MARK_CURRENT_SUBSCRIPTION_ROW, !_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0);
-            Api selectedSubscriptionApi = _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getApi();
-            Api selectedApi = ApiService.getInstance().getEntitiesListByIds(Arrays.asList(selectedSubscriptionApi.getUuid())).stream().findFirst().orElse(null);
-            model.put(MARK_SELECTED_API, selectedApi);
-            List<Resource> selectedResources = ResourceService.getInstance().getResourcesByApiUuid(selectedApi.getUuid());
-            List<String> availableEnvironementUuids = selectedResources.stream().map(selectedResource -> selectedResource.getEnvironement().getUuid()).distinct().collect(Collectors.toList());
 
-            List<String> availablePLANUuids = selectedResources.stream().map(selectedResource -> selectedResource.getPlan().getUuid()).distinct().collect(Collectors.toList());
+            if(!_subscriptions.isEmpty()){
+                Subscription selectedSubscription = _subscriptions.get(_subscriptions.size() - 1);
+                if(selectedSubscription != null){
+                    Api selectedSubscriptionApi = selectedSubscription.getApi();
+                    Api selectedApi = ApiService.getInstance().getEntitiesListByIds(Arrays.asList(selectedSubscriptionApi.getUuid())).stream().findFirst().orElse(null);
+                    model.put(MARK_SELECTED_API, selectedApi);
+                    List<Resource> selectedResources = ResourceService.getInstance().getResourcesByApiUuid(selectedApi.getUuid());
+                    List<String> availableEnvironementUuids = selectedResources.stream().map(selectedResource -> selectedResource.getEnvironement().getUuid()).distinct().collect(Collectors.toList());
 
-            model.put(MARK_PLAN_LIST, PlanService.getInstance().getEntitiesListByIds(availablePLANUuids));
+                    List<String> availablePLANUuids = selectedResources.stream().map(selectedResource -> selectedResource.getPlan().getUuid()).distinct().collect(Collectors.toList());
 
-            model.put(MARK_ENVIRONMENT_LIST, EnvironementService.getInstance().getEntitiesListByIds(availableEnvironementUuids));
-            model.put(MARK_SELECTED_ENVIRONEMENT, _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getEnvironement());
-            model.put(MARK_SELECTED_PLAN, _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getPlan());
+                    model.put(MARK_PLAN_LIST, PlanService.getInstance().getEntitiesListByIds(availablePLANUuids));
+
+                    model.put(MARK_ENVIRONMENT_LIST, EnvironementService.getInstance().getEntitiesListByIds(availableEnvironementUuids));
+                    model.put(MARK_SELECTED_ENVIRONEMENT, _subscriptions.get(_subscriptions.size() - 1).getEnvironement());
+                    model.put(MARK_SELECTED_PLAN, _subscriptions.get(_subscriptions.size() - 1).getPlan());
+                }
+            }
 
         } else {
             model.put(MARK_CURRENT_SUBSCRIPTION_ROW, subscriptionIndex);
@@ -618,16 +613,6 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                 return getModifyClient(request);
             }
 
-            // Hashing secrets
-            try {
-                for (final ClientSecret clientSecret : _client.getSecretList()) {
-                    clientSecret.setSecret(PasswordUtils.hashPassword(clientSecret.getSecret()));
-                }
-            } catch (final Exception e) {
-                this.addError(ERROR_HASHING_SECRETS);
-                this.addError(e.getMessage());
-                return getModifyClient(request);
-            }
 
             getService().update(_client, getUser().getEmail());
 
@@ -688,17 +673,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         return redirectView(request, VIEW_MANAGE_CLIENTS);
     }
 
-    @View(VIEW_GENERATE_NEW_SECRETS)
-    public String getGenerateNewSecrets(final HttpServletRequest request) {
-        final String uuid = request.getParameter(PARAMETER_ID_CLIENT);
-        if (uuid == null) {
-            return redirectView(request, VIEW_MANAGE_CLIENTS);
-        }
-
-        if (_client == null || !uuid.equals(_client.getUuid())) {
-            final Optional<Client> optClient = ClientHome.findByPrimaryKey(uuid);
-            _client = optClient.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
-        }
+    private String generateSecrets(final HttpServletRequest request){
 
         // We don't hash the new secrets yet, so that we can display them to the user
         _client.setSecretList(EnvironementHome.getEnvironementsList().stream().map(env -> {
@@ -713,6 +688,21 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_GENERATE_NEW_SECRETS));
 
         return getPage(PROPERTY_PAGE_TITLE_GENERATE_NEW_SECRETS, TEMPLATE_GENERATE_NEW_SECRETS, model);
+    }
+
+    @View(VIEW_GENERATE_NEW_SECRETS)
+    public String getGenerateNewSecrets(final HttpServletRequest request) {
+        final String uuid = request.getParameter(PARAMETER_ID_CLIENT);
+        if (uuid == null) {
+            return redirectView(request, VIEW_MANAGE_CLIENTS);
+        }
+
+        if (_client == null || !uuid.equals(_client.getUuid())) {
+            final Optional<Client> optClient = ClientHome.findByPrimaryKey(uuid);
+            _client = optClient.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+        }
+
+        return generateSecrets(request);
     }
 
     @Action(ACTION_GENERATE_NEW_SECRETS)
