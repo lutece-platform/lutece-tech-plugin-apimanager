@@ -493,7 +493,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?infoMsg=" + INFO_PLAN_UPDATED );
+        return redirect( request, "ManagePlans.jsp?infoMsg=" + INFO_PLAN_UPDATED );
     }
 
     /**
@@ -511,12 +511,12 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
         final String newVersion = request.getParameter( PARAMETER_VERSION );
         if ( uuid == null || newVersion == null )
         {
-            return redirect( request, "ManageApis.jsp" );
+            return redirect( request, "ManagePlans.jsp" );
         }
         final Plan planToClone = PlanHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         if ( planToClone.getVersion( ).equals( newVersion ) )
         {
-            return redirect( request, "ManageApis.jsp" );
+            return redirect( request, "ManagePlans.jsp" );
         }
 
         try
@@ -554,7 +554,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
 
         resetListId( );
 
-        return redirect( request, "ManageApis.jsp?reload=true&infoMsg=" + INFO_PLAN_CREATED );
+        return redirect( request, "ManagePlans.jsp?reload=true&infoMsg=" + INFO_PLAN_CREATED );
     }
 
     private void populateAll( final HttpServletRequest request, final Locale locale )

@@ -567,19 +567,25 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         model.put(MARK_SUBSCRIPTION_LIST, _subscriptions);
         if (subscriptionIndex == null || usecase.equals("delete_subscription")) {
             model.put(MARK_CURRENT_SUBSCRIPTION_ROW, !_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0);
-            Api selectedSubscriptionApi = _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getApi();
-            Api selectedApi = ApiService.getInstance().getEntitiesListByIds(Arrays.asList(selectedSubscriptionApi.getUuid())).stream().findFirst().orElse(null);
-            model.put(MARK_SELECTED_API, selectedApi);
-            List<Resource> selectedResources = ResourceService.getInstance().getResourcesByApiUuid(selectedApi.getUuid());
-            List<String> availableEnvironementUuids = selectedResources.stream().map(selectedResource -> selectedResource.getEnvironement().getUuid()).distinct().collect(Collectors.toList());
 
-            List<String> availablePLANUuids = selectedResources.stream().map(selectedResource -> selectedResource.getPlan().getUuid()).distinct().collect(Collectors.toList());
+            if(!_subscriptions.isEmpty()){
+                Subscription selectedSubscription = _subscriptions.get(_subscriptions.size() - 1);
+                if(selectedSubscription != null){
+                    Api selectedSubscriptionApi = selectedSubscription.getApi();
+                    Api selectedApi = ApiService.getInstance().getEntitiesListByIds(Arrays.asList(selectedSubscriptionApi.getUuid())).stream().findFirst().orElse(null);
+                    model.put(MARK_SELECTED_API, selectedApi);
+                    List<Resource> selectedResources = ResourceService.getInstance().getResourcesByApiUuid(selectedApi.getUuid());
+                    List<String> availableEnvironementUuids = selectedResources.stream().map(selectedResource -> selectedResource.getEnvironement().getUuid()).distinct().collect(Collectors.toList());
 
-            model.put(MARK_PLAN_LIST, PlanService.getInstance().getEntitiesListByIds(availablePLANUuids));
+                    List<String> availablePLANUuids = selectedResources.stream().map(selectedResource -> selectedResource.getPlan().getUuid()).distinct().collect(Collectors.toList());
 
-            model.put(MARK_ENVIRONMENT_LIST, EnvironementService.getInstance().getEntitiesListByIds(availableEnvironementUuids));
-            model.put(MARK_SELECTED_ENVIRONEMENT, _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getEnvironement());
-            model.put(MARK_SELECTED_PLAN, _subscriptions.get(!_subscriptions.isEmpty() ? _subscriptions.size() - 1 : 0).getPlan());
+                    model.put(MARK_PLAN_LIST, PlanService.getInstance().getEntitiesListByIds(availablePLANUuids));
+
+                    model.put(MARK_ENVIRONMENT_LIST, EnvironementService.getInstance().getEntitiesListByIds(availableEnvironementUuids));
+                    model.put(MARK_SELECTED_ENVIRONEMENT, _subscriptions.get(_subscriptions.size() - 1).getEnvironement());
+                    model.put(MARK_SELECTED_PLAN, _subscriptions.get(_subscriptions.size() - 1).getPlan());
+                }
+            }
 
         } else {
             model.put(MARK_CURRENT_SUBSCRIPTION_ROW, subscriptionIndex);
