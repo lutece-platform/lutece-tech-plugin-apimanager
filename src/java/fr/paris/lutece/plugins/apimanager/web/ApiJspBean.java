@@ -90,6 +90,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Templates
     private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/api/manage_apis.html";
     private static final String TEMPLATE_CREATE_API = "/admin/plugins/apimanager/api/create_api.html";
+    private static final String TEMPLATE_CREATE_API_STEP_1 = "/admin/plugins/apimanager/api/create/step1.html";
+    private static final String TEMPLATE_CREATE_API_STEP_2 = "/admin/plugins/apimanager/api/create/step2.html";
+    private static final String TEMPLATE_CREATE_API_STEP_3 = "/admin/plugins/apimanager/api/create/step3.html";
     private static final String TEMPLATE_MODIFY_API = "/admin/plugins/apimanager/api/modify_api.html";
 
     // Parameters
@@ -153,11 +156,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Views
     private static final String VIEW_MANAGE_APIS = "manageApis";
     private static final String VIEW_CREATE_API = "createApi";
+    private static final String VIEW_CREATE_API_STEP_2 = "step2";
+    private static final String VIEW_CREATE_API_STEP_3 = "step3";
     private static final String VIEW_MODIFY_API = "modifyApi";
     private static final String VIEW_LINK_API = "linkApi";
 
     // Actions
     private static final String ACTION_CREATE_API = "createApi";
+    private static final String ACTION_CREATE_API_STEP_1 = "step1";
+    private static final String ACTION_CREATE_API_STEP_2 = "step2";
+    private static final String ACTION_CREATE_API_STEP_3 = "step3";
     private static final String ACTION_MODIFY_API = "modifyApi";
     private static final String ACTION_ARCHIVE_API = "archiveApi";
     private static final String ACTION_REMOVE_LINK = "removeLink";
@@ -375,6 +383,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API, model);
     }
 
+
+
     /**
      * Process the data capture form of a new api
      *
@@ -406,6 +416,52 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         resetListId();
 
         return redirectView(request, VIEW_MANAGE_APIS);
+    }
+
+    /**
+     * Process the data capture form of a new api
+     *
+     * @param request The Http Request
+     * @return The Jsp URL of the process result
+     * @throws AccessDeniedException
+     */
+    @Action(ACTION_CREATE_API_STEP_1)
+    public String doCreateApiStep1(HttpServletRequest request) throws AccessDeniedException {
+        _api = (_api != null) ? _api : new Api();
+        try {
+            populateApi(_api, request, getLocale());
+        } catch (JsonProcessingException e) {
+            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+            return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
+        }
+
+        if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API_STEP_1)) {
+            throw new AccessDeniedException("Invalid security token");
+        }
+
+        // Check constraints
+        if (!validateBean(_api, VALIDATION_ATTRIBUTES_PREFIX)) {
+            return redirectView(request, VIEW_CREATE_API);
+        }
+
+        return getCreateApiStep2(request);
+    }
+
+    /**
+     * Returns the form to create a api
+     *
+     * @param request The Http request
+     * @return the html code of the api form
+     */
+    @View(VIEW_CREATE_API_STEP_2)
+    public String getCreateApiStep2(HttpServletRequest request) {
+        _api = (_api != null) ? _api : new Api();
+
+        Map<String, Object> model = getModel();
+        model.put(MARK_API, _api);
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
+
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API_STEP_1, model);
     }
 
     /**
@@ -659,7 +715,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                             String[] planResources = envPlanResources.get(envPlanResource);
                             if(planResources != null && planResources.length > 0){
                                 if(Arrays.stream(planResources).anyMatch(s -> s.equals(currentResource.getVerb().name()+"|"+currentResource.getName()))){
-                                    Plan currentPlan = plans.stream().filter(plan -> plan.getName().equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
+                                    Plan currentPlan = plans.stream().filter(plan -> plan.getName().replace(" ","").equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
                                     if(currentPlan != null){
                                         currentResource.setPlan(currentPlan);
                                     }

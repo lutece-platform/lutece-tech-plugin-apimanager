@@ -419,4 +419,8 @@ $('#delete-resource-row-0').click(function () {
     }
 });
 
+function submitStep1(){
+    $("#api_step1").submit();
+}
+
 

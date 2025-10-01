@@ -309,6 +309,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
                         .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) && resource.getApi().getUuid().equals(apiUuid) ).collect(Collectors.toList());
                 Collection<Resource> uniqueByPlan = environementAndApiResources
                         .stream()
+                        .filter(resource -> resource.getPlan() != null)
                         .collect(Collectors.toMap(usr -> Set.of(usr.getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
                         .values();
                 model.put( MARK_PLAN_LIST, uniqueByPlan.stream().map(resource -> resource.getPlan()).collect(Collectors.toList()) );
