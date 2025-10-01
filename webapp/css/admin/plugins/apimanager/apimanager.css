@@ -29,6 +29,8 @@
     padding: .9rem;
 }
 
+/*------------------- Results sections: cards and tables---------------------*/
+
 .apim-plugin .result-cards-container {
     margin-bottom: 1.5em;
 }
@@ -40,18 +42,6 @@
 
 .apim-plugin .result-cards-container .card .card-title{
     font-weight: 600;
-}
-
-.apim-plugin .badge {
-    background-color: #dbeafe !important;
-    color: #1d4ed8;
-    padding: 0.25rem 0.75rem;
-    margin: 0.2em 0;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
 }
 
 .apim-plugin .card-tools .btn,
@@ -101,5 +91,45 @@
 }
 .apim-plugin .card-tools .btn-secret:hover {
     color: rgb(20 83 45) !important;    /* vert-800 */
+}
+
+
+/*------------------- Badges ---------------------*/
+
+.apim-plugin .badge {
+    background-color: #dbeafe !important;
+    color: #1d4ed8;
+    padding: 0.25rem 0.75rem;
+    margin: 0.2em 0;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.apim-plugin .badge.badge-yes {
+    background-color: rgb(220 252 231) !important;
+    color: rgb(22 101 52);
+}
+
+.apim-plugin .badge.badge-no {
+    background-color: rgb(254 226 226) !important;
+    color: rgb(153 27 27);
+}
+
+.apim-plugin .badge.badge-published {
+    background-color: rgb(220 252 231) !important;
+    color: rgb(22 101 52);
+}
+
+.apim-plugin .badge.badge-unpublished {
+    background-color: rgb(254 226 226) !important;
+    color: rgb(153 27 27);
+}
+
+.apim-plugin .badge.badge-draft {
+    background-color: #e2e8f0 !important;
+    color: #475569;
 }
 
