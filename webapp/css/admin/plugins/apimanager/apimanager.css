@@ -54,35 +54,44 @@
     transition: background-color 0.2s, color 0.2s;
 }
 
-.apim-plugin .card-tools .btn, .apim-plugin .card-tools .btn:hover {
+.apim-plugin .card-tools .btn,
+.apim-plugin .card-tools .btn:hover,
+.apim-plugin .result-table-container table .btn,
+.apim-plugin .result-table-container table .btn:hover {
     background-color: transparent !important;
-    border: none;
-    font-size: 1.4em;
-    padding: 0.1em;
-    margin: 0;
-    box-shadow: none;
+    border: none !important;
+    font-size: 1.4em !important;
+    padding: 0.1em !important;
+    margin: 0 !important;
+    box-shadow: none !important;
 }
 
-.apim-plugin .card-tools .btn-edit {
+.apim-plugin .card-tools .btn-edit,
+.apim-plugin .result-table-container table .btn-edit {
     color: rgb(37 99 235) !important;   /* bleu-600 */
 }
-.apim-plugin .card-tools .btn-edit:hover {
+.apim-plugin .card-tools .btn-edit:hover,
+.apim-plugin .result-table-container table .btn-edit:hover{
     color: rgb(30 64 175) !important;   /* bleu-800 */
 }
 
 /* Bouton supprimer (rouge) */
-.apim-plugin .card-tools .btn-delete {
+.apim-plugin .card-tools .btn-delete,
+.apim-plugin .result-table-container table .btn-delete {
     color: rgb(220 38 38) !important;   /* rouge-600 */
 }
-.apim-plugin .card-tools .btn-delete:hover {
+.apim-plugin .card-tools .btn-delete:hover,
+.apim-plugin .result-table-container table .btn-delete:hover {
     color: rgb(153 27 27) !important;   /* rouge-800 */
 }
 
 /* Bouton archiver (rouge, comme delete) */
-.apim-plugin .card-tools .btn-archive {
+.apim-plugin .card-tools .btn-archive,
+.apim-plugin .result-table-container table .btn-archive {
     color: rgb(220 38 38) !important;
 }
-.apim-plugin .card-tools .btn-archive:hover {
+.apim-plugin .card-tools .btn-archive:hover,
+.apim-plugin .result-table-container table .btn-archive:hover {
     color: rgb(153 27 27) !important;
 }
 
