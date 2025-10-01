@@ -65,6 +65,15 @@
     color: rgb(30 64 175) !important;   /* bleu-800 */
 }
 
+.apim-plugin .card-tools .btn-publish,
+.apim-plugin .result-table-container table .btn-publish {
+    color: rgb(37 99 235) !important;   /* bleu-600 */
+}
+.apim-plugin .card-tools .btn-publish:hover,
+.apim-plugin .result-table-container table .btn-publish:hover{
+    color: rgb(30 64 175) !important;   /* bleu-800 */
+}
+
 /* Bouton supprimer (rouge) */
 .apim-plugin .card-tools .btn-delete,
 .apim-plugin .result-table-container table .btn-delete {
@@ -129,6 +138,11 @@
 }
 
 .apim-plugin .badge.badge-draft {
+    background-color: #e2e8f0 !important;
+    color: #475569;
+}
+
+.apim-plugin .badge.badge-new {
     background-color: #e2e8f0 !important;
     color: #475569;
 }
