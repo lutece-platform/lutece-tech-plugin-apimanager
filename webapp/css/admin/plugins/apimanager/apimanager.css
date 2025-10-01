@@ -38,6 +38,10 @@
     height: 100%;
 }
 
+.apim-plugin .result-cards-container .card .card-title{
+    font-weight: 600;
+}
+
 .apim-plugin .badge {
     background-color: #dbeafe !important;
     color: #1d4ed8;
@@ -50,18 +54,43 @@
     transition: background-color 0.2s, color 0.2s;
 }
 
-.apim-plugin .card-tools .btn {
+.apim-plugin .card-tools .btn, .apim-plugin .card-tools .btn:hover {
     background-color: transparent !important;
     border: none;
     font-size: 1.4em;
     padding: 0.1em;
     margin: 0;
+    box-shadow: none;
 }
 
 .apim-plugin .card-tools .btn-edit {
-    color: rgb(37 99 235) !important;
+    color: rgb(37 99 235) !important;   /* bleu-600 */
+}
+.apim-plugin .card-tools .btn-edit:hover {
+    color: rgb(30 64 175) !important;   /* bleu-800 */
 }
 
+/* Bouton supprimer (rouge) */
 .apim-plugin .card-tools .btn-delete {
+    color: rgb(220 38 38) !important;   /* rouge-600 */
+}
+.apim-plugin .card-tools .btn-delete:hover {
+    color: rgb(153 27 27) !important;   /* rouge-800 */
+}
+
+/* Bouton archiver (rouge, comme delete) */
+.apim-plugin .card-tools .btn-archive {
     color: rgb(220 38 38) !important;
 }
+.apim-plugin .card-tools .btn-archive:hover {
+    color: rgb(153 27 27) !important;
+}
+
+/* Bouton secret (vert) */
+.apim-plugin .card-tools .btn-secret {
+    color: rgb(22 163 74) !important;   /* vert-600 */
+}
+.apim-plugin .card-tools .btn-secret:hover {
+    color: rgb(20 83 45) !important;    /* vert-800 */
+}
+
