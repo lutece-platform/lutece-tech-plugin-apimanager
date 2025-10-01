@@ -329,7 +329,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(MARK_VERB_LIST, ResourceVerbEnum.values());
         model.put(MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values());
         model.put(MARK_MATCHER_TYPE_LIST, matcherTypeList);
-        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API_STEP_1));
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
         model.put(PARAMETER_ACTIVE_TAB, 1);
 
         return getPage(PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_MANAGE_APIS, model);
@@ -380,7 +380,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(MARK_API, _api);
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
 
-        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API_STEP_1, model);
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API, model);
     }
 
 
@@ -715,7 +715,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                             String[] planResources = envPlanResources.get(envPlanResource);
                             if(planResources != null && planResources.length > 0){
                                 if(Arrays.stream(planResources).anyMatch(s -> s.equals(currentResource.getVerb().name()+"|"+currentResource.getName()))){
-                                    Plan currentPlan = plans.stream().filter(plan -> plan.getName().equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
+                                    Plan currentPlan = plans.stream().filter(plan -> plan.getName().replace(" ","").equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
                                     if(currentPlan != null){
                                         currentResource.setPlan(currentPlan);
                                     }
