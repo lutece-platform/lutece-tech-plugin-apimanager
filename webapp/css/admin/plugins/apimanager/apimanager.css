@@ -147,3 +147,18 @@
     color: #475569;
 }
 
+.apim-plugin .badge.badge-create {
+    background-color: rgb(220 252 231) !important;
+    color: rgb(22 101 52);
+}
+
+.apim-plugin .badge.badge-update {
+    background-color: rgb(254 249 195) !important;
+    color: rgb(133 77 14);
+}
+
+.apim-plugin .badge.badge-delete {
+    background-color: rgb(254 226 226) !important;
+    color: rgb(153 27 27);
+}
+
