@@ -388,13 +388,8 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
             List<Subscription> subscriptions =new ArrayList<>();
             subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
 
-            ArrayList<Environement> environments = new ArrayList<Environement>();
-            for(Subscription sub : subscriptions){
-                if(!environments.stream().anyMatch(environement -> environement.getUuid().equals(sub.getEnvironement().getUuid()))){
-                    environments.add(sub.getResource().getEnvironement());
-                }
-            }
-            for(Environement envir : environments){
+            List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+            for(Environement envir : availableEnvs){
                 _configGeneratorService.generateOauth2Client(client,
                         envir, comment, getUser( ).getEmail( ) );
             }
