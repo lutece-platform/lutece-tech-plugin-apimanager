@@ -166,6 +166,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String VIEW_CREATE_API_STEP_2 = "step2";
     private static final String VIEW_CREATE_API_STEP_3 = "step3";
     private static final String VIEW_MODIFY_API = "modifyApi";
+    private static final String VIEW_NEW_API_VERSION = "newApiVersion";
     private static final String VIEW_LINK_API = "linkApi";
 
     // Actions
@@ -783,13 +784,40 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
             _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
+        loadApi();
 
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_API));
 
-        return getPage(PROPERTY_PAGE_TITLE_MODIFY_API, TEMPLATE_MODIFY_API, model);
+        return getCreateApi(request);
     }
+
+
+    /**
+     * Returns the form to update info about a api
+     *
+     * @param request The Http request
+     * @return The HTML form to update info
+     */
+    @View(VIEW_NEW_API_VERSION)
+    public String getNewApiVersion(HttpServletRequest request) {
+        String uuid = request.getParameter(PARAMETER_ID_API);
+        if (uuid == null) {
+            return redirectView(request, VIEW_MANAGE_APIS);
+        }
+        if (_api == null || !uuid.equals(_api.getUuid())) {
+            Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
+            _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+        }
+        loadApi();
+        Map<String, Object> model = getModel();
+        model.put(MARK_API, _api);
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_API));
+
+        return getCreateApi(request);
+    }
+
 
     /**
      * Process the change form of a api
@@ -867,6 +895,30 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         return redirectView(request, VIEW_MANAGE_APIS);
     }
 
+    protected void loadApi()  {
+        if( _api!=null && !_api.getUuid().isEmpty()){
+
+            List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(_api.getUuid());
+            Map<String, List<Resource>> resourcesByEnvironements =
+                    resources.stream().collect(Collectors.groupingBy(w -> w.getEnvironement().getUuid()));
+            for (String  envuuid : resourcesByEnvironements.keySet()) {
+                Environement resourceEnv = EnvironementHome.findByPrimaryKey(envuuid).orElse(null);
+                if(resourceEnv != null){
+                    resourceEnv.setResourceList(resourcesByEnvironements.get(envuuid));
+                    resourceEnv.setPlanList(PlanService.getInstance().getEntitiesListByIds(resourcesByEnvironements.get(envuuid).stream().map(resource -> resource.getPlan().getUuid()).collect(Collectors.toList())));
+                    if(_api.getEnvironementList() == null){
+                        _api.setEnvironementList(new ArrayList<>());
+                    }
+                    if(!_api.getEnvironementList().stream().anyMatch(environement -> environement.getUuid().equals(resourceEnv.getUuid()))){
+                        _api.getEnvironementList().add(resourceEnv);
+                    }
+                }
+            }
+
+        }
+
+
+    }
 
     protected void populateApi(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
         super.populate(bean, request, locale);
@@ -947,8 +999,12 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     currentResource.setVerb(ResourceVerbEnum.valueOf(resourceRequest.getParameter(PARAMETER_VERB_NAME)));
 
                 //instances
-                List<String> uuid_instance = List.of(resourceRequest.getParameterValues(PARAMETER_UUID_INSTANCES));
-                currentResource.setInstances(InstanceService.getInstance().getEntitiesListByIds(uuid_instance));
+                if(resourceRequest.getParameterValues(PARAMETER_UUID_INSTANCES) != null){
+                    List<String> uuid_instance = List.of(resourceRequest.getParameterValues(PARAMETER_UUID_INSTANCES));
+                    currentResource.setInstances(InstanceService.getInstance().getEntitiesListByIds(uuid_instance));
+                }else {
+                    currentResource.setInstances(new ArrayList<>());
+                }
 
                 _resources.add(currentResource);
             }
