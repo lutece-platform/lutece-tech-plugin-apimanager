@@ -73,9 +73,8 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
 /**
  * This class provides the user interface to manage Subscription features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageClientOperations.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEOPERATIONS)
-public class OperationClientJspBean extends AbstractJspBean<String, Client>
-{
+@Controller(controllerJsp = "ManageClientOperations.jsp", controllerPath = "jsp/admin/plugins/apimanager/", right = RIGHT_MANAGEOPERATIONS)
+public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
     // Templates
     private static final String TEMPLATE_MANAGE_API_OPERATIONS = "/admin/plugins/apimanager/operation/manage_api_operations.html";
@@ -141,60 +140,56 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
     private Subscription _subscription;
     private List<Client> _clientList;
     private List<String> _listIdResources;
-    private HashMap<String, String> _mapFilterCriteria = new HashMap<>( );
+    private HashMap<String, String> _mapFilterCriteria = new HashMap<>();
     private String _optionOrderBy;
 
-    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean( IConfigGeneratorService.BEAN_NAME );
+    private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean(IConfigGeneratorService.BEAN_NAME);
 
     /**
      * Build the Manage View
      *
-     * @param request
-     *            The HTTP request
+     * @param request The HTTP request
      * @return The page
      */
-    @View( value = VIEW_MANAGE_CLIENT_OPERATIONS, defaultView = true )
-    public String getManageClientOperations( HttpServletRequest request )
-    {
+    @View(value = VIEW_MANAGE_CLIENT_OPERATIONS, defaultView = true)
+    public String getManageClientOperations(HttpServletRequest request) {
 
         // new search only if in pagination mode
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
-        {
-            _optionOrderBy = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
-            _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-            final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
-            if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
-            {
-                criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
+        if (request.getParameter(AbstractPaginator.PARAMETER_PAGE_INDEX) == null) {
+            _optionOrderBy = request.getParameter(PARAMETER_SEARCH_ORDER_BY);
+            _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest(request);
+            final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
+            if (!_mapFilterCriteria.containsKey(FILTER_DISPLAY_ARCHIVED)) {
+                criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
             }
-            _listIdResources = ResourceService.getInstance().getIdEntitiesList( criterias );
+            _listIdResources = ResourceService.getInstance().getIdEntitiesList(criterias);
 
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
-            resetCurrentPageIndexOfPaginator( );
+            resetCurrentPageIndexOfPaginator();
         }
 
 
         _clientList = ClientService.getInstance().getEntitiesListByIds(ClientService.getInstance().getIdEntitiesList());
 
-        for(Client client: _clientList){
+        for (Client client : _clientList) {
             List<Subscription> currentSubscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid()));
-            for(Subscription subscription: currentSubscriptions){
+            for (Subscription subscription : currentSubscriptions) {
                 Resource currentResource = ResourceHome.findByPrimaryKey(subscription.getResource().getUuid()).orElse(subscription.getResource());
-                if(currentResource.getApi()!=null  && currentResource.getApi().getUuid() != null){
+                if (currentResource.getApi() != null && currentResource.getApi().getUuid() != null) {
                     subscription.setApi(ApiHome.findByPrimaryKey(currentResource.getApi().getUuid()).orElse(subscription.getApi()));
                 }
             }
             client.setSubscriptionList(currentSubscriptions);
         }
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_CLIENT_LIST, _clientList.stream().map(Client::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
+        Map<String, Object> model = getPaginatedListModel(request, MARK_CLIENT_LIST, _clientList.stream().map(Client::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS);
 
-        addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
-        model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
-        model.put( MARK_ENVIRONMENT_LIST, environmentList );
-        model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
+        addSearchParameters(model, _mapFilterCriteria); // allow the persistence of search values in inputs search bar inputs
+        model.put(MARK_SHOW_GENERATE_BUTTON, (_configGeneratorService != null));
+        model.put(MARK_ENVIRONMENT_LIST, environmentList);
+        model.put(MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean(Optional.ofNullable(request.getParameter(PARAMETER_VIEW_FROM_CLIENT)).orElse("false")));
 
-        return getPage( PROPERTY_PAGE_CLIENT_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
+        return getPage(PROPERTY_PAGE_CLIENT_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model);
 
     }
 
@@ -225,189 +220,167 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client>
     }
 
 
-
     @Override
-    protected ClientService getService( )
-    {
-        return ClientService.getInstance( );
+    protected ClientService getService() {
+        return ClientService.getInstance();
     }
 
     @Override
-    int getPluginDefaultNumberOfItemPerPage( )
-    {
-        return AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
+    int getPluginDefaultNumberOfItemPerPage() {
+        return AppPropertiesService.getPropertyInt(PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50);
     }
 
     /**
      * reset the _listIdSubscriptions list
      */
-    public void resetListId( )
-    {
-        _listIdResources = new ArrayList<>( );
+    public void resetListId() {
+        _listIdResources = new ArrayList<>();
     }
 
     /**
      * Returns the form to create a subscription
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the html code of the subscription form
      */
-    @View( VIEW_CREATE_OPERATION )
-    public String getCreateSubscription( HttpServletRequest request )
-    {
-        _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        _subscription.setClient( new Client( ) );
-        _subscription.setResource( new Resource( ) );
+    @View(VIEW_CREATE_OPERATION)
+    public String getCreateSubscription(HttpServletRequest request) {
+        _subscription = (_subscription != null) ? _subscription : new Subscription();
+        _subscription.setClient(new Client());
+        _subscription.setResource(new Resource());
 
         String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
         String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
         String apiUuid = request.getParameter(PARAMETER_UUID_API);
         String planUuid = request.getParameter(PARAMETER_UUID_PLAN);
-        Map<String, Object> model = getModel( );
-        model.put(PARAMETER_UUID_APPLICATION,clientUuid );
-        model.put(PARAMETER_UUID_ENVIRONEMENT,environementUuid );
-        model.put(PARAMETER_UUID_API,apiUuid );
-        model.put(PARAMETER_UUID_PLAN,planUuid );
-        model.put( MARK_OPERATION, _subscription );
+        Map<String, Object> model = getModel();
+        model.put(PARAMETER_UUID_APPLICATION, clientUuid);
+        model.put(PARAMETER_UUID_ENVIRONEMENT, environementUuid);
+        model.put(PARAMETER_UUID_API, apiUuid);
+        model.put(PARAMETER_UUID_PLAN, planUuid);
+        model.put(MARK_OPERATION, _subscription);
         List<Environement> environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
-        model.put( MARK_ENVIRONMENT_LIST, environements );
+        model.put(MARK_ENVIRONMENT_LIST, environements);
         model.put(MARK_CLIENT_LIST, ClientService.getInstance().getEntitiesListByIds(ClientService.getInstance().getIdEntitiesList()));
 
-        if(clientUuid!=null && environementUuid!=null){
+        if (clientUuid != null && environementUuid != null) {
             List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
             List<Resource> environementResources = resources.stream()
-                    .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) ).collect(Collectors.toList());
+                    .filter(resource -> resource.getEnvironement().getUuid().equals(environementUuid)).collect(Collectors.toList());
             Collection<Resource> uniqueByApi = environementResources
                     .stream()
                     .filter(resource -> resource.getApi() != null)
                     .collect(Collectors.toMap(usr -> Set.of(usr.getApi().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
                     .values();
-            model.put( MARK_API_LIST, uniqueByApi.stream().map(resource -> resource.getApi()).collect(Collectors.toList()) );
-            if(apiUuid!=null){
+            model.put(MARK_API_LIST, uniqueByApi.stream().map(resource -> resource.getApi()).collect(Collectors.toList()));
+            if (apiUuid != null) {
                 List<Resource> environementAndApiResources = resources.stream()
                         .filter(resource -> resource.getApi() != null)
-                        .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) && resource.getApi().getUuid().equals(apiUuid) ).collect(Collectors.toList());
+                        .filter(resource -> resource.getEnvironement().getUuid().equals(environementUuid) && resource.getApi().getUuid().equals(apiUuid)).collect(Collectors.toList());
                 Collection<Resource> uniqueByPlan = environementAndApiResources
                         .stream()
                         .collect(Collectors.toMap(usr -> Set.of(usr.getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
                         .values();
-                model.put( MARK_PLAN_LIST, uniqueByPlan.stream().map(resource -> resource.getPlan()).collect(Collectors.toList()) );
+                model.put(MARK_PLAN_LIST, uniqueByPlan.stream().map(resource -> resource.getPlan()).collect(Collectors.toList()));
             }
         }
 
 
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_OPERATION ) );
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_OPERATION));
 
-        return getPage( PROPERTY_PAGE_CLIENT_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
+        return getPage(PROPERTY_PAGE_CLIENT_OPERATION, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model);
     }
 
     /**
      * Manages the removal form of a subscription whose identifier is in the http request
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_REMOVE_OPERATION )
-    public String getConfirmRemoveSubscription( HttpServletRequest request )
-    {
-        String uuid = request.getParameter( PARAMETER_ID_OPERATION );
-        UrlItem url = new UrlItem( getActionUrl( ACTION_REMOVE_OPERATION ) );
-        url.addParameter( PARAMETER_ID_OPERATION, uuid );
+    @Action(ACTION_CONFIRM_REMOVE_OPERATION)
+    public String getConfirmRemoveSubscription(HttpServletRequest request) {
+        String uuid = request.getParameter(PARAMETER_ID_OPERATION);
+        UrlItem url = new UrlItem(getActionUrl(ACTION_REMOVE_OPERATION));
+        url.addParameter(PARAMETER_ID_OPERATION, uuid);
 
-        String strMessageUrl = AdminMessageService.getMessageUrl( request, MESSAGE_CONFIRM_REMOVE_OPERATION, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION );
+        String strMessageUrl = AdminMessageService.getMessageUrl(request, MESSAGE_CONFIRM_REMOVE_OPERATION, url.getUrl(), AdminMessage.TYPE_CONFIRMATION);
 
-        return redirect( request, strMessageUrl );
+        return redirect(request, strMessageUrl);
     }
 
     /**
      * Handles the removal form of a subscription
      *
-     * @param request
-     *            The Http request
+     * @param request The Http request
      * @return the jsp URL to display the form to manage subscriptions
      */
-    @Action( ACTION_REMOVE_OPERATION )
-    public String doRemoveSubscription( HttpServletRequest request )
-    {
-        String uuid = request.getParameter( PARAMETER_ID_OPERATION );
+    @Action(ACTION_REMOVE_OPERATION)
+    public String doRemoveSubscription(HttpServletRequest request) {
+        String uuid = request.getParameter(PARAMETER_ID_OPERATION);
 
         try {
-        final Client client = ClientHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+            final Client client = ClientHome.findByPrimaryKey(uuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        List<Subscription> subscriptions =new ArrayList<>();
-        subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
-
-        ArrayList<Environement> environments = new ArrayList<Environement>();
-        for(Subscription sub : subscriptions){
-            if(!environments.stream().anyMatch(environement -> environement.getUuid().equals(sub.getEnvironement().getUuid()))){
-                environments.add(sub.getResource().getEnvironement());
-            }
-        }
-
-        for(Environement envir : environments){
-            _configGeneratorService.deleteOauth2Client(client,
-                    envir, getUser( ).getEmail( ) );
-        }
-
-            getService( ).addNewHistory( client.getUuid( ), HistoryTypeEnum.DELETE, getUser( ).getEmail( ) );
-            client.setStatus( PlanStatusEnum.UNPUBLISHED.name() );
-            ClientService.getInstance( ).update( client, getUser( ).getEmail( ) );
-        }
-        catch( final AppException e )
-        {
-            addError( ERROR_CLIENT_GENERATION );
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
-        }
-
-        addInfo( INFO_OPERATION_REMOVED, getLocale( ) );
-        resetListId( );
-
-        return redirect( request, "ManageClientOperations.jsp?infoMsg=" + INFO_OPERATION_REMOVED );
-    }
-
-    @Action( ACTION_GENERATE_CLIENT )
-    public String doGenerateClient( final HttpServletRequest request )
-    {
-        final String clientUuid = request.getParameter( PARAMETER_ID_OPERATION );
-        if ( clientUuid == null )
-        {
-            addError( ERROR_RESOURCE_NOT_FOUND );
-            return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
-        }
-        final Client client = ClientHome.findByPrimaryKey( clientUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
-        final String comment = request.getParameter( PARAMETER_COMMENT );
-
-        try
-        {
-
-            List<Subscription> subscriptions =new ArrayList<>();
+            List<Subscription> subscriptions = new ArrayList<>();
             subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
 
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
-            for(Environement envir : availableEnvs){
+
+            for (Environement envir : availableEnvs) {
+                _configGeneratorService.deleteOauth2Client(client,
+                        envir, getUser().getEmail());
+            }
+
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.DELETE, getUser().getEmail());
+            client.setStatus(PlanStatusEnum.UNPUBLISHED.name());
+            ClientService.getInstance().update(client, getUser().getEmail());
+        } catch (final AppException e) {
+            addError(ERROR_CLIENT_GENERATION);
+            addError(e.getMessage());
+            return redirectView(request, VIEW_MANAGE_CLIENT_OPERATIONS);
+        }
+
+        addInfo(INFO_OPERATION_REMOVED, getLocale());
+        resetListId();
+
+        return redirect(request, "ManageClientOperations.jsp?infoMsg=" + INFO_OPERATION_REMOVED);
+    }
+
+    @Action(ACTION_GENERATE_CLIENT)
+    public String doGenerateClient(final HttpServletRequest request) {
+        final String clientUuid = request.getParameter(PARAMETER_ID_OPERATION);
+        if (clientUuid == null) {
+            addError(ERROR_RESOURCE_NOT_FOUND);
+            return redirectView(request, VIEW_MANAGE_CLIENT_OPERATIONS);
+        }
+        final Client client = ClientHome.findByPrimaryKey(clientUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+
+        final String env = request.getParameter(PARAMETER_ENVIRONNEMENT);
+        final String comment = request.getParameter(PARAMETER_COMMENT);
+
+        try {
+
+            List<Subscription> subscriptions = new ArrayList<>();
+            subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
+
+            List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+            for (Environement envir : availableEnvs) {
                 _configGeneratorService.generateOauth2Client(client,
-                        envir, comment, getUser( ).getEmail( ) );
+                        envir, comment, getUser().getEmail());
             }
 
 
-            getService( ).addNewHistory( client.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-            client.setStatus( PlanStatusEnum.PUBLISHED.name() );
-            ClientService.getInstance( ).update( client, getUser( ).getEmail( ) );
-        }
-        catch( final AppException e )
-        {
-            addError( ERROR_CLIENT_GENERATION );
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.GENERATE, getUser().getEmail());
+            client.setStatus(PlanStatusEnum.PUBLISHED.name());
+            ClientService.getInstance().update(client, getUser().getEmail());
+        } catch (final AppException e) {
+            addError(ERROR_CLIENT_GENERATION);
+            addError(e.getMessage());
+            return redirectView(request, VIEW_MANAGE_CLIENT_OPERATIONS);
         }
 
-        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
-        return redirectView( request, VIEW_MANAGE_CLIENT_OPERATIONS );
+        addInfo(INFO_API_MANAGER_GENERATED, getLocale());
+        return redirectView(request, VIEW_MANAGE_CLIENT_OPERATIONS);
     }
 
 }
