@@ -61,6 +61,7 @@ values  ('00988c70-702f-4ff5-86ac-8b030cf1c7a4', 'c6a8e5ac-e5ca-4ed9-82c0-a4d718
 
 insert into apimanager_deployed (uuid, uuid_resource, uuid_instance, status)
 values  ('a79ea45b-d7c9-42b4-8852-4d15baf87c11', 'adf74b03-c16d-49c2-9256-3e6810d97544', 'bff5fb61-6093-4396-a070-18a2cedaf7ec', null);
+values  ('a79ea45b-d7c9-42b4-8852-4d15baf87c12', '4109dd6b-2e57-4631-8b69-a4ebea308f47', 'bff5fb61-6093-4396-a070-18a2cedaf7ec', null);
 
 insert into apimanager_environement (uuid, name, description)
 values  ('1df5eee8-038b-4f12-86fc-dba73352ddcf', 'REC', null),
@@ -236,31 +237,32 @@ insert into apimanager_meecrogate_instance (uuid, description, base_url, name,ty
 values  ('4', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02','GATEWAY');
 
 insert into apimanager_plan (uuid, name, description, active, version, request_timeout, oauth_enabled, uuid_oauth_configuration, rate_limiting_enabled, rate_limiting_template, client_http_template, status, environnement_list)
-values  ('0d21847f-dcb4-4d82-8412-d1aee8a9f922', 'Plan SSE', 'Plan pour acces SSE', 1, '4', 4, 0, '68b19b22-f694-49e3-a61c-8d7707314ee1', 1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', 'Plan Test', 'Plan de test sans limite', 1, '1', 1000, 1, '6e6414cc-660e-4d52-91a9-cae902077a7f', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('16c15a3d-06a6-4306-8216-5bb162058cf8', 'Plan 01', 'yuyuyu', 1, '25', 212121, 1, '6a5c02c1-744b-43ae-941b-ef7b1b786080', 1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('2e3cb988-1273-4195-8d36-d89f9821efa2', 'Plan 02', 'sessedsedsese', 1, '1', 0, 1, 'ffbd4a2a-f5b4-49f8-8c41-29322ab8872e', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('2f19dcf7-0fb4-4131-b84e-9cad24b537fe', 'Plan illimité', 'Ceci est le plan avec les configurations par défault', 1, '1', 0, 1, '57507e48-9359-4438-b538-b985f3c5db0a', 0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('33ae04c7-095f-4f94-8eaa-78118aad9996', 'Plan soir et week-end', 'Ceci est le plan avec les configurations par défault', 1, '1', 0, 1, 'ec5580f0-6d51-4627-ae3c-95ef326d0f30', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('39f3b83d-7da8-4ff7-b945-0054e6532f77', 'Plan semaine', 'Configuration du lundi', 1, '25', 545, 1, '0dfd223c-7ee3-45e4-b7c3-88f943cf9dec', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('4433e1e6-6d65-4cb5-a9c7-402ae4880dca', 'Plan XXL', 'Configuration XXL', 1, '2', 212121, 0, 'e011ddbe-d688-4cd2-ab10-e490ad53de32', 0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('6946eb5a-2b26-4d31-a9b3-a38a4ae726f7', 'AERZRZEC', 'dsf', 1, '2', 41421, 1, '775273bb-bddd-4add-927c-4e9a2d563a26', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('6d6c96c5-3b47-4373-8b07-96b89027cc4d', 'reerrere', 'fff', 1, '3', 11111, 1, '33b87ebc-d605-4ccd-90d2-cab6ca0cd369', 0, '', null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('7188c225-29dc-4a62-92a4-81e0f74d35c7', 'test kfofqcd', 'dsqc', 1, '1', 212121, 0, '27f0fb95-ba67-45e5-835a-68bc404e712c', 0, null, 'SSE', 'DRAFT', ''),
-        ('744dcd93-5bed-4c2b-91e7-d9f8601c559d', 'HAHAHAHA', 'fezffrz', 1, '41', 212121, 1, 'a2cc3ec4-a6af-4a3e-84c2-49a218d1c6aa', 1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('78c5640a-525a-47cf-a7a1-fc36e28fabb8', 'zzaedde', 'edz', 1, '1', 212121, 0, 'bb117c89-5227-456f-84fd-59b15d01a5a7', 0, null, 'SSE', 'DRAFT', 'TEST,DEV,PREPROD'),
-        ('7bdc9b01-5be7-43a0-8ae5-6685755571d1', 'TEST plan env', 'TEST plan env', 1, '1', 41421, 0, 'a12b660e-122a-4c7a-9c34-307d3d40c6f2', 0, null, 'SSE', 'DRAFT', ''),
-        ('7d37bce5-b3ae-485d-8cfd-cdf3bfb865ad', 'Plan par défaut', 'Ceci est le plan avec les configurations par défault', 1, '1', 0, 1, '3dc06575-8e0b-4a37-b485-20a9bc9cd092', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('86bf9287-749d-4670-b4a1-4f8d4360e026', 'LOLOLOLOLO', 'dcxvf', 1, '10', 51, 1, 'ff7dc798-aa09-4e60-9e13-358c689ca02a', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('8c13ce9b-31ed-4d0c-b9fd-cc3b5b882a76', 'ozPlan', 'plan de oz', 0, '1.0', 1000, 1, 'fada133b-6b0c-44bd-b9ec-6e9253a683b7', 1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('8fad4c0e-3ebe-4be2-ab2a-0a21c98df365', 'yuyuyuyu', 'yuyuyu', 1, '10', 212121, 1, 'e371d051-ec35-486d-a3a5-445db9d3a250', 1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('95d64d51-b3f1-4aa4-89c0-7450b9aa42ff', 'yuyuyuyu', 'yuyuyu', 1, '26', 212121, 1, '93601007-9f2b-42e8-8611-211b9dd4ef80', 1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('c1bd2a0c-a346-43db-843d-88bd8441b94b', 'testRateLim', 'efqfd', 1, '41', 41421, 1, '608ea520-bceb-42bf-b94c-87d634150378', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('d5f9be2a-e203-4f1a-9714-b89de5e13030', 'PZEORPROFZ', 'efrefr', 1, '1', 212121, 1, 'bae4e8e3-171a-42d8-a16d-9343c4797818', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('da22a53d-31bb-428e-b09a-60fbafbfe75e', 'tibidiboup', 'zez', 1, '3', 4, 0, 'aaedbc39-4143-41bc-ba64-dc2c4e19fcee', 1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('f108d9bb-649c-4df2-8d67-0a2a946e1ac2', 'tibidiboup', 'zez', 1, '5', 4, 0, '75b7b5ef-5717-40e8-bf51-f17e37f617b1', 1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('f20a5ddb-2627-477d-ab49-835173107ff8', 'rr', 'rr', 1, '3', 33, 1, '7da597b7-7968-49e0-a953-64084e40a0ed', 0, null, '', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('f2753d44-d9a7-4972-b4b4-15f48b04c749', 'testRateLim2', 'zertf', 1, '41', 11111, 1, '0ed54a3b-a6a9-4ffb-b150-c299968e5f3e', 0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD');
+values  ('0d21847f-dcb4-4d82-8412-d1aee8a9f922','Plan SSE','Plan pour accès SSE',1, '4',4,0, '68b19b22-f694-49e3-a61c-8d7707314ee1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('0d3d9b4e-cd20-43ae-b019-503e93fdcc6f','Plan Premium','Plan pour accès complet aux API Premium',1, '1',1000,1, '6e6414cc-660e-4d52-91a9-cae902077a7f',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('16c15a3d-06a6-4306-8216-5bb162058cf8','Plan Basique','Plan accès de base pour les développeurs',1, '25',212121,1, '6a5c02c1-744b-43ae-941b-ef7b1b786080',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('2e3cb988-1273-4195-8d36-d89f9821efa2','Plan Entreprise','Plan pour les intégrations entreprise',1, '1',0,1, 'ffbd4a2a-f5b4-49f8-8c41-29322ab8872e',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('2f19dcf7-0fb4-4131-b84e-9cad24b537fe','Plan Démo','Plan essai gratuit pour tests et démonstrations',1, '1',0,1, '57507e48-9359-4438-b538-b985f3c5db0a',0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('33ae04c7-095f-4f94-8eaa-78118aad9996','Plan Avancé','Plan pour accès aux fonctionnalités avancées',1, '1',0,1, 'ec5580f0-6d51-4627-ae3c-95ef326d0f30',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('39f3b83d-7da8-4ff7-b945-0054e6532f77','Plan Équipe','Plan accès pour les équipes collaboratives',1, '25',545,1, '0dfd223c-7ee3-45e4-b7c3-88f943cf9dec',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('4433e1e6-6d65-4cb5-a9c7-402ae4880dca','Plan Développeur','Plan dédié aux environnements de développement',1, '2',212121,0, 'e011ddbe-d688-4cd2-ab10-e490ad53de32',0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('6946eb5a-2b26-4d31-a9b3-a38a4ae726f7','Plan Sécurité','Plan pour accès avec contrôles de sécurité renforcés',1, '2',41421,1, '775273bb-bddd-4add-927c-4e9a2d563a26',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('6d6c96c5-3b47-4373-8b07-96b89027cc4d','Plan IoT','Plan pour intégration appareils connectés IoT',1, '3',11111,1, '33b87ebc-d605-4ccd-90d2-cab6ca0cd369',0, '', null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('7188c225-29dc-4a62-92a4-81e0f74d35c7','Plan Public','Plan accès public sans authentification stricte',1, '1',212121,0, '27f0fb95-ba67-45e5-835a-68bc404e712c',0, null, 'SSE', 'DRAFT', ''),
+        ('744dcd93-5bed-4c2b-91e7-d9f8601c559d','Plan Privé','Plan réservé aux applications internes sécurisées',1, '41',212121,1, 'a2cc3ec4-a6af-4a3e-84c2-49a218d1c6aa',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('78c5640a-525a-47cf-a7a1-fc36e28fabb8','Plan Partenaire','Plan accès pour partenaires stratégiques',1, '1',212121,0, 'bb117c89-5227-456f-84fd-59b15d01a5a7',0, null, 'SSE', 'DRAFT', 'TEST,DEV,PREPROD'),
+        ('7bdc9b01-5be7-43a0-8ae5-6685755571d1','Plan Start','Plan entrée de gamme pour petits projets',1, '1',41421,0, 'a12b660e-122a-4c7a-9c34-307d3d40c6f2',0, null, 'SSE', 'DRAFT', ''),
+        ('7d37bce5-b3ae-485d-8cfd-cdf3bfb865ad','Plan Scale','Plan évolutif pour montée en charge',1, '1',0,1, '3dc06575-8e0b-4a37-b485-20a9bc9cd092',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('86bf9287-749d-4670-b4a1-4f8d4360e026','Plan Data','Plan pour accès aux API de données brutes',1, '10',51,1, 'ff7dc798-aa09-4e60-9e13-358c689ca02a',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('8c13ce9b-31ed-4d0c-b9fd-cc3b5b882a76','Plan Mobile','Plan optimisé pour les applications mobiles',0, '1.0',1000,1, 'fada133b-6b0c-44bd-b9ec-6e9253a683b7',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('8fad4c0e-3ebe-4be2-ab2a-0a21c98df365','Plan Global','Plan pour déploiement multi-régions',1, '10',212121,1, 'e371d051-ec35-486d-a3a5-445db9d3a250',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('95d64d51-b3f1-4aa4-89c0-7450b9aa42ff','Plan Temps Réel','Plan pour accès aux flux en temps réel',1, '26',212121,1, '93601007-9f2b-42e8-8611-211b9dd4ef80',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('c1bd2a0c-a346-43db-843d-88bd8441b94b','Plan Sandbox','Plan pour environnement de test isolé',1, '41',41421,1, '608ea520-bceb-42bf-b94c-87d634150378',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('d5f9be2a-e203-4f1a-9714-b89de5e13030','Plan Silver','Plan intermédiaire pour utilisateurs réguliers',1, '1',212121,1, 'bae4e8e3-171a-42d8-a16d-9343c4797818',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('da22a53d-31bb-428e-b09a-60fbafbfe75e','Plan Gold','Plan premium avec SLA renforcé',1, '3',4,0, 'aaedbc39-4143-41bc-ba64-dc2c4e19fcee',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('f108d9bb-649c-4df2-8d67-0a2a946e1ac2','Plan Platinum','Plan haut de gamme avec support dédié',1, '5',4,0, '75b7b5ef-5717-40e8-bf51-f17e37f617b1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('f20a5ddb-2627-477d-ab49-835173107ff8','Plan Edge','Plan optimisé pour réseaux Edge et CDN',1, '3',33,1, '7da597b7-7968-49e0-a953-64084e40a0ed',0, null, '', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('f2753d44-d9a7-4972-b4b4-15f48b04c749','Plan API Gateway','Plan complet pour gestion centralisée d’API',1, '41',11111,1, '0ed54a3b-a6a9-4ffb-b150-c299968e5f3e',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD');
+
 
 insert into apimanager_plan_oauth_configuration (uuid, jwt_issuer, jwt_validity)
 values  ('0dfd223c-7ee3-45e4-b7c3-88f943cf9dec', 'https://mdp.meecrogate.com', null),
@@ -292,20 +294,20 @@ values  ('0dfd223c-7ee3-45e4-b7c3-88f943cf9dec', 'https://mdp.meecrogate.com', n
         ('ffbd4a2a-f5b4-49f8-8c41-29322ab8872e', 'https://mdp.meecrogate.com', 144);
 
 insert into apimanager_resource (uuid, uuid_plan, uuid_environement, path, verb, status, uuid_rewrite_url, matcher_type, name, uuid_api, trace_enabled, uuid_meecrogate_instance)
-values  ('0d569165-2c5b-418e-84f7-feb52845ab15', 'f108d9bb-649c-4df2-8d67-0a2a946e1ac2', '3747f054-e562-4839-8886-d0b7099c1aba', '/entity', 'DELETE', '', 'f429fa80-585a-47db-b815-11b1649fbc56', 'EXACT', '0d569165-2c5b-418e-84f7-feb52845ab15', null, null, null),
-        ('1eaaff83-6229-4659-9f12-d575f8c78191', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/list', 'GET', null, null, 'EXACT', 'test', '6f76f8f5-670f-41ca-8a11-3bf293478369', 0, null),
-        ('2883e119-ab3d-4935-841a-498ec4cce11d', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/entity', 'DELETE', '', 'd27ce480-4804-4818-903b-700de584e186', 'STARTS_WITH', 'api-test-plan-test-delete-fdsfds', null, null, null),
-        ('4109dd6b-2e57-4631-8b69-a4ebea308f47', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/one', 'GET', null, null, 'EXACT', 'test', '3d061ebc-673f-4592-9de6-f7e2babedc8f', 0, null),
-        ('58a23a36-6797-4439-8bcf-78b8ddb1c840', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/lol', 'GET', '', '2301f205-201c-4179-aeb9-02412a321567', 'EXACT', 'api-test-plan-test-get-lol', null, null, null),
-        ('6bb196ed-c201-4cf2-8246-98a8385c5cff', 'f108d9bb-649c-4df2-8d67-0a2a946e1ac2', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', '5a467be7-94ce-4ff9-8211-8207c30ca68c', 'EXACT', '6bb196ed-c201-4cf2-8246-98a8385c5cff', null, null, null),
-        ('6c175974-1512-4c25-88a1-96f1ee075b31', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/hoho', 'GET', '', 'ca7bd09a-c2a0-44a1-bd1a-3cf2417a8101', 'STARTS_WITH', '6c175974-1512-4c25-88a1-96f1ee075b31', null, null, null),
-        ('71140751-35bf-4b9d-b3e8-042caaaf416e', 'da22a53d-31bb-428e-b09a-60fbafbfe75e', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', '13329e9a-d9c2-416b-810d-1535dfe203b9', 'EXACT', '71140751-35bf-4b9d-b3e8-042caaaf416e', null, null, null),
-        ('adf74b03-c16d-49c2-9256-3e6810d97544', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/bots', 'GET', null, null, 'EXACT', 'bots', '3d061ebc-673f-4592-9de6-f7e2babedc8f', 0, null),
-        ('e24cc04a-79cf-4ea3-ada0-1a4305cf20c0', '0d21847f-dcb4-4d82-8412-d1aee8a9f922', '3747f054-e562-4839-8886-d0b7099c1aba', '/lul', 'DELETE', '', 'f4db2bbf-f0fc-4552-934a-0d308cc837b4', 'EXACT', 'e24cc04a-79cf-4ea3-ada0-1a4305cf20c0', null, null, null),
-        ('e60d55f8-b12e-4d51-b6d7-943146def6ca', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', 'd8e95527-a2d9-47b7-9bbc-937cf7b9e76c', 'EXACT', 'api-test-plan-test-get-test', null, null, null),
-        ('ef13a502-eedc-42dd-98cf-d2379e71ef14', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', 'test', 'GET', null, null, 'EXACT', 'test', 'c64b3825-efba-4b8a-884e-7196af364113', 0, null),
-        ('f1b7eabe-b7f7-42ad-9f5a-683cee0e47ce', '0d21847f-dcb4-4d82-8412-d1aee8a9f922', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', '0949cf59-2b47-4663-a4c2-29ee7e24617c', 'EXACT', 'f1b7eabe-b7f7-42ad-9f5a-683cee0e47ce', null, null, null),
-        ('f6663da7-42b1-4b44-b9f8-30368f7b5f70', 'da22a53d-31bb-428e-b09a-60fbafbfe75e', '3747f054-e562-4839-8886-d0b7099c1aba', '/lul', 'DELETE', '', 'bb3b4a14-489a-4ebe-9558-95f3e54797fe', 'EXACT', 'f6663da7-42b1-4b44-b9f8-30368f7b5f70', null, null, null);
+values  ('0d569165-2c5b-418e-84f7-feb52845ab15', 'f108d9bb-649c-4df2-8d67-0a2a946e1ac2', '3747f054-e562-4839-8886-d0b7099c1aba', '/entity', 'DELETE', '', 'f429fa80-585a-47db-b815-11b1649fbc56', 'EXACT', '0d569165-2c5b-418e-84f7-feb52845ab15', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('1eaaff83-6229-4659-9f12-d575f8c78191', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/list', 'GET', null, null, 'EXACT', 'test', '6f76f8f5-670f-41ca-8a11-3bf293478369', 0, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('2883e119-ab3d-4935-841a-498ec4cce11d', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/entity', 'DELETE', '', 'd27ce480-4804-4818-903b-700de584e186', 'STARTS_WITH', 'api-test-plan-test-delete-fdsfds', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('4109dd6b-2e57-4631-8b69-a4ebea308f47', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/one', 'GET', null, null, 'EXACT', 'test', '3d061ebc-673f-4592-9de6-f7e2babedc8f', 0, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('58a23a36-6797-4439-8bcf-78b8ddb1c840', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/lol', 'GET', '', '2301f205-201c-4179-aeb9-02412a321567', 'EXACT', 'api-test-plan-test-get-lol', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('6bb196ed-c201-4cf2-8246-98a8385c5cff', 'f108d9bb-649c-4df2-8d67-0a2a946e1ac2', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', '5a467be7-94ce-4ff9-8211-8207c30ca68c', 'EXACT', '6bb196ed-c201-4cf2-8246-98a8385c5cff', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('6c175974-1512-4c25-88a1-96f1ee075b31', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/hoho', 'GET', '', 'ca7bd09a-c2a0-44a1-bd1a-3cf2417a8101', 'STARTS_WITH', '6c175974-1512-4c25-88a1-96f1ee075b31', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('71140751-35bf-4b9d-b3e8-042caaaf416e', 'da22a53d-31bb-428e-b09a-60fbafbfe75e', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', '13329e9a-d9c2-416b-810d-1535dfe203b9', 'EXACT', '71140751-35bf-4b9d-b3e8-042caaaf416e', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('adf74b03-c16d-49c2-9256-3e6810d97544', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/bots', 'GET', null, '13329e9a-d9c2-416b-810d-1535dfe203b9', 'EXACT', 'bots', '3d061ebc-673f-4592-9de6-f7e2babedc8f', 0, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('e24cc04a-79cf-4ea3-ada0-1a4305cf20c0', '0d21847f-dcb4-4d82-8412-d1aee8a9f922', '3747f054-e562-4839-8886-d0b7099c1aba', '/lul', 'DELETE', '', 'f4db2bbf-f0fc-4552-934a-0d308cc837b4', 'EXACT', 'e24cc04a-79cf-4ea3-ada0-1a4305cf20c0', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('e60d55f8-b12e-4d51-b6d7-943146def6ca', '0d3d9b4e-cd20-43ae-b019-503e93fdcc6f', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', 'd8e95527-a2d9-47b7-9bbc-937cf7b9e76c', 'EXACT', 'api-test-plan-test-get-test', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('ef13a502-eedc-42dd-98cf-d2379e71ef14', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', 'test', 'GET', null, null, 'EXACT', 'test', 'c64b3825-efba-4b8a-884e-7196af364113', 0, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('f1b7eabe-b7f7-42ad-9f5a-683cee0e47ce', '0d21847f-dcb4-4d82-8412-d1aee8a9f922', '3747f054-e562-4839-8886-d0b7099c1aba', '/test', 'GET', '', '0949cf59-2b47-4663-a4c2-29ee7e24617c', 'EXACT', 'f1b7eabe-b7f7-42ad-9f5a-683cee0e47ce', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c'),
+        ('f6663da7-42b1-4b44-b9f8-30368f7b5f70', 'da22a53d-31bb-428e-b09a-60fbafbfe75e', '3747f054-e562-4839-8886-d0b7099c1aba', '/lul', 'DELETE', '', 'bb3b4a14-489a-4ebe-9558-95f3e54797fe', 'EXACT', 'f6663da7-42b1-4b44-b9f8-30368f7b5f70', null, null, '30b2a419-ce6e-4a1b-983d-611760f9121c');
 
 insert into apimanager_resource_header_matching (uuid, uuid_resource, name, value, type)
 values  ('75750c00-a1be-4da9-bfd1-cc7a50c3ccdb', '0d569165-2c5b-418e-84f7-feb52845ab15', 'X-Meecrogate-Code', 'X01', 'EQUALS'),
