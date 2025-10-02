@@ -380,11 +380,11 @@ public class Api extends AbstractTagBean implements Serializable
         _bArchived = bArchived;
     }
 
-    public List<Resource> get_resourceList() {
+    public List<Resource> getResourceList() {
         return _resourceList;
     }
 
-    public void set_resourceList(List<Resource> _resourceList) {
+    public void setResourceList(List<Resource> _resourceList) {
         this._resourceList = _resourceList;
     }
 }

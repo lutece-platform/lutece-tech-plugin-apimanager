@@ -126,6 +126,23 @@ public class ResourceService extends AbstractService<Resource>
     /**
      * Get Resources by plan UUID
      *
+     * @param envUuid
+     *            the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByEnvironementUuid( final String envUuid )
+    {
+        final List<String> resourceIds = this.getIdEntitiesList( Map.of( "uuid_environement", envUuid ) );
+        if ( resourceIds.isEmpty( ) )
+        {
+            return List.of( );
+        }
+        return this.getEntitiesListByIds( resourceIds );
+    }
+
+    /**
+     * Get Resources by plan UUID
+     *
      * @param planUuid
      *            the plan UUID
      * @return list of Resource

@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.apimanager.business.environement;
 
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -54,6 +56,8 @@ public class Environement implements Serializable
     private String _strName;
 
     private List<Instance> _instanceList;
+    private List<Resource> _resourceList;
+    private List<Plan> _planList;
     /**
      * Returns the Uuid
      * 
@@ -91,5 +95,22 @@ public class Environement implements Serializable
     public void setInstances( List<Instance> instances )
     {
         this._instanceList = instances;
+    }
+
+
+    public List<Resource> getResourceList() {
+        return _resourceList;
+    }
+
+    public void setResourceList(List<Resource> _resourceList) {
+        this._resourceList = _resourceList;
+    }
+
+    public List<Plan> getPlanList() {
+        return _planList;
+    }
+
+    public void setPlanList(List<Plan> _planList) {
+        this._planList = _planList;
     }
 }

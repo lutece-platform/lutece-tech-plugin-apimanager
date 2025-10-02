@@ -362,6 +362,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         List<Resource> fullResourceList = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
         Collection<Resource> uniqueByApiAndEnvironementAndPlan = fullResourceList
                 .stream()
+                .filter(resource -> resource.getPlan() != null)
                 .filter(resource -> resource.getPlan().getUuid().equals(planUuid) && resource.getApi().getUuid().equals(apiUuid) && resource.getEnvironement().getUuid().equals(environementUuid))
                 .collect(Collectors.toList());
         for(Resource resource : uniqueByApiAndEnvironementAndPlan){

@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.apimanager.service;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
@@ -66,16 +67,19 @@ public class ApiService extends AbstractService<Api>
     public void create( final Api entity, final String user )
     {
         final String uuid = ApiHome.create( entity ).getUuid( );
-        for(Resource resource : entity.get_resourceList()){
-            entity.setUuid(uuid);
-            resource.setApi(entity);
-            ResourceHome.create(resource);
-            if( resource.getInstances() != null){
-                for(Instance instance : resource.getInstances()){
-                    ResourceHome.linkInstance(resource, instance.getUuid());
+        for (Environement env : entity.getEnvironementList()){
+            for(Resource resource : env.getResourceList()){
+                entity.setUuid(uuid);
+                resource.setApi(entity);
+                ResourceHome.create(resource);
+                if( resource.getInstances() != null){
+                    for(Instance instance : resource.getInstances()){
+                        ResourceHome.linkInstance(resource, instance.getUuid());
+                    }
                 }
             }
         }
+
         this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
     }
 

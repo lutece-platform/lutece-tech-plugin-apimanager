@@ -49,6 +49,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.*;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
@@ -101,6 +102,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String PARAMETER_NAME = "name";
     private static final String PARAMETER_DESCRIPTION = "description";
     private static final String PARAMETER_PATH = "path";
+    private static final String PARAMETER_SELECTED_ENVIRONMENT = "environement";
+    private static final String PARAMETER_PREFIX_SELECTED_PLAN = "plan-environement-";
     private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
     private static final String PARAMETER_LINK_MODE = "linkMode";
     private static final String PARAMETER_SELECTED_TAGS = "selected_tags";
@@ -113,11 +116,15 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String PARAMETER_RELOAD = "reload";
     private static final String PARAMETER_ENVIRONEMENT_PREFIX = "environement-";
     private static final String PARAMETER_RESOURCE_PREFIX = "resource-";
-    private static final String PARAMETER_RESOURCE_ROW ="-resource-row-";
-    private static final String PARAMETER_PLAN ="-plan-";
-    private static final String PARAMETER_PLAN_RESOURCES ="-resources";
+    private static final String PARAMETER_RESOURCE_ROW = "-resource-row-";
+    private static final String PARAMETER_PLAN = "-plan-";
+    private static final String PARAMETER_PLAN_RESOURCES = "-resources";
     private static final String PARAMETER_VERB_NAME = "verb_name";
     private static final String PARAMETER_UUID_INSTANCES = "uuid_instances";
+    private static final String PARAMETER_CREATE_USECASE = "create_usecase";
+    private static final String PARAMETER_CURRENT_ENVIRONMENT_TAB = "current_environement_tab";
+    private static final String PARAMETER_CURRENT_PLAN_TAB = "current_plan_tab";
+    private static final String PARAMETER_CURRENT_RESOURCE = "current_resource";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -258,16 +265,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
 
         // new search only if in pagination mode
-        if ( request.getParameter( PARAMETER_SELECTED_TAGS ) != null ){
+        if (request.getParameter(PARAMETER_SELECTED_TAGS) != null) {
             String selectedStringTags = request.getParameter(PARAMETER_SELECTED_TAGS);
-            List<String> selectedTags =  new ArrayList<>( );
-            if(selectedStringTags != null && !selectedStringTags.isEmpty() && selectedStringTags.contains(",")){
-                selectedTags.addAll( Arrays.asList(selectedStringTags.split(",")));
-            }else{
+            List<String> selectedTags = new ArrayList<>();
+            if (selectedStringTags != null && !selectedStringTags.isEmpty() && selectedStringTags.contains(",")) {
+                selectedTags.addAll(Arrays.asList(selectedStringTags.split(",")));
+            } else {
                 selectedTags.add(selectedStringTags);
             }
 
-            _listIdApis = getService( ).getApisByTags(selectedTags);
+            _listIdApis = getService().getApisByTags(selectedTags);
             model.put(MARK_SELECTED_TAG_LIST, selectedTags);
         }
 
@@ -275,11 +282,12 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         Map<String, Object> apiModel = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
         List<Api> apiList = ((List<Api>) apiModel.get(MARK_API_LIST));
         String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
-        if(selectedEnvironementUuid != null){
+        if (selectedEnvironementUuid != null) {
             Environement environement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
-            if(environement != null){
-                apiModel.put(MARK_PLAN_LIST, apiList.stream().filter(api -> api.get_resourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(environement.getUuid())) ).collect(Collectors.toList()));            }
-            model.put(MARK_SELECTED_ENVIRONMENT_UUID,selectedEnvironementUuid);
+            if (environement != null) {
+                apiModel.put(MARK_PLAN_LIST, apiList.stream().filter(api -> api.getResourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(environement.getUuid()))).collect(Collectors.toList()));
+            }
+            model.put(MARK_SELECTED_ENVIRONMENT_UUID, selectedEnvironementUuid);
         }
         model.putAll(apiModel);
 
@@ -292,7 +300,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
         instances = new ArrayList<>();
-        for(Environement envir : environements){
+        for (Environement envir : environements) {
             List<Instance> envInstances = InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToEnvironementUuid(envir.getUuid()));
             instances.addAll(envInstances);
             envir.setInstances(envInstances);
@@ -311,9 +319,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         addPlanTemplateNamesToModel(model);
 
 
-        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID, _mapFilterCriteria.get("uuid_environement"));
         //exlude some filters from the returned list
-        for(String exclusion: getExcludedSearchParameters()){
+        for (String exclusion : getExcludedSearchParameters()) {
             _mapFilterCriteria.remove(exclusion);
         }
 
@@ -380,9 +388,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(MARK_API, _api);
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
 
-        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API, model);
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API_STEP_1, model);
     }
-
 
 
     /**
@@ -401,7 +408,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
         }
 
-        if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
+        if (!SecurityTokenService.getInstance().validate(request, ACTION_ARCHIVE_API)) {
             throw new AccessDeniedException("Invalid security token");
         }
 
@@ -427,15 +434,11 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
      */
     @Action(ACTION_CREATE_API_STEP_1)
     public String doCreateApiStep1(HttpServletRequest request) throws AccessDeniedException {
+        Map<String, String[]> params = request.getParameterMap();
         _api = (_api != null) ? _api : new Api();
-        try {
-            populateApi(_api, request, getLocale());
-        } catch (JsonProcessingException e) {
-            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
-            return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
-        }
+        super.populate(_api, request, getLocale());
 
-        if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API_STEP_1)) {
+        if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
             throw new AccessDeniedException("Invalid security token");
         }
 
@@ -447,6 +450,20 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         return getCreateApiStep2(request);
     }
 
+    private void reloadLists(){
+        if(this.environements == null){
+            this.environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+        }
+
+        if(this.instances == null){
+            instances = new ArrayList<>();
+            for (Environement envir : environements) {
+                List<Instance> envInstances = InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToEnvironementUuid(envir.getUuid()));
+                instances.addAll(envInstances);
+                envir.setInstances(envInstances);
+            }
+        }
+    }
     /**
      * Returns the form to create a api
      *
@@ -456,14 +473,207 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     @View(VIEW_CREATE_API_STEP_2)
     public String getCreateApiStep2(HttpServletRequest request) {
         _api = (_api != null) ? _api : new Api();
+        if (_api.getEnvironementList() == null ) {
+            _api.setEnvironementList(new ArrayList<>());
+        }
+       this.reloadLists();
+
+        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
+        if (usecase != null && usecase.equals("add_environment")) {
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_SELECTED_ENVIRONMENT);
+            Environement currentEnvironement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
+            if(currentEnvironement != null){
+                currentEnvironement.setResourceList(new ArrayList<>());
+                if(_api.getEnvironementList()==null){
+                    _api.setEnvironementList(new ArrayList<>());
+                }
+
+                if(currentEnvironement.getPlanList() == null)
+                    currentEnvironement.setPlanList(new ArrayList<>());
+
+                for(Resource res : currentEnvironement.getResourceList()){
+                    if(res.getRewriteUrl() == null)
+                        res.setRewriteUrl(new ResourceRewriteUrl());
+                }
+                _api.getEnvironementList().add(currentEnvironement);
+            }
+            this.environements.removeIf(environement -> _api.getEnvironementList().stream().anyMatch(environement1 -> environement1.getUuid().equals(environement.getUuid())));
+        }
+
+        if (usecase != null && usecase.equals("add_resource")) {
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+            Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
+
+            if(currentEnvironement != null) {
+                if(currentEnvironement.getResourceList() == null)
+                    currentEnvironement.setResourceList(new ArrayList<>());
+                Resource blankResource = new Resource();
+                blankResource.setRewriteUrl(new ResourceRewriteUrl());
+                currentEnvironement.getResourceList().add(blankResource);
+            }
+
+        }
+
+        String index = request.getParameter(PARAMETER_CURRENT_RESOURCE);
+        if (usecase != null &&  usecase.equals("delete_resource")) {
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+            Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
+
+            if(index != null && currentEnvironement != null){
+                currentEnvironement.getResourceList().remove(Integer.parseInt(index));
+            }
+        }
+
+
+
+        Map<String, Object> model = getModel();
+
+        String currentTab = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+
+        if(currentTab == null){
+            if(!_api.getEnvironementList().isEmpty()){
+                model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB,_api.getEnvironementList().get(0).getUuid());
+            }else {
+                model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB,"");
+            }
+        }else{
+
+            model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, currentTab);
+        }
+        model.put(MARK_API, _api);
+        model.put(MARK_ENVIRONMENT_LIST, environements);
+
+        model.put(MARK_VERB_LIST, ResourceVerbEnum.values());
+        model.put(MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values());
+        model.put(MARK_MATCHER_TYPE_LIST, matcherTypeList);
+        model.put(PARAMETER_ACTIVE_TAB, 1);
+        model.put(PARAMETER_CURRENT_RESOURCE, 0);
+        model.put(MARK_INSTANCE_LIST, instances);
+
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
+
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API_STEP_2, model);
+    }
+
+
+    /**
+     * Process the data capture form of a new api
+     *
+     * @param request The Http Request
+     * @return The Jsp URL of the process result
+     * @throws AccessDeniedException
+     */
+    @Action(ACTION_CREATE_API_STEP_2)
+    public String doCreateApiStep2(HttpServletRequest request) throws AccessDeniedException {
+        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
+
+        if (usecase != null && usecase.isEmpty()) {
+            _api = (_api != null) ? _api : new Api();
+            super.populate(_api, request, getLocale());
+
+            try {
+                populateEnvironement(_api, request, getLocale());
+            } catch (JsonProcessingException e) {
+                this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+                return redirect(request, VIEW_CREATE_API);
+            }
+
+            if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
+                throw new AccessDeniedException("Invalid security token");
+            }
+
+            // Check constraints
+            if (!validateBean(_api, VALIDATION_ATTRIBUTES_PREFIX)) {
+                return redirectView(request, VIEW_CREATE_API);
+            }
+
+            return getCreateApiStep3(request);
+        }
+        return getCreateApiStep2(request);
+    }
+
+    /**
+     * Returns the form to create a api
+     *
+     * @param request The Http request
+     * @return the html code of the api form
+     */
+    @View(VIEW_CREATE_API_STEP_3)
+    public String getCreateApiStep3(HttpServletRequest request) {
+        _api = (_api != null) ? _api : new Api();
+        if (_api.getEnvironementList() == null ) {
+            _api.setEnvironementList(new ArrayList<>());
+        }
+
+        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
+        String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+        String selectedPlanUuid = request.getParameter(PARAMETER_PREFIX_SELECTED_PLAN+selectedEnvironementUuid);
+        if (usecase != null && usecase.equals("add_plan")) {
+            Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
+
+            Plan currentPlan = PlanHome.findByPrimaryKey(selectedPlanUuid).orElse(null);
+
+            if(currentEnvironement != null && currentPlan != null) {
+                currentEnvironement.getPlanList().add(currentPlan);
+            }
+
+        }
+
 
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
+        model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB,request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB)!=null? request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB):0);
+
+        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
+        model.put(MARK_PLAN_LIST, plans);
+        model.put(PARAMETER_CURRENT_PLAN_TAB, selectedPlanUuid != null? selectedPlanUuid: 0);
+
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
 
-        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API_STEP_1, model);
+        return getPage(PROPERTY_PAGE_TITLE_CREATE_API, TEMPLATE_CREATE_API_STEP_3, model);
     }
 
+    /**
+     * Process the data capture form of a new api
+     *
+     * @param request The Http Request
+     * @return The Jsp URL of the process result
+     * @throws AccessDeniedException
+     */
+    @Action(ACTION_CREATE_API_STEP_3)
+    public String doCreateApiStep3(HttpServletRequest request) throws AccessDeniedException {
+        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
+
+        Map<String, String[]> params = request.getParameterMap();
+        if (usecase != null && usecase.isEmpty()) {
+            _api = (_api != null) ? _api : new Api();
+            super.populate(_api, request, getLocale());
+
+            try {
+                populatePlan(_api, request, getLocale());
+            } catch (JsonProcessingException e) {
+                this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+                return redirect(request, VIEW_CREATE_API);
+            }
+
+            if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
+                throw new AccessDeniedException("Invalid security token");
+            }
+
+            // Check constraints
+            if (!validateBean(_api, VALIDATION_ATTRIBUTES_PREFIX)) {
+                return redirectView(request, VIEW_CREATE_API);
+            }
+
+            _api.setStatus("NEW");
+            getService().create(_api, getUser().getEmail());
+            addInfo(INFO_API_CREATED, getLocale());
+            resetListId();
+
+            return redirectView(request, VIEW_MANAGE_APIS);
+        }
+        return getCreateApiStep3(request);
+    }
     /**
      * Manages the removal form of a api whose identifier is in the http request
      *
@@ -657,9 +867,11 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         return redirectView(request, VIEW_MANAGE_APIS);
     }
 
+
     protected void populateApi(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
         super.populate(bean, request, locale);
 
+        Map<String, String[]> map = request.getParameterMap();
         if (request instanceof MultipartHttpServletRequest) {
             final FileItem openapiFile = ((MultipartHttpServletRequest) request).getFile(PARAMETER_OPENAPI);
             if (openapiFile != null && openapiFile.getSize() > 0) {
@@ -670,72 +882,123 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         _api.setTags(Arrays.stream(Optional.ofNullable(request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse(new String[0]))
                 .collect(Collectors.toList()));
 
+
+    }
+
+
+    protected void populateEnvironement(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
+
         //environement
 
         final List<String> configuredEnvironements = request.getParameterMap().entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(PARAMETER_ENVIRONEMENT_PREFIX))
                 .map(envEntry -> {
                     String key = envEntry.getKey().replace(PARAMETER_ENVIRONEMENT_PREFIX, "");
-                    return key.substring(0, key.indexOf("-"));
+                    return key.substring(0, key.indexOf(PARAMETER_RESOURCE_ROW));
                 }).distinct()
                 .collect(Collectors.toList());
 
+
+        environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+
         List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
 
-        for (String environement : configuredEnvironements) {
+        for (String environementUuid : configuredEnvironements) {
 
             // Resources
             final List<Integer> resourceIndexes = request.getParameterMap().keySet().stream()
-                    .filter(key -> key.startsWith(PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_RESOURCE_ROW))
-                    .map(key -> key.replace(PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_RESOURCE_ROW, ""))
+                    .filter(key -> key.startsWith(PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW))
+                    .map(key -> key.replace(PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW, ""))
                     .map(key -> Integer.parseInt(key.substring(0, key.indexOf('-')))).distinct().collect(Collectors.toList());
 
             Resource currentResource = new Resource();
             for (final int index : resourceIndexes) {
-                final String prefix = PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_RESOURCE_ROW + index + "-";
+                final String prefix = PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW + index + "-";
                 final Map<String, String[]> resourceParams = request.getParameterMap().entrySet().stream()
                         .filter(entry -> entry.getKey().startsWith(prefix))
                         .collect(Collectors.toMap(entry -> entry.getKey().replace(prefix, ""), Map.Entry::getValue));
 
                 final MultipartHttpServletRequest resourceRequest = new MultipartHttpServletRequest(request, Map.of(), resourceParams);
                 populate(currentResource, resourceRequest, locale);
-                currentResource.setEnvironement(environements.stream().filter(s -> s.getName().equals(environement)).findFirst().orElse(null));
+                final Map<String, String[]> rewriteUrlParams = resourceParams.entrySet().stream()
+                        .filter(entry -> entry.getKey().startsWith("rewrite_url_"))
+                        .collect(Collectors.toMap(entry -> entry.getKey().replace("rewrite_url_", ""), Map.Entry::getValue));
+                if(!rewriteUrlParams.isEmpty()){
+                    ResourceRewriteUrl currentRewriteResourceUrl = new ResourceRewriteUrl();
+                    String[] targets = rewriteUrlParams.get("target");
+                    String[] values = rewriteUrlParams.get("value");
+                    String[] types = rewriteUrlParams.get("type_name");
+                    if(targets!=null && targets.length>0){
+                        currentRewriteResourceUrl.setTarget(targets[0]);
+                    }
+                    if(values!=null && values.length>0){
+                        currentRewriteResourceUrl.setValue(values[0]);
+                    }
+                    if(types!=null && types.length>0){
+                        currentRewriteResourceUrl.setType(ResourceRewriteUrlTypeEnum.valueOf(types[0]));
+                    }
+                    ResourceRewriteUrlHome.create(currentRewriteResourceUrl);
+                    currentResource.setRewriteUrl(currentRewriteResourceUrl);
+                }
+                currentResource.setEnvironement(environements.stream().filter(s -> s.getUuid().equals(environementUuid)).findFirst().orElse(null));
 
                 String verbName = resourceRequest.getParameter(PARAMETER_VERB_NAME);
-                if(verbName != null)
-                    currentResource.setVerb( ResourceVerbEnum.valueOf( resourceRequest.getParameter( PARAMETER_VERB_NAME ) ) );
-
-                //get plans
-                final String plan_prefix = PARAMETER_ENVIRONEMENT_PREFIX + environement + PARAMETER_PLAN;
-                final Map<String, String[]> envPlanResources = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(plan_prefix))
-                        .collect(Collectors.toMap(entry -> entry.getKey().replace(plan_prefix, ""), Map.Entry::getValue));;
-
-                        for(String envPlanResource : envPlanResources.keySet()){
-
-                            String[] planResources = envPlanResources.get(envPlanResource);
-                            if(planResources != null && planResources.length > 0){
-                                if(Arrays.stream(planResources).anyMatch(s -> s.equals(currentResource.getVerb().name()+"|"+currentResource.getName()))){
-                                    Plan currentPlan = plans.stream().filter(plan -> plan.getName().replace(" ","").equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
-                                    if(currentPlan != null){
-                                        currentResource.setPlan(currentPlan);
-                                    }
-                                }
-                            }
-                        }
+                if (verbName != null)
+                    currentResource.setVerb(ResourceVerbEnum.valueOf(resourceRequest.getParameter(PARAMETER_VERB_NAME)));
 
                 //instances
-
                 List<String> uuid_instance = List.of(resourceRequest.getParameterValues(PARAMETER_UUID_INSTANCES));
-                currentResource.setInstances(InstanceService.getInstance().getEntitiesListByIds( uuid_instance) );
+                currentResource.setInstances(InstanceService.getInstance().getEntitiesListByIds(uuid_instance));
 
                 _resources.add(currentResource);
             }
 
+            Environement apiEnvironement = _api.getEnvironementList().stream().filter(environement1 -> environement1.getUuid().equals(environementUuid)).findFirst().orElse(null);
+
+            if(apiEnvironement != null)
+                apiEnvironement.setResourceList(_resources);
         }
-        _api.set_resourceList(_resources);
 
     }
 
+
+    protected void populatePlan(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
+
+
+        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
+
+        for (Environement environement : _api.getEnvironementList()) {
+
+            for (Resource resource : environement.getResourceList()) {
+                //get plans
+                final String plan_prefix = PARAMETER_ENVIRONEMENT_PREFIX + environement.getUuid() + PARAMETER_PLAN;
+                final Map<String, String[]> envPlanResources = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(plan_prefix))
+                        .collect(Collectors.toMap(entry -> entry.getKey().replace(plan_prefix, ""), Map.Entry::getValue));
+                ;
+
+                for (String envPlanResource : envPlanResources.keySet()) {
+
+                    String[] planResources = envPlanResources.get(envPlanResource);
+                    if (planResources != null && planResources.length > 0) {
+                        if (Arrays.stream(planResources).anyMatch(s -> s.equals(resource.getVerb().name() + "|" + resource.getName()))) {
+                            Plan currentPlan = plans.stream().filter(plan -> plan.getUuid().replace(" ", "").equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
+                            if (currentPlan != null) {
+                                if(resource.getPlan() == null){
+                                    resource.setPlan(currentPlan);
+                                }else{
+                                    Resource currentResource = new Resource(resource);
+                                    currentResource.setPlan(currentPlan);
+                                    environement.getResourceList().add(currentResource);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+    }
 
     private void addPlanTemplateNamesToModel(final Map<String, Object> model) {
         final List<String> templateNameList = new ArrayList<>();

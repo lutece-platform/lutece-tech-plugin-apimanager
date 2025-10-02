@@ -192,7 +192,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
             List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(api.getUuid());
             api.setEnvironementList(resources.stream().filter(resource -> resource.getEnvironement()!=null&& resource.getEnvironement().getUuid()!=null).map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
             api.setPlantList(resources.stream().filter(resource -> resource.getPlan()!=null && resource.getPlan().getUuid()!=null).map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
-            api.set_resourceList(resources);
+            api.setResourceList(resources);
             for(Resource resource : resources){
                 List<Subscription> subscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(resource.getUuid()));
 
@@ -210,7 +210,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
 
         String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
         if(selectedEnvironementUuid != null){
-            _apiList = _apiList.stream().filter(api -> api.get_resourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(selectedEnvironementUuid))).collect(Collectors.toList());
+            _apiList = _apiList.stream().filter(api -> api.getResourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(selectedEnvironementUuid))).collect(Collectors.toList());
         }
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_API_LIST, _apiList.stream().map(Api::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );

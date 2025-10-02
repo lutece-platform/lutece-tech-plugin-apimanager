@@ -77,6 +77,26 @@ public class Resource implements Serializable
     @Pattern( regexp = "[a-z0-9\\-]+", message = "#i18n{apimanager.resource.labelName.help}" )
     private String _strName;
 
+
+    public Resource() {
+
+    }
+
+    public Resource(Resource resource) {
+        this.setMatcherType(resource.getMatcherType() );
+        this.setTraceEnabled(resource.getTraceEnabled() );
+        this.setHeaderMatchings(resource.getHeaderMatchings() );
+        this.setInstances(resource.getInstances());
+        this.setPath(resource.getPath());
+        this.setVerb(resource.getVerb());
+        this.setName(resource.getName());
+        this.setStatus(resource.getStatus());
+        this.setEnvironement(resource.getEnvironement());
+        this.setApi(resource.getApi());
+        this.setPlan(resource.getPlan());
+        this.setRewriteUrl(resource.getRewriteUrl());
+    }
+
     /**
      * Returns the Uuid
      * 

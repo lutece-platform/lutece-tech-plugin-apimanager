@@ -1,12 +1,12 @@
 <div class="container-fluid">
-   <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
-         <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab" aria-controls="manage" aria-selected="false">#i18n{apimanager.manage_apis.viewApi}</button>
-      </li>
-      <li class="nav-item" role="presentation">
-         <button class="nav-link active" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="true">#i18n{apimanager.manage_apis.createApi}</button>
-      </li>
-   </ul>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageApis.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_apis.viewApi}</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="create-tab" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_apis.createApi}</a>
+        </li>
+    </ul>
    <div class="tab-content mt-3" id="myTabContent">
       <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
 
@@ -40,7 +40,7 @@
             </div>
          </div>
          <div class="bs-stepper-content">
-            <@tform name='api_step1' id='api_step1' action='jsp/admin/plugins/apimanager/ManageApis.jsp?action=step1' params='enctype="multipart/form-data"'>
+            <@tform name='step1' id='step1' method='post' action='jsp/admin/plugins/apimanager/ManageApis.jsp?action=step1' params='enctype="multipart/form-data"' >
             <@messages errors=errors />
             <@input type="hidden" id="uuid" name="uuid" />
             <@input type="hidden" value="${token}" name="token" />
@@ -97,7 +97,7 @@
                      </@formGroup>
                   </div>
                </div>
-               <button class="btn btn-primary" type="button" tabIndex='8' onclick="submitStep1()">Next</button>
+                <@actionButtons button1Name="action_step1"  i18nValue1Key="apimanager.manage_apis.next"  icon1="next" />
             </div>
             <div id="information-part" class="content auto-height" role="tabpanel" aria-labelledby="information-part-trigger">
 
