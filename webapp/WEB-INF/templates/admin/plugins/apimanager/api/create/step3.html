@@ -114,7 +114,7 @@
                    </#list>
 
                     <div class="stepper-actions">
-                        <#if api.uuid??>
+                        <#if api.uuid?? && api.uuid?has_content>
                         <@actionButtons button1Name="view_step2" button2Name="action_step3" i18nValue1Key="apimanager.manage_apis.previous" icon1="previous" i18nValue2Key="apimanager.manage_apis.update"  icon2="save" />
                         <#else>
                         <@actionButtons button1Name="view_step2" button2Name="action_step3" i18nValue1Key="apimanager.manage_apis.previous" icon1="previous" i18nValue2Key="apimanager.manage_apis.save"  icon2="save" />

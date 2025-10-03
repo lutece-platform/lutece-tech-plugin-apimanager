@@ -89,8 +89,10 @@
                                                 <div class="mb-3 col-1 align-content-end">
                                                     <button class="btn btn-light" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})"><i class="ti ti-trash" aria-hidden="true"></i></button>
                                                 </div>
+                                                 <#if api.uuid??>
                                                  <@input type="hidden" id="environement-${environment.uuid}-resource-row-${resource?index}-uuid" value=resource.uuid!''
                                                  name="environement-${environment.uuid}-resource-row-${resource?index}-uuid" />
+                                                </#if>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-name' labelKey='#i18n{apimanager.resource.labelName}' mandatory=true>
                                                 <div class="d-none" id="suggested-name-prefix"></div>
                                                 <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-name'

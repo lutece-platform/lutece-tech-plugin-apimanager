@@ -676,7 +676,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
             _api.setStatus("NEW");
 
-            if(_api.getUuid() != null){
+            if(_api.getUuid() != null && !_api.getUuid().isEmpty()){
                 addInfo(INFO_API_UPDATED, getLocale());
                 getService().update(_api, getUser().getEmail());
             }else{
@@ -720,9 +720,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         // DELETE PUBLISHED CONFIGS AND ARCHIVE SUBSCRIPTIONS
         // get all plans linked to this API, if any
-        PlanService.getInstance().getIdEntitiesList(Map.of("uuid_api", apiUuid)).forEach(planUuid -> {
+        ResourceService.getInstance().getIdEntitiesList(Map.of("uuid_api", apiUuid)).forEach(resourceUuid -> {
             // for each plan, get the subscriptions, if any
-            SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_plan", planUuid)).forEach(subscriptionUuid -> {
+            SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_resource", resourceUuid)).forEach(subscriptionUuid -> {
                 SubscriptionHome.findByPrimaryKey(subscriptionUuid).ifPresent(subscription -> {
                     // for each subscription, send a delete request, and archive the subscription
                    /* _configGeneratorService.deleteSubscription(subscription.getClient(), subscription.getResource().getPlan(),
@@ -732,11 +732,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     SubscriptionService.getInstance().archive(subscriptionUuid, getUser().getEmail());
                 });
             });
-            // Update plan status to unpublished if it was previously published
-            PlanHome.findByPrimaryKey(planUuid).filter(plan -> plan.getStatus().equals(PlanStatusEnum.PUBLISHED)).ifPresent(plan -> {
-                plan.setStatus(PlanStatusEnum.UNPUBLISHED);
-                PlanService.getInstance().update(plan, getUser().getEmail());
-            });
+            ResourceService.getInstance().delete(resourceUuid,getUser().getEmail());
         });
 
         getService().archive(apiUuid, getUser().getEmail());
@@ -827,6 +823,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
         _api.setVersion(generateNewVersionNumber(_api.getVersion()));
         loadApi();
+        _api.setUuid(null);
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_API));
