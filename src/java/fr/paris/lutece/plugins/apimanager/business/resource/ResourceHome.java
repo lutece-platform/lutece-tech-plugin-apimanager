@@ -172,4 +172,15 @@ public final class ResourceHome
     {
         _dao.linkInstance( resource, instanceUuid, _plugin );
     }
+
+    /**
+     * Remove the link the specified Resource with instances
+     *
+     * @param resource
+     *            the Resource
+     */
+    public static void removeInstanceLinks(final Resource resource)
+    {
+        _dao.removeInstanceLinks( resource, _plugin );
+    }
 }

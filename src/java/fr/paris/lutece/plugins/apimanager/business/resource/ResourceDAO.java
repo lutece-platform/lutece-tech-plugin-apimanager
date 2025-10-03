@@ -188,11 +188,11 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getRewriteUrl( ) != null ? resource.getRewriteUrl( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getMatcherType( ) );
             daoUtil.setString( nIndex++, resource.getName( ) );
-            daoUtil.setString( nIndex++, resource.getUuid( ) );
             daoUtil.setString( nIndex++, resource.getEnvironement( ) != null ? resource.getEnvironement( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getApi( ) != null ? resource.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getStatus( ) );
             daoUtil.setBoolean( nIndex++, resource.getTraceEnabled( ) );
+            daoUtil.setString( nIndex, resource.getUuid( ) );
 
             daoUtil.executeUpdate( );
 
@@ -332,6 +332,17 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getUuid( ) );
             daoUtil.setString( nIndex, instanceUuid );
 
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public void removeInstanceLinks(final Resource resource, final Plugin plugin )
+    {
+
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINKS, plugin ) )
+        {
+            daoUtil.setString( 1, resource.getUuid() );
             daoUtil.executeUpdate( );
         }
     }

@@ -56,4 +56,5 @@ public interface IResourceDAO extends IDAO<Resource>
      *            the instance UUID
      */
     void linkInstance(Resource resource, String instanceUuid, Plugin plugin );
+    void removeInstanceLinks(Resource resource, Plugin plugin );
 }

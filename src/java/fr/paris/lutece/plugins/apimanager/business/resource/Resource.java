@@ -44,6 +44,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is the business class for the object Resource
@@ -227,6 +228,11 @@ public class Resource implements Serializable
     public void setHeaderMatchings( final List<ResourceHeaderMatching> headerMatchings )
     {
         _headerMatchings = headerMatchings;
+    }
+
+
+    public List<String> getInstanceUuids() {
+        return _instances != null ? _instances.stream().map(Instance::getUuid).collect(Collectors.toList()) : new ArrayList<>();
     }
 
     public List<Instance> getInstances() {

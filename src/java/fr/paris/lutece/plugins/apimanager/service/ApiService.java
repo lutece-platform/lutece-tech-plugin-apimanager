@@ -41,9 +41,12 @@ import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ApiService extends AbstractService<Api>
 {
@@ -67,9 +70,9 @@ public class ApiService extends AbstractService<Api>
     public void create( final Api entity, final String user )
     {
         final String uuid = ApiHome.create( entity ).getUuid( );
+        entity.setUuid(uuid);
         for (Environement env : entity.getEnvironementList()){
             for(Resource resource : env.getResourceList()){
-                entity.setUuid(uuid);
                 resource.setApi(entity);
                 ResourceHome.create(resource);
                 if( resource.getInstances() != null){
@@ -87,6 +90,33 @@ public class ApiService extends AbstractService<Api>
     public void update( final Api entity, final String user )
     {
         ApiHome.update( entity );
+        for (Environement env : entity.getEnvironementList()){
+            // retrieve current resource list to find deleted ones
+            List<Resource> currentResources = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(entity.getUuid(), null, env.getUuid());
+            // check if some subscriptions have been deleted
+            // compare the new edition with the current stored resource list
+            List<String> currentResourcesUuids = currentResources.stream().map(Resource::getUuid).collect(Collectors.toList());
+            currentResourcesUuids.removeAll(env.getResourceList().stream().map(Resource::getUuid).collect(Collectors.toList()));
+            for(String ressourceUuid : currentResourcesUuids){
+                ResourceService.getInstance().delete(ressourceUuid,user);
+            }
+
+            for(Resource resource : env.getResourceList()){
+                if(resource.getUuid() != null){
+                    resource.setApi(entity);
+                    ResourceHome.update(resource);
+                }else{
+                    ResourceHome.create(resource);
+                }
+                //clean previous link
+                ResourceHome.removeInstanceLinks(resource);
+                if( resource.getInstances() != null){
+                    for(Instance instance : resource.getInstances()){
+                        ResourceHome.linkInstance(resource, instance.getUuid());
+                    }
+                }
+            }
+        }
         this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
     }
 

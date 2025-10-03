@@ -385,6 +385,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     @View(VIEW_CREATE_API)
     public String getCreateApi(HttpServletRequest request) {
         _api = (_api != null) ? _api : new Api();
+        _resources = (_resources != null) ? _resources : new ArrayList<Resource>();
 
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
@@ -403,12 +404,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
      */
     @Action(ACTION_CREATE_API)
     public String doCreateApi(HttpServletRequest request) throws AccessDeniedException {
-        try {
-            populateApi(_api, request, getLocale());
-        } catch (JsonProcessingException e) {
-            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
-            return redirect(request, VIEW_MODIFY_API, Map.of(PARAMETER_ID_API, _api.getUuid()));
-        }
 
         if (!SecurityTokenService.getInstance().validate(request, ACTION_ARCHIVE_API)) {
             throw new AccessDeniedException("Invalid security token");
@@ -440,13 +435,20 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         _api = (_api != null) ? _api : new Api();
         super.populate(_api, request, getLocale());
 
+        try {
+            populateApi(_api, request, getLocale());
+        } catch (JsonProcessingException e) {
+            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+            return redirect(request, VIEW_MANAGE_APIS);
+        }
+
         if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
             throw new AccessDeniedException("Invalid security token");
         }
 
         // Check constraints
         if (!validateBean(_api, VALIDATION_ATTRIBUTES_PREFIX)) {
-            return redirectView(request, VIEW_CREATE_API);
+            return redirectView(request, VIEW_MANAGE_APIS);
         }
 
         return getCreateApiStep2(request);
@@ -571,7 +573,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         if (usecase != null && usecase.isEmpty()) {
             _api = (_api != null) ? _api : new Api();
-            super.populate(_api, request, getLocale());
 
             try {
                 populateEnvironement(_api, request, getLocale());
@@ -628,7 +629,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
         model.put(MARK_PLAN_LIST, plans);
-        model.put(PARAMETER_CURRENT_PLAN_TAB, selectedPlanUuid != null ? selectedPlanUuid : 0);
+        String defaultIndex = "0";
+        Environement defaultEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getPlanList() != null && !environement.getPlanList().isEmpty()).findFirst().orElse(null);
+        if(defaultEnvironement != null){
+            String defaultuuid = defaultEnvironement.getPlanList().get(0).getUuid();
+            if(defaultuuid != null)
+            defaultIndex = defaultuuid;
+        }
+        model.put(PARAMETER_CURRENT_PLAN_TAB, selectedPlanUuid != null ? selectedPlanUuid : defaultIndex);
 
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
 
@@ -649,7 +657,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         Map<String, String[]> params = request.getParameterMap();
         if (usecase != null && usecase.isEmpty()) {
             _api = (_api != null) ? _api : new Api();
-            super.populate(_api, request, getLocale());
 
             try {
                 populatePlan(_api, request, getLocale());
@@ -668,8 +675,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             }
 
             _api.setStatus("NEW");
-            getService().create(_api, getUser().getEmail());
-            addInfo(INFO_API_CREATED, getLocale());
+
+            if(_api.getUuid() != null){
+                addInfo(INFO_API_UPDATED, getLocale());
+                getService().update(_api, getUser().getEmail());
+            }else{
+                addInfo(INFO_API_CREATED, getLocale());
+                getService().create(_api, getUser().getEmail());
+            }
             resetListId();
 
             return redirectView(request, VIEW_MANAGE_APIS);
@@ -938,6 +951,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 if (resourceEnv != null) {
                     resourceEnv.setResourceList(resourcesByEnvironements.get(envuuid));
                     resourceEnv.setPlanList(PlanService.getInstance().getEntitiesListByIds(resourcesByEnvironements.get(envuuid).stream().map(resource -> resource.getPlan().getUuid()).collect(Collectors.toList())));
+                    for(Resource  resource : resourceEnv.getResourceList()){
+                        resource.setInstances(InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(resource.getUuid())));
+                    }
                     if (_api.getEnvironementList() == null) {
                         _api.setEnvironementList(new ArrayList<>());
                     }
@@ -946,6 +962,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     }
                 }
             }
+
+            Api currentApi = ApiHome.findByPrimaryKey(_api.getUuid()).orElse(null);
+            _api.setOpenapi(currentApi.getOpenapi());
+            _api.setTags(currentApi.getTags());
 
         }
 
@@ -972,6 +992,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
     protected void populateEnvironement(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
 
+        _resources = new ArrayList<Resource>();
         //environement
 
         final List<String> configuredEnvironements = request.getParameterMap().entrySet().stream()

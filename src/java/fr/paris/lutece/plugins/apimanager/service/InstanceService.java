@@ -111,7 +111,7 @@ public class InstanceService extends AbstractService<Instance>
      */
     public List<String> getIdInstancesListLinkedToResourceUuid( final String apiUuid )
     {
-        return InstanceHome.getIdInstancesListLinkedToEnvironementUuid( apiUuid );
+        return InstanceHome.getIdInstancesListLinkedToResourceUuid( apiUuid );
     }
 
     /**

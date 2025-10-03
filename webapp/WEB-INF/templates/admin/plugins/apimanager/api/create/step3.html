@@ -4,7 +4,7 @@
             <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageApis.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_apis.viewApi}</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="create-tab" href="#"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_apis.createApi}</a>
+            <a class="nav-link active" id="create-tab" role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_apis.createApi}</a>
         </li>
     </ul>
    <div class="tab-content mt-3" id="myTabContent">
@@ -41,7 +41,6 @@
             <div class="bs-stepper-content">
                <@tform name='step3' id='step3' method='post' action='jsp/admin/plugins/apimanager/ManageApis.jsp?action=step3'>
                <@messages errors=errors />
-               <@input type="hidden" id="uuid" name="uuid" />
                <@input type="hidden" value="${token}" name="token" />
                <@input type="hidden" value="${current_environement_tab}" id="current_environement_tab" name="current_environement_tab" />
                 <@input type="hidden" value="${current_plan_tab}" id="current_plan_tab" name="current_plan_tab" />
@@ -86,14 +85,18 @@
 
                            <#list environment.planList as plan>
                            <!-- plan tab content -->
-                           <div class="tab-pane container-fluid border border-1 rounded p-4 mt-4 shadow <#if '${plan.uuid}'=='${current_plan_tab}'>active show</#if>" id="environement-${environment.uuid}-plan-${plan.uuid}" role="tabpanel">
+                           <div class="tab-pane container-fluid border border-1 rounded p-4 mt-4 shadow <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active show</#if><#else><#if plan?index==0>active show</#if></#if>" id="environement-${environment.uuid}-plan-${plan.uuid}" role="tabpanel">
                                <div class="plan-resources sub-tab-content" id="plan-resources-template" style="display: block;">
                                    <div class="flex items-center space-x-4 mb-4">
                                        <div class="form-group mb-3">
                                            <label for="environement-${environment.uuid}-plan-${plan.uuid}-resources" class="form-label form-label" >Ajouter des ressources :</label>
                                            <select id="environement-${environment.uuid}-plan-${plan.uuid}-resources" name="environement-${environment.uuid}-plan-${plan.uuid}-resources" multiple class="form-control">
                                                <#list environment.resourceList as resource>
+                                               <#if resource.uuid??>
+                                               <option value="${resource.verb.name()}|${resource.path}" id="${resource.verb.name()}${resource.path}" selected>${resource.verb.name()} - ${resource.path}</option>
+                                               <#else>
                                                <option value="${resource.verb.name()}|${resource.path}" id="${resource.verb.name()}${resource.path}">${resource.verb.name()} - ${resource.path}</option>
+                                               </#if>
                                                 </#list>
                                            </select>
                                        </div>
@@ -111,8 +114,12 @@
                    </#list>
 
                     <div class="stepper-actions">
-                      <@actionButtons button1Name="view_step2" button2Name="action_step3" i18nValue1Key="apimanager.manage_apis.previous" icon1="previous" i18nValue2Key="apimanager.manage_apis.save"  icon2="save" />
-                    </div>
+                        <#if api.uuid??>
+                        <@actionButtons button1Name="view_step2" button2Name="action_step3" i18nValue1Key="apimanager.manage_apis.previous" icon1="previous" i18nValue2Key="apimanager.manage_apis.update"  icon2="save" />
+                        <#else>
+                        <@actionButtons button1Name="view_step2" button2Name="action_step3" i18nValue1Key="apimanager.manage_apis.previous" icon1="previous" i18nValue2Key="apimanager.manage_apis.save"  icon2="save" />
+                        </#if>
+                     </div>
                     </div>
                </@tform>
             </div>
