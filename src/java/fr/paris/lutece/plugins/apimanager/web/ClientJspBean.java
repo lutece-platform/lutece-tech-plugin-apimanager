@@ -366,10 +366,10 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
         final Map<String, String[]> subscriptionEnvironements;
         final Map<String, String[]> subscriptionPlans;
 
-        if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty()) {
-            subscriptionUuids = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_SUBSCRIPTION_ROW))
-                    .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
+        subscriptionUuids = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_SUBSCRIPTION_ROW))
+                .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
 
+        if (request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) != null && !request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty()) {
             subscriptionApis = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(MARK_PREFIX_API_SUBSCRIPTION_ROW))
                     .collect(Collectors.toMap(entry -> entry.getKey().replace(MARK_PREFIX_API_SUBSCRIPTION_ROW, ""), Map.Entry::getValue));
 
@@ -390,7 +390,8 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             Subscription currentSubscription = null;
             for (String apiIndex : subscriptionApis.keySet()) {
                 currentSubscription = new Subscription();
-                currentSubscription.setUuid(subscriptionUuids.get(apiIndex)[0]);
+                if(subscriptionUuids.get(apiIndex) != null && subscriptionUuids.get(apiIndex).length >0)
+                    currentSubscription.setUuid(subscriptionUuids.get(apiIndex)[0]);
                 currentSubscription.setApi(ApiService.getInstance().getEntitiesListByIds(List.of(subscriptionApis.get(apiIndex))).stream().findFirst().orElse(null));
                 if (subscriptionEnvironements.get(apiIndex) != null) {
                     currentSubscription.setEnvironement(EnvironementService.getInstance().getEntitiesListByIds(List.of(subscriptionEnvironements.get(apiIndex))).stream().findFirst().orElse(null));

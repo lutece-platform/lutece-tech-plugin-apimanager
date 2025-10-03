@@ -105,7 +105,7 @@
                          <div class="card-title"><b>${api.name!''}</b> - v${api.version!''}</div>
                         <div class="card-tools">
                             <#if api.status!='NEW'>
-                            <@aButton class="btn-edit disabled" href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=newApiVersion&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.NewVersion}' buttonIcon='link' hideTitle=['all']  />
+                            <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=newApiVersion&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.NewVersion}' buttonIcon='link' hideTitle=['all']  />
                             <#else>
                             <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
                         </#if>

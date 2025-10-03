@@ -68,7 +68,7 @@
                      <div class="col">
                         <#if api.version??>
                         <@formGroup labelFor='version' labelKey='#i18n{apimanager.api.versionName}' mandatory=true>
-                        <@input type='text' id='version' name='version' maxlength=255 value=api.version+'-1' readonly=true tabIndex='4'  />
+                        <@input type='text' id='version' name='version' maxlength=255 value=api.version readonly=true tabIndex='4'  />
                         </@formGroup>
                         <#else>
                         <@formGroup labelFor='version' labelKey='#i18n{apimanager.api.versionName}' mandatory=true>
