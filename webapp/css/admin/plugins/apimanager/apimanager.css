@@ -162,3 +162,17 @@
     color: rgb(153 27 27);
 }
 
+
+/* delete: css pour la démo du stepper de création d'APIs, à refactorer / supprimer */
+.stepper-actions .btn-light {
+    background-color: rgba(58, 157, 254) !important;
+    border-color: rgba(58, 157, 254) !important;
+    color: white;
+}
+
+.stepper-actions .btn-primary {
+    background-color: rgb(242, 247, 255) !important;
+    border-color: rgb(242, 247, 255) !important;
+    color: black;
+}
+
