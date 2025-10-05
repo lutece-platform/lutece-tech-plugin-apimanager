@@ -65,6 +65,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_api WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, active = ?, in_maintenance = ?, wait = ?, openapi = ?, archived = ?, version= ?, status= ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE_STATUS = "UPDATE apimanager_api SET status= ? WHERE uuid = ?";
 
     private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status  FROM apimanager_api";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_api";
@@ -370,6 +371,20 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.executeUpdate( );
         }
     }
+
+    @Override
+    public void updateStatus( final String apiUuid, final String status, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_STATUS, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setString( nIndex++, status );
+            daoUtil.setString( nIndex, apiUuid );
+
+            daoUtil.executeUpdate( );
+        }
+    }
+
 
     private Api loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin ) throws JsonProcessingException
     {

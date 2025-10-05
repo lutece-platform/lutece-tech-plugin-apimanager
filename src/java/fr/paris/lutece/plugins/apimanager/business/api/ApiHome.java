@@ -90,6 +90,20 @@ public final class ApiHome
     }
 
     /**
+     * Update of the status of api which is specified in parameter
+     *
+     * @param apiUuid
+     * @param status
+     *            The instance of the Api which contains the data to store
+     * @return The instance of the api which has been updated
+     */
+    public static void updateStatus( String apiUuid, String status )
+    {
+        _dao.updateStatus( apiUuid,status, _plugin );
+
+    }
+
+    /**
      * Remove the api whose identifier is specified in parameter
      * 
      * @param nKey

@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.client.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
@@ -70,6 +71,9 @@ import org.checkerframework.checker.units.qual.A;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -481,10 +485,8 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
         try
         {
 
-            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
-            List<Resource> apiResources = resources.stream()
-                    .filter(resource -> resource.getApi() != null)
-                    .filter(resource -> resource.getApi().getUuid().equals( apiUuid ) ).collect(Collectors.toList());
+
+            List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
             List<Subscription> resourceSubscription =new ArrayList<>();
             for(Resource apiResource : apiResources){
                 resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
@@ -506,17 +508,19 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                             List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                             sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
                         }
-                        _configGeneratorService.generateSubscriptions(
-                                subscriptions, comment, getUser( ).getEmail( ) );
-
+                        ExecutorService executor = Executors.newFixedThreadPool(1);
+                        executor.submit(() -> {
+                            _configGeneratorService.generateSubscriptions(
+                                    subscriptions, comment, getUser( ).getEmail( ) );
+                            ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                        });
+                        executor.shutdown();
                     }
                 }
-
-
             }
 
-            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-            api.setStatus( PlanStatusEnum.PUBLISHED.name() );
+            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.PUBLISH, getUser( ).getEmail( ) );
+            api.setStatus( ApiStatusEnum.PUBLISHING.name() );
             ApiService.getInstance( ).update( api, getUser( ).getEmail( ) );
         }
         catch( final AppException e )

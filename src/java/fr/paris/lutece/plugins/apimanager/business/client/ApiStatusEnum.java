@@ -31,47 +31,12 @@
  *
  * License 1.0
  */
+package fr.paris.lutece.plugins.apimanager.business.client;
 
-package fr.paris.lutece.plugins.apimanager.business.api;
-
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.ReferenceList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-/**
- * IApiDAO Interface
- */
-public interface IApiDAO extends IDAO<Api>
+public enum ApiStatusEnum
 {
-    /**
-     * Load the uuid of all the APIs that are NOT linked to the specified instance UUID, and returns them as a list
-     * 
-     * @param instanceUuid
-     *            the instance uuid
-     * @return the list which contains the uuid of all the avant objects
-     */
-    List<String> getIdApisListNotLinkedToInstanceUuid( String instanceUuid, Plugin plugin );
-
-    /**
-     * Load the uuid of all APIs that are linked to the specified instance UUID, and returns them as a list
-     * 
-     * @param instanceUuid
-     *            the instance uuid
-     * @return the list which contains the uuid of all the APIs
-     */
-    List<String> getIdApisListLinkedToInstanceUuid( String instanceUuid, Plugin plugin );
-
-    /**
-     * Link the specified API to the specified instance UUID.
-     * 
-     * @param api
-     *            the API
-     * @param instanceUuid
-     *            the instance UUID
-     */
-    void linkInstance( Api api, String instanceUuid, Plugin plugin );
-    void updateStatus( String apiUuid,String status, Plugin plugin );
+    DRAFT,
+    PUBLISHING,
+    PUBLISHED,
+    UNPUBLISHED
 }
