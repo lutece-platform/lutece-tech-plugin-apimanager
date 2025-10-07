@@ -87,7 +87,6 @@ values  ('0dfd223c-7ee3-45e4-b7c3-88f943cf9dec', 'https://mdp.meecrogate.com', n
 insert into apimanager_resource (uuid, uuid_plan, uuid_environement, path, verb, status, uuid_rewrite_url, matcher_type, name, uuid_api, trace_enabled, uuid_meecrogate_instance)
 values  ('4109dd6b-2e57-4631-8b69-a4ebea308f47', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/one', 'GET', null, 'f4db2bbf-f0fc-4552-934a-0d308cc837b4', 'EXACT', 'test', '3d061ebc-673f-4592-9de6-f7e2babedc8f', 0, '3');
 
-
 insert into apimanager_resource_rewrite_url (uuid, target, value, type)
 values  ('f4db2bbf-f0fc-4552-934a-0d308cc837b4', 'blop', 'bloup', 'PREFIX_PATH');
 
