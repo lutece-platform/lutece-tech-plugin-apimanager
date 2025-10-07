@@ -118,7 +118,7 @@ CREATE TABLE apimanager_resource
     uuid_api                 varchar(50)                  null,
     trace_enabled            smallint                     null,
     uuid_meecrogate_instance varchar(50)                  null,
-    request_timeout          int          default 0       null,
+    request_timeout          int          default 30000       null,
     constraint apimanager_resource_apimanager_meecrogate_instance_uuid_fk foreign key (uuid_meecrogate_instance) references apimanager_meecrogate_instance (uuid),
     constraint fk_plan_uuid_rewrite_url foreign key (uuid_rewrite_url) references apimanager_resource_rewrite_url (uuid),
     constraint fk_resource_uuid_api foreign key (uuid_api) references apimanager_api (uuid),
