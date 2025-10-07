@@ -483,6 +483,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
         this.reloadLists();
 
+        this.environements.removeIf(environement -> _api.getEnvironementList().stream().anyMatch(environement1 -> environement1.getUuid().equals(environement.getUuid())));
+
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
         if (usecase != null && usecase.equals("add_environment")) {
             String selectedEnvironementUuid = request.getParameter(PARAMETER_SELECTED_ENVIRONMENT);
@@ -502,7 +504,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 }
                 _api.getEnvironementList().add(currentEnvironement);
             }
-            this.environements.removeIf(environement -> _api.getEnvironementList().stream().anyMatch(environement1 -> environement1.getUuid().equals(environement.getUuid())));
         }
 
         if (usecase != null && usecase.equals("add_resource")) {
@@ -983,6 +984,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         _api.setTags(Arrays.stream(Optional.ofNullable(request.getParameterValues(PARAMETER_SELECTED_TAGS)).orElse(new String[0]))
                 .collect(Collectors.toList()));
 
+        if(map.get("active") != null){
+            _api.setActive(true);
+        }
+
+        if(map.get("inMaintenance") != null){
+            _api.setInMaintenance(true);
+        }
 
     }
 
@@ -1013,8 +1021,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     .map(key -> key.replace(PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW, ""))
                     .map(key -> Integer.parseInt(key.substring(0, key.indexOf('-')))).distinct().collect(Collectors.toList());
 
-            Resource currentResource = new Resource();
             for (final int index : resourceIndexes) {
+                Resource currentResource = new Resource();
                 final String prefix = PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW + index + "-";
                 final Map<String, String[]> resourceParams = request.getParameterMap().entrySet().stream()
                         .filter(entry -> entry.getKey().startsWith(prefix))
