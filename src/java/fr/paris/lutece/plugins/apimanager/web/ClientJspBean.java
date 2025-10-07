@@ -432,6 +432,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                 return getCreateClient(request);
             }
 
+            _client.setStatus("NEW");
             getService().create(_client, getUser().getEmail());
 
             if(!_client.getSubscriptionList().isEmpty()){

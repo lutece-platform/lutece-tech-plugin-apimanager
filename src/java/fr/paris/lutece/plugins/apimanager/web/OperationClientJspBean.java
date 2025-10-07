@@ -318,9 +318,13 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             for (Environement envir : availableEnvs) {
                 ExecutorService executor = Executors.newFixedThreadPool(1);
                 executor.submit(() -> {
-                    _configGeneratorService.deleteOauth2Client(client,
-                            envir, getUser().getEmail());
-                    ClientService.getInstance( ).updateStatus( uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser( ).getEmail( ) );
+                    try {
+                        _configGeneratorService.deleteOauth2Client(client,
+                                envir, getUser().getEmail());
+                        ClientService.getInstance( ).updateStatus( uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser( ).getEmail( ) );
+                    } catch (AppException e) {
+                        ClientService.getInstance( ).updateStatus( uuid, ClientStatusEnum.ERROR.name(), getUser( ).getEmail( ) );
+                    }
                 });
                 executor.shutdown();
             }
@@ -361,9 +365,13 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             for (Environement envir : availableEnvs) {
                 ExecutorService executor = Executors.newFixedThreadPool(1);
                 executor.submit(() -> {
-                    _configGeneratorService.generateOauth2Client(client,
-                            envir, comment, getUser().getEmail());
-                    ClientService.getInstance( ).updateStatus( clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                    try{
+                        _configGeneratorService.generateOauth2Client(client,
+                                envir, comment, getUser().getEmail());
+                        ClientService.getInstance( ).updateStatus( clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                    } catch (Exception e) {
+                        ClientService.getInstance( ).updateStatus( clientUuid, ClientStatusEnum.ERROR.name(), getUser( ).getEmail( ) );
+                    }
                 });
                 executor.shutdown();
             }

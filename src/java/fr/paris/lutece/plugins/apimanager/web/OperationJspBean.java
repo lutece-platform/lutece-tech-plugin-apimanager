@@ -432,9 +432,13 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                         }
                         ExecutorService executor = Executors.newFixedThreadPool(1);
                         executor.submit(() -> {
-                            _configGeneratorService.deleteSubscriptions(
-                                    subscriptions, comment, getUser( ).getEmail( ) );
-                            ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                            try{
+                                _configGeneratorService.deleteSubscriptions(
+                                        subscriptions, comment, getUser( ).getEmail( ) );
+                                ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                            } catch (Exception e) {
+                                ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.ERROR.name(), getUser( ).getEmail( ) );
+                            }
                         });
                         executor.shutdown();
                     }
@@ -498,9 +502,13 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                         }
                         ExecutorService executor = Executors.newFixedThreadPool(1);
                         executor.submit(() -> {
-                            _configGeneratorService.generateSubscriptions(
-                                    subscriptions, comment, getUser( ).getEmail( ) );
-                            ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                            try{
+                                _configGeneratorService.generateSubscriptions(
+                                        subscriptions, comment, getUser( ).getEmail( ) );
+                                ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                            } catch (Exception e) {
+                                ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.ERROR.name(), getUser( ).getEmail( ) );
+                            }
                         });
                         executor.shutdown();
                     }

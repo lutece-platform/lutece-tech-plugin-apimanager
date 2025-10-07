@@ -39,5 +39,6 @@ public enum ClientStatusEnum
     UNPUBLISHING,
     PUBLISHING,
     PUBLISHED,
-    UNPUBLISHED
+    UNPUBLISHED,
+    ERROR
 }
