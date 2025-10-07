@@ -323,7 +323,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                                 envir, getUser().getEmail());
                         ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                     }
-                } catch (AppException e) {
+                } catch (Exception e) {
                     ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
                 }
             });
