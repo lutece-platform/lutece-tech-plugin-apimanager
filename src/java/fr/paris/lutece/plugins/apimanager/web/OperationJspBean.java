@@ -80,12 +80,8 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
 
     // Templates
     private static final String TEMPLATE_MANAGE_API_OPERATIONS = "/admin/plugins/apimanager/operation/manage_api_operations.html";
-    private static final String TEMPLATE_MANAGE_CLIENT_OPERATIONS = "/admin/plugins/apimanager/operation/manage_client_operations.html";
-    private static final String TEMPLATE_HISTORY_OPERATIONS = "/admin/plugins/apimanager/operation/history_operations.html";
     // Parameters
     private static final String PARAMETER_ID_OPERATION = "uuid";
-    private static final String PARAMETER_ID_CLIENT = "uuid_client";
-    private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
     private static final String PARAMETER_ENVIRONNEMENT = "environnement";
     private static final String PARAMETER_COMMENT = "comment";
@@ -325,7 +321,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
 
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_OPERATION ) );
 
-        return getPage( PROPERTY_PAGE_API_OPERATIONS, TEMPLATE_MANAGE_CLIENT_OPERATIONS, model );
+        return getPage( PROPERTY_PAGE_API_OPERATIONS, TEMPLATE_MANAGE_API_OPERATIONS, model );
     }
 
     /**

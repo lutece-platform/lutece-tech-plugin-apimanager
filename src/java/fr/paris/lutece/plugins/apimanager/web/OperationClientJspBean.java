@@ -34,23 +34,17 @@
 
 package fr.paris.lutece.plugins.apimanager.web;
 
-import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
-import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
-import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
-import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -81,13 +75,9 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
 public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
     // Templates
-    private static final String TEMPLATE_MANAGE_API_OPERATIONS = "/admin/plugins/apimanager/operation/manage_api_operations.html";
     private static final String TEMPLATE_MANAGE_CLIENT_OPERATIONS = "/admin/plugins/apimanager/operation/manage_client_operations.html";
-    private static final String TEMPLATE_HISTORY_OPERATIONS = "/admin/plugins/apimanager/operation/history_operations.html";
     // Parameters
     private static final String PARAMETER_ID_OPERATION = "uuid";
-    private static final String PARAMETER_ID_CLIENT = "uuid_client";
-    private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
     private static final String PARAMETER_ENVIRONNEMENT = "environnement";
     private static final String PARAMETER_COMMENT = "comment";
@@ -104,7 +94,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
     private static final String PROPERTY_PAGE_CLIENT_OPERATION = "apimanager.manage_operations.clients.pageTitle";
 
     // Markers
-    private static final String MARK_OPERATION_LIST = "subscription_list";
     private static final String MARK_CLIENT_LIST = "client_list";
     private static final String MARK_OPERATION = "subscription";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
@@ -118,9 +107,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_OPERATION = "apimanager.message.confirmRemoveSubscription";
 
-    // Validations
-    private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.subscription.attribute.";
-
     // Views
     private static final String VIEW_MANAGE_CLIENT_OPERATIONS = "manageClientOperations";
     private static final String VIEW_CREATE_OPERATION = "createOperation";
@@ -132,7 +118,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
     private static final String ACTION_GENERATE_CLIENT = "generateClient";
 
     // Infos
-    private static final String INFO_OPERATION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.removed";
     private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
 

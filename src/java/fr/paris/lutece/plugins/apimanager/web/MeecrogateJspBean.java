@@ -84,16 +84,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     private static final String TEMPLATE_MANAGE_MEECROGATE_ID_SERVERS = "/admin/plugins/apimanager/meecrogate/manage_meecrogate_idservers.html";
     // Parameters
     private static final String PARAMETER_ID_OPERATION = "uuid";
-    private static final String PARAMETER_ID_CLIENT = "uuid_client";
-    private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
-    private static final String PARAMETER_ENVIRONNEMENT = "environnement";
-    private static final String PARAMETER_COMMENT = "comment";
-    private static final String PARAMETER_UUID_OPERATION = "uuid_api";
-    private static final String PARAMETER_UUID_APPLICATION = "uuid_application";
-    private static final String PARAMETER_UUID_ENVIRONEMENT = "uuid_environement";
-    private static final String PARAMETER_UUID_API = "uuid_api";
-    private static final String PARAMETER_UUID_PLAN = "uuid_plan";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -104,25 +95,17 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     private static final String PROPERTY_PAGE_TITLE_MANAGE_IDSERVERS = "apimanager.manage_meecrogate_id_servers.pageTitle";
 
     // Markers
-    private static final String MARK_OPERATION_LIST = "subscription_list";
-    private static final String MARK_CLIENT_LIST = "client_list";
-    private static final String MARK_OPERATION = "subscription";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
     private static final String MARK_MEECROGATE_GATEWAY_LIST = "gateway_list";
     private static final String MARK_MEECROGATE_ID_SERVER_LIST = "id_server_list";
-    private static final String MARK_API_LIST = "api_list";
-    private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
     private static final String MARK_INSTANCE = "instance";
 
-    private static final String JSP_MANAGE_OPERATIONS = "jsp/admin/plugins/apimanager/ManageOperations.jsp";
+    private static final String JSP_MANAGE_MEECROGATES = "jsp/admin/plugins/apimanager/ManageMeecrogates.jsp";
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_OPERATION = "apimanager.message.confirmRemoveSubscription";
-
-    // Validations
-    private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.subscription.attribute.";
 
     // Views
     private static final String VIEW_MANAGE_GATEWAYS = "manageGateways";
@@ -137,11 +120,6 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     // Infos
     private static final String INFO_OPERATION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_MEECROGATE_REMOVED = "apimanager.info.meecrogate.removed";
-    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
-
-    // Errors
-    private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_API_MANAGER_GENERATION = "Error publishing API manager";
 
     // Session variable to store working values
     private Meecrogate _meecrogate;
@@ -189,7 +167,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
 
         _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(_listIdMeecrogates);
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_GATEWAY_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
+        Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_GATEWAY_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_MEECROGATES );
 
         model.put( MARK_INSTANCE, _meecrogate );
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
@@ -211,7 +189,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
      *            The HTTP request
      * @return The page
      */
-    @View( value = VIEW_MANAGE_IDSERVERS, defaultView = true )
+    @View( value = VIEW_MANAGE_IDSERVERS )
     public String getManageIDServers( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_OPERATION );
@@ -240,7 +218,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
 
         _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(_listIdMeecrogates);
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_ID_SERVER_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS );
+        Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_ID_SERVER_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_MEECROGATES );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_INSTANCE, _meecrogate );
@@ -369,79 +347,6 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
         resetListId( );
 
         return redirect( request, "ManageMeecrogates.jsp?infoMsg=" + INFO_MEECROGATE_REMOVED+((_meecrogate.getType()!=null && _meecrogate.getType().equals("ID"))?("&view="+VIEW_MANAGE_IDSERVERS):"")  );
-    }
-
-    @Action( ACTION_GENERATE_API_MANAGER )
-    public String doGenerateApiManager( final HttpServletRequest request )
-    {
-        final String apiUuid = request.getParameter( PARAMETER_UUID_OPERATION );
-        if ( apiUuid == null )
-        {
-            addError( ERROR_RESOURCE_NOT_FOUND );
-            return redirectView( request, VIEW_MANAGE_GATEWAYS );
-        }
-        final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
-        final String comment = request.getParameter( PARAMETER_COMMENT );
-
-        try
-        {
-
-            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
-            List<Resource> apiResources = resources.stream()
-                    .filter(resource -> resource.getApi() != null)
-                    .filter(resource -> resource.getApi().getUuid().equals( apiUuid ) ).collect(Collectors.toList());
-            List<Subscription> resourceSubscription =new ArrayList<>();
-            for(Resource apiResource : apiResources){
-                resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
-            }
-
-            Map<String,Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
-                    .collect(
-                            Collectors.groupingBy(o -> o.getClient().getUuid(),
-                                    Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
-                                            (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
-
-            for(Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()){
-                String clientUuid = clientSubscriptionByEnvironementAndPlan.getKey();
-                Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
-                for(Map.Entry<String, Map<String, List<Subscription>>> environementSubscription :  clientEnvironements.entrySet()){
-                    String environemenbtUuid = environementSubscription.getKey();
-                    Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
-                    for(Map.Entry<String, List<Subscription>> planSubscription :  clientPlans.entrySet()) {
-                        String planUuid = planSubscription.getKey();
-                        List<Subscription> subscriptions = planSubscription.getValue();
-
-
-                        for(Subscription sub : subscriptions){
-                            List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
-                            sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
-
-                        }
-
-                        _configGeneratorService.generateSubscriptions(
-                                subscriptions, comment, getUser( ).getEmail( ) );
-
-                    }
-                }
-
-
-            }
-
-            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-            api.setStatus( PlanStatusEnum.PUBLISHED.name() );
-            ApiService.getInstance( ).update( api, getUser( ).getEmail( ) );
-        }
-        catch( final AppException e )
-        {
-            addError( ERROR_API_MANAGER_GENERATION );
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_GATEWAYS );
-        }
-
-        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
-        return redirectView( request, VIEW_MANAGE_GATEWAYS );
     }
 
 }

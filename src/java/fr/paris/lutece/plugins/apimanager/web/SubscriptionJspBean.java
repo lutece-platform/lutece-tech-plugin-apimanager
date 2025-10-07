@@ -81,12 +81,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
     // Parameters
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
-    private static final String PARAMETER_ID_CLIENT = "uuid_client";
-    private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
-    private static final String PARAMETER_ENVIRONNEMENT = "environnement";
-    private static final String PARAMETER_COMMENT = "comment";
-    private static final String PARAMETER_UUID_SUBSCRIPTION = "uuid_subscription";
     private static final String PARAMETER_UUID_APPLICATION = "uuid_application";
     private static final String PARAMETER_UUID_ENVIRONEMENT = "uuid_environement";
     private static final String PARAMETER_UUID_API = "uuid_api";
@@ -116,9 +111,6 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_SUBSCRIPTION = "apimanager.message.confirmRemoveSubscription";
 
-    // Validations
-    private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.subscription.attribute.";
-
     // Views
     private static final String VIEW_MANAGE_SUBSCRIPTIONS = "manageSubscriptions";
     private static final String VIEW_CREATE_SUBSCRIPTION = "createSubscription";
@@ -127,16 +119,11 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String ACTION_CREATE_SUBSCRIPTION = "createSubscription";
     private static final String ACTION_REMOVE_SUBSCRIPTION = "removeSubscription";
     private static final String ACTION_CONFIRM_REMOVE_SUBSCRIPTION = "confirmRemoveSubscription";
-    private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
 
     // Infos
     private static final String INFO_SUBSCRIPTION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_SUBSCRIPTION_REMOVED = "apimanager.info.subscription.removed";
-    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
 
-    // Errors
-    private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_API_MANAGER_GENERATION = "Error publishing API manager";
 
     // Session variable to store working values
     private Subscription _subscription;
@@ -177,7 +164,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         // recuperation des souscription a chaque resource pour reduire a api/environement
         List<Subscription> fullSubscriptionList = getService().getEntitiesListByIds(_listIdSubscriptions);
-        String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
+        String selectedEnvironementUuid = _mapFilterCriteria.get(PARAMETER_UUID_ENVIRONEMENT);
         if(selectedEnvironementUuid != null){
             fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getEnvironement().getUuid().equals(selectedEnvironementUuid)).collect(Collectors.toList());
         }
@@ -190,7 +177,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, uniqueByApiAndEnvironement.stream().map(Subscription::getUuid).collect(Collectors.toList()), JSP_MANAGE_SUBSCRIPTIONS );
 
-        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get("uuid_environement"));
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get(PARAMETER_UUID_ENVIRONEMENT));
         //exlude some filters from the returned list
         for(String exclusion: getExcludedSearchParameters()){
             _mapFilterCriteria.remove(exclusion);
@@ -418,45 +405,8 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale( ) );
         resetListId( );
 
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED );
+        return redirect( request, "ManageSubscriptions.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED );
     }
 
-    @Action( ACTION_GENERATE_API_MANAGER )
-    public String doGenerateApiManager( final HttpServletRequest request )
-    {
-        final String uuid = request.getParameter( PARAMETER_UUID_SUBSCRIPTION );
-        if ( uuid == null )
-        {
-            addError( ERROR_RESOURCE_NOT_FOUND );
-            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-        }
-        final Subscription subscription = SubscriptionHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
-        final String comment = request.getParameter( PARAMETER_COMMENT );
-
-        try
-        {
-            final Plan plan = subscription.getResource().getPlan( );
-           /* _configGeneratorService.get( subscription.getClient( ), plan,
-                    ResourceService.getInstance( ).getResourcesByPlanUuid( plan.getUuid( ) ),
-                    InstanceService.getInstance( )
-                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToResourceUuid( subscription.getResource().getApi( ).getUuid( ) ) ).stream( )
-                            .filter( instance -> env.equals( instance.getEnvironement( ).getUuid() ) ).collect( Collectors.toList( ) ),
-                    env, comment, getUser( ).getEmail( ) );*/
-            getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-            plan.setStatus( PlanStatusEnum.PUBLISHED );
-            PlanService.getInstance( ).update( plan, getUser( ).getEmail( ) );
-        }
-        catch( final AppException e )
-        {
-            addError( ERROR_API_MANAGER_GENERATION );
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-        }
-
-        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
-        return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-    }
 
 }
