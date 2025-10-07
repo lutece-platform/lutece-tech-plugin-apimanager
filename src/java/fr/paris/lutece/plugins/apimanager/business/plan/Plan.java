@@ -68,7 +68,6 @@ public class Plan extends AbstractTagBean implements Serializable
 
     private String _strClientHttpTemplate;
 
-    private Integer _nRequestTimeout;
 
     private boolean _bOauthEnabled;
 
@@ -247,26 +246,6 @@ public class Plan extends AbstractTagBean implements Serializable
         _strClientHttpTemplate = strClientHttpTemplate;
     }
 
-    /**
-     * Returns the RequestTimeout
-     * 
-     * @return The RequestTimeout
-     */
-    public Integer getRequestTimeout( )
-    {
-        return _nRequestTimeout;
-    }
-
-    /**
-     * Sets the RequestTimeout
-     * 
-     * @param nRequestTimeout
-     *            The RequestTimeout
-     */
-    public void setRequestTimeout( Integer nRequestTimeout )
-    {
-        _nRequestTimeout = nRequestTimeout;
-    }
 
 
     /**

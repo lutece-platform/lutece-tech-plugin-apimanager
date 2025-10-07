@@ -1,4 +1,4 @@
-insert into apimanager_api (uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status)
+/*insert into apimanager_api (uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status)
 values  ('1b0210ef-9c54-4408-b21a-4b3d3b03696b', 'api-customer', 'API to manage customers', '/customer', 1, 0, 343, '{"info": {"title": "OpenAPI Plant Store", "license": {"name": "MIT"}, "version": "1.0.0", "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification"}, "paths": {"/plants/{id}": {"get": {"responses": {"200": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Plant"}}}, "description": "Plant response"}, "400": {"content": {"application/json": {"schema": {"$ref": "#/components/schemas/Error"}}}, "description": "Unexpected error"}}, "parameters": [{"in": "path", "name": "id", "schema": {"type": "string"}, "required": true, "description": "The ID of plant to fetch"}]}}}, "openapi": "3.0.1", "servers": [{"url": "https://sandbox.mintlify.com"}], "security": [{"bearerAuth": []}], "components": {"schemas": {"Error": {"type": "object", "required": ["error", "message"], "properties": {"error": {"type": "integer", "format": "int32"}, "message": {"type": "string"}}}, "Plant": {"type": "object", "required": ["name"], "properties": {"tag": {"type": "string", "description": "Tag to specify the type"}, "name": {"type": "string", "description": "The name of the plant"}}}}, "securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer"}}}}', 1, '1.0', 'NEW'),
         ('21e2a002-18f9-453d-9f1f-9ce9af602d67', 'api-party', 'API to manage party', '/party', 0, 0, 0, '{"info":{"title":"OpenAPI Plant Store","license":{"name":"MIT"},"version":"1.0.0","description":"A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification"},"paths":{"/plants/{id}":{"get":{"responses":{"200":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Plant"}}},"description":"Plant response"},"400":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}},"description":"Unexpected error"}},"parameters":[{"in":"path","name":"id","schema":{"type":"string"},"required":true,"description":"The ID of plant to fetch"}]}}},"openapi":"3.0.1","servers":[{"url":"https://sandbox.mintlify.com"}],"security":[{"bearerAuth":[]}],"components":{"schemas":{"Error":{"type":"object","required":["error","message"],"properties":{"error":{"type":"integer","format":"int32"},"message":{"type":"string"}}},"Plant":{"type":"object","required":["name"],"properties":{"tag":{"type":"string","description":"Tag to specify the type"},"name":{"type":"string","description":"The name of the plant"}}}},"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer"}}}}', 0, '1.0', 'PUBLISHED'),
         ('22e87b95-7cdb-40c4-bb98-91c7af47c191', 'api-event', 'API to manage events', '/events', 0, 0, 0, '{"info":{"title":"OpenAPI Plant Store","license":{"name":"MIT"},"version":"1.0.0","description":"A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification"},"paths":{"/plants/{id}":{"get":{"responses":{"200":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Plant"}}},"description":"Plant response"},"400":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Error"}}},"description":"Unexpected error"}},"parameters":[{"in":"path","name":"id","schema":{"type":"string"},"required":true,"description":"The ID of plant to fetch"}]}}},"openapi":"3.0.1","servers":[{"url":"https://sandbox.mintlify.com"}],"security":[{"bearerAuth":[]}],"components":{"schemas":{"Error":{"type":"object","required":["error","message"],"properties":{"error":{"type":"integer","format":"int32"},"message":{"type":"string"}}},"Plant":{"type":"object","required":["name"],"properties":{"tag":{"type":"string","description":"Tag to specify the type"},"name":{"type":"string","description":"The name of the plant"}}}},"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer"}}}}', 0, '1.0', 'PUBLISHED'),
@@ -58,14 +58,14 @@ values  ('00988c70-702f-4ff5-86ac-8b030cf1c7a4', 'c6a8e5ac-e5ca-4ed9-82c0-a4d718
         ('e970de59-19cd-4910-a4b6-3e07297e87f2', 'ff41dffb-1331-4f64-9a44-a176d469cd82', '1df5eee8-038b-4f12-86fc-dba73352ddcf', '100000:jsV3KmYShmrjuhmWBCrFiw==:umEl21DntQmDmN04fTIi+MKPosyDZRH3ciOPHFtxAVc='),
         ('fcf568cd-9dc1-4891-a305-14f7ed0bbfb6', '2651a90f-fc1f-4149-979b-2212a3f2e7b9', '1df5eee8-038b-4f12-86fc-dba73352ddcf', '100000:BRp/PF+vxtXCyBjfMo2aHQ==:rtelPviUW6N5ezODLODGrE7YXh62S7Yjitsb9cNNYFw='),
         ('ffb8ee57-ebe9-4a60-8c7b-76240e98d493', 'c952c877-813d-4ed5-b2e0-f4098697fb87', '3747f054-e562-4839-8886-d0b7099c1aba', '100000:gOr2/PnPvlTmg7iRB1UYqg==:+AlRp8MsrX6300KNqtdp7qufq+o8xh7jl0fW/pQKcx4=');
-
+*/
 insert into apimanager_environement (uuid, name, description)
 values  ('1df5eee8-038b-4f12-86fc-dba73352ddcf', 'REC', null),
         ('3747f054-e562-4839-8886-d0b7099c1aba', 'DEV', null),
         ('3747f054-e562-4839-8886-d0b7099c1gdf', 'TEST', null),
         ('3747f054-e562-4839-8886-d0b7099c1hgf', 'PREPROD', null),
         ('3747f054-e562-4839-8886-d0b7099c1klm', 'PROD', null);
-
+/*
 insert into apimanager_history (uuid, uuid_ref, date, type, user)
 values  ('005b66b1-6fc7-4276-89d2-44d42597c9dc', '2883e119-ab3d-4935-841a-498ec4cce11d', '2025-07-03 17:38:33.228', 'CREATE', 'admin@lutece.fr'),
         ('02990cd0-6098-4709-8b8d-7c2911ee5541', 'd1009e3d-807d-45e8-99a4-9eeb2812408c', '2025-04-23 13:04:57.032', 'CREATE', 'admin@lutece.fr'),
@@ -218,7 +218,7 @@ values  ('005b66b1-6fc7-4276-89d2-44d42597c9dc', '2883e119-ab3d-4935-841a-498ec4
         ('fe89cc6d-de3f-460b-bcbc-3d4cf553b3b6', '55582bb3-7e9c-4bd4-a414-f526d7a656af', '2025-09-21 17:44:36.000', 'CREATE', 'admin@lutece.fr'),
         ('fea44d3b-e564-4084-9fba-b2956635edd9', '0f7c1e59-8ff1-4b02-998b-6af840f182f4', '2025-05-15 11:29:45.227', 'CREATE', 'admin@lutece.fr'),
         ('ffc09a79-7f31-4413-a8cb-01f1be92ca27', '2651a90f-fc1f-4149-979b-2212a3f2e7b9', '2025-09-21 16:30:54.000', 'CREATE', 'admin@lutece.fr');
-
+*/
 insert into apimanager_instance (uuid, protocol, host, port, name, uuid_environement, health_path, health_port)
 values  ('30b2a419-ce6e-4a1b-983d-611760f9121c', 'HTTP', '192.168.52.31', '8080', 'Linux-D13-test-01', '1df5eee8-038b-4f12-86fc-dba73352ddcf', '/health', '8080'),
         ('bff5fb61-6093-4396-a070-18a2cedaf7ec', 'HTTP', '192.168.52.32', '8080', 'Linux-D13-test-02', '3747f054-e562-4839-8886-d0b7099c1aba', '/health', '1234');
@@ -232,32 +232,32 @@ values  ('3', 'meecrogate gateway 01 - test', 'http://mg-gateway-01:8080/gateway
 insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type)
 values  ('4', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02','GATEWAY');
 
-insert into apimanager_plan (uuid, name, description, active, version, request_timeout, oauth_enabled, uuid_oauth_configuration, rate_limiting_enabled, rate_limiting_template, client_http_template, status, environnement_list)
-values  ('0d21847f-dcb4-4d82-8412-d1aee8a9f922','Plan SSE','Plan pour accès SSE',1, '4',4,0, '68b19b22-f694-49e3-a61c-8d7707314ee1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('0d3d9b4e-cd20-43ae-b019-503e93fdcc6f','Plan Premium','Plan pour accès complet aux API Premium',1, '1',1000,1, '6e6414cc-660e-4d52-91a9-cae902077a7f',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('16c15a3d-06a6-4306-8216-5bb162058cf8','Plan Basique','Plan accès de base pour les développeurs',1, '25',212121,1, '6a5c02c1-744b-43ae-941b-ef7b1b786080',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('2e3cb988-1273-4195-8d36-d89f9821efa2','Plan Entreprise','Plan pour les intégrations entreprise',1, '1',0,1, 'ffbd4a2a-f5b4-49f8-8c41-29322ab8872e',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('2f19dcf7-0fb4-4131-b84e-9cad24b537fe','Plan Démo','Plan essai gratuit pour tests et démonstrations',1, '1',0,1, '57507e48-9359-4438-b538-b985f3c5db0a',0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('33ae04c7-095f-4f94-8eaa-78118aad9996','Plan Avancé','Plan pour accès aux fonctionnalités avancées',1, '1',0,1, 'ec5580f0-6d51-4627-ae3c-95ef326d0f30',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('39f3b83d-7da8-4ff7-b945-0054e6532f77','Plan Équipe','Plan accès pour les équipes collaboratives',1, '25',545,1, '0dfd223c-7ee3-45e4-b7c3-88f943cf9dec',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('4433e1e6-6d65-4cb5-a9c7-402ae4880dca','Plan Développeur','Plan dédié aux environnements de développement',1, '2',212121,0, 'e011ddbe-d688-4cd2-ab10-e490ad53de32',0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('6946eb5a-2b26-4d31-a9b3-a38a4ae726f7','Plan Sécurité','Plan pour accès avec contrôles de sécurité renforcés',1, '2',41421,1, '775273bb-bddd-4add-927c-4e9a2d563a26',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('6d6c96c5-3b47-4373-8b07-96b89027cc4d','Plan IoT','Plan pour intégration appareils connectés IoT',1, '3',11111,1, '33b87ebc-d605-4ccd-90d2-cab6ca0cd369',0, '', null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('7188c225-29dc-4a62-92a4-81e0f74d35c7','Plan Public','Plan accès public sans authentification stricte',1, '1',212121,0, '27f0fb95-ba67-45e5-835a-68bc404e712c',0, null, 'SSE', 'DRAFT', ''),
-        ('744dcd93-5bed-4c2b-91e7-d9f8601c559d','Plan Privé','Plan réservé aux applications internes sécurisées',1, '41',212121,1, 'a2cc3ec4-a6af-4a3e-84c2-49a218d1c6aa',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('78c5640a-525a-47cf-a7a1-fc36e28fabb8','Plan Partenaire','Plan accès pour partenaires stratégiques',1, '1',212121,0, 'bb117c89-5227-456f-84fd-59b15d01a5a7',0, null, 'SSE', 'DRAFT', 'TEST,DEV,PREPROD'),
-        ('7bdc9b01-5be7-43a0-8ae5-6685755571d1','Plan Start','Plan entrée de gamme pour petits projets',1, '1',41421,0, 'a12b660e-122a-4c7a-9c34-307d3d40c6f2',0, null, 'SSE', 'DRAFT', ''),
-        ('7d37bce5-b3ae-485d-8cfd-cdf3bfb865ad','Plan Scale','Plan évolutif pour montée en charge',1, '1',0,1, '3dc06575-8e0b-4a37-b485-20a9bc9cd092',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('86bf9287-749d-4670-b4a1-4f8d4360e026','Plan Data','Plan pour accès aux API de données brutes',1, '10',51,1, 'ff7dc798-aa09-4e60-9e13-358c689ca02a',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('8c13ce9b-31ed-4d0c-b9fd-cc3b5b882a76','Plan Mobile','Plan optimisé pour les applications mobiles',0, '1.0',1000,1, 'fada133b-6b0c-44bd-b9ec-6e9253a683b7',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('8fad4c0e-3ebe-4be2-ab2a-0a21c98df365','Plan Global','Plan pour déploiement multi-régions',1, '10',212121,1, 'e371d051-ec35-486d-a3a5-445db9d3a250',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('95d64d51-b3f1-4aa4-89c0-7450b9aa42ff','Plan Temps Réel','Plan pour accès aux flux en temps réel',1, '26',212121,1, '93601007-9f2b-42e8-8611-211b9dd4ef80',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('c1bd2a0c-a346-43db-843d-88bd8441b94b','Plan Sandbox','Plan pour environnement de test isolé',1, '41',41421,1, '608ea520-bceb-42bf-b94c-87d634150378',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('d5f9be2a-e203-4f1a-9714-b89de5e13030','Plan Silver','Plan intermédiaire pour utilisateurs réguliers',1, '1',212121,1, 'bae4e8e3-171a-42d8-a16d-9343c4797818',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('da22a53d-31bb-428e-b09a-60fbafbfe75e','Plan Gold','Plan premium avec SLA renforcé',1, '3',4,0, 'aaedbc39-4143-41bc-ba64-dc2c4e19fcee',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('f108d9bb-649c-4df2-8d67-0a2a946e1ac2','Plan Platinum','Plan haut de gamme avec support dédié',1, '5',4,0, '75b7b5ef-5717-40e8-bf51-f17e37f617b1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('f20a5ddb-2627-477d-ab49-835173107ff8','Plan Edge','Plan optimisé pour réseaux Edge et CDN',1, '3',33,1, '7da597b7-7968-49e0-a953-64084e40a0ed',0, null, '', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
-        ('f2753d44-d9a7-4972-b4b4-15f48b04c749','Plan API Gateway','Plan complet pour gestion centralisée d’API',1, '41',11111,1, '0ed54a3b-a6a9-4ffb-b150-c299968e5f3e',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD');
+insert into apimanager_plan (uuid, name, description, active, version,  oauth_enabled, uuid_oauth_configuration, rate_limiting_enabled, rate_limiting_template, client_http_template, status, environnement_list)
+values  ('0d21847f-dcb4-4d82-8412-d1aee8a9f922','Plan SSE','Plan pour accès SSE',1, '4',0, '68b19b22-f694-49e3-a61c-8d7707314ee1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('0d3d9b4e-cd20-43ae-b019-503e93fdcc6f','Plan Premium','Plan pour accès complet aux API Premium',1, '1',1, '6e6414cc-660e-4d52-91a9-cae902077a7f',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('16c15a3d-06a6-4306-8216-5bb162058cf8','Plan Basique','Plan accès de base pour les développeurs',1, '25',1, '6a5c02c1-744b-43ae-941b-ef7b1b786080',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('2e3cb988-1273-4195-8d36-d89f9821efa2','Plan Entreprise','Plan pour les intégrations entreprise',1, '1',1, 'ffbd4a2a-f5b4-49f8-8c41-29322ab8872e',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('2f19dcf7-0fb4-4131-b84e-9cad24b537fe','Plan Démo','Plan essai gratuit pour tests et démonstrations',1, '1',1, '57507e48-9359-4438-b538-b985f3c5db0a',0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('33ae04c7-095f-4f94-8eaa-78118aad9996','Plan Avancé','Plan pour accès aux fonctionnalités avancées',1, '1',1, 'ec5580f0-6d51-4627-ae3c-95ef326d0f30',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('39f3b83d-7da8-4ff7-b945-0054e6532f77','Plan Équipe','Plan accès pour les équipes collaboratives',1, '25',1, '0dfd223c-7ee3-45e4-b7c3-88f943cf9dec',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('4433e1e6-6d65-4cb5-a9c7-402ae4880dca','Plan Développeur','Plan dédié aux environnements de développement',1, '2',0, 'e011ddbe-d688-4cd2-ab10-e490ad53de32',0, null, 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('6946eb5a-2b26-4d31-a9b3-a38a4ae726f7','Plan Sécurité','Plan pour accès avec contrôles de sécurité renforcés',1, '2',1, '775273bb-bddd-4add-927c-4e9a2d563a26',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('6d6c96c5-3b47-4373-8b07-96b89027cc4d','Plan IoT','Plan pour intégration appareils connectés IoT',1, '3',1, '33b87ebc-d605-4ccd-90d2-cab6ca0cd369',0, '', null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('7188c225-29dc-4a62-92a4-81e0f74d35c7','Plan Public','Plan accès public sans authentification stricte',1, '1',0, '27f0fb95-ba67-45e5-835a-68bc404e712c',0, null, 'SSE', 'DRAFT', ''),
+        ('744dcd93-5bed-4c2b-91e7-d9f8601c559d','Plan Privé','Plan réservé aux applications internes sécurisées',1, '41',1, 'a2cc3ec4-a6af-4a3e-84c2-49a218d1c6aa',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('78c5640a-525a-47cf-a7a1-fc36e28fabb8','Plan Partenaire','Plan accès pour partenaires stratégiques',1, '1',0, 'bb117c89-5227-456f-84fd-59b15d01a5a7',0, null, 'SSE', 'DRAFT', 'TEST,DEV,PREPROD'),
+        ('7bdc9b01-5be7-43a0-8ae5-6685755571d1','Plan Start','Plan entrée de gamme pour petits projets',1, '1',0, 'a12b660e-122a-4c7a-9c34-307d3d40c6f2',0, null, 'SSE', 'DRAFT', ''),
+        ('7d37bce5-b3ae-485d-8cfd-cdf3bfb865ad','Plan Scale','Plan évolutif pour montée en charge',1, '1',1, '3dc06575-8e0b-4a37-b485-20a9bc9cd092',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('86bf9287-749d-4670-b4a1-4f8d4360e026','Plan Data','Plan pour accès aux API de données brutes',1, '10',1, 'ff7dc798-aa09-4e60-9e13-358c689ca02a',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('8c13ce9b-31ed-4d0c-b9fd-cc3b5b882a76','Plan Mobile','Plan optimisé pour les applications mobiles',0, '1.0',1, 'fada133b-6b0c-44bd-b9ec-6e9253a683b7',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('8fad4c0e-3ebe-4be2-ab2a-0a21c98df365','Plan Global','Plan pour déploiement multi-régions',1, '10',1, 'e371d051-ec35-486d-a3a5-445db9d3a250',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('95d64d51-b3f1-4aa4-89c0-7450b9aa42ff','Plan Temps Réel','Plan pour accès aux flux en temps réel',1, '26',1, '93601007-9f2b-42e8-8611-211b9dd4ef80',1, 'API REST', 'API REST', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('c1bd2a0c-a346-43db-843d-88bd8441b94b','Plan Sandbox','Plan pour environnement de test isolé',1, '41',1, '608ea520-bceb-42bf-b94c-87d634150378',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('d5f9be2a-e203-4f1a-9714-b89de5e13030','Plan Silver','Plan intermédiaire pour utilisateurs réguliers',1, '1',1, 'bae4e8e3-171a-42d8-a16d-9343c4797818',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('da22a53d-31bb-428e-b09a-60fbafbfe75e','Plan Gold','Plan premium avec SLA renforcé',1, '3',0, 'aaedbc39-4143-41bc-ba64-dc2c4e19fcee',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('f108d9bb-649c-4df2-8d67-0a2a946e1ac2','Plan Platinum','Plan haut de gamme avec support dédié',1, '5',0, '75b7b5ef-5717-40e8-bf51-f17e37f617b1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('f20a5ddb-2627-477d-ab49-835173107ff8','Plan Edge','Plan optimisé pour réseaux Edge et CDN',1, '3',1, '7da597b7-7968-49e0-a953-64084e40a0ed',0, null, '', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),
+        ('f2753d44-d9a7-4972-b4b4-15f48b04c749','Plan API Gateway','Plan complet pour gestion centralisée d’API',1, '41',1, '0ed54a3b-a6a9-4ffb-b150-c299968e5f3e',0, null, null, 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD');
 
 
 insert into apimanager_plan_oauth_configuration (uuid, jwt_issuer, jwt_validity)
@@ -288,7 +288,7 @@ values  ('0dfd223c-7ee3-45e4-b7c3-88f943cf9dec', 'https://mdp.meecrogate.com', n
         ('fada133b-6b0c-44bd-b9ec-6e9253a683b7', 'https://mdp.meecrogate.com', null),
         ('ff7dc798-aa09-4e60-9e13-358c689ca02a', 'https://mdp.meecrogate.com', null),
         ('ffbd4a2a-f5b4-49f8-8c41-29322ab8872e', 'https://mdp.meecrogate.com', 144);
-
+/*
 insert into apimanager_resource (uuid, uuid_plan, uuid_environement, path, verb, status, uuid_rewrite_url, matcher_type, name, uuid_api, trace_enabled, uuid_meecrogate_instance)
 values  ('0d569165-2c5b-418e-84f7-feb52845ab15', 'f108d9bb-649c-4df2-8d67-0a2a946e1ac2', '3747f054-e562-4839-8886-d0b7099c1aba', '/entity', 'DELETE', '', 'f429fa80-585a-47db-b815-11b1649fbc56', 'EXACT', '0d569165-2c5b-418e-84f7-feb52845ab15', null, null, '3'),
         ('1eaaff83-6229-4659-9f12-d575f8c78191', '16c15a3d-06a6-4306-8216-5bb162058cf8', '3747f054-e562-4839-8886-d0b7099c1aba', '/list', 'GET', null, null, 'EXACT', 'test', '6f76f8f5-670f-41ca-8a11-3bf293478369', 0, '3'),
@@ -359,7 +359,7 @@ values  ('076924eb-8ffd-4257-9340-0335ed3d2119', 'c64b3825-efba-4b8a-884e-7196af
         ('f5f097b4-3fd0-4041-823a-b9b8c74a1977', '30b2a419-ce6e-4a1b-983d-611760f9121c', 'ochestrator'),
         ('fd6a0413-42b0-436c-ab2d-e00439faad10', '32ddd591-2582-47cd-a844-2400bb4b1036', 'ochestrator'),
         ('fecf7926-db98-4947-9b92-0d51a657f4a3', '5db08185-7d1d-42d9-aa74-17e7738a654d', 'ochestrator');
-
+*/
 TRUNCATE TABLE core_admin_security_header;
 INSERT INTO core_admin_security_header(id_security_header,name,value,description,type,page_category,is_active) VALUES
 (1,'Strict-Transport-Security','max-age=31536000; includeSubDomains','The HTTP Strict-Transport-Security response header (often abbreviated as HSTS) informs browsers that the site should only be accessed using HTTPS, and that any future attempts to access it using HTTP should automatically be converted to HTTPS. The value recommended by OWASP for this header is ''max-age=31536000; includeSubDomains'' and this is the value retained for Lutece. This setting means that the browser should remember that this site and all of his subdomains are only to be accessed using HTTPS for 31536000 seconds (1 year).','page','all',0),

@@ -62,11 +62,11 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_resource";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name,uuid_environement,uuid_api,status, trace_enabled ) VALUES ( ?, ?, ?, ?, ?, ?, ?,?,?,?,? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_resource ( uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name,uuid_environement,uuid_api,status, trace_enabled,request_timeout ) VALUES ( ?, ?, ?, ?, ?, ?, ?,?,?,?,?,? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_resource WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ?, matcher_type = ?, name = ?, uuid_environement = ?, uuid_api = ?, status = ? , trace_enabled = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_resource SET uuid_plan = ?, path = ?, verb = ?, uuid_rewrite_url = ?, matcher_type = ?, name = ?, uuid_environement = ?, uuid_api = ?, status = ? , trace_enabled = ?, request_timeout=? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name ,uuid_environement,uuid_api,status, trace_enabled FROM apimanager_resource";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_plan, path, verb, uuid_rewrite_url, matcher_type, name ,uuid_environement,uuid_api,status, trace_enabled, request_timeout FROM apimanager_resource";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_resource";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -119,6 +119,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getApi( )!=null?resource.getApi().getUuid( ):null );
             daoUtil.setString( nIndex++, resource.getStatus( ));
             daoUtil.setBoolean( nIndex++, resource.getTraceEnabled( ));
+            daoUtil.setInt( nIndex, resource.getRequestTimeout( ));
 
             daoUtil.executeUpdate( );
             resource.setUuid( uuid );
@@ -192,6 +193,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getApi( ) != null ? resource.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getStatus( ) );
             daoUtil.setBoolean( nIndex++, resource.getTraceEnabled( ) );
+            daoUtil.setInt( nIndex++, resource.getRequestTimeout( ) );
             daoUtil.setString( nIndex, resource.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -366,6 +368,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
         resource.setApi(ApiHome.findByPrimaryKey( daoUtil.getString( nIndex++ )).orElse( null ) );
         resource.setStatus( daoUtil.getString( nIndex++ ) );
         resource.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
+        resource.setRequestTimeout( daoUtil.getInt( nIndex ) );
 
         resource.setHeaderMatchings( ResourceHeaderMatchingHome
                 .getResourceHeaderMatchingsListByIds( ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList( Map.of( "uuid_resource", uuidResource ), null, null ) ) );

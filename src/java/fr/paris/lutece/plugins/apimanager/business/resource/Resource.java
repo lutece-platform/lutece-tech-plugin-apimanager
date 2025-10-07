@@ -74,6 +74,7 @@ public class Resource implements Serializable
     private List<ResourceHeaderMatching> _headerMatchings = new ArrayList<>( );
     private List<Instance> _instances = new ArrayList<>( );
 
+    private Integer _nRequestTimeout;
     @Valid
     @Pattern( regexp = "[a-z0-9\\-]+", message = "#i18n{apimanager.resource.labelName.help}" )
     private String _strName;
@@ -264,6 +265,26 @@ public class Resource implements Serializable
         _strPath = strPath;
     }
 
+    /**
+     * Returns the RequestTimeout
+     *
+     * @return The RequestTimeout
+     */
+    public Integer getRequestTimeout( )
+    {
+        return _nRequestTimeout;
+    }
+
+    /**
+     * Sets the RequestTimeout
+     *
+     * @param nRequestTimeout
+     *            The RequestTimeout
+     */
+    public void setRequestTimeout( Integer nRequestTimeout )
+    {
+        _nRequestTimeout = nRequestTimeout;
+    }
     /**
      * Returns the Verb
      * 

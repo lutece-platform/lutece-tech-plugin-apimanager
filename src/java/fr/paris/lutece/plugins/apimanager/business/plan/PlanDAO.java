@@ -56,11 +56,11 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_plan";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, status, environnement_list ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_plan ( uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, oauth_enabled, uuid_oauth_configuration, status, environnement_list ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_plan WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET name = ?, description = ?, active = ?, version = ?, rate_limiting_enabled = ?, rate_limiting_template = ?, client_http_template = ?, request_timeout = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, status = ?, environnement_list = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_plan SET name = ?, description = ?, active = ?, version = ?, rate_limiting_enabled = ?, rate_limiting_template = ?, client_http_template = ?, oauth_enabled = ?, uuid_oauth_configuration = ?, status = ?, environnement_list = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, request_timeout, oauth_enabled, uuid_oauth_configuration, status, environnement_list FROM apimanager_plan";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, active, version, rate_limiting_enabled, rate_limiting_template, client_http_template, oauth_enabled, uuid_oauth_configuration, status, environnement_list FROM apimanager_plan";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_plan";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -95,7 +95,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setBoolean( nIndex++, plan.getRateLimitingEnabled( ) );
             daoUtil.setString( nIndex++, plan.getRateLimitingTemplate( ) );
             daoUtil.setString( nIndex++, plan.getClientHttpTemplate( ) );
-            daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
             daoUtil.setBoolean( nIndex++, plan.getOauthEnabled( ) );
             daoUtil.setString( nIndex++, plan.getOauthConfiguration( ) != null ? plan.getOauthConfiguration( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, plan.getStatus( ).name( ) );
@@ -164,7 +163,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             daoUtil.setBoolean( nIndex++, plan.getRateLimitingEnabled( ) );
             daoUtil.setString( nIndex++, plan.getRateLimitingTemplate( ) );
             daoUtil.setString( nIndex++, plan.getClientHttpTemplate( ) );
-            daoUtil.setInt( nIndex++, plan.getRequestTimeout( ) );
             daoUtil.setBoolean( nIndex++, plan.getOauthEnabled( ) );
             daoUtil.setString( nIndex++, plan.getOauthConfiguration( ) != null ? plan.getOauthConfiguration( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, plan.getStatus( ).name( ) );
@@ -307,7 +305,6 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
         plan.setRateLimitingEnabled( daoUtil.getBoolean( nIndex++ ) );
         plan.setRateLimitingTemplate( daoUtil.getString( nIndex++ ) );
         plan.setClientHttpTemplate( daoUtil.getString( nIndex++ ) );
-        plan.setRequestTimeout( daoUtil.getInt( nIndex++ ) );
         plan.setOauthEnabled( daoUtil.getBoolean( nIndex++ ) );
         plan.setOauthConfiguration( PlanOauthConfigurationHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
         plan.setStatus( PlanStatusEnum.valueOf( daoUtil.getString( nIndex++ ) ) );
