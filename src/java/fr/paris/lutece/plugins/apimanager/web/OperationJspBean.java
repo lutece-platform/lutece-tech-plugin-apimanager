@@ -415,6 +415,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                 }
                                 _configGeneratorService.deleteSubscriptions(
                                         subscriptions, comment, getUser().getEmail());
+                                ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                             }
                         }
                     }
