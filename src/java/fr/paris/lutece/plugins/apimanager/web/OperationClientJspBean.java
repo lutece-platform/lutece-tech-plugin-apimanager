@@ -315,19 +315,19 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
-            for (Environement envir : availableEnvs) {
-                ExecutorService executor = Executors.newFixedThreadPool(1);
-                executor.submit(() -> {
-                    try {
+            ExecutorService executor = Executors.newFixedThreadPool(1);
+            executor.submit(() -> {
+                try {
+                    for (Environement envir : availableEnvs) {
                         _configGeneratorService.deleteOauth2Client(client,
                                 envir, getUser().getEmail());
-                        ClientService.getInstance( ).updateStatus( uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser( ).getEmail( ) );
-                    } catch (AppException e) {
-                        ClientService.getInstance( ).updateStatus( uuid, ClientStatusEnum.ERROR.name(), getUser( ).getEmail( ) );
+                        ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                     }
-                });
-                executor.shutdown();
-            }
+                } catch (AppException e) {
+                    ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                }
+            });
+            executor.shutdown();
 
             getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail());
             client.setStatus(ClientStatusEnum.UNPUBLISHING.name());
@@ -362,19 +362,20 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
 
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
-            for (Environement envir : availableEnvs) {
-                ExecutorService executor = Executors.newFixedThreadPool(1);
-                executor.submit(() -> {
-                    try{
+
+            ExecutorService executor = Executors.newFixedThreadPool(1);
+            executor.submit(() -> {
+                try {
+                    for (Environement envir : availableEnvs) {
                         _configGeneratorService.generateOauth2Client(client,
                                 envir, comment, getUser().getEmail());
-                        ClientService.getInstance( ).updateStatus( clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
-                    } catch (Exception e) {
-                        ClientService.getInstance( ).updateStatus( clientUuid, ClientStatusEnum.ERROR.name(), getUser( ).getEmail( ) );
+                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
                     }
-                });
-                executor.shutdown();
-            }
+                } catch (Exception e) {
+                    ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                }
+            });
+            executor.shutdown();
 
             getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail());
             client.setStatus(ClientStatusEnum.PUBLISHING.name());
