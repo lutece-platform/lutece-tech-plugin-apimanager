@@ -31,15 +31,13 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.business.history;
+package fr.paris.lutece.plugins.apimanager.business.client;
 
-public enum HistoryTypeEnum
+public enum ClientStatusEnum
 {
-    CREATE,
-    UPDATE,
-    DELETE,
-    ARCHIVE,
-    PUBLISH,
-    UNPUBLISH,
-    GENERATE
+    DRAFT,
+    UNPUBLISHING,
+    PUBLISHING,
+    PUBLISHED,
+    UNPUBLISHED
 }

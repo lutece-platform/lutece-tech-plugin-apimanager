@@ -31,11 +31,12 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.business.client;
+package fr.paris.lutece.plugins.apimanager.business.api;
 
 public enum ApiStatusEnum
 {
     DRAFT,
+    UNPUBLISHING,
     PUBLISHING,
     PUBLISHED,
     UNPUBLISHED

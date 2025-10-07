@@ -67,6 +67,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE_STATUS = "UPDATE apimanager_client SET status= ? WHERE uuid = ?";
 
 
     /**
@@ -161,6 +162,19 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
         }
     }
 
+
+    @Override
+    public void updateStatus( final String clientUuid, final String status, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_STATUS, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setString( nIndex++, status );
+            daoUtil.setString( nIndex, clientUuid );
+
+            daoUtil.executeUpdate( );
+        }
+    }
     /**
      * {@inheritDoc }
      */

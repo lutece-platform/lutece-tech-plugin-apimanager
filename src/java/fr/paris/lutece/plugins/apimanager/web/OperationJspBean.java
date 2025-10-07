@@ -36,21 +36,15 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
-import fr.paris.lutece.plugins.apimanager.business.client.ApiStatusEnum;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
-import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
-import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
 import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -65,13 +59,10 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
-import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.A;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -421,11 +412,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
 
         try
         {
-
-            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
-            List<Resource> apiResources = resources.stream()
-                    .filter(resource -> resource.getApi() != null)
-                    .filter(resource -> resource.getApi().getUuid().equals( apiUuid ) ).collect(Collectors.toList());
+            List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
             List<Subscription> resourceSubscription =new ArrayList<>();
             for(Resource apiResource : apiResources){
                 resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
@@ -447,14 +434,19 @@ public class OperationJspBean extends AbstractJspBean<String, Api>
                             List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                             sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
                         }
-                        _configGeneratorService.deleteSubscriptions(
-                                subscriptions, comment, getUser( ).getEmail( ) );
+                        ExecutorService executor = Executors.newFixedThreadPool(1);
+                        executor.submit(() -> {
+                            _configGeneratorService.deleteSubscriptions(
+                                    subscriptions, comment, getUser( ).getEmail( ) );
+                            ApiService.getInstance( ).updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                        });
+                        executor.shutdown();
                     }
                 }
             }
 
-            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.DELETE, getUser( ).getEmail( ) );
-            api.setStatus( PlanStatusEnum.UNPUBLISHED.name() );
+            getService( ).addNewHistory( api.getUuid( ), HistoryTypeEnum.UNPUBLISH, getUser( ).getEmail( ) );
+            api.setStatus( ApiStatusEnum.UNPUBLISHING.name() );
             ApiService.getInstance( ).update( api, getUser( ).getEmail( ) );
         }
         catch( final AppException e )

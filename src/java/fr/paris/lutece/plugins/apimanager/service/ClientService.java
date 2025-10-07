@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.apimanager.service;
 
+import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
@@ -78,6 +79,13 @@ public class ClientService extends AbstractService<Client>
     {
         ClientHome.update( entity );
         this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+    }
+
+
+    public void updateStatus( final String clientUuid, final String status, final String user )
+    {
+        ClientHome.updateStatus(clientUuid,status);
+        this.addNewHistory( clientUuid, HistoryTypeEnum.UPDATE, user );
     }
 
     /**

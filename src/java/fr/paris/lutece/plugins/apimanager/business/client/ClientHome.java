@@ -87,6 +87,21 @@ public final class ClientHome
         return client;
     }
 
+
+    /**
+     * Update of the status of api which is specified in parameter
+     *
+     * @param clientUuid
+     * @param status
+     *            The instance of the Api which contains the data to store
+     * @return The instance of the api which has been updated
+     */
+    public static void updateStatus( String clientUuid, String status )
+    {
+        _dao.updateStatus( clientUuid,status, _plugin );
+
+    }
+
     /**
      * Remove the client whose identifier is specified in parameter
      * 

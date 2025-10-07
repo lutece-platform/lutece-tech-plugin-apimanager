@@ -36,8 +36,10 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
+import fr.paris.lutece.plugins.apimanager.business.client.ClientStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
@@ -64,6 +66,8 @@ import fr.paris.lutece.util.url.UrlItem;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -327,12 +331,17 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
             for (Environement envir : availableEnvs) {
-                _configGeneratorService.deleteOauth2Client(client,
-                        envir, getUser().getEmail());
+                ExecutorService executor = Executors.newFixedThreadPool(1);
+                executor.submit(() -> {
+                    _configGeneratorService.deleteOauth2Client(client,
+                            envir, getUser().getEmail());
+                    ClientService.getInstance( ).updateStatus( uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser( ).getEmail( ) );
+                });
+                executor.shutdown();
             }
 
-            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.DELETE, getUser().getEmail());
-            client.setStatus(PlanStatusEnum.UNPUBLISHED.name());
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail());
+            client.setStatus(ClientStatusEnum.UNPUBLISHING.name());
             ClientService.getInstance().update(client, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_CLIENT_GENERATION);
@@ -365,13 +374,17 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
             for (Environement envir : availableEnvs) {
-                _configGeneratorService.generateOauth2Client(client,
-                        envir, comment, getUser().getEmail());
+                ExecutorService executor = Executors.newFixedThreadPool(1);
+                executor.submit(() -> {
+                    _configGeneratorService.generateOauth2Client(client,
+                            envir, comment, getUser().getEmail());
+                    ClientService.getInstance( ).updateStatus( clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser( ).getEmail( ) );
+                });
+                executor.shutdown();
             }
 
-
-            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.GENERATE, getUser().getEmail());
-            client.setStatus(PlanStatusEnum.PUBLISHED.name());
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail());
+            client.setStatus(ClientStatusEnum.PUBLISHING.name());
             ClientService.getInstance().update(client, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_CLIENT_GENERATION);
