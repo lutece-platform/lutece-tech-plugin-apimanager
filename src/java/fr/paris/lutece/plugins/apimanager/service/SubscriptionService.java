@@ -62,21 +62,23 @@ public class SubscriptionService extends AbstractService<Subscription>
     public void create( final Subscription entity, final String user )
     {
         final String uuid = SubscriptionHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user,
+                (entity.getApi() !=null && entity.getClient()!=null? "SOUSCRIPTION "+ (entity.getApi() != null? entity.getApi().getName(): "") + " par " +(entity.getClient() != null? entity.getClient().getName(): ""):"") );
     }
 
     @Override
     public void update( final Subscription entity, final String user )
     {
         SubscriptionHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user,
+                (entity.getApi() !=null && entity.getClient()!=null? "SOUSCRIPTION "+ (entity.getApi() != null? entity.getApi().getName(): "") + " par " +(entity.getClient() != null? entity.getClient().getName(): ""):"") );
     }
 
     @Override
     public void delete( final String uuid, final String user )
     {
         SubscriptionHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, "" );
     }
 
     @Override
@@ -111,7 +113,7 @@ public class SubscriptionService extends AbstractService<Subscription>
         SubscriptionHome.findByPrimaryKey( uuid ).ifPresent( subscription -> {
             subscription.setArchived( true );
             SubscriptionHome.update( subscription );
-            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "" );
         } );
     }
 }

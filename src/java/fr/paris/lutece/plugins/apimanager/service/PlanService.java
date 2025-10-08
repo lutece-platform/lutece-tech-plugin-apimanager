@@ -68,7 +68,7 @@ public class PlanService extends AbstractService<Plan>
 
         final String uuid = PlanHome.create( entity ).getUuid( );
 
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "PLAN " + entity.getName( ) );
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PlanService extends AbstractService<Plan>
         Optional.ofNullable( entity.getOauthConfiguration( ) ).ifPresent( PlanOauthConfigurationHome::update );
 
         PlanHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user,  "PLAN " + entity.getName( ) );
     }
 
     @Override
@@ -95,7 +95,7 @@ public class PlanService extends AbstractService<Plan>
             // Delete plan config objects
             Optional.ofNullable( plan.getOauthConfiguration( ) ).ifPresent( oac -> PlanOauthConfigurationHome.remove( oac.getUuid( ) ) );
 
-            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user,  "PLAN " + plan.getName( )  );
         } );
 
     }

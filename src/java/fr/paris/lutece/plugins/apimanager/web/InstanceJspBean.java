@@ -114,7 +114,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_INSTANCE = "apimanager.message.confirmRemoveInstance";
-    private static final String MESSAGE_CONFIRM_REMOVE_LINK = "apimanager.message.confirmRemoveLink";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.instance.attribute.";
@@ -130,8 +129,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String ACTION_MODIFY_INSTANCE = "modifyInstance";
     private static final String ACTION_REMOVE_INSTANCE = "removeInstance";
     private static final String ACTION_CONFIRM_REMOVE_INSTANCE = "confirmRemoveInstance";
-    private static final String ACTION_REMOVE_LINK = "removeLink";
-    private static final String ACTION_CONFIRM_REMOVE_LINK = "confirmRemoveLink";
     private static final String ACTION_LINK_API = "linkApi";
 
     // Infos
@@ -139,7 +136,6 @@ public class InstanceJspBean extends AbstractJspBean<String, Instance>
     private static final String INFO_INSTANCE_UPDATED = "apimanager.info.instance.updated";
     private static final String INFO_INSTANCE_REMOVED = "apimanager.info.instance.removed";
     private static final String INFO_API_LINKED = "apimanager.info.instance.apiLinked";
-    private static final String INFO_LINK_REMOVED = "apimanager.info.instance.linkRemoved";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";

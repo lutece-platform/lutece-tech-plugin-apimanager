@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.apimanager.service;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 
 import java.util.List;
 import java.util.Map;
@@ -62,21 +64,22 @@ public class InstanceService extends AbstractService<Instance>
     public void create( final Instance entity, final String user )
     {
         final String uuid = InstanceHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "INSTANCE " + entity.getName() );
     }
 
     @Override
     public void update( final Instance entity, final String user )
     {
         InstanceHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user,  "INSTANCE " + entity.getName() );
     }
 
     @Override
     public void delete( final String uuid, final String user )
     {
+        Instance instance = InstanceHome.findByPrimaryKey(uuid).orElse(null);
         InstanceHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, (instance!=null?instance.getName():uuid) );
     }
 
     @Override
@@ -139,8 +142,9 @@ public class InstanceService extends AbstractService<Instance>
     public void linkResource( final Instance instance, final String resourceUuid, final String user )
     {
         InstanceHome.linkResource( instance, resourceUuid );
-        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
-        this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user,"INSTANCE " + instance.getName() );
+        Resource resource = ResourceHome.findByPrimaryKey(resourceUuid).orElse(null);
+        this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user, "API " + (resource.getApi()!=null?resource.getApi().getName( ):resourceUuid) );
     }
 
     /**
@@ -156,8 +160,9 @@ public class InstanceService extends AbstractService<Instance>
     public void deleteLinkResource( final Instance instance, final String resourceUuid, final String user )
     {
         InstanceHome.deleteLinkResource( instance, resourceUuid );
-        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
-        this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user ,"INSTANCE " + instance.getName() );
+        Resource resource = ResourceHome.findByPrimaryKey(resourceUuid).orElse(null);
+        this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user, "API " + (resource.getApi()!=null?resource.getApi().getName( ):resourceUuid)  );
     }
 
 

@@ -320,7 +320,6 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     @Action( ACTION_CREATE_SUBSCRIPTION )
     public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
     {
-        Map<String, String[]> test = request.getParameterMap();
         String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
         String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
         String apiUuid = request.getParameter(PARAMETER_UUID_API);

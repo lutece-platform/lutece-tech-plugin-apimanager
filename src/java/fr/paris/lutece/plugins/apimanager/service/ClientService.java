@@ -71,21 +71,22 @@ public class ClientService extends AbstractService<Client>
             clientSecret.setClient( client );
             ClientSecretHome.create( clientSecret );
         } );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "CLIENT "+entity.getName( ) );
     }
 
     @Override
     public void update( final Client entity, final String user )
     {
         ClientHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user, "CLIENT "+entity.getName( ) );
     }
 
 
     public void updateStatus( final String clientUuid, final String status, final String user )
     {
         ClientHome.updateStatus(clientUuid,status);
-        this.addNewHistory( clientUuid, HistoryTypeEnum.UPDATE, user );
+        Client client = ClientHome.findByPrimaryKey(clientUuid).orElse(null);
+        this.addNewHistory( clientUuid, HistoryTypeEnum.UPDATE, user, "CLIENT "+(client != null ? client.getName():clientUuid) );
     }
 
     /**
@@ -137,7 +138,7 @@ public class ClientService extends AbstractService<Client>
         ClientHome.findByPrimaryKey( uuid ).ifPresent( client -> {
             client.setArchived( true );
             ClientHome.update( client );
-            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "CLIENT "+client.getName( ) );
         } );
     }
 

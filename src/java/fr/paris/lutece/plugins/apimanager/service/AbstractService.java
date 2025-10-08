@@ -132,13 +132,14 @@ public abstract class AbstractService<T>
      *            the user who initiated the action
      * @return the new history record
      */
-    public History addNewHistory( final String uuidRef, final HistoryTypeEnum type, final String user )
+    public History addNewHistory( final String uuidRef, final HistoryTypeEnum type, final String user, final String action )
     {
         final History history = new History( );
         history.setUuidRef( uuidRef );
         history.setType( type );
         history.setDate( Timestamp.from( Instant.now( ) ) );
         history.setUser( user );
+        history.setAction( action );
         return HistoryHome.create( history );
     }
 

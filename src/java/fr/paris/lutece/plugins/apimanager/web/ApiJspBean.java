@@ -91,18 +91,13 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
 public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Templates
     private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/api/manage_apis.html";
-    private static final String TEMPLATE_CREATE_API = "/admin/plugins/apimanager/api/create_api.html";
     private static final String TEMPLATE_CREATE_API_STEP_1 = "/admin/plugins/apimanager/api/create/step1.html";
     private static final String TEMPLATE_CREATE_API_STEP_2 = "/admin/plugins/apimanager/api/create/step2.html";
     private static final String TEMPLATE_CREATE_API_STEP_3 = "/admin/plugins/apimanager/api/create/step3.html";
-    private static final String TEMPLATE_MODIFY_API = "/admin/plugins/apimanager/api/modify_api.html";
 
     // Parameters
     private static final String PARAMETER_ID_API = "uuid";
     private static final String PARAMETER_OPENAPI = "openapi";
-    private static final String PARAMETER_NAME = "name";
-    private static final String PARAMETER_DESCRIPTION = "description";
-    private static final String PARAMETER_PATH = "path";
     private static final String PARAMETER_SELECTED_ENVIRONMENT = "environement";
     private static final String PARAMETER_PREFIX_SELECTED_PLAN = "plan-environement-";
     private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
@@ -113,10 +108,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String PARAMETER_SHOW_INSTANCES = "showInstances";
     private static final String PARAMETER_DELETE_LINK = "deleteLink";
     private static final String PARAMETER_ACTIVE_TAB = "activeTab";
-    private static final String PARAMETER_ARCHIVED = "archived";
     private static final String PARAMETER_RELOAD = "reload";
     private static final String PARAMETER_ENVIRONEMENT_PREFIX = "environement-";
-    private static final String PARAMETER_RESOURCE_PREFIX = "resource-";
     private static final String PARAMETER_RESOURCE_ROW = "-resource-row-";
     private static final String PARAMETER_PLAN = "-plan-";
     private static final String PARAMETER_PLAN_RESOURCES = "-resources";
@@ -133,7 +126,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_APIS = "apimanager.manage_apis.pageTitle";
-    private static final String PROPERTY_PAGE_TITLE_MODIFY_API = "apimanager.modify_api.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_API = "apimanager.create_api.pageTitle";
 
     // Markers
@@ -431,7 +423,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
      */
     @Action(ACTION_CREATE_API_STEP_1)
     public String doCreateApiStep1(HttpServletRequest request) throws AccessDeniedException {
-        Map<String, String[]> params = request.getParameterMap();
         _api = (_api != null) ? _api : new Api();
         super.populate(_api, request, getLocale());
 
@@ -1011,7 +1002,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
-        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
 
         for (String environementUuid : configuredEnvironements) {
 

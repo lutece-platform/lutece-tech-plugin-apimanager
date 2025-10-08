@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
@@ -83,14 +84,15 @@ public class ApiService extends AbstractService<Api>
             }
         }
 
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "API " + entity.getName( ) );
     }
 
 
     public void updateStatus( final String apiUuid, final String status, final String user )
     {
+        Api api = ApiHome.findByPrimaryKey(apiUuid).orElse(null);
         ApiHome.updateStatus(apiUuid,status);
-        this.addNewHistory( apiUuid, HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( apiUuid, HistoryTypeEnum.UPDATE, user, (api!=null?"API "+api.getName():apiUuid) );
     }
 
     @Override
@@ -127,7 +129,7 @@ public class ApiService extends AbstractService<Api>
             }
         }
 
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user, "API " + entity.getName( ) );
     }
 
     /**
@@ -143,7 +145,9 @@ public class ApiService extends AbstractService<Api>
     @Override
     public void delete( final String uuid, final String user )
     {
+        Api api = ApiHome.findByPrimaryKey(uuid).orElse(null);
         this.archive( uuid, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "API " + (api != null ? api.getName( ):uuid) );
     }
 
     @Override
@@ -195,8 +199,9 @@ public class ApiService extends AbstractService<Api>
     public void linkInstance( final Api api, final String instanceUuid, final String user )
     {
         ApiHome.linkInstance( api, instanceUuid );
-        this.addNewHistory( api.getUuid( ), HistoryTypeEnum.UPDATE, user );
-        this.addNewHistory( instanceUuid, HistoryTypeEnum.UPDATE, user );
+        Instance instance = InstanceHome.findByPrimaryKey(instanceUuid).orElse(null);
+        this.addNewHistory( api.getUuid( ), HistoryTypeEnum.UPDATE, user, "API " + api.getName( ) );
+        this.addNewHistory( instanceUuid, HistoryTypeEnum.UPDATE, user,"INSTANCE " + (instance != null?instance.getName() : instanceUuid) );
     }
 
     /**
@@ -212,7 +217,7 @@ public class ApiService extends AbstractService<Api>
         ApiHome.findByPrimaryKey( uuid ).ifPresent( api -> {
             api.setArchived( true );
             ApiHome.update( api );
-            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "API " + api.getName( ) );
         } );
 
     }

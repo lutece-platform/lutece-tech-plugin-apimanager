@@ -64,21 +64,22 @@ public class MeecrogateService extends AbstractService<Meecrogate>
     public void create(final Meecrogate entity, final String user )
     {
         final String uuid = MeecrogateHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "Meecrogate " + entity.getName()   );
     }
 
     @Override
     public void update( final Meecrogate entity, final String user )
     {
         MeecrogateHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user, "Meecrogate " + entity.getName() );
     }
 
     @Override
     public void delete( final String uuid, final String user )
     {
+        Meecrogate meecrogateInstance = MeecrogateHome.findByPrimaryKey(uuid).orElse(null);
         MeecrogateHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, "Meecrogate " + (meecrogateInstance!=null?meecrogateInstance.getName():uuid)  );
     }
 
     @Override

@@ -134,7 +134,6 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
             resetCurrentPageIndexOfPaginator( );
         }
 
-
         _historyList = HistoryService.getInstance().getEntitiesListByIds(HistoryService.getInstance().getIdEntitiesList());
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_HISTORY_LIST, _historyList.stream().map(History::getUuid).collect(Collectors.toList()), JSP_MANAGE_HISTORY );
@@ -155,12 +154,6 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
         Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
-    /**
-     * Get Items from Ids list
-     *
-     * @param listIds
-     * @return the populated list of items corresponding to the id List
-     */
 
     /**
      * Get Items from Ids list
@@ -173,8 +166,6 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
         // keep original order
         return _historyList.stream().sorted(Comparator.comparingInt(notif -> listIds.indexOf(notif.getUuid()))).collect(Collectors.toList());
     }
-
-
 
     @Override
     protected HistoryService getService( )

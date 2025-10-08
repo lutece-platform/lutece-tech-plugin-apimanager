@@ -383,7 +383,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
         }
         final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        final String env = request.getParameter(PARAMETER_ENVIRONNEMENT);
         final String comment = request.getParameter(PARAMETER_COMMENT);
 
         try {
@@ -425,7 +424,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail());
+            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "API "+ api.getName());
             api.setStatus(ApiStatusEnum.UNPUBLISHING.name());
             ApiService.getInstance().update(api, getUser().getEmail());
         } catch (final AppException e) {
@@ -491,7 +490,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail());
+            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "API "+ api.getName());
             api.setStatus(ApiStatusEnum.PUBLISHING.name());
             ApiService.getInstance().update(api, getUser().getEmail());
         } catch (final AppException e) {

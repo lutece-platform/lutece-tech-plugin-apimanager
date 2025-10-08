@@ -661,11 +661,9 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             return redirectView(request, VIEW_MANAGE_CLIENTS);
         }
         final String env = request.getParameter(PARAMETER_ENVIRONNEMENT);
-        final String comment = request.getParameter(PARAMETER_COMMENT);
         _client = ClientService.getInstance().getClientById(uuid, Optional.of(env)).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         try {
-           // _configGeneratorService.generateOauth2Client(_client, env, comment, getUser().getEmail());
-            getService().addNewHistory(_client.getUuid(), HistoryTypeEnum.GENERATE, getUser().getEmail());
+            getService().addNewHistory(_client.getUuid(), HistoryTypeEnum.GENERATE, getUser().getEmail(), "CLIENT " + _client.getName());
         } catch (final AppException e) {
             addError(ERROR_CLIENT_OAUTH2_GENERATION);
             addError(e.getMessage());
@@ -729,7 +727,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             secret.setClient(_client);
             ClientSecretHome.create(secret);
         });
-        ClientService.getInstance().addNewHistory(_client.getUuid(), HistoryTypeEnum.UPDATE, getUser().getEmail());
+        ClientService.getInstance().addNewHistory(_client.getUuid(), HistoryTypeEnum.UPDATE, getUser().getEmail(), "CLIENT " + _client.getName());
 
         addInfo(INFO_CLIENT_UPDATED, getLocale());
         resetListId();

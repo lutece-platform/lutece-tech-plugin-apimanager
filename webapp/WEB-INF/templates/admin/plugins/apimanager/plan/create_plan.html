@@ -39,6 +39,12 @@
 			<@formGroup labelFor='description' labelKey='#i18n{apimanager.plan.labelDescription}' mandatory=true>
 					<@input type='text' id='description' name='description' value=plan.description!''  tabIndex='1' />
 			</@formGroup>
+
+             <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=false>
+             <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
+             <div id="tags-container" class="mt-2"></div>
+             </@formGroup>
+
 			<@formGroup labelFor='version' labelKey='#i18n{apimanager.plan.labelVersion}' mandatory=true>
 					<@input type='text' id='version' name='version' value=plan.version!'' maxlength=50  tabIndex='3' />
 			</@formGroup>
@@ -105,6 +111,7 @@
 </div>
 </div>
 
+<script src="javascript/tags/tags.js"></script>
 <script type="text/javascript">
 	$(function() {
 		if($('#rate_limiting_enabled').is(":checked")) {

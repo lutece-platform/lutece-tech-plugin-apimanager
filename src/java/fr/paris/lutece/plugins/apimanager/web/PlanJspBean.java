@@ -91,7 +91,6 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     private static final String PARAMETER_ID_PLAN = "uuid";
     private static final String PARAMETER_ID_API = "uuid_api";
     private static final String PARAMETER_SUBSCRIPTION_MODE = "subscriptionMode";
-    private static final String PARAMETER_HEADER_MATCHING_PREFIX = "header_matching_";
     private static final String PARAMETER_OAUTH_CONFIGURATION_PREFIX = "oauth_configuration_";
     private static final String PARAMETER_TEMPLATE_NAME = "template_name";
     private static final String PARAMETER_VERSION = "version";

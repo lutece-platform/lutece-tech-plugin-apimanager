@@ -62,14 +62,14 @@ public class ResourceService extends AbstractService<Resource> {
     public void create(final Resource entity, final String user) {
         Optional.ofNullable(entity.getRewriteUrl()).ifPresent(ResourceRewriteUrlHome::create);
         final String uuid = ResourceHome.create(entity).getUuid();
-        this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user);
+        this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user, "");
     }
 
     @Override
     public void update(final Resource entity, final String user) {
         Optional.ofNullable(entity.getRewriteUrl()).ifPresent(ResourceRewriteUrlHome::update);
         ResourceHome.update(entity);
-        this.addNewHistory(entity.getUuid(), HistoryTypeEnum.UPDATE, user);
+        this.addNewHistory(entity.getUuid(), HistoryTypeEnum.UPDATE, user, "");
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ResourceService extends AbstractService<Resource> {
             // Delete header matching
             ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList(Map.of("uuid_resource", uuid), null, null).forEach(ResourceHeaderMatchingHome::remove);
 
-            this.addNewHistory(uuid, HistoryTypeEnum.DELETE, user);
+            this.addNewHistory(uuid, HistoryTypeEnum.DELETE, user, "");
         });
     }
 

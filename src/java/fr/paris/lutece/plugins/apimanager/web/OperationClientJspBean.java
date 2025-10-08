@@ -329,7 +329,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail());
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
             client.setStatus(ClientStatusEnum.UNPUBLISHING.name());
             ClientService.getInstance().update(client, getUser().getEmail());
         } catch (final AppException e) {
@@ -353,7 +353,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
         }
         final Client client = ClientHome.findByPrimaryKey(clientUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        final String env = request.getParameter(PARAMETER_ENVIRONNEMENT);
         final String comment = request.getParameter(PARAMETER_COMMENT);
 
         try {
@@ -377,7 +376,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail());
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
             client.setStatus(ClientStatusEnum.PUBLISHING.name());
             ClientService.getInstance().update(client, getUser().getEmail());
         } catch (final AppException e) {

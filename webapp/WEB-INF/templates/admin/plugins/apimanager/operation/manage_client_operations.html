@@ -17,60 +17,6 @@
 		<@boxBody>
     	<@messages infos=infos warnings=warnings errors=errors />
 
-		<div id="subscription-search-container">
-			<div class="card">
-				<div class="card-body d-flex justify-content-between align-items-center">
-					<div class="container-fluid">
-						<div class="row">
-							<div class="col-sm"></div>
-							<div class="col-sm" style="text-align: right;">
-								<@offcanvas id='search_subscription' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
-								<@tform id='subscription_search_form' name='subscription_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp' >
-								<@messages errors=errors />
-
-								<@formGroup labelFor='filter_environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}'>
-									<select id="filter_environnement" name="filter_environnement" class="form-control">
-										<option value="" selected></option>
-										<#list environment_list as environment>
-											<option value="${environment}">${environment}</option>
-										</#list>
-									</select>
-								</@formGroup>
-								<@formGroup labelFor='filter_client' labelKey='#i18n{apimanager.manage_subscriptions.columnClient}'>
-										<@input type='text' id='filter_client' name='filter_client' placeHolder='#i18n{apimanager.manage_subscriptions.columnClient}' value=mapFilterCriteria["client"]!'' tabIndex='1' />
-								</@formGroup>
-								<@formGroup labelFor='filter_api' labelKey='#i18n{apimanager.manage_subscriptions.columnApi}'>
-										<@input type='text' id='filter_api' name='filter_api' placeHolder='#i18n{apimanager.manage_subscriptions.columnApi}' value=mapFilterCriteria["api"]!'' tabIndex='1' />
-								</@formGroup>
-								<@formGroup labelFor='filter_plan' labelKey='#i18n{apimanager.manage_subscriptions.columnPlan}'>
-										<@input type='text' id='filter_plan' name='filter_plan' placeHolder='#i18n{apimanager.manage_subscriptions.columnPlan}' value=mapFilterCriteria["plan"]!'' tabIndex='2' />
-								</@formGroup>
-								<@formGroup labelFor='filter_trace_enabled' >
-									<@checkBox id='filter_trace_enabled' name='filter_trace_enabled' value='1' labelKey='#i18n{apimanager.manage_subscriptions.columnTraceEnabled}' tabIndex='3' />
-								</@formGroup>
-								<@formGroup labelFor='filter_display_archived' >
-									<@checkBox id='filter_display_archived' name='filter_display_archived' value='1' labelKey='#i18n{apimanager.global.filter.display.archived}' tabIndex='6' />
-								</@formGroup>
-
-								<@button type='submit' title='Search' buttonIcon='search'/>
-								</@tform>
-								</@offcanvas>
-
-								<#list mapFilterCriteria?keys as key>
-									<#if mapFilterCriteria[key]!="">
-										<span class="badge bg-primary px-2" >
-											${key} <a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
-										</span>
-									</#if>
-								</#list>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-		</div>
-
 	<div id="subscription-result-container" class="result-table-container">
 		<div class="clearfix"></div>
 		<div class="card">

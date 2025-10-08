@@ -46,7 +46,7 @@
                         <div class="col-sm">
                            <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.global.filter.labelEnvironnement}' mandatory=false>
                            <select id="filter_environement" name="filter_environement" class="form-control" >
-                              <option value="">-- environements --</option>
+                              <option value="">-- environnements --</option>
                               <#list environment_list as environment>
                               <#if ((selected_environment_uuid!'')!="") && environment.uuid == selected_environment_uuid>
                               <option value="${environment.uuid}" selected>${environment.name}</option>

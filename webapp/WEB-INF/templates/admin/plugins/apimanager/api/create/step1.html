@@ -77,7 +77,7 @@
                         </#if>
                      </div>
                      <div class="col">
-                        <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
+                        <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=false>
                                 <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
                                 <div id="tags-container" class="mt-2">
                                     <#if api.tags??>
@@ -95,18 +95,12 @@
                   </div>
                   <div class="row">
                      <div class="col">
-                        <#if api.openapi??>
-                             <@formGroup labelFor='openapi' labelKey='#i18n{apimanager.api.labelOpenapi}'>
-                             <@input type='file' id='openapi' name='openapi' tabIndex='6' params='accept=".json"' />
-                            </@formGroup>
-                         <#else>
-                              <@formGroup labelFor='openapi' labelKey='#i18n{apimanager.api.labelOpenapi}' mandatory=true>
-                              <@input type='file' id='openapi' name='openapi' tabIndex='6' params='accept=".json"' />
-                                </@formGroup>
-                        </#if>
+                         <@formGroup labelFor='openapi' labelKey='#i18n{apimanager.api.labelOpenapi}'>
+                         <@input type='file' id='openapi' name='openapi' tabIndex='6' params='accept=".json"' />
+                        </@formGroup>
                      </div>
                   </div>
-                  <div class="row">
+                <!--  <div class="row">
                      <div class="col">
                         <@formGroup labelFor='active' labelKey='#i18n{apimanager.manage_apis.columnActive}' mandatory=true>
                         <@checkBox id="active" name="active" value="1" checked=false tabIndex='7' />
@@ -117,7 +111,7 @@
                         <@checkBox id="inMaintenance" name="inMaintenance" value="1" checked=false tabIndex='8' />
                         </@formGroup>
                      </div>
-                  </div>
+                  </div>-->
                   <@actionButtons button1Name="action_step1"  i18nValue1Key="apimanager.manage_apis.next"  icon1="next" />
                </div>
                <div id="information-part" class="content auto-height" role="tabpanel" aria-labelledby="information-part-trigger">

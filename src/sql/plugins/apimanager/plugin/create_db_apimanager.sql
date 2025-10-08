@@ -47,7 +47,8 @@ CREATE TABLE apimanager_history
     uuid_ref varchar(50)            null,
     date     timestamp(3)           null,
     type     varchar(50) default '' null,
-    user     varchar(50) default '' null
+    user     varchar(50) default '' null,
+    action   varchar(255)           null
 );
 
 CREATE TABLE apimanager_instance

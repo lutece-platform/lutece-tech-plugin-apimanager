@@ -56,6 +56,8 @@ public class History implements Serializable
 
     private HistoryTypeEnum _type;
 
+    private String _strAction;
+
     @Size( max = 50, message = "#i18n{apimanager.validation.history.User.size}" )
     private String _strUser;
 
@@ -153,6 +155,7 @@ public class History implements Serializable
         return _strUser;
     }
 
+
     /**
      * Sets the User
      * 
@@ -162,6 +165,28 @@ public class History implements Serializable
     public void setUser( String strUser )
     {
         _strUser = strUser;
+    }
+
+
+    /**
+     * Sets the Action
+     *
+     * @param action
+     *            The Action
+     */
+    public void setAction( String action )
+    {
+        _strAction = action;
+    }
+
+    /**
+     * Returns the Action
+     *
+     * @return The Action
+     */
+    public String getAction( )
+    {
+        return _strAction;
     }
 
 }
