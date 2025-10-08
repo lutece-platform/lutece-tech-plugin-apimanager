@@ -1,12 +1,12 @@
 <div class="container-fluid">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageApis.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_apis.viewApi}</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="create-tab" role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_apis.createApi}</a>
-        </li>
-    </ul>
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageApis.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_apis.viewApi}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link active" id="create-tab" role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_apis.createApi}</a>
+      </li>
+   </ul>
    <div class="tab-content mt-3" id="myTabContent">
       <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
       </div>
@@ -43,11 +43,10 @@
                <@messages errors=errors />
                <@input type="hidden" value="${token}" name="token" />
                <@input type="hidden" value="${current_environement_tab}" id="current_environement_tab" name="current_environement_tab" />
-                <@input type="hidden" value="${current_resource}" id="current_resource" name="current_resource" />
+               <@input type="hidden" value="${current_resource}" id="current_resource" name="current_resource" />
                <@input type="hidden" value="" id="create_usecase" name="create_usecase" />
                <!-- your steps content here -->
                <div id="logins-part" role="tabpanel" aria-labelledby="logins-part-trigger" class="content auto-height">
-
                </div>
                <div id="information-part" class="content auto-height" role="tabpanel" aria-labelledby="information-part-trigger">
                   <@formGroup labelFor='apiEnvironnement' labelKey='#i18n{apimanager.api.resource.labelEnvironement}' mandatory=false>
@@ -61,11 +60,11 @@
                   <!-- Nav tabs -->
                   <ul class="nav nav-tabs bg-light"  style="margin-top: 3em" id="myTabs" role="tablist">
                      <#list api.environementList as environment>
-                      <li class="nav-item" role="presentation">
-                          <button class="nav-link text-dark <#if '${environment.uuid}'=='${current_environement_tab}'>active</#if>" id="environement-${environment.uuid}-resource-container-link"
-                                  data-bs-toggle="tab" data-bs-target="#environement-${environment.uuid}-resource-container"
-                                  type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}</button>
-                      </li>
+                     <li class="nav-item" role="presentation">
+                        <button class="nav-link text-dark <#if '${environment.uuid}'=='${current_environement_tab}'>active</#if>" id="environement-${environment.uuid}-resource-container-link"
+                           data-bs-toggle="tab" data-bs-target="#environement-${environment.uuid}-resource-container"
+                           type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}</button>
+                     </li>
                      </#list>
                   </ul>
                   <!-- Tab panes -->
@@ -74,8 +73,7 @@
                      <div class="tab-pane container-fluid border border-1 rounded p-4 mt-4 shadow text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
                         <button type="button" class="btn btn-primary" id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
                         <div id="resource-container" class="col-xl-12 py-2">
-
-                            <#list environment.resourceList as resource>
+                           <#list environment.resourceList as resource>
                            <div id="environement-${environment.uuid}-resource-row-${resource?index}" class="row resource-row" data-index="${resource?index}">
                               <div id="resource-card-container">
                                  <div class="clearfix"></div>
@@ -87,21 +85,21 @@
                                              </div>
                                              <div class="card-body">
                                                 <div class="mb-3 col-1 align-content-end">
-                                                    <button class="btn btn-light" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+                                                   <button class="btn btn-light" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})"><i class="ti ti-trash" aria-hidden="true"></i></button>
                                                 </div>
-                                                 <#if api.uuid??>
-                                                 <@input type="hidden" id="environement-${environment.uuid}-resource-row-${resource?index}-uuid" value=resource.uuid!''
-                                                 name="environement-${environment.uuid}-resource-row-${resource?index}-uuid" />
+                                                <#if api.uuid??>
+                                                <@input type="hidden" id="environement-${environment.uuid}-resource-row-${resource?index}-uuid" value=resource.uuid!''
+                                                name="environement-${environment.uuid}-resource-row-${resource?index}-uuid" />
                                                 </#if>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-name' labelKey='#i18n{apimanager.resource.labelName}' mandatory=true>
                                                 <div class="d-none" id="suggested-name-prefix"></div>
                                                 <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-name'
-                                                 name='environement-${environment.uuid}-resource-row-${resource?index}-name' maxlength=100 value=resource.name!'' tabIndex='${resource?index}1' />
+                                                name='environement-${environment.uuid}-resource-row-${resource?index}-name' maxlength=100 value=resource.name!'' tabIndex='${resource?index}1' />
                                                 <small class="form-text text-muted">#i18n{apimanager.resource.labelName.help}</small>
                                                 </@formGroup>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-path' labelKey='#i18n{apimanager.resource.labelPath}' mandatory=true>
                                                 <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-path'
-                                              name='environement-${environment.uuid}-resource-row-${resource?index}-path' maxlength=255 value=resource.path!'' tabIndex='${resource?index}2' />
+                                                name='environement-${environment.uuid}-resource-row-${resource?index}-path' maxlength=255 value=resource.path!'' tabIndex='${resource?index}2' />
                                                 </@formGroup>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-verb_name' labelKey='#i18n{apimanager.resource.labelVerb}' mandatory=true>
                                                 <select id="environement-${environment.uuid}-resource-row-${resource?index}-verb_name" name="environement-${environment.uuid}-resource-row-${resource?index}-verb_name" class="form-control">
@@ -116,7 +114,7 @@
                                                 </@formGroup>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-matcher_type' labelKey='#i18n{apimanager.resource.labelMatcherType}' mandatory=true>
                                                 <select id="environement-${environment.uuid}-resource-row-${resource?index}-matcher_type"
-                                                        name="environement-${environment.uuid}-resource-row-${resource?index}-matcher_type" class="form-control">
+                                                   name="environement-${environment.uuid}-resource-row-${resource?index}-matcher_type" class="form-control">
                                                    <#list matcher_type_list as matcherType>
                                                    <#if resource.matcherType?? && resource.matcherType==matcherType>
                                                    <option value="${matcherType}" selected>${matcherType}</option>
@@ -132,11 +130,11 @@
                                                    <div id="rewrite-url-container" class="row gx-2">
                                                       <@formGroup class='col-3' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' labelKey='#i18n{apimanager.resource.labelRewriteUrlValue}' mandatory=true>
                                                       <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value'
-                                                       name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' value=resource.rewriteUrl.value!'' tabIndex='${resource?index}3' />
+                                                      name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' value=resource.rewriteUrl.value!'' tabIndex='${resource?index}3' />
                                                       </@formGroup>
                                                       <@formGroup class='col-3' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target' labelKey='#i18n{apimanager.resource.labelRewriteUrlTarget}' mandatory=true>
                                                       <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target'
-                                                    name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target' value=resource.rewriteUrl.target!'' tabIndex='${resource?index}4' />
+                                                      name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target' value=resource.rewriteUrl.target!'' tabIndex='${resource?index}4' />
                                                       </@formGroup>
                                                       <@formGroup class='col-6' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_type_name' labelKey='#i18n{apimanager.resource.labelRewriteUrlType}' mandatory=true>
                                                       <select id="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_type_name" name="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_type_name" class="form-control">
@@ -151,23 +149,22 @@
                                                       </@formGroup>
                                                    </div>
                                                 </div>
-
                                                 <@formGroup labelFor='request_timeout' labelKey='#i18n{apimanager.plan.labelRequestTimeout}' mandatory=false>
-                                                        <@input type='text' id='request_timeout' name='request_timeout' value=resource.requestTimeout!'' tabIndex='${resource?index}5' />
+                                                <@input type='text' id='request_timeout' name='request_timeout' value=resource.requestTimeout!'' tabIndex='${resource?index}5' />
                                                 </@formGroup>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' >
                                                 <@checkBox id='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' name='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' value='1' labelKey='#i18n{apimanager.resource.columnTraceEnabled}' tabIndex='${resource?index}6' />
                                                 </@formGroup>
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-instances' labelKey='#i18n{apimanager.resource.labelInstance}' mandatory=true>
-                                                <select multiple id="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" name="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" class="form-control instances">
+                                                <select required multiple id="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" name="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" class="form-control instances">
                                                    <#list instance_list as instance>
-                                                    <#if instance.environement.uuid == environment.uuid>
-                                                        <#if resource.instanceUuids?seqContains(instance.uuid)>
-                                                        <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}" selected>${instance.name}</option>
-                                                        <#else>
-                                                        <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}">${instance.name}</option>
-                                                        </#if>
-                                                    </#if>
+                                                   <#if instance.environement.uuid == environment.uuid>
+                                                   <#if resource.instanceUuids?seqContains(instance.uuid)>
+                                                   <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}" selected>${instance.name}</option>
+                                                   <#else>
+                                                   <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}">${instance.name}</option>
+                                                   </#if>
+                                                   </#if>
                                                    </#list>
                                                 </select>
                                                 </@formGroup>
@@ -178,16 +175,15 @@
                                  </div>
                               </div>
                            </div>
-                        </#list>
+                           </#list>
                         </div>
                      </div>
                      </#list>
                   </div>
-
                   <div class="stepper-actions">
-                     <@actionButtons button1Name="view_createApi" button2Name="action_step2" i18nValue1Key="apimanager.manage_apis.previous" i18nValue2Key="apimanager.manage_apis.next" icon1="previous" icon2="next" />
+                     <@actionButtons button2Name="view_createApi" button1Name="action_step2" i18nValue2Key="apimanager.manage_apis.previous" i18nValue1Key="apimanager.manage_apis.next" icon2="previous" icon1="next" />
                   </div>
-                  </div>
+               </div>
                <div id="plan-part" class="content auto-height"  aria-labelledby="plan-part-trigger">
                </div>
                </@tform>
@@ -202,5 +198,5 @@
 <script src="javascript/stepper/bs-stepper.min.js"></script>
 <script src="javascript/api/api.js"></script>
 <script type="text/javascript">
-    stepper.to(2);
+   stepper.to(2);
 </script>
