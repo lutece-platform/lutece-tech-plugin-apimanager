@@ -256,7 +256,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
      * reset the _listIdSubscriptions list
      */
     public void resetListId() {
-        _listIdResources = new ArrayList<>();
+        _listIdApis = new ArrayList<>();
     }
 
     /**
