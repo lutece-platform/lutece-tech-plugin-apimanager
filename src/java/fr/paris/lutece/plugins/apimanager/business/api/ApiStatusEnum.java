@@ -40,5 +40,6 @@ public enum ApiStatusEnum
     PUBLISHING,
     PUBLISHED,
     UNPUBLISHED,
+    ARCHIVED,
     ERROR
 }

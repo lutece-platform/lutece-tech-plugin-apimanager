@@ -161,7 +161,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             _optionOrderBy = request.getParameter(PARAMETER_SEARCH_ORDER_BY);
             _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest(request);
             final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
-            criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
             _listIdApis = ApiService.getInstance().getIdEntitiesList(criterias);
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator();

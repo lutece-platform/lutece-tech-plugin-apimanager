@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
@@ -736,24 +737,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         final String apiUuid = request.getParameter(PARAMETER_ID_API);
         final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        // DELETE PUBLISHED CONFIGS AND ARCHIVE SUBSCRIPTIONS
-        // get all plans linked to this API, if any
-        ResourceService.getInstance().getIdEntitiesList(Map.of("uuid_api", apiUuid)).forEach(resourceUuid -> {
-            // for each plan, get the subscriptions, if any
-            SubscriptionService.getInstance().getIdEntitiesList(Map.of("uuid_resource", resourceUuid)).forEach(subscriptionUuid -> {
-                SubscriptionHome.findByPrimaryKey(subscriptionUuid).ifPresent(subscription -> {
-                    // for each subscription, send a delete request, and archive the subscription
-                   /* _configGeneratorService.deleteSubscription(subscription.getClient(), subscription.getResource().getPlan(),
-                            ResourceService.getInstance().getResourcesByPlanUuid(planUuid),
-                            InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(apiUuid)),
-                            subscription.getEnvironement().getUuid(), getUser().getEmail());*/
-                    SubscriptionService.getInstance().archive(subscriptionUuid, getUser().getEmail());
-                });
-            });
-            ResourceService.getInstance().delete(resourceUuid,getUser().getEmail());
-        });
+
 
         getService().archive(apiUuid, getUser().getEmail());
+        getService().updateStatus(apiUuid, ApiStatusEnum.ARCHIVED.name(), getUser().getEmail());
         addInfo(INFO_API_ARCHIVED, getLocale());
         resetListId();
 
