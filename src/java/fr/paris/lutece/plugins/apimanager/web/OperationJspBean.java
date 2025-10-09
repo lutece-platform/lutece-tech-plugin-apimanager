@@ -397,6 +397,9 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                     Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
                                             (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
 
+            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "API "+ api.getName());
+            api.setStatus(ApiStatusEnum.UNPUBLISHING.name());
+            ApiService.getInstance().update(api, getUser().getEmail());
 
             ExecutorService executor = Executors.newFixedThreadPool(1);
             executor.submit(() -> {
@@ -423,9 +426,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "API "+ api.getName());
-            api.setStatus(ApiStatusEnum.UNPUBLISHING.name());
-            ApiService.getInstance().update(api, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_API_MANAGER_GENERATION);
             addError(e.getMessage());
@@ -464,6 +464,10 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                             (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
 
 
+            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "API "+ api.getName());
+            api.setStatus(ApiStatusEnum.PUBLISHING.name());
+            ApiService.getInstance().update(api, getUser().getEmail());
+
             ExecutorService executor = Executors.newFixedThreadPool(1);
             executor.submit(() -> {
                 try {
@@ -489,9 +493,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "API "+ api.getName());
-            api.setStatus(ApiStatusEnum.PUBLISHING.name());
-            ApiService.getInstance().update(api, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_API_MANAGER_GENERATION);
             addError(e.getMessage());

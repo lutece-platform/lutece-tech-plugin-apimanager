@@ -740,7 +740,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
 
         getService().archive(apiUuid, getUser().getEmail());
-        getService().updateStatus(apiUuid, ApiStatusEnum.ARCHIVED.name(), getUser().getEmail());
         addInfo(INFO_API_ARCHIVED, getLocale());
         resetListId();
 

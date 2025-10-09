@@ -117,7 +117,7 @@
                      <div class="card-body">
                          <div class="row">
                              <div class="col">
-                                 <span>Status: ${api.status}</span>
+                                 <span>Status: <#if api.archived>ARCHIVED<#else>${api.status}</#if></span>
                          </div>
                      </div>
                         <div class="row">

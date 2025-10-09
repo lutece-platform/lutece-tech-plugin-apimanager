@@ -118,8 +118,8 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
     private static final String ACTION_GENERATE_CLIENT = "generateClient";
 
     // Infos
-    private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.removed";
-    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
+    private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.client.manager.unpublished";
+    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.client.manager.published";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
@@ -315,6 +315,11 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
+            client.setStatus(ClientStatusEnum.UNPUBLISHING.name());
+            ClientService.getInstance().update(client, getUser().getEmail());
+
+
             ExecutorService executor = Executors.newFixedThreadPool(1);
             executor.submit(() -> {
                 try {
@@ -329,9 +334,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
-            client.setStatus(ClientStatusEnum.UNPUBLISHING.name());
-            ClientService.getInstance().update(client, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_CLIENT_GENERATION);
             addError(e.getMessage());
@@ -362,6 +364,10 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
+            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
+            client.setStatus(ClientStatusEnum.PUBLISHING.name());
+            ClientService.getInstance().update(client, getUser().getEmail());
+
             ExecutorService executor = Executors.newFixedThreadPool(1);
             executor.submit(() -> {
                 try {
@@ -376,9 +382,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             });
             executor.shutdown();
 
-            getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
-            client.setStatus(ClientStatusEnum.PUBLISHING.name());
-            ClientService.getInstance().update(client, getUser().getEmail());
         } catch (final AppException e) {
             addError(ERROR_CLIENT_GENERATION);
             addError(e.getMessage());
