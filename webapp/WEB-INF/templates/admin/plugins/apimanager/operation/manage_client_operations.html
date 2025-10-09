@@ -54,14 +54,25 @@
 						</#if>
 						</td>
 						<td>
-							${client.status!''}
+                            <#if client.status == "NEW">
+                            <span class="badge badge-new"> ${client.status!''} </span>
+                            <#elseif client.status == "PUBLISHED">
+                            <span class="badge badge-published"> ${client.status!''} </span>
+                            <#elseif client.status == "ERROR">
+                            <span class="badge badge-error"> ${client.status!''} </span>
+                            <#else>
+                            <span class="badge"> ${client.status!''} </span>
+                            </#if>
 						</td>
 						<td>
-							<#if client.status?? && client.status=='PUBLISHED'>
-							<@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
-							<#else>
-							<@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=generateClient&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
-							</#if>
+
+                            <#if client.status?? && client.status!='PUBLISHING' && client.status!='ERROR'>
+                                <#if client.status?? && client.status=='PUBLISHED'>
+                                    <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
+                                <#else>
+                                    <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=generateClient&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
+                                </#if>
+                            </#if>
 						</td>
 					</tr>
 					</#list>

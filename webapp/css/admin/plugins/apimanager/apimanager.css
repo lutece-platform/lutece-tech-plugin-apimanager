@@ -132,6 +132,11 @@
     color: rgb(22 101 52);
 }
 
+.apim-plugin .badge.badge-error {
+    background-color: rgb(255, 31, 31) !important;
+    color: rgb(255, 255, 255);
+}
+
 .apim-plugin .badge.badge-unpublished {
     background-color: rgb(254 226 226) !important;
     color: rgb(153 27 27);

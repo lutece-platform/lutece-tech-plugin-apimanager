@@ -111,16 +111,20 @@
                         <span class="badge badge-new"> ${api.status!''} </span>
                         <#elseif api.status == "PUBLISHED">
                         <span class="badge badge-published"> ${api.status!''} </span>
+                        <#elseif api.status == "ERROR">
+                        <span class="badge badge-error"> ${api.status!''} </span>
                         <#else>
                         <span class="badge"> ${api.status!''} </span>
                         </#if>
                     </td>
                     <td>
-                        <#if api.status?? && api.status=='PUBLISHED'>
-                        <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
-                        <#else>
-                        <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
-                    </#if>
+                        <#if api.status?? && api.status!='PUBLISHING' && api.status!='ERROR'>
+                            <#if api.status?? && api.status=='PUBLISHED'>
+                            <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
+                            <#else>
+                            <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
+                            </#if>
+                        </#if>
                     </td>
                     </tr>
                     </#list>
