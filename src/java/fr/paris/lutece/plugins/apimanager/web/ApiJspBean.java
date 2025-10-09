@@ -113,12 +113,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String PARAMETER_RESOURCE_ROW = "-resource-row-";
     private static final String PARAMETER_PLAN = "-plan-";
     private static final String PARAMETER_PLAN_RESOURCES = "-resources";
+    private static final String PARAMETER_RESOURCE_HEADER_MATCHING = "header-matching-";
     private static final String PARAMETER_VERB_NAME = "verb_name";
     private static final String PARAMETER_UUID_INSTANCES = "uuid_instances";
     private static final String PARAMETER_CREATE_USECASE = "create_usecase";
     private static final String PARAMETER_CURRENT_ENVIRONMENT_TAB = "current_environement_tab";
     private static final String PARAMETER_CURRENT_PLAN_TAB = "current_plan_tab";
     private static final String PARAMETER_CURRENT_RESOURCE = "current_resource";
+    private static final String PARAMETER_CURRENT_RESOURCE_HEADER_MATCHING = "current_header_matching";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -142,13 +144,15 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String MARK_PLAN_TEMPLATE_NAMES = "plan_template_names";
     private static final String MARK_SELECTED_TAG_LIST = "selected_tag_list";
     private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
-
+    private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
     private static final String JSP_MANAGE_APIS = "jsp/admin/plugins/apimanager/ManageApis.jsp";
 
     // Properties
     private static final String MESSAGE_CONFIRM_ARCHIVE_API = "apimanager.message.confirmArchiveApi";
     private static final String MESSAGE_CONFIRM_REMOVE_LINK = "apimanager.message.confirmRemoveLink";
     private static final String TEMPLATE_NAME_PROP = "apimanager.plan.template.{i}.template.name";
+    private static final String HEADER_MATCHING_TYPE_VALUES = "apimanager.plan.headermatching.type.values";
+
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.api.attribute.";
@@ -191,6 +195,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private List<String> _listResources;
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>();
     private String _optionOrderBy;
+    private final List<String> headerMatchingTypeList = Arrays.asList( AppPropertiesService.getProperty( HEADER_MATCHING_TYPE_VALUES ).split( "," ) );
 
     private final IConfigGeneratorService _configGeneratorService = SpringContextService.getBean(IConfigGeneratorService.BEAN_NAME);
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
@@ -506,6 +511,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     currentEnvironement.setResourceList(new ArrayList<>());
                 Resource blankResource = new Resource();
                 blankResource.setRewriteUrl(new ResourceRewriteUrl());
+                blankResource.setHeaderMatchings(new ArrayList<>());
                 currentEnvironement.getResourceList().add(blankResource);
             }
 
@@ -521,6 +527,26 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             }
         }
 
+        if (usecase != null && usecase.equals("add_header_matching")) {
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+            Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
+            if (index != null && currentEnvironement != null) {
+                Resource selectedResource = currentEnvironement.getResourceList().get(Integer.parseInt(index));
+                if(selectedResource.getHeaderMatchings() == null)
+                    selectedResource.setHeaderMatchings(new ArrayList<>());
+                selectedResource.getHeaderMatchings().add(new ResourceHeaderMatching());
+            }
+        }
+        String indexHeaderMatching = request.getParameter(PARAMETER_CURRENT_RESOURCE_HEADER_MATCHING);
+        if (usecase != null && usecase.equals("delete_header_matching")) {
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+            Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
+
+            if (index != null && currentEnvironement != null) {
+                Resource selectedResource = currentEnvironement.getResourceList().get(Integer.parseInt(index));
+                selectedResource.getHeaderMatchings().remove(Integer.parseInt(indexHeaderMatching));
+            }
+        }
 
         Map<String, Object> model = getModel();
 
@@ -539,11 +565,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(MARK_API, _api);
         model.put(MARK_ENVIRONMENT_LIST, environements);
 
+        model.put( MARK_HEADER_MATCHING_TYPE_LIST, headerMatchingTypeList );
         model.put(MARK_VERB_LIST, ResourceVerbEnum.values());
         model.put(MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values());
         model.put(MARK_MATCHER_TYPE_LIST, matcherTypeList);
         model.put(PARAMETER_ACTIVE_TAB, 1);
         model.put(PARAMETER_CURRENT_RESOURCE, 0);
+        model.put(PARAMETER_CURRENT_RESOURCE_HEADER_MATCHING, 0);
         model.put(MARK_INSTANCE_LIST, instances);
 
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
@@ -563,15 +591,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     public String doCreateApiStep2(HttpServletRequest request) throws AccessDeniedException {
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
 
+
+        try {
+            populateEnvironement(_api, request, getLocale());
+        } catch (JsonProcessingException e) {
+            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+            return redirect(request, VIEW_CREATE_API);
+        }
+
         if (usecase != null && usecase.isEmpty()) {
             _api = (_api != null) ? _api : new Api();
-
-            try {
-                populateEnvironement(_api, request, getLocale());
-            } catch (JsonProcessingException e) {
-                this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
-                return redirect(request, VIEW_CREATE_API);
-            }
 
             if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
                 throw new AccessDeniedException("Invalid security token");
@@ -939,8 +968,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 Environement resourceEnv = EnvironementHome.findByPrimaryKey(envuuid).orElse(null);
                 if (resourceEnv != null) {
                     resourceEnv.setResourceList(resourcesByEnvironements.get(envuuid));
-                    resourceEnv.setPlanList(PlanService.getInstance().getEntitiesListByIds(resourcesByEnvironements.get(envuuid).stream().map(resource -> resource.getPlan().getUuid()).collect(Collectors.toList())));
+                    List<Plan> planList = PlanService.getInstance().getEntitiesListByIds(resourcesByEnvironements.get(envuuid).stream().filter(resource -> resource.getPlan() != null && resource.getPlan().getUuid()!=null)
+                            .map(resource -> resource.getPlan().getUuid()).collect(Collectors.toList()));
+                    resourceEnv.setPlanList(planList!=null?planList:new ArrayList<>());
                     for(Resource  resource : resourceEnv.getResourceList()){
+                        if(resource.getRewriteUrl() == null){
+                            resource.setRewriteUrl(new ResourceRewriteUrl());
+                        }
+                        if(resource.getHeaderMatchings() == null){
+                            resource.setHeaderMatchings(new ArrayList<>());
+                        }
                         resource.setInstances(InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToResourceUuid(resource.getUuid())));
                     }
                     if (_api.getEnvironementList() == null) {
@@ -1028,6 +1065,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     String[] targets = rewriteUrlParams.get("target");
                     String[] values = rewriteUrlParams.get("value");
                     String[] types = rewriteUrlParams.get("type_name");
+                    String[] uuids = rewriteUrlParams.get("uuid");
                     if (targets != null && targets.length > 0) {
                         currentRewriteResourceUrl.setTarget(targets[0]);
                     }
@@ -1037,10 +1075,57 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     if (types != null && types.length > 0) {
                         currentRewriteResourceUrl.setType(ResourceRewriteUrlTypeEnum.valueOf(types[0]));
                     }
-                    ResourceRewriteUrlHome.create(currentRewriteResourceUrl);
+                    if (uuids != null && uuids.length > 0) {
+                        String rewriteUuid = uuids[0];
+                        if(!rewriteUuid.isEmpty()){
+                            currentRewriteResourceUrl.setUuid(uuids[0]);
+                        }
+                    }
                     currentResource.setRewriteUrl(currentRewriteResourceUrl);
                 }
+                final List<Integer> resourceHeadearMatchingIndexes = resourceParams.keySet().stream()
+                        .filter(key -> key.startsWith(PARAMETER_RESOURCE_HEADER_MATCHING))
+                        .map(key -> key.replace(PARAMETER_RESOURCE_HEADER_MATCHING, ""))
+                        .map(key -> Integer.parseInt(key.substring(0, key.indexOf('-')))).distinct().collect(Collectors.toList());
+
                 currentResource.setEnvironement(environements.stream().filter(s -> s.getUuid().equals(environementUuid)).findFirst().orElse(null));
+
+                for (final int headerMatchingIndex : resourceHeadearMatchingIndexes) {
+                    final String headerMatchingprefix = PARAMETER_RESOURCE_HEADER_MATCHING + headerMatchingIndex + "-";
+                    final Map<String, String[]> headerMatchingParams = resourceParams.entrySet().stream()
+                            .filter(entry -> entry.getKey().startsWith(headerMatchingprefix))
+                            .collect(Collectors.toMap(entry -> entry.getKey().replace(headerMatchingprefix, ""), Map.Entry::getValue));
+
+                    String[] types = headerMatchingParams.get("type");
+                    String[] values = headerMatchingParams.get("value");
+                    String[] names = headerMatchingParams.get("name");
+                    String[] uuids = headerMatchingParams.get("uuid");
+
+                    if (!headerMatchingParams.isEmpty()) {
+                        ResourceHeaderMatching resourceHeaderMatching = new ResourceHeaderMatching();
+                        if (types != null && types.length > 0) {
+                            resourceHeaderMatching.setType(types[0]);
+                        }
+                        if (values != null && values.length > 0) {
+                            resourceHeaderMatching.setValue(values[0]);
+                        }
+                        if (names != null && names.length > 0) {
+                            resourceHeaderMatching.setName(names[0]);
+                        }
+                        if (uuids != null && uuids.length > 0) {
+                            String headerUuid = uuids[0];
+                            if(!headerUuid.isEmpty()){
+                                resourceHeaderMatching.setUuid(headerUuid);
+                            }
+                        }
+
+                        if(currentResource.getHeaderMatchings() == null){
+                            currentResource.setHeaderMatchings(new ArrayList<>());
+                        }
+                        currentResource.getHeaderMatchings().add(resourceHeaderMatching);
+                    }
+
+                }
 
                 String verbName = resourceRequest.getParameter(PARAMETER_VERB_NAME);
                 if (verbName != null)

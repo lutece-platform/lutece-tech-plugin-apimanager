@@ -75,7 +75,7 @@ public class ApiService extends AbstractService<Api>
         for (Environement env : entity.getEnvironementList()){
             for(Resource resource : env.getResourceList()){
                 resource.setApi(entity);
-                ResourceHome.create(resource);
+                ResourceService.getInstance().create(resource, user);
                 if( resource.getInstances() != null){
                     for(Instance instance : resource.getInstances()){
                         ResourceHome.linkInstance(resource, instance.getUuid());
@@ -114,9 +114,9 @@ public class ApiService extends AbstractService<Api>
                 for(Resource resource : env.getResourceList()){
                     resource.setApi(entity);
                     if(resource.getUuid() != null){
-                        ResourceHome.update(resource);
+                        ResourceService.getInstance().update(resource, user);
                     }else{
-                        ResourceHome.create(resource);
+                        ResourceService.getInstance().create(resource, user);
                     }
                     //clean previous link
                     ResourceHome.removeInstanceLinks(resource);

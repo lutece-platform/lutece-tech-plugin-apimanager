@@ -193,7 +193,7 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             daoUtil.setString( nIndex++, resource.getApi( ) != null ? resource.getApi( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, resource.getStatus( ) );
             daoUtil.setBoolean( nIndex++, resource.getTraceEnabled( ) );
-            daoUtil.setInt( nIndex++, resource.getRequestTimeout( ) );
+            daoUtil.setInt( nIndex++, resource.getRequestTimeout( )!=null?resource.getRequestTimeout( ):30000 );
             daoUtil.setString( nIndex, resource.getUuid( ) );
 
             daoUtil.executeUpdate( );

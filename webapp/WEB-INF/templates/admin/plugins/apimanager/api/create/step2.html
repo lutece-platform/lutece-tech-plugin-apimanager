@@ -44,6 +44,7 @@
                <@input type="hidden" value="${token}" name="token" />
                <@input type="hidden" value="${current_environement_tab}" id="current_environement_tab" name="current_environement_tab" />
                <@input type="hidden" value="${current_resource}" id="current_resource" name="current_resource" />
+                <@input type="hidden" value="${current_header_matching}" id="current_header_matching" name="current_header_matching" />
                <@input type="hidden" value="" id="create_usecase" name="create_usecase" />
                <!-- your steps content here -->
                <div id="logins-part" role="tabpanel" aria-labelledby="logins-part-trigger" class="content auto-height">
@@ -131,6 +132,9 @@
                                                 <div class="col-xl-12 py-2">
                                                    <h2><i class="ti ti-reload"></i> Rewrite URL</h2>
                                                    <div id="rewrite-url-container" class="row gx-2">
+
+                                                       <@input type="hidden" value=resource.rewriteUrl.uuid!'' id="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_uuid"
+                                                       name="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_uuid" />
                                                       <@formGroup class='col-3' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' labelKey='#i18n{apimanager.resource.labelRewriteUrlValue}' mandatory=true>
                                                       <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value'
                                                       name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' value=resource.rewriteUrl.value!'' tabIndex='${resource?index}3' />
@@ -152,6 +156,46 @@
                                                       </@formGroup>
                                                    </div>
                                                 </div>
+                                                 <!-- HEADER MATCHING -->
+                                                <div id="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-container" class="col-xl-12 py-2">
+                                                    <h2><i class="ti ti-checkbox"></i> Header Matching
+                                                        <button type="button" class="btn btn-primary" id="environement-${environment.uuid}-resource-row-${resource?index}-add-header-matching"
+                                                                name="environement-${environment.uuid}-resource-row-${resource?index}-add-header-matching"
+                                                                onclick="newHeaderMatching('${environment.uuid}','${resource?index}')">+</button>
+                                                    </h2>
+                                                    <#list resource.headerMatchings as headerMatching>
+                                                         <div id="header-matching-row-0" class="row gx-2 header-matching-row " data-index="0">
+                                                             <@input type="hidden" value=headerMatching.uuid!'' id="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-uuid"
+                                                             name="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-uuid" />
+
+                                                            <@formGroup class='col' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true >
+                                                                    <@input type='text' value=headerMatching.name!'' id='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-name'
+                                                                    name='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-name'  maxlength=50  mandatory=true />
+                                                            </@formGroup>
+                                                            <@formGroup class='col' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' >
+                                                                    <@input type='text' value=headerMatching.value!'' id='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-value'
+                                                                    name='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-value'  maxlength=255  mandatory=true />
+                                                            </@formGroup>
+                                                            <@formGroup class='col' labelFor='header_matching_0_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true >
+                                                                <select id="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-type"
+                                                                        name="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-type" class="form-control" >
+                                                                    <#list header_matching_type_list as type>
+                                                                        <#if headerMatching.type?? && headerMatching.type==type>
+                                                                            <option value="${type}" selected>${type}</option>
+                                                                        <#else>
+                                                                            <option value="${type}">${type}</option>
+                                                                        </#if>
+                                                                    </#list>
+                                                                </select>
+                                                            </@formGroup>
+                                                            <div class="mb-3 col-1 align-content-end">
+                                                                <button class="btn btn-light" type="button" id="delete-resource-row-${resource?index}-header_matching_${headerMatching?index}"
+                                                                        onclick="removeResourceHeaderMatching('${environment.uuid}',${resource?index},${headerMatching?index})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </#list>
+                                                </div>
+
                                                 <@formGroup labelFor='request_timeout' labelKey='#i18n{apimanager.plan.labelRequestTimeout}' mandatory=false>
                                                 <@input type='text' id='request_timeout' name='request_timeout' value=resource.requestTimeout!'' tabIndex='${resource?index}5' />
                                                 </@formGroup>

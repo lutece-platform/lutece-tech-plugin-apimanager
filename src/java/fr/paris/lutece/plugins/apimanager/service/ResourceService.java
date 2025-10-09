@@ -34,10 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHeaderMatchingHome;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,16 +57,25 @@ public class ResourceService extends AbstractService<Resource> {
 
     @Override
     public void create(final Resource entity, final String user) {
-        Optional.ofNullable(entity.getRewriteUrl()).ifPresent(ResourceRewriteUrlHome::create);
+        if(entity.getRewriteUrl() != null){
+            ResourceRewriteUrlHome.create(entity.getRewriteUrl());
+        }
         final String uuid = ResourceHome.create(entity).getUuid();
+
         this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user, "");
     }
 
     @Override
     public void update(final Resource entity, final String user) {
-        Optional.ofNullable(entity.getRewriteUrl()).ifPresent(ResourceRewriteUrlHome::update);
+        if(entity.getRewriteUrl() != null){
+            if(entity.getRewriteUrl().getUuid() != null){
+                ResourceRewriteUrlHome.update(entity.getRewriteUrl());
+            }else{
+                ResourceRewriteUrlHome.create(entity.getRewriteUrl());
+            }
+        }
         ResourceHome.update(entity);
-        this.addNewHistory(entity.getUuid(), HistoryTypeEnum.UPDATE, user, "");
+        this.addNewHistory(entity.getUuid(), HistoryTypeEnum.UPDATE, user, "RESOURCE "+ entity.getName());
     }
 
     @Override
@@ -83,7 +89,7 @@ public class ResourceService extends AbstractService<Resource> {
             // Delete header matching
             ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList(Map.of("uuid_resource", uuid), null, null).forEach(ResourceHeaderMatchingHome::remove);
 
-            this.addNewHistory(uuid, HistoryTypeEnum.DELETE, user, "");
+            this.addNewHistory(uuid, HistoryTypeEnum.DELETE, user, "RESOURCE "+ resource.getName());
         });
     }
 

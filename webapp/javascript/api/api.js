@@ -103,9 +103,26 @@ function newResource(envUuid){
     $("#step2").submit();
 }
 
+
+function newHeaderMatching(envUuid, resourceIndex){
+    $("#create_usecase").val("add_header_matching");
+    $("#current_environement_tab").val(envUuid);
+    $("#current_resource").val(resourceIndex);
+    $("#step2").submit();
+}
+
 function removeResource(envUuid, resourceIndex){
     $("#create_usecase").val("delete_resource");
     $("#current_resource").val(resourceIndex);
+    $("#current_environement_tab").val(envUuid);
+    $("#step2").submit();
+}
+
+
+function removeResourceHeaderMatching(envUuid, resourceIndex, headerMatchingIndex){
+    $("#create_usecase").val("delete_header_matching");
+    $("#current_resource").val(resourceIndex);
+    $("#current_header_matching").val(headerMatchingIndex);
     $("#current_environement_tab").val(envUuid);
     $("#step2").submit();
 }
