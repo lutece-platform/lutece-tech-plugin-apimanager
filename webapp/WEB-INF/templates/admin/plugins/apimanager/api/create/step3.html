@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid apim-plugin">
    <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
          <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageApis.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_apis.viewApi}</a>
@@ -52,7 +52,7 @@
                </div>
                <div id="plan-part" class="content auto-height"  aria-labelledby="plan-part-trigger">
                   <#list api.environementList as environment>
-                  <div class="my-4 p-6 border rounded-md " id="plan" data-index="0">
+                  <div class="my-4 p-6 card " id="plan" data-index="0">
                      <h4 class="font-bold text-gray-800 mb-4" id="plan-environement-${environment.name}">${environment.name}</h4>
                      <div class="flex items-center space-x-4 mb-4">
                         <@formGroup labelFor='plan-environement-${environment.uuid}' labelKey='#i18n{apimanager.plan.addLabel}' mandatory=true>
@@ -62,7 +62,7 @@
                            </#list>
                         </select>
                         </@formGroup>
-                        <button type="button" id="add-plan-button" class="btn btn-primary"  onclick="newPlan('${environment.uuid}')">Ajouter</button>
+                        <button type="button" id="add-plan-button" class="btn btn-success"  onclick="newPlan('${environment.uuid}')">Ajouter</button>
                      </div>
                      <div>
                         <!-- Nav tabs -->
@@ -78,11 +78,11 @@
                         <div class="tab-content" id="planTabContent">
                            <#list environment.planList as plan>
                            <!-- plan tab content -->
-                           <div class="tab-pane container-fluid border border-1 rounded p-4 mt-4 shadow <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active show</#if><#else><#if plan?index==0>active show</#if></#if>" id="environement-${environment.uuid}-plan-${plan.uuid}" role="tabpanel">
+                           <div class="tab-pane container-fluid p-4 mt-4 <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active show</#if><#else><#if plan?index==0>active show</#if></#if>" id="environement-${environment.uuid}-plan-${plan.uuid}" role="tabpanel">
                               <div class="plan-resources sub-tab-content" id="plan-resources-template" style="display: block;">
                                  <div class="flex items-center space-x-4 mb-4">
                                     <div class="form-group mb-3">
-                                       <label for="environement-${environment.uuid}-plan-${plan.uuid}-resources" class="form-label form-label" >Ajouter des ressources :</label>
+                                       <label for="environement-${environment.uuid}-plan-${plan.uuid}-resources" class="form-label form-label" >Sélectionner les ressources du plan :</label>
                                        <select id="environement-${environment.uuid}-plan-${plan.uuid}-resources" name="environement-${environment.uuid}-plan-${plan.uuid}-resources" multiple required class="form-control">
                                           <#list environment.resourceList as resource>
                                           <#if resource.uuid??>

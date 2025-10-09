@@ -50,15 +50,21 @@
                </div>
                <div id="information-part" class="content auto-height" role="tabpanel" aria-labelledby="information-part-trigger">
                   <@formGroup labelFor='apiEnvironnement' labelKey='#i18n{apimanager.api.resource.labelEnvironement}' mandatory=false>
-                  <select id="apiEnvironnement" name="environement" class="form-control">
-                     <#list environment_list as environment>
-                     <option value="${environment.uuid}">${environment.name}</option>
-                     </#list>
-                  </select>
+                  <div class="d-flex align-items-center gap-2 mb-5">
+                     <select id="apiEnvironnement" name="environement" class="form-control w-auto">
+                        <#list environment_list as environment>
+                        <option value="${environment.uuid}">${environment.name}</option>
+                        </#list>
+                     </select>
+                     <button type="button" class="btn btn-success" id="addEnvBtn" onclick="addEnvironement()">Ajouter</button>
+                  </div>
                   </@formGroup>
-                  <button type="button" class="btn btn-primary" id="addEnvBtn" onclick="addEnvironement()">Ajouter</button>
+
+
+                  <label class="form-label">Gérer les ressources par environnement</label>
+
                   <!-- Nav tabs -->
-                  <ul class="nav nav-tabs bg-light"  style="margin-top: 3em" id="myTabs" role="tablist">
+                  <ul class="nav nav-tabs bg-light" id="myTabs" role="tablist">
                      <#list api.environementList as environment>
                      <li class="nav-item" role="presentation">
                         <button class="nav-link text-dark <#if '${environment.uuid}'=='${current_environement_tab}'>active</#if>" id="environement-${environment.uuid}-resource-container-link"
@@ -70,9 +76,9 @@
                   <!-- Tab panes -->
                   <div class="tab-content " id="tabContent">
                      <#list api.environementList as environment>
-                     <div class="tab-pane container-fluid border border-1 rounded p-4 mt-4 shadow text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
-                        <button type="button" class="btn btn-primary" id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
-                        <div id="resource-container" class="col-xl-12 py-2">
+                     <div class="tab-pane container-fluid mt-4 text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
+                        <button type="button" class="btn btn-success mb-4 id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
+                        <div id="resource-container" class="col py-2">
                            <#list environment.resourceList as resource>
                            <div id="environement-${environment.uuid}-resource-row-${resource?index}" class="row resource-row" data-index="${resource?index}">
                               <div id="resource-card-container">
@@ -84,9 +90,6 @@
                                              <div class="card-tools">
                                              </div>
                                              <div class="card-body">
-                                                <div class="mb-3 col-1 align-content-end">
-                                                   <button class="btn btn-light" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})"><i class="ti ti-trash" aria-hidden="true"></i></button>
-                                                </div>
                                                 <#if api.uuid??>
                                                 <@input type="hidden" id="environement-${environment.uuid}-resource-row-${resource?index}-uuid" value=resource.uuid!''
                                                 name="environement-${environment.uuid}-resource-row-${resource?index}-uuid" />
@@ -168,6 +171,11 @@
                                                    </#list>
                                                 </select>
                                                 </@formGroup>
+
+                                                <div class="mb-3 col-1 align-content-end">
+                                                   <button class="btn btn-danger" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})">Supprimer la ressource</button>
+                                                </div>
+
                                              </div>
                                           </div>
                                        </div>

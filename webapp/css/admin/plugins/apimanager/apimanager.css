@@ -169,3 +169,11 @@
 }
 
 
+form#step1 {
+    max-width: 800px;
+    margin-top: 3em;
+}
+
+form#step1 button{
+    margin-top: 3em;
+}
