@@ -140,7 +140,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
     // Session variable to store working values
     private Subscription _subscription;
     private List<Api> _apiList;
-    private List<String> _listIdResources;
+    private List<String> _listIdApis;
     private HashMap<String, String> _mapFilterCriteria = new HashMap<>();
     private String _optionOrderBy;
 
@@ -161,17 +161,17 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             _optionOrderBy = request.getParameter(PARAMETER_SEARCH_ORDER_BY);
             _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest(request);
             final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
-            if (!_mapFilterCriteria.containsKey(FILTER_DISPLAY_ARCHIVED)) {
-                criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
-            }
-            _listIdResources = ResourceService.getInstance().getIdEntitiesList(criterias);
-
+            criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
+            _listIdApis = ResourceService.getInstance().getIdEntitiesList(criterias);
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator();
+        }else{
+            final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
+            criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
+            _listIdApis = ApiService.getInstance().getIdEntitiesList(criterias);
         }
 
-
-        _apiList = ApiService.getInstance().getEntitiesListByIds(ApiService.getInstance().getIdEntitiesList());
+        _apiList = ApiService.getInstance().getEntitiesListByIds(_listIdApis);
 
         for (Api api : _apiList) {
             Map<String, Client> subscribers = new HashMap<>();
