@@ -118,8 +118,8 @@
                         </#if>
                     </td>
                     <td>
-                        <#if api.status?? && api.status!='PUBLISHING' && api.status!='ERROR'>
-                            <#if api.status?? && api.status=='PUBLISHED'>
+                        <#if api.status?? && api.status!='PUBLISHING'>
+                            <#if api.status=='PUBLISHED'>
                             <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
                             <#else>
                             <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />

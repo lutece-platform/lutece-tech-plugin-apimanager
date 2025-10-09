@@ -66,7 +66,7 @@
 						</td>
 						<td>
 
-                            <#if client.status?? && client.status!='PUBLISHING' && client.status!='ERROR'>
+                            <#if client.status?? && client.status!='PUBLISHING'>
                                 <#if client.status?? && client.status=='PUBLISHED'>
                                     <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
                                 <#else>
