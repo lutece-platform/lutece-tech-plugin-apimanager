@@ -177,3 +177,7 @@ form#step1 {
 form#step1 button{
     margin-top: 3em;
 }
+
+.blurry{
+    opacity: 0.6;
+}

@@ -100,17 +100,19 @@
                <#list api_list as api>
                <div class="col">
 
-                  <div class="card">
-                     <div class="card-header d-flex justify-content-between align-items-center">
+                  <div class="card <#if api.archived>blurry</#if>">
+                     <div class="card-header d-flex justify-content-between align-items-center ">
                          <div class="card-title"><b>${api.name!''}</b> - v${api.version!''}</div>
                         <div class="card-tools">
-                            <#if api.status!='NEW'>
-                            <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=newApiVersion&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.NewVersion}' buttonIcon='link' hideTitle=['all']  />
-                            <#else>
-                            <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-                        </#if>
-                            <@aButton class="btn-archive" href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmArchiveApi&uuid=${api.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] />
-                        </div>
+                            <#if !api.archived>
+                                <#if api.status!='NEW'>
+                                    <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=newApiVersion&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.NewVersion}' buttonIcon='link' hideTitle=['all']  />
+                                <#else>
+                                    <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=modifyApi&uuid=${api.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                                </#if>
+                                <@aButton class="btn-archive" href='jsp/admin/plugins/apimanager/ManageApis.jsp?action=confirmArchiveApi&uuid=${api.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] />
+                            </#if>
+                         </div>
                      </div>
                      <div class="card-body">
                          <div class="row">

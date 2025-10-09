@@ -244,9 +244,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest(request);
                 final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
-                if (!_mapFilterCriteria.containsKey(FILTER_DISPLAY_ARCHIVED)) {
-                    criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
-                }
                 if (criterias.containsKey(PARAMETER_ID_INSTANCE)) {
                     final String uuidInstance = criterias.get(PARAMETER_ID_INSTANCE);
                     _listIdApis = getService().getIdApisListLinkedToInstanceUuid(uuidInstance);
