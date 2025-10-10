@@ -43,6 +43,7 @@
                <@messages errors=errors />
                <@input type="hidden" value="${token}" name="token" />
                <@input type="hidden" value="${current_environement_tab}" id="current_environement_tab" name="current_environement_tab" />
+                <@input type="hidden" value="${current_source_environement}" id="current_source_environement" name="current_source_environement" />
                <@input type="hidden" value="${current_resource}" id="current_resource" name="current_resource" />
                 <@input type="hidden" value="${current_header_matching}" id="current_header_matching" name="current_header_matching" />
                <@input type="hidden" value="" id="create_usecase" name="create_usecase" />
@@ -58,6 +59,15 @@
                         </#list>
                      </select>
                      <button type="button" class="btn btn-success" id="addEnvBtn" onclick="addEnvironement()">Ajouter</button>
+                      <div class="dropdown">
+                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Cloner
+                              <span class="caret"></span></button>
+                          <ul class="dropdown-menu">
+                              <#list api.environementList as environment>
+                              <li><a onclick="clone('${environment.uuid}')" class="dropdown-item">${environment.name}</a></li>
+                              </#list>
+                          </ul>
+                      </div>
                   </div>
                   </@formGroup>
 
@@ -70,7 +80,8 @@
                      <li class="nav-item" role="presentation">
                         <button class="nav-link text-dark <#if '${environment.uuid}'=='${current_environement_tab}'>active</#if>" id="environement-${environment.uuid}-resource-container-link"
                            data-bs-toggle="tab" data-bs-target="#environement-${environment.uuid}-resource-container"
-                           type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}</button>
+                           type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}
+                            <a id="delete-environement" class="icon-block icon-delete" onclick="deleteEnvironement('${environment.uuid}')"><i class="fas fa-times" style="color:black" ></i></a></button>
                      </li>
                      </#list>
                   </ul>
@@ -78,15 +89,20 @@
                   <div class="tab-content " id="tabContent">
                      <#list api.environementList as environment>
                      <div class="tab-pane container-fluid mt-4 text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
-                        <button type="button" class="btn btn-success mb-4 id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
-                        <div id="resource-container" class="col py-2">
+                        <button type="button" class="btn btn-success mb-4" id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
+                        <div id="resource-container" class="col py-2 accordion">
                            <#list environment.resourceList as resource>
-                           <div id="environement-${environment.uuid}-resource-row-${resource?index}" class="row resource-row" data-index="${resource?index}">
-                              <div id="resource-card-container">
+                           <div id="environement-${environment.uuid}-resource-row-${resource?index}" class="row resource-row accordion-item" data-index="${resource?index}">
+                               <h2 class="accordion-header">
+                                   <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${resource?index}" aria-expanded="true" aria-controls="collapseOne">
+                                       Resource <#if resource.name?? && resource.name !=''>${resource.name}<#else>${resource?index}</#if>
+                                   </button>
+                               </h2>
+                              <div id="collapse${resource?index}" class="col accordion-collapse collapse <#if '${resource?index}'=='${current_resource}'>show</#if> ">
                                  <div class="clearfix"></div>
                                  <div class="row ">
-                                    <div class="col">
-                                       <div class="card">
+                                     <div class="col">
+                                       <div class="card accordion-body">
                                           <div class="card-header d-flex justify-content-between align-items-center">
                                              <div class="card-tools">
                                              </div>

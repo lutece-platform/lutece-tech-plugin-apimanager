@@ -186,3 +186,12 @@ form#step1 button{
 .blurry{
     opacity: 0.6;
 }
+
+.icon-delete:hover{
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.dropdown-item{
+    cursor: pointer;
+}

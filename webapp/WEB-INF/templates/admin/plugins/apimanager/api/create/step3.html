@@ -70,7 +70,8 @@
                            <#list environment.planList as plan>
                            <li class="nav-item" role="presentation">
                               <button class="nav-link active" id="environement-${environment.uuid}-plan-${plan.uuid}-container-link" data-bs-toggle="environement-${environment.uuid}-plan-${plan.uuid}"
-                                 data-bs-target="#environement-${environment.uuid}-plan-${plan.uuid}" type="button" role="tab" aria-controls="create" aria-selected="true">${plan.name}</button>
+                                 data-bs-target="#environement-${environment.uuid}-plan-${plan.uuid}" type="button" role="tab" aria-controls="create" aria-selected="true">${plan.name}
+                               <a id="delete-plan" class="icon-block icon-delete" onclick="deletePlan('${environment.uuid}','${plan?index}')"><i class="fas fa-times" style="color:black" ></i></a></button>
                            </li>
                            </#list>
                         </ul>

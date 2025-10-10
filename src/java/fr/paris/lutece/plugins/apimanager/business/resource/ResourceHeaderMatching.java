@@ -57,6 +57,17 @@ public class ResourceHeaderMatching implements Serializable
     @Size( max = 50, message = "#i18n{apimanager.validation.resourceheadermatching.Type.size}" )
     private String _strType;
 
+
+    public ResourceHeaderMatching() {
+    }
+
+    public ResourceHeaderMatching(ResourceHeaderMatching headerMatching) {
+        this._strName = headerMatching._strName;
+        this._strValue = headerMatching._strValue;
+        this._strType = headerMatching._strType;
+    }
+
+
     /**
      * Returns the Uuid
      * 

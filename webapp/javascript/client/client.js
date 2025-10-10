@@ -3,13 +3,13 @@ function cleanSpace(text){
 }
 $(document).ready(function () {
     const target = $('#api_selection_'+$("#current_subscription_row").val());
-    console.log(target);
-    if(target && target.length > 0){
+    //TODO make the scroll back to the currently selected element active
+   /* if(target && target.length > 0){
         $('html,body').animate({
             scrollTop: target.offset().top
         }, 500);
         console.log('scrolled');
-    }
+    }*/
 });
 
 

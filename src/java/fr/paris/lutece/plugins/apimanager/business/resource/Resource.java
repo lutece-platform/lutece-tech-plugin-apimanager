@@ -87,6 +87,12 @@ public class Resource implements Serializable
     public Resource(Resource resource) {
         this.setMatcherType(resource.getMatcherType() );
         this.setTraceEnabled(resource.getTraceEnabled() );
+        resource.setHeaderMatchings(new ArrayList<>());
+        if(resource.getHeaderMatchings() != null){
+            for(ResourceHeaderMatching headerMatching: resource.getHeaderMatchings()){
+                resource.getHeaderMatchings().add(new ResourceHeaderMatching(headerMatching));
+            }
+        }
         this.setHeaderMatchings(resource.getHeaderMatchings() );
         this.setInstances(resource.getInstances());
         this.setPath(resource.getPath());

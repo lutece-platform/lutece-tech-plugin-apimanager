@@ -89,13 +89,27 @@ var stepper = new Stepper(document.querySelector('#stepper'), {
 });
 
 
-function addEnvironement(){
+function addEnvironement() {
     $("#create_usecase").val("add_environment");
     const selectectEnvironement = $("#apiEnvironnement").val();
     $("#current_environement_tab").val(selectectEnvironement);
     $("#step2").submit();
 }
 
+function clone(envUuid){
+    $("#create_usecase").val("clone_environment");
+    const selectectEnvironement = $("#apiEnvironnement").val();
+    $("#current_environement_tab").val(selectectEnvironement);
+    $("#current_source_environement").val(envUuid);
+    $("#step2").submit();
+}
+
+
+function deleteEnvironement(envUuid){
+    $("#create_usecase").val("delete_environment");
+    $("#current_environement_tab").val(envUuid);
+    $("#step2").submit();
+}
 
 function newResource(envUuid){
     $("#create_usecase").val("add_resource");
@@ -130,6 +144,13 @@ function removeResourceHeaderMatching(envUuid, resourceIndex, headerMatchingInde
 function newPlan(envUuid){
     $("#create_usecase").val("add_plan");
     $("#current_environement_tab").val(envUuid);
+    $("#step3").submit();
+}
+
+function deletePlan(envUuid, planIndex){
+    $("#create_usecase").val("delete_plan");
+    $("#current_environement_tab").val(envUuid)
+    $("#current_plan_tab").val(planIndex);
     $("#step3").submit();
 }
 

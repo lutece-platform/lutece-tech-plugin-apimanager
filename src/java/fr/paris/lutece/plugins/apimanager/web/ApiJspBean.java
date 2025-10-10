@@ -119,6 +119,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String PARAMETER_UUID_INSTANCES = "uuid_instances";
     private static final String PARAMETER_CREATE_USECASE = "create_usecase";
     private static final String PARAMETER_CURRENT_ENVIRONMENT_TAB = "current_environement_tab";
+    private static final String PARAMETER_CURRENT_ENVIRONMENT_SOURCE = "current_source_environement";
     private static final String PARAMETER_CURRENT_PLAN_TAB = "current_plan_tab";
     private static final String PARAMETER_CURRENT_RESOURCE = "current_resource";
     private static final String PARAMETER_CURRENT_RESOURCE_HEADER_MATCHING = "current_header_matching";
@@ -477,14 +478,42 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
         this.reloadLists();
 
-        this.environements.removeIf(environement -> _api.getEnvironementList().stream().anyMatch(environement1 -> environement1.getUuid().equals(environement.getUuid())));
 
+        String resourceIndex = request.getParameter(PARAMETER_CURRENT_RESOURCE);
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
         if (usecase != null && usecase.equals("add_environment")) {
             String selectedEnvironementUuid = request.getParameter(PARAMETER_SELECTED_ENVIRONMENT);
             Environement currentEnvironement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
             if (currentEnvironement != null) {
                 currentEnvironement.setResourceList(new ArrayList<>());
+                if (_api.getEnvironementList() == null) {
+                    _api.setEnvironementList(new ArrayList<>());
+                }
+
+                if (currentEnvironement.getPlanList() == null)
+                    currentEnvironement.setPlanList(new ArrayList<>());
+
+                for (Resource res : currentEnvironement.getResourceList()) {
+                    if (res.getRewriteUrl() == null)
+                        res.setRewriteUrl(new ResourceRewriteUrl());
+                }
+                _api.getEnvironementList().add(currentEnvironement);
+            }
+        }
+
+        if (usecase != null && usecase.equals("clone_environment")) {
+            String sourceEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_SOURCE);
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_SELECTED_ENVIRONMENT);
+            Environement sourceEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(sourceEnvironementUuid)).findFirst().orElse(null);
+            Environement currentEnvironement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
+            if (currentEnvironement != null) {
+                currentEnvironement.setResourceList(new ArrayList<>());
+                if(sourceEnvironement != null){
+                    for(Resource resource : sourceEnvironement.getResourceList()){
+                        currentEnvironement.getResourceList().add(new Resource(resource));
+                    }
+                }
+
                 if (_api.getEnvironementList() == null) {
                     _api.setEnvironementList(new ArrayList<>());
                 }
@@ -512,24 +541,29 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 blankResource.setHeaderMatchings(new ArrayList<>());
                 currentEnvironement.getResourceList().add(blankResource);
             }
+            resourceIndex =Integer.toString(currentEnvironement.getResourceList().size()-1);
 
         }
 
-        String index = request.getParameter(PARAMETER_CURRENT_RESOURCE);
         if (usecase != null && usecase.equals("delete_resource")) {
             String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
             Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
 
-            if (index != null && currentEnvironement != null) {
-                currentEnvironement.getResourceList().remove(Integer.parseInt(index));
+            if (resourceIndex != null && currentEnvironement != null) {
+                currentEnvironement.getResourceList().remove(Integer.parseInt(resourceIndex));
             }
+        }
+
+        if (usecase != null && usecase.equals("delete_environment")) {
+            String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+            _api.getEnvironementList().removeIf(environement -> environement.getUuid().equals(selectedEnvironementUuid));
         }
 
         if (usecase != null && usecase.equals("add_header_matching")) {
             String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
             Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
-            if (index != null && currentEnvironement != null) {
-                Resource selectedResource = currentEnvironement.getResourceList().get(Integer.parseInt(index));
+            if (resourceIndex != null && currentEnvironement != null) {
+                Resource selectedResource = currentEnvironement.getResourceList().get(Integer.parseInt(resourceIndex));
                 if(selectedResource.getHeaderMatchings() == null)
                     selectedResource.setHeaderMatchings(new ArrayList<>());
                 selectedResource.getHeaderMatchings().add(new ResourceHeaderMatching());
@@ -540,12 +574,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
             Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
 
-            if (index != null && currentEnvironement != null) {
-                Resource selectedResource = currentEnvironement.getResourceList().get(Integer.parseInt(index));
+            if (resourceIndex != null && currentEnvironement != null) {
+                Resource selectedResource = currentEnvironement.getResourceList().get(Integer.parseInt(resourceIndex));
                 selectedResource.getHeaderMatchings().remove(Integer.parseInt(indexHeaderMatching));
             }
         }
 
+        this.environements.removeIf(environement -> _api.getEnvironementList().stream().anyMatch(environement1 -> environement1.getUuid().equals(environement.getUuid())));
         Map<String, Object> model = getModel();
 
         String currentTab = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
@@ -557,8 +592,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, "");
             }
         } else {
-
-            model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, currentTab);
+            Environement envToSelect = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(currentTab)).findFirst().orElse(null);
+            if(envToSelect != null){
+                model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, currentTab);
+            }else{
+                if(!_api.getEnvironementList().isEmpty()){
+                    model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, _api.getEnvironementList().get(0).getUuid());
+                }else{
+                    model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, "");
+                }
+            }
         }
         model.put(MARK_API, _api);
         model.put(MARK_ENVIRONMENT_LIST, environements);
@@ -568,7 +611,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values());
         model.put(MARK_MATCHER_TYPE_LIST, matcherTypeList);
         model.put(PARAMETER_ACTIVE_TAB, 1);
-        model.put(PARAMETER_CURRENT_RESOURCE, 0);
+        model.put(PARAMETER_CURRENT_RESOURCE, resourceIndex!=null?resourceIndex:0);
+        model.put(PARAMETER_CURRENT_ENVIRONMENT_SOURCE, 0);
         model.put(PARAMETER_CURRENT_RESOURCE_HEADER_MATCHING, 0);
         model.put(MARK_INSTANCE_LIST, instances);
 
@@ -629,16 +673,21 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
         String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
+        String selectedPlanIndex = request.getParameter(PARAMETER_CURRENT_PLAN_TAB);
         String selectedPlanUuid = request.getParameter(PARAMETER_PREFIX_SELECTED_PLAN + selectedEnvironementUuid);
         if (usecase != null && usecase.equals("add_plan")) {
             Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
-
             Plan currentPlan = PlanHome.findByPrimaryKey(selectedPlanUuid).orElse(null);
-
             if (currentEnvironement != null && currentPlan != null) {
                 currentEnvironement.getPlanList().add(currentPlan);
             }
+        }
+        if (usecase != null && usecase.equals("delete_plan")) {
+            Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
 
+            if (selectedPlanIndex != null && currentEnvironement != null) {
+                currentEnvironement.getPlanList().remove(Integer.parseInt(selectedPlanIndex));
+            }
         }
 
 

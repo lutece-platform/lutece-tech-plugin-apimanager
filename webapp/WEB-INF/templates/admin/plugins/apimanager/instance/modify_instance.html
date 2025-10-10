@@ -19,7 +19,7 @@
          <@input type="hidden" id="uuid" name="uuid" value=instance.uuid!''/>
 
          <@formGroup labelFor='name' labelKey='#i18n{apimanager.instance.labelName}' mandatory=true>
-         <@input type='text' id='name' name='name'  maxlength=255 value=instance.name!'' tabIndex='2' />
+         <@input type='text' id='name' name='name'  maxlength=255 value=instance.name!'' tabIndex='1' />
          </@formGroup>
 
          <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
@@ -40,10 +40,10 @@
                </select>
                </@formGroup>
                <@formGroup class='col-8' labelFor='host' labelKey='#i18n{apimanager.instance.labelHost}' mandatory=true>
-               <@input type='text' id='host' name='host'  maxlength=255 value=instance.host!'' tabIndex='0' />
+               <@input type='text' id='host' name='host'  maxlength=255 value=instance.host!'' tabIndex='2' />
                </@formGroup>
                <@formGroup class='col-2' labelFor='port' labelKey='#i18n{apimanager.instance.labelPort}' mandatory=true>
-               <@input type='text' id='port' name='port'  maxlength=50 value=instance.port!'' tabIndex='1' />
+               <@input type='text' id='port' name='port'  maxlength=50 value=instance.port!'' tabIndex='3' />
                </@formGroup>
             </div>
          </div>
@@ -57,10 +57,21 @@
                </@formGroup>
             </div>
          </div>
-         <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=true>
-         <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
-         <div id="tags-container" class="mt-2"></div>
+         <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=false>
+                <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='6' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
+                <div id="tags-container" class="mt-2">
+                    <#if instance.tags??>
+                        <#list instance.tags as tag>
+                            <span class="badge bg-primary px-2 me-1" id="tag-${tag?index}">
+                                ${tag}
+                                <a id="delete-tag-${tag?index}" class="icon-block"><i class="fas fa-times-circle" style="color:white"></i></a>
+                                <input type="hidden" name="selected_tags" value="${tag}">
+                            </span>
+                        </#list>
+                    </#if>
+                </div>
          </@formGroup>
+
         <@actionButtons button1Name="action_modifyInstance" button2Name="view_manageInstance"/>
          </@tform>
          </@boxBody>
