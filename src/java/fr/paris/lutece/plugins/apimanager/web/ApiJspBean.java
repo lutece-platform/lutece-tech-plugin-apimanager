@@ -1152,7 +1152,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
                     String[] planResources = envPlanResources.get(envPlanResource);
                     if (planResources != null && planResources.length > 0) {
-                        if (Arrays.stream(planResources).anyMatch(s -> s.equals(resource.getVerb().name() + "|" + resource.getName()))) {
+                        if (Arrays.stream(planResources).anyMatch(s -> s.equals(resource.getVerb().name() + "|" + resource.getPath()))) {
                             Plan currentPlan = plans.stream().filter(plan -> plan.getUuid().replace(" ", "").equals(envPlanResource.replace(PARAMETER_PLAN_RESOURCES, ""))).findFirst().orElse(null);
                             if (currentPlan != null) {
                                 if (resource.getPlan() == null) {
