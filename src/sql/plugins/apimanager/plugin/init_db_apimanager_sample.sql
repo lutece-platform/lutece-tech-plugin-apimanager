@@ -18,14 +18,14 @@ values  ('1df5eee8-038b-4f12-86fc-dba73352ddcf', 'REC', null),
 -- values  ('30b2a419-ce6e-4a1b-983d-611760f9121c', 'HTTP', '192.168.52.31', '8080', 'Linux-D13-test-01', '1df5eee8-038b-4f12-86fc-dba73352ddcf', '/health', '8080'),
 --         ('bff5fb61-6093-4396-a070-18a2cedaf7ec', 'HTTP', '192.168.52.32', '8080', 'Linux-D13-test-02', '3747f054-e562-4839-8886-d0b7099c1aba', '/health', '1234');
 
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type)
-values  ('1', 'meecrogate oauth2 server 01 - test', 'http://mg-oauth2-server-01:8080/oauth2', 'mg-oauth2-server-01','ID');
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type)
-values  ('2', 'meecrogate oauth2 server 02 - test', 'http://mg-oauth2-server-02:8080/oauth2', 'mg-oauth2-server-02','ID');
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type)
-values  ('3', 'meecrogate gateway 01 - test', 'http://mg-gateway-01:8080/gateway', 'mg-gateway-01','GATEWAY');
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type)
-values  ('4', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02','GATEWAY');
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,uuid_environement)
+values  ('1', 'meecrogate oauth2 server 01 - test', 'http://mg-oauth2-server-01:8080/oauth2', 'mg-oauth2-server-01','ID','1df5eee8-038b-4f12-86fc-dba73352ddcf');
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,'1df5eee8-038b-4f12-86fc-dba73352ddcf')
+values  ('2', 'meecrogate oauth2 server 02 - test', 'http://mg-oauth2-server-02:8080/oauth2', 'mg-oauth2-server-02','ID','1df5eee8-038b-4f12-86fc-dba73352ddcf');
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,'1df5eee8-038b-4f12-86fc-dba73352ddcf')
+values  ('3', 'meecrogate gateway 01 - test', 'http://mg-gateway-01:8080/gateway', 'mg-gateway-01','GATEWAY','1df5eee8-038b-4f12-86fc-dba73352ddcf');
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,'1df5eee8-038b-4f12-86fc-dba73352ddcf')
+values  ('4', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02','GATEWAY','1df5eee8-038b-4f12-86fc-dba73352ddcf');
 
 -- insert into apimanager_plan (uuid, name, description, active, version,  oauth_enabled, uuid_oauth_configuration, rate_limiting_enabled, rate_limiting_template, client_http_template, status, environnement_list)
 -- values  ('0d21847f-dcb4-4d82-8412-d1aee8a9f922','Plan SSE','Plan pour accès SSE',1, '4',0, '68b19b22-f694-49e3-a61c-8d7707314ee1',1, 'SSE', 'SSE', 'DRAFT', 'TEST,DEV,REC,PREPROD,PROD'),

@@ -52,11 +52,11 @@ public final class MeecrogateDAO extends AbstractFilterDao implements IMeecrogat
     // Constants
     private static final String TABLE_NAME = "apimanager_instance";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_meecrogate_instance ( uuid, name, description, base_url,type) VALUES ( ?, ?, ?, ?,?) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_meecrogate_instance ( uuid, name, description, base_url,type,uuid_environement) VALUES ( ?, ?, ?, ?,?,?) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_meecrogate_instance WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_meecrogate_instance SET name = ?, description = ?, base_url = ?, type = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_meecrogate_instance SET name = ?, description = ?, base_url = ?, type = ?,uuid_environement=? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, base_url,type FROM apimanager_meecrogate_instance";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, base_url,type,uuid_environement FROM apimanager_meecrogate_instance";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_meecrogate_instance";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -88,7 +88,8 @@ public final class MeecrogateDAO extends AbstractFilterDao implements IMeecrogat
             daoUtil.setString( nIndex++, meecrogate.getName( ) );
             daoUtil.setString( nIndex++, meecrogate.getDescription( ) );
             daoUtil.setString( nIndex++, meecrogate.getBaseUrl( ) );
-            daoUtil.setString( nIndex, meecrogate.getType( ) );
+            daoUtil.setString( nIndex++, meecrogate.getType( ) );
+            daoUtil.setString( nIndex, meecrogate.getEnvironement( )!=null?meecrogate.getEnvironement().getUuid( ):null );
 
             daoUtil.executeUpdate( );
             meecrogate.setUuid( uuid );
@@ -145,6 +146,7 @@ public final class MeecrogateDAO extends AbstractFilterDao implements IMeecrogat
             daoUtil.setString( nIndex++, instance.getDescription( ) );
             daoUtil.setString( nIndex++, instance.getBaseUrl( ) );
             daoUtil.setString( nIndex++, instance.getType( ) );
+            daoUtil.setString( nIndex++, instance.getEnvironement( ) != null ? instance.getEnvironement( ).getUuid( ) : null );
             daoUtil.setString( nIndex, instance.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -279,7 +281,8 @@ public final class MeecrogateDAO extends AbstractFilterDao implements IMeecrogat
         instance.setName( daoUtil.getString( nIndex++ ) );
         instance.setDescription( daoUtil.getString( nIndex++ ) );
         instance.setBaseUrl( daoUtil.getString( nIndex++ ) );
-        instance.setType( daoUtil.getString( nIndex ) );
+        instance.setType( daoUtil.getString( nIndex++ ) );
+        instance.setEnvironement(EnvironementHome.findByPrimaryKey( daoUtil.getString( nIndex )).orElse( null ) );
 
         return instance;
     }

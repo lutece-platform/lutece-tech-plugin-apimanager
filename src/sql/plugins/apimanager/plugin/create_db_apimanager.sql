@@ -70,7 +70,10 @@ CREATE TABLE apimanager_meecrogate_instance
     description varchar(255) default '' null,
     base_url    varchar(255) default '' null,
     name        varchar(255) default '' null,
-    type        varchar(50) default '' null
+    uuid_environement varchar(50)             null,
+    type        varchar(50) default '' null,
+    constraint apimanager_meecrogate_instance__environement_fk
+        foreign key (uuid_environement) references apim.apimanager_environement (uuid)
 );
 
 CREATE TABLE apimanager_plan_oauth_configuration

@@ -25,7 +25,11 @@
          <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
          <select id="environement" name="environement_uuid" class="form-control">
             <#list environment_list as environment>
-            <option value="${environment.uuid}">${environment.name}</option>
+             <#if instance.environement?? && instance.environement.uuid==environment.uuid >
+             <option value="${environment.uuid}" selected>${environment.name}</option>
+             <#else>
+             <option value="${environment.uuid}">${environment.name}</option>
+            </#if>
             </#list>
          </select>
          </@formGroup>

@@ -27,6 +27,19 @@
             <@formGroup labelFor='name' labelKey='#i18n{apimanager.manage_operations.labelBaseurl}' mandatory=true>
             <@input type='text' id='base_url' name='base_url'  maxlength=255 value=instance.baseUrl!'' tabIndex='2' />
             </@formGroup>
+
+             <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.instance.labelEnvironnement}' mandatory=true>
+             <select id="environement" name="uuid_environement" class="form-control">
+                 <option value="">-- environement --</option>
+                <#list environment_list as environment>
+                 <#if instance.environement?? && instance.environement.uuid==environment.uuid >
+                 <option value="${environment.uuid}" selected>${environment.name}</option>
+                 <#else>
+                 <option value="${environment.uuid}">${environment.name}</option>
+                </#if>
+                </#list>
+             </select>
+             </@formGroup>
             <@formGroup labelFor='tags-input' labelKey='#i18n{apimanager.global.labelTags}' mandatory=false>
             <input type='text' class="form-control" id='tags-input' maxlength=50 tabIndex='4' placeholder="#i18n{apimanager.global.inputTagsPlaceholder}" />
             <div id="tags-container" class="mt-2">
@@ -49,6 +62,7 @@
                <th>#i18n{apimanager.manage_operations.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=manageGateways&orderBy=name'><i class='fas fa-sort'></i></a></th>
                <th>#i18n{apimanager.manage_operations.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=manageGateways&orderBy=name'><i class='fas fa-sort'></i></a></th>
                <th>#i18n{apimanager.manage_operations.columnBaseUrl}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?view=manageGateways&orderBy=name'><i class='fas fa-sort'></i></a></th>
+                <th>#i18n{apimanager.manage_operations.columnEnvironnement}&nbsp;</th>
                <th>#i18n{portal.util.labelActions}</th>
             </tr>
             <@tableHeadBodySeparator />
@@ -63,6 +77,14 @@
                <td>
                   ${instance.baseUrl!''}
                </td>
+                 <td>
+                    <#if instance.environement??>
+                    <span class="badge bg-primary px-2 me-1" id="env-${instance?index}">
+                    ${instance.environement.name}
+                    <input type="hidden" name="environement-${instance?index}" value="${instance.environement.name}">
+                    </span>
+                    </#if>
+                 </td>
                <td>
                   <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
                   <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />

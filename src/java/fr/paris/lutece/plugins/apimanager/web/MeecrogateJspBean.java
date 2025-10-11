@@ -39,6 +39,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.meecrogate.Meecrogate;
@@ -85,6 +86,7 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     // Parameters
     private static final String PARAMETER_ID_OPERATION = "uuid";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
+    private static final String PARAMETER_ENVIRONEMENT_UUID = "uuid_environement";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -167,12 +169,15 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
 
         _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(_listIdMeecrogates);
 
+
+        List<Environement> environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+
         Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_GATEWAY_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_MEECROGATES );
 
         model.put( MARK_INSTANCE, _meecrogate );
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
-        model.put( MARK_ENVIRONMENT_LIST, environmentList );
+        model.put( MARK_ENVIRONMENT_LIST, environements );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_MEECROGATE ) );
 
@@ -219,11 +224,12 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
         _meecrogateList = MeecrogateService.getInstance().getEntitiesListByIds(_listIdMeecrogates);
 
         Map<String, Object> model = getPaginatedListModel( request, MARK_MEECROGATE_ID_SERVER_LIST, _meecrogateList.stream().map(Meecrogate::getUuid).collect(Collectors.toList()), JSP_MANAGE_MEECROGATES );
+        List<Environement> environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_INSTANCE, _meecrogate );
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
-        model.put( MARK_ENVIRONMENT_LIST, environmentList );
+        model.put( MARK_ENVIRONMENT_LIST, environements );
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_MEECROGATE ) );
 
@@ -291,9 +297,15 @@ public class MeecrogateJspBean extends AbstractJspBean<String, Meecrogate>
     public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
     {
         _meecrogate = (_meecrogate != null) ? _meecrogate : new Meecrogate();
-
+        Map<String, String[]> params = request.getParameterMap();
         populate(_meecrogate, request, getLocale());
 
+        if(params.get(PARAMETER_ENVIRONEMENT_UUID) != null){
+            String[] uuid_env = params.get(PARAMETER_ENVIRONEMENT_UUID);
+            if(uuid_env != null && uuid_env.length > 0){
+                _meecrogate.setEnvironement(EnvironementHome.findByPrimaryKey(uuid_env[0]).orElse(null));
+            }
+        }
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_MEECROGATE ) )
         {
             throw new AccessDeniedException( "Invalid security token" );

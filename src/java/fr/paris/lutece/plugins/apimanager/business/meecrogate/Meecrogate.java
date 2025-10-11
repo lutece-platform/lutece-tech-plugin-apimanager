@@ -61,6 +61,7 @@ public class Meecrogate extends AbstractTagBean implements Serializable {
 
     @Size(max = 255, message = "#i18n{apimanager.validation.instance.Name.size}")
     private String _strType;
+    private Environement _environement;
 
     /**
      * Returns the Uuid
@@ -137,6 +138,13 @@ public class Meecrogate extends AbstractTagBean implements Serializable {
         _strBaseUrl= strBaseUrl;
     }
 
+    public Environement getEnvironement() {
+        return _environement;
+    }
+
+    public void setEnvironement(Environement environement) {
+        this._environement = environement;
+    }
 
 
     /**
