@@ -181,6 +181,20 @@ public final class SubscriptionHome
         return _dao.getIdSubscriptionsByResource( resourceUuid, _plugin  );
     }
 
+
+    /**
+     * Load the uuid of all the avant objects that are NOT linked to the specified instance UUID, and returns them as a list
+     *
+     * @param instanceUuid
+     *            the instance uuid
+     * @return the list which contains the uuid of all the avant objects
+     */
+    public static List<String> getIdSubscriptionsByApi( String instanceUuid )
+    {
+        return _dao.getIdSubscriptionsByApi( instanceUuid, _plugin );
+    }
+
+
     /**
      * Load the data of all the avant objects and returns them as a list
      *

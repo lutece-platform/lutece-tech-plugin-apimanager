@@ -38,7 +38,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.ReferenceList;
@@ -78,6 +77,9 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             + SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE + " )";
     private static final String SQL_QUERY_LINK_INSTANCE = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
     private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_api = ?";
+
+
+
 
     private final ObjectMapper objectMapper = new ObjectMapper( );
 

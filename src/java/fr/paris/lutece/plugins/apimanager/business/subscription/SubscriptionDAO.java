@@ -79,6 +79,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     private static final String SQL_QUERY_SELECTALL_ID_BY_RESOURCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid_resource = ? ";
     private static final String SQL_QUERY_SELECTALL_ID_BY_CLIENT = SQL_QUERY_SELECTALL_ID + " WHERE uuid_client = ? ";
 
+    private static final String SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ID = "SELECT uuid FROM apimanager_subscription " +
+            "WHERE uuid_resource in (select uuid from apimanager_resource " +
+            "WHERE uuid_api=?)";
+
     private static final String FILTER_CLIENT = "client";
     private static final String FILTER_API = "api";
     private static final String FILTER_PLAN = "resource";
@@ -246,6 +250,26 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
             return subscriptionList;
         }
+    }
+
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> getIdSubscriptionsByApi(final String apiUuid, final Plugin plugin)
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ID, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
     }
 
     /**

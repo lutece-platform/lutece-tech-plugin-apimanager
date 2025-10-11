@@ -60,5 +60,6 @@ public interface ISubscriptionDAO extends IDAO<Subscription>
     List<String> getIdSubscriptionsByResource( String resourceUuid, Plugin plugin );
     List<String> getIdSubscriptionsByClient( String clientUuid, Plugin plugin );
 
+    List<String> getIdSubscriptionsByApi(String apiUuid, Plugin plugin);
 
 }

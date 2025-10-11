@@ -38,6 +38,7 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -82,6 +83,7 @@ public class Api extends AbstractTagBean implements Serializable
 
     private List<Plan> _planList;
     private List<Client> _subscriberList;
+    private List<Subscription> _subscriptionList;
 
     /**
      * Returns the Uuid
@@ -192,9 +194,9 @@ public class Api extends AbstractTagBean implements Serializable
 
 
     /**
-     * Returns the Description
+     * Returns the Subscriber
      *
-     * @return The Description
+     * @return The Subscriber
      */
     public List<Client> getSubscriberList( )
     {
@@ -202,15 +204,34 @@ public class Api extends AbstractTagBean implements Serializable
     }
 
     /**
-     * Sets the Description
+     * Sets the Subscriber
      *
      * @param subscriberList
+     *            The Subscriber
+     */
+    public void setSubscriberList( List<Client> subscriberList ){this._subscriberList = subscriberList;}
+
+
+
+    /**
+     * Returns the Subscription
+     *
+     * @return The Subscription
+     */
+    public List<Subscription> getSubscriptionList( )
+    {
+        return _subscriptionList;
+    }
+
+    /**
+     * Sets the Subscription
+     *
+     * @param subscriptionList
      *            The Description
      */
-    public void setSubscriberList( List<Client> subscriberList )
-    {
-        _subscriberList = subscriberList;
-    }
+    public void setSubscriptionList( List<Subscription> subscriptionList ){this._subscriptionList =subscriptionList;}
+
+
 
     /**
      * Returns the Version

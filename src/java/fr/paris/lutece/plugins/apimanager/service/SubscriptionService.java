@@ -108,6 +108,13 @@ public class SubscriptionService extends AbstractService<Subscription>
         return SubscriptionHome.getIdSubscriptionsByClient( clientUuid);
     }
 
+
+    public List<String> getIdSubscriptionsByApi(final String apiUuid)
+    {
+        return SubscriptionHome.getIdSubscriptionsByApi( apiUuid);
+    }
+
+
     public void archive( final String uuid, final String user )
     {
         SubscriptionHome.findByPrimaryKey( uuid ).ifPresent( subscription -> {

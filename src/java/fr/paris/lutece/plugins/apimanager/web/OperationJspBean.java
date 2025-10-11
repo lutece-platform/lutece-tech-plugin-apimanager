@@ -161,13 +161,17 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
             _optionOrderBy = request.getParameter(PARAMETER_SEARCH_ORDER_BY);
             _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest(request);
             final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
-            _listIdApis = ApiService.getInstance().getIdEntitiesList(criterias);
+            _listIdApis = ApiService.getInstance().getIdEntitiesList(criterias).stream().filter(s ->
+                    !SubscriptionService.getInstance().getIdSubscriptionsByApi(s).isEmpty()
+            ).collect(Collectors.toList());
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator();
-        }else{
+        } else {
             final HashMap<String, String> criterias = new HashMap<>(_mapFilterCriteria);
             criterias.put(FILTER_ARCHIVED, Boolean.FALSE.toString());
-            _listIdApis = ApiService.getInstance().getIdEntitiesList(criterias);
+            _listIdApis = ApiService.getInstance().getIdEntitiesList(criterias)
+                    .stream().filter(s -> !SubscriptionService.getInstance().getIdSubscriptionsByApi(s).isEmpty()
+            ).collect(Collectors.toList());
         }
 
         _apiList = ApiService.getInstance().getEntitiesListByIds(_listIdApis);
@@ -397,7 +401,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                     Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
                                             (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
 
-            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "API "+ api.getName());
+            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "API " + api.getName());
             api.setStatus(ApiStatusEnum.UNPUBLISHING.name());
             ApiService.getInstance().update(api, getUser().getEmail());
 
@@ -464,7 +468,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                             (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
 
 
-            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "API "+ api.getName());
+            getService().addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "API " + api.getName());
             api.setStatus(ApiStatusEnum.PUBLISHING.name());
             ApiService.getInstance().update(api, getUser().getEmail());
 

@@ -52,6 +52,7 @@ public class Subscription implements Serializable
     private String _strUuid;
 
     private Client _client;
+    private String _strStatus;
 
     private Resource _resource;
 
@@ -190,6 +191,27 @@ public class Subscription implements Serializable
         _api = api;
     }
 
+
+    /**
+     * Returns the Status
+     *
+     * @return The Status
+     */
+    public String getStatus( )
+    {
+        return _strStatus;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param strStatus
+     *            The Status
+     */
+    public void setStatus( String strStatus )
+    {
+        _strStatus = strStatus;
+    }
 
 
     /**

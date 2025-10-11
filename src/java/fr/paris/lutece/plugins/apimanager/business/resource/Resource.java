@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -78,6 +79,7 @@ public class Resource implements Serializable
     @Valid
     @Pattern( regexp = "[a-z0-9\\-]+", message = "#i18n{apimanager.resource.labelName.help}" )
     private String _strName;
+    private List<Subscription> _subscriptionList;
 
 
     public Resource() {
@@ -250,6 +252,27 @@ public class Resource implements Serializable
         this._instances = _instances;
     }
 
+
+    /**
+     * Returns the Subscriptions
+     *
+     * @return The Subscriptions
+     */
+    public List<Subscription> getSubscriptionList( )
+    {
+        return _subscriptionList;
+    }
+
+    /**
+     * Sets the Subscription
+     *
+     * @param subscriptionList
+     *            The Subscription
+     */
+    public void setSubscriptionList( List<Subscription> subscriptionList )
+    {
+        _subscriptionList = subscriptionList;
+    }
     /**
      * Returns the Path
      * 
