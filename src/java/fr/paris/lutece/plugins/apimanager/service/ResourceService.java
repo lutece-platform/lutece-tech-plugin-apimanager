@@ -62,7 +62,7 @@ public class ResourceService extends AbstractService<Resource> {
         }
         final String uuid = ResourceHome.create(entity).getUuid();
 
-        this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user, "");
+        this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user, "RESOURCE " + entity.getUuid());
     }
 
     @Override

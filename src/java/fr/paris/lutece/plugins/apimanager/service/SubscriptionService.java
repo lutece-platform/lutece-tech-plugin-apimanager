@@ -78,7 +78,7 @@ public class SubscriptionService extends AbstractService<Subscription>
     public void delete( final String uuid, final String user )
     {
         SubscriptionHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, "" );
+        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, "SOUSCRIPTION " + uuid );
     }
 
     @Override

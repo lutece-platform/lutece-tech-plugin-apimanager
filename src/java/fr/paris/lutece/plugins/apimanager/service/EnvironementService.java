@@ -62,14 +62,14 @@ public class EnvironementService extends AbstractService<Environement>
     public void create( final Environement entity, final String user )
     {
         final String uuid = EnvironementHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user,"" );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user,"ENVIRONEMENT "+entity.getName() );
     }
 
     @Override
     public void update( final Environement entity, final String user )
     {
         EnvironementHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user, "" );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user, "ENVIRONEMENT "+entity.getName() );
     }
 
     /**
