@@ -71,6 +71,7 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, uuid_environement , trace_enabled, archived FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECT_DISTINCT_STATUS = "SELECT distinct(status) FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
@@ -270,6 +271,21 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             }
         }
         return idApiList;
+    }
+
+    @Override
+    public List<String> getDistinctStatus(Plugin plugin) {
+
+        final List<String> status = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DISTINCT_STATUS, plugin ) )
+        {
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                status.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return status;
     }
 
     /**

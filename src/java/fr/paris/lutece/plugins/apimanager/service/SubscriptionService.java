@@ -123,4 +123,8 @@ public class SubscriptionService extends AbstractService<Subscription>
             this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "" );
         } );
     }
+
+    public List<String> getDistinctStatus() {
+        return SubscriptionHome.getDistinctStatus( );
+    }
 }

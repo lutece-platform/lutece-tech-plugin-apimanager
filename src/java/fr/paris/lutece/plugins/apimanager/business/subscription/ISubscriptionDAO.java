@@ -62,4 +62,5 @@ public interface ISubscriptionDAO extends IDAO<Subscription>
 
     List<String> getIdSubscriptionsByApi(String apiUuid, Plugin plugin);
 
+    List<String> getDistinctStatus(Plugin plugin);
 }

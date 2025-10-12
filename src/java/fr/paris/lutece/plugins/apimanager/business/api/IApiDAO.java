@@ -75,4 +75,6 @@ public interface IApiDAO extends IDAO<Api>
      */
     void linkInstance( Api api, String instanceUuid, Plugin plugin );
     void updateStatus( String apiUuid,String status, Plugin plugin );
+
+    List<String> getDistinctStatus(Plugin plugin);
 }

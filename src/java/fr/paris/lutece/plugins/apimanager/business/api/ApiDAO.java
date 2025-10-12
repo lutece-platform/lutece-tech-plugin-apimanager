@@ -68,6 +68,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 
     private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status  FROM apimanager_api";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_api";
+    private static final String SQL_QUERY_SELECT_DISTINCT_STATUS = "SELECT distinct(status) FROM apimanager_api";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
@@ -385,6 +386,20 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
 
             daoUtil.executeUpdate( );
         }
+    }
+
+    @Override
+    public List<String> getDistinctStatus(Plugin plugin) {
+        final List<String> status = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DISTINCT_STATUS, plugin ) )
+        {
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                status.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return status;
     }
 
 

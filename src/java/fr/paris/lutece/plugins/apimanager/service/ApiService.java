@@ -233,4 +233,8 @@ public class ApiService extends AbstractService<Api>
     {
         return ApiHome.getuuidsByTags( tags );
     }
+
+    public List<String> getDistinctStatus() {
+        return ApiHome.getDistinctStatus( );
+    }
 }

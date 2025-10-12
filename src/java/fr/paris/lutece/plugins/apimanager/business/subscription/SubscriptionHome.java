@@ -207,4 +207,7 @@ public final class SubscriptionHome
     }
 
 
+    public static List<String> getDistinctStatus() {
+        return _dao.getDistinctStatus( _plugin  );
+    }
 }

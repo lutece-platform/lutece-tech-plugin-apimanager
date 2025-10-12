@@ -136,6 +136,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Markers
     private static final String MARK_API_LIST = "api_list";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_STATUS_LIST = "status_list";
     private static final String MARK_INSTANCE_LIST = "instance_list";
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_TAG_LIST = "tag_list";
@@ -147,6 +148,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String MARK_PLAN_TEMPLATE_NAMES = "plan_template_names";
     private static final String MARK_SELECTED_TAG_LIST = "selected_tag_list";
     private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
+    private static final String MARK_SELECTED_STATUS = "selected_status";
     private static final String MARK_HEADER_MATCHING_TYPE_LIST = "header_matching_type_list";
     private static final String JSP_MANAGE_APIS = "jsp/admin/plugins/apimanager/ManageApis.jsp";
 
@@ -278,13 +280,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
 
 
+
         Map<String, Object> apiModel = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
         List<Api> apiList = ((List<Api>) apiModel.get(MARK_API_LIST));
         String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
         if (selectedEnvironementUuid != null) {
             Environement environement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
             if (environement != null) {
-                apiModel.put(MARK_PLAN_LIST, apiList.stream().filter(api -> api.getResourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(environement.getUuid()))).collect(Collectors.toList()));
+                apiModel.put(MARK_PLAN_LIST, apiList.stream()
+                        .filter(api -> api.getResourceList()!=null &&  !api.getResourceList().isEmpty())
+                        .filter(api -> api.getResourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(environement.getUuid()))).collect(Collectors.toList()));
             }
             model.put(MARK_SELECTED_ENVIRONMENT_UUID, selectedEnvironementUuid);
         }
@@ -308,6 +313,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
 
         model.put(MARK_ENVIRONMENT_LIST, environements);
+        model.put(MARK_STATUS_LIST, getService().getDistinctStatus());
         model.put(MARK_INSTANCE_LIST, instances);
         model.put(MARK_PLAN_LIST, plans);
 
@@ -319,6 +325,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
 
         model.put(MARK_SELECTED_ENVIRONMENT_UUID, _mapFilterCriteria.get("uuid_environement"));
+        model.put(MARK_SELECTED_STATUS, _mapFilterCriteria.get("status"));
+
         //exlude some filters from the returned list
         for (String exclusion : getExcludedSearchParameters()) {
             _mapFilterCriteria.remove(exclusion);

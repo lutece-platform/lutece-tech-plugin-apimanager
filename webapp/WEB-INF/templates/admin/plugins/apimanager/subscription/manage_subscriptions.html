@@ -31,6 +31,52 @@
                            </select>
                            </@formGroup>
                         </div>
+
+                          <div class="col-sm">
+                             <@formGroup labelFor='filter_status' labelKey='#i18n{apimanager.global.filter.labelApiStatus}' mandatory=false>
+                             <select id="filter_api_status" name="filter_api_status" class="form-control" >
+                                <option value="">-- Api status --</option>
+                                <#list api_status_list as status>
+                                <#if ((selected_api_status!'')!="") && status == selected_api_status>
+                                <option value="${status}" selected>${status}</option>
+                                <#else>
+                                <option value="${status}">${status}</option>
+                                </#if>
+                                </#list>
+                             </select>
+                             </@formGroup>
+                          </div>
+
+                          <div class="col-sm">
+                             <@formGroup labelFor='filter_client_status' labelKey='#i18n{apimanager.global.filter.labelClientStatus}' mandatory=false>
+                             <select id="filter_client_status" name="filter_client_status" class="form-control" >
+                                <option value="">-- client status --</option>
+                                <#list client_status_list as status>
+                                <#if ((selected_client_status!'')!="") && status == selected_client_status>
+                                <option value="${status}" selected>${status}</option>
+                                <#else>
+                                <option value="${status}">${status}</option>
+                                </#if>
+                                </#list>
+                             </select>
+                             </@formGroup>
+                          </div>
+
+                        <div class="col-sm">
+                             <@formGroup labelFor='filter_client' labelKey='#i18n{apimanager.global.filter.labelClient}' mandatory=false>
+                             <select id="filter_client" name="filter_client" class="form-control" >
+                                <option value="">-- Client --</option>
+                                <#list client_list as client>
+                                <#if ((selected_uuid_client!'')!="") && client.uuid == selected_uuid_client>
+                                <option value="${client.uuid}" selected>${client.name}</option>
+                                <#else>
+                                <option value="${client.uuid}">${client.name}</option>
+                                </#if>
+                                </#list>
+                             </select>
+                             </@formGroup>
+                          </div>
+
                         <div class="col-sm">
                            <@offcanvas id='search_subscription' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
                            <@tform id='subscription_search_form' name='subscription_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp' >
@@ -163,25 +209,8 @@
    }
 
 
-      $( "#filter_environement" ).on( "change", function() {
-          updateSearch();
-      } );
-
       $('#btn-search_subscription').css('float','right');
 
 
-      function updateSearch(tagElement){
-
-          const selectedEnvironement =$('#filter_environement').find(":selected").val();
-
-
-          let destination = 'jsp/admin/plugins/apimanager/ManageSubscriptions.jsp'
-
-          if(selectedEnvironement){
-              destination = destination+'?filter_uuid_environement='+selectedEnvironement ;
-          }
-
-          window.location.href = destination ;
-
-      }
 </script>
+<script src="javascript/filter/filters.js"></script>
