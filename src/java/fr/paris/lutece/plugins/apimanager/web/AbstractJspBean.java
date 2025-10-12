@@ -90,7 +90,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
 
     // Search
     private static final String FILTER_ATTRIBUTES_PREFIX = "filter_";
-    private static final String[] FILTER_ATTRIBUTES_TO_EXCLUDE_IN_RETURNED_LIST = new String[]{"uuid_environement"};
+    private static final String[] FILTER_ATTRIBUTES_TO_EXCLUDE_IN_RETURNED_LIST = new String[]{"uuid_environement","uuid_plan","uuid_client","uuid_api"};
     protected static final String SORT_ATTRIBUTES_ASC = " ASC ";
     protected static final String SORT_ATTRIBUTES_DESC = " DESC ";
 
