@@ -758,6 +758,8 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                             for (Subscription subscription : resource.getSubscriptionList()) {
                                 subscription.setApi(_api);
                                 subscription.setResource(resource);
+                                subscription.setEnvironement(resource.getEnvironement());
+                                subscription.setPlan(resource.getPlan());
                                 SubscriptionService.getInstance().create(subscription, getUser().getEmail());
                             }
                         }
@@ -1162,26 +1164,18 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     .filter(entry -> entry.getKey().startsWith(Subscriptionprefix))
                     .collect(Collectors.toMap(entry -> entry.getKey().replace(Subscriptionprefix, ""), Map.Entry::getValue));
             String[] archived = subscriptionParams.get("archived");
-            String[] plan = subscriptionParams.get("plan");
             String[] uuid_client = subscriptionParams.get("uuid_client");
-            String[] uuid_environement = subscriptionParams.get("uuid_environement");
             String[] trace_enabled = subscriptionParams.get("trace_enabled");
 
             if (!subscriptionParams.isEmpty()) {
                 Subscription subscription = new Subscription();
 
 
-                if (uuid_environement != null && uuid_environement.length > 0) {
-                    subscription.setEnvironement(environements.stream().filter(s -> s.getUuid().equals(uuid_environement[0])).findFirst().orElse(null));
-                }
                 if (trace_enabled != null && trace_enabled.length > 0) {
                     subscription.setTraceEnabled(Boolean.parseBoolean(trace_enabled[0]));
                 }
                 if (uuid_client != null && uuid_client.length > 0) {
                     subscription.setClient(ClientService.getInstance().getClientById(uuid_client[0], null).orElse(null));
-                }
-                if (plan != null && plan.length > 0) {
-                    subscription.setPlan(PlanHome.findByPrimaryKey(plan[0]).orElse(null));
                 }
                 if (archived != null && archived.length > 0) {
                     subscription.setArchived(Boolean.parseBoolean(archived[0]));

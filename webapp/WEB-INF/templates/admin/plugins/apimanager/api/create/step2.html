@@ -95,15 +95,9 @@
                            <@input type="hidden" value=subscription.archived?string('1', '0')
                            id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-archived"
                            name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-archived" />
-                           <@input type="hidden" value=subscription.plan.uuid!''
-                           id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-plan"
-                           name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-plan" />
                            <@input type="hidden" value=subscription.client.uuid!''
                            id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_client"
                            name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_client" />
-                           <@input type="hidden" value=subscription.environement.uuid!''
-                           id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_environement"
-                           name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_environement" />
                            <@input type="hidden" value=subscription.traceEnabled?string('1', '0')
                            id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-trace_enabled"
                            name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-trace_enabled" />
