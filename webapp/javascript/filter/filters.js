@@ -20,6 +20,11 @@ $( "#filter_api" ).on( "change", function() {
     updateSearch();
 } );
 
+
+$( "#filter_plan" ).on( "change", function() {
+    updateSearch();
+} );
+
 $( "#filter_client" ).on( "change", function() {
     updateSearch();
 } );
@@ -31,8 +36,7 @@ function updateSearch(tagElement){
 
     const selectedEnvironement =$('#filter_environement').find(":selected").val();
     const selectedStatus =$('#filter_status').find(":selected").val();
-    const selectedClientStatus =$('#filter_client_status').find(":selected").val();
-    const selectedApiStatus =$('#filter_api_status').find(":selected").val();
+    const selectedPlan =$('#filter_plan').find(":selected").val();
     const selectedApi =$('#filter_api').find(":selected").val();
     const selectedClient =$('#filter_client').find(":selected").val();
 
@@ -47,14 +51,11 @@ function updateSearch(tagElement){
         destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_status='+selectedStatus ;
     }
 
-    if(selectedClientStatus){
-        destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_client_status='+selectedClientStatus ;
-    }
-    if(selectedApiStatus){
-        destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_api_status='+selectedApiStatus ;
+    if(selectedPlan){
+        destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_uuid_plan='+selectedPlan ;
     }
     if(selectedApi){
-        destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_api='+selectedApi ;
+        destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_uuid_api='+selectedApi ;
     }
     if(selectedClient){
         destination = destination+(destination.indexOf('?')!=-1?'&':'?')+'filter_uuid_client='+selectedClient ;

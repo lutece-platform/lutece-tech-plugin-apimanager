@@ -87,8 +87,6 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String PARAMETER_UUID_APPLICATION = "uuid_application";
     private static final String PARAMETER_UUID_ENVIRONEMENT = "uuid_environement";
     private static final String PARAMETER_UUID_CLIENT = "uuid_client";
-    private static final String PARAMETER_CLIENT_STATUS = "client_status";
-    private static final String PARAMETER_API_STATUS = "api_status";
     private static final String PARAMETER_STATUS = "status";
     private static final String PARAMETER_UUID_API = "uuid_api";
     private static final String PARAMETER_UUID_PLAN = "uuid_plan";
@@ -107,14 +105,12 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String MARK_SUBSCRIPTION = "subscription";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
-    private static final String MARK_CLIENT_STATUS_LIST = "client_status_list";
-    private static final String MARK_API_STATUS_LIST = "api_status_list";
     private static final String MARK_API_LIST = "api_list";
     private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
     private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
-    private static final String MARK_SELECTED_API_STATUS = "selected_api_status";
-    private static final String MARK_SELECTED_CLIENT_STATUS = "selected_client_status";
+    private static final String MARK_SELECTED_UUID_API = "selected_uuid_api";
+    private static final String MARK_SELECTED_UUID_PLAN = "selected_uuid_plan";
     private static final String MARK_SELECTED_UUID_CLIENT = "selected_uuid_client";
 
     private static final String JSP_MANAGE_SUBSCRIPTIONS = "jsp/admin/plugins/apimanager/ManageSubscriptions.jsp";
@@ -176,18 +172,16 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         // recuperation des souscription a chaque resource pour reduire a api/environement
         List<Subscription> fullSubscriptionList = getService().getEntitiesListByIds(_listIdSubscriptions);
         String selectedEnvironementUuid = _mapFilterCriteria.get(PARAMETER_UUID_ENVIRONEMENT);
-        String selectedClientStatus = _mapFilterCriteria.get(PARAMETER_CLIENT_STATUS);
-        String selectedApiStatus = _mapFilterCriteria.get(PARAMETER_API_STATUS);
+        String selectedPlanUuid = _mapFilterCriteria.get(PARAMETER_UUID_PLAN);
+        String selectedApiUuid = _mapFilterCriteria.get(PARAMETER_UUID_API);
         if(selectedEnvironementUuid != null){
             fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getEnvironement().getUuid().equals(selectedEnvironementUuid)).collect(Collectors.toList());
         }
-        if(selectedClientStatus != null){
-            fullSubscriptionList = fullSubscriptionList.stream()
-                    .filter(subscription -> subscription.getClient().getStatus().equals(selectedClientStatus)).collect(Collectors.toList());
+        if(selectedPlanUuid != null){
+            fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getPlan().getUuid().equals(selectedPlanUuid)).collect(Collectors.toList());
         }
-        if(selectedApiStatus != null){
-            fullSubscriptionList = fullSubscriptionList.stream()
-                    .filter(subscription -> subscription.getApi().getStatus().equals(selectedApiStatus)).collect(Collectors.toList());
+        if(selectedApiUuid != null){
+            fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getApi().getUuid().equals(selectedApiUuid)).collect(Collectors.toList());
         }
 
         Collection<Subscription> uniqueByApiAndEnvironement = fullSubscriptionList
@@ -199,8 +193,8 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, uniqueByApiAndEnvironement.stream().map(Subscription::getUuid).collect(Collectors.toList()), JSP_MANAGE_SUBSCRIPTIONS );
 
         model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get(PARAMETER_UUID_ENVIRONEMENT));
-        model.put(MARK_SELECTED_CLIENT_STATUS, _mapFilterCriteria.get(PARAMETER_CLIENT_STATUS));
-        model.put(MARK_SELECTED_API_STATUS, _mapFilterCriteria.get(PARAMETER_API_STATUS));
+        model.put(MARK_SELECTED_UUID_PLAN, _mapFilterCriteria.get(PARAMETER_UUID_PLAN));
+        model.put(MARK_SELECTED_UUID_API, _mapFilterCriteria.get(PARAMETER_UUID_API));
         model.put(MARK_SELECTED_UUID_CLIENT, _mapFilterCriteria.get(PARAMETER_UUID_CLIENT));
 
         //exlude some filters from the returned list
@@ -213,8 +207,14 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         model.put(MARK_CLIENT_LIST, fullSubscriptionList.stream().map(Subscription::getClient).collect(Collectors.toList()).stream()
                 .filter(distinctByKey(p -> p.getUuid()))
                 .collect(Collectors.toList()));
-        model.put(MARK_CLIENT_STATUS_LIST, fullSubscriptionList.stream().map(Subscription::getClient).map(Client::getStatus).distinct().collect(Collectors.toList()));
-        model.put(MARK_API_STATUS_LIST, fullSubscriptionList.stream().map(Subscription::getApi).map(Api::getStatus).distinct().collect(Collectors.toList()));
+        model.put(MARK_PLAN_LIST, fullSubscriptionList.stream().map(Subscription::getPlan).collect(Collectors.toList()).stream()
+                .filter(distinctByKey(p -> p.getUuid()))
+                .collect(Collectors.toList()));
+
+        model.put(MARK_API_LIST, fullSubscriptionList.stream().map(Subscription::getApi).collect(Collectors.toList()).stream()
+                .filter(distinctByKey(p -> p.getUuid()))
+                .collect(Collectors.toList()));
+
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS, TEMPLATE_MANAGE_SUBSCRIPTIONS, model );

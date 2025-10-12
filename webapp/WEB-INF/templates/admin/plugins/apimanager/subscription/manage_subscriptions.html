@@ -33,14 +33,14 @@
                         </div>
 
                           <div class="col-sm">
-                             <@formGroup labelFor='filter_status' labelKey='#i18n{apimanager.global.filter.labelApiStatus}' mandatory=false>
-                             <select id="filter_api_status" name="filter_api_status" class="form-control" >
-                                <option value="">-- Api status --</option>
-                                <#list api_status_list as status>
-                                <#if ((selected_api_status!'')!="") && status == selected_api_status>
-                                <option value="${status}" selected>${status}</option>
+                             <@formGroup labelFor='filter_api' labelKey='#i18n{apimanager.global.filter.labelApi}' mandatory=false>
+                             <select id="filter_api" name="filter_api" class="form-control" >
+                                <option value="">-- Api --</option>
+                                <#list api_list as api>
+                                <#if ((selected_uuid_api!'')!="") && api.uuid == selected_uuid_api>
+                                <option value="${api.uuid}" selected>${api.name} - ${api.version}</option>
                                 <#else>
-                                <option value="${status}">${status}</option>
+                                <option value="${api.uuid}">${api.name} - ${api.version}</option>
                                 </#if>
                                 </#list>
                              </select>
@@ -48,14 +48,14 @@
                           </div>
 
                           <div class="col-sm">
-                             <@formGroup labelFor='filter_client_status' labelKey='#i18n{apimanager.global.filter.labelClientStatus}' mandatory=false>
-                             <select id="filter_client_status" name="filter_client_status" class="form-control" >
-                                <option value="">-- client status --</option>
-                                <#list client_status_list as status>
-                                <#if ((selected_client_status!'')!="") && status == selected_client_status>
-                                <option value="${status}" selected>${status}</option>
+                             <@formGroup labelFor='filter_plan' labelKey='#i18n{apimanager.global.filter.labelPlan}' mandatory=false>
+                             <select id="filter_plan" name="filter_plan" class="form-control" >
+                                <option value="">-- plan --</option>
+                                <#list plan_list as plan>
+                                <#if ((selected_uuid_plan!'')!="") && plan.uuid == selected_uuid_plan>
+                                <option value="${plan.uuid}" selected>${plan.name}</option>
                                 <#else>
-                                <option value="${status}">${status}</option>
+                                <option value="${plan.uuid}">${plan.name}</option>
                                 </#if>
                                 </#list>
                              </select>
