@@ -9,3 +9,4 @@
 
 <%@ include file="../../AdminFooter.jsp" %>
 <link href="css/admin/plugins/apimanager/apimanager.css" rel="stylesheet">
+<script src="javascript/menu/menu.js"></script>
