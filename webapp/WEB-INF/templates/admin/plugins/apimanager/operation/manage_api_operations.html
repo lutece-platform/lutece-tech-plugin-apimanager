@@ -56,23 +56,16 @@
                            </#if>
                            </#list>
                         </div>
-                        <div class="col-sm">
-                           <div class="dropdown-center" style="float: right">
-                              <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                  #i18n{apimanager.manage_apis.button.massorder}
-                              </button>
-                              <ul class="dropdown-menu">
-                                 <li>
-                                    <div class="dropdown-item" onclick="publishAll()">#i18n{apimanager.manage_apis.button.publish.all}</div>
-                                 </li>
-                                 <li>
-                                    <div class="dropdown-item" onclick="unpublishAll()">#i18n{apimanager.manage_apis.button.unpublish.all}</div>
-                                 </li>
-                              </ul>
-                           </div>
-                        </div>
                      </div>
                   </div>
+               </div>
+            </div>
+         </div>
+         <div>
+            <div>
+               <div class="card-body d-flex align-items-center">
+                  <button type="button" id="publish-all-button" class="btn btn-success" onclick="publishAll()">#i18n{apimanager.manage_apis.button.publish.all}</button>
+                  <button type="button" id="unpublish-all-button" class="btn btn-danger" onclick="unpublishAll()">#i18n{apimanager.manage_apis.button.unpublish.all}</button>
                </div>
             </div>
          </div>
