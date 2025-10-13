@@ -61,14 +61,22 @@
                     </div>
                  </div>
               </div>
-
          </div>
+        <div>
+            <div class="card">
+                <div class="card-body d-flex align-items-center">
+            <button type="button" id="publish-all-button" class="btn btn-success" onclick="publishAll()">#i18n{apimanager.manage_apis.button.publish.all}</button>
+                    <button type="button" id="unpublish-all-button" class="btn btn-danger" onclick="unpublishAll()">#i18n{apimanager.manage_apis.button.unpublish.all}</button>
+                </div>
+            </div>
+        </div>
          <div id="subscription-result-container" class="result-table-container">
             <div class="clearfix"></div>
                 <div class="card">
                      <div class="card-body">
                     <@table>
                     <tr>
+                        <th class="select-column"></th>
                        <th>#i18n{apimanager.manage_apis.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
                        <th>#i18n{apimanager.manage_apis.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
                        <th>#i18n{apimanager.manage_apis.columnEnvironement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
@@ -79,6 +87,11 @@
                     <@tableHeadBodySeparator />
                     <#list api_list as api >
                     <tr >
+                    <td>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="${api.uuid!''}" id="select_api-${api.uuid!''}" name="select_api-${api.uuid!''}">
+                        </div>
+                    </td>
                     <td>
                        ${api.name!''} - ${api.version!''}
                     </td>
@@ -203,5 +216,28 @@
 
        window.location.href = destination ;
 
+   }
+
+   function publishAll(){
+       const selected_apis=[];
+       $('input[name^="select_api-"]').each(function(){
+           if($(this).is(":checked")){
+               selected_apis.push($(this).val());
+           }
+       });
+       if(selected_apis.length > 0){
+           window.location.href= 'jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api='+selected_apis.join(',');
+       }
+   }
+   function unpublishAll(){
+       const selected_apis=[];
+       $('input[name^="select_api-"]').each(function(){
+           if($(this).is(":checked")){
+               selected_apis.push($(this).val());
+           }
+       });
+       if(selected_apis.length > 0){
+           window.location.href= 'jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api='+selected_apis.join(',');
+       }
    }
 </script>

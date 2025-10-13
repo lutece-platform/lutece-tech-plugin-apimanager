@@ -195,3 +195,8 @@ form#step1 button{
 .dropdown-item{
     cursor: pointer;
 }
+
+.select-column{
+    min-width: 10px;
+    width: 10px;
+}
