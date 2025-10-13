@@ -108,6 +108,7 @@ function clone(envUuid){
 function deleteEnvironement(envUuid){
     $("#create_usecase").val("delete_environment");
     $("#current_environement_tab").val(envUuid);
+    $("#environement-"+envUuid+"-resource-container").remove();
     $("#step2").submit();
 }
 

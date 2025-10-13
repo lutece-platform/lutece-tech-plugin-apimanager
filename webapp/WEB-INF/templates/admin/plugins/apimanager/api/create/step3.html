@@ -58,7 +58,9 @@
                         <@formGroup labelFor='plan-environement-${environment.uuid}' labelKey='#i18n{apimanager.plan.addLabel}' mandatory=true>
                         <select multiple id="plan-environement-${environment.uuid}" name="plan-environement-${environment.uuid}" class="form-control instances">
                            <#list plan_list as plan>
-                           <option value="${plan.uuid}" id="${plan.name}">${plan.name}</option>
+                            <#if plan.availableEnvironments?seq_contains(environment.name)>
+                            <option value="${plan.uuid}" id="${plan.name}">${plan.name}</option>
+                            </#if>
                            </#list>
                         </select>
                         </@formGroup>
