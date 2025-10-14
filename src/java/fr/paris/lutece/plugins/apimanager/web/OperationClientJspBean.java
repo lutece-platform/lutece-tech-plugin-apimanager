@@ -35,6 +35,7 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientStatusEnum;
@@ -45,6 +46,7 @@ import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
+import fr.paris.lutece.plugins.apimanager.web.rest.dto.MeecrogateAckResponse;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -326,7 +328,13 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                     for (Environement envir : availableEnvs) {
                         _configGeneratorService.deleteOauth2Client(client,
                                 envir, getUser().getEmail());
-                        ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
+
+                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                        if(ackResponse.getDeployOauth2Status().equals("updated")){
+                            ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                        }else{
+                            ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                        }
                     }
                 } catch (Exception e) {
                     ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
@@ -374,7 +382,13 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                     for (Environement envir : availableEnvs) {
                         _configGeneratorService.generateOauth2Client(client,
                                 envir, comment, getUser().getEmail());
-                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+
+                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                        if(ackResponse.getDeployOauth2Status().equals("updated")){
+                            ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                        }else{
+                            ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                        }
                     }
                 } catch (Exception e) {
                     ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
