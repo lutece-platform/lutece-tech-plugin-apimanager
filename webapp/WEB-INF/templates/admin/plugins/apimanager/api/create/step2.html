@@ -106,7 +106,7 @@
                            <div id="environement-${environment.uuid}-resource-row-${resource?index}" class="row resource-row accordion-item" data-index="${resource?index}">
                               <h2 class="accordion-header">
                                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${resource?index}" aria-expanded="true" aria-controls="collapseOne">
-                                 Resource <#if resource.name?? && resource.name !=''>${resource.name}<#else>${resource?index}</#if>
+                                     <#if resource.name?? && resource.name !=''>${resource.name}<#if resource.verb !=''> - ${resource.verb}</#if><#if resource.path !=''> - ${resource.path}</#if><#else>Resource ${resource?index}</#if>
                                  </button>
                               </h2>
                               <div id="collapse${resource?index}" class="col accordion-collapse collapse <#if '${resource?index}'=='${current_resource}'>show</#if> ">
