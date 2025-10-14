@@ -43,6 +43,12 @@
             <version>[7.0.0,7.1.9)</version>
             <type>lutece-core</type>
         </dependency>
+        <dependency>
+            <groupId>fr.paris.lutece.plugins</groupId>
+            <artifactId>plugin-rest</artifactId>
+            <version>[3.0.0,)</version>
+            <type>lutece-plugin</type>
+        </dependency>
     </dependencies>
     
     <properties>
@@ -53,6 +59,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <meecrogate.admin.api.version>1.0.5</meecrogate.admin.api.version>
     </properties>
 
  <scm>

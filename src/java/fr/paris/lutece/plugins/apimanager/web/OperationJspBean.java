@@ -47,6 +47,7 @@ import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
+import fr.paris.lutece.plugins.apimanager.web.rest.dto.MeecrogateAckResponse;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -431,7 +432,13 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         }
                                         _configGeneratorService.deleteSubscriptions(
                                                 subscriptions, comment, getUser().getEmail());
-                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
+
+                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                                        if(ackResponse.getDeployGatewayStatus().equals("updated")){
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
+                                        }else{
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.ERROR.name(), getUser().getEmail());
+                                        }
                                     }
                                 }
                             }
@@ -508,7 +515,12 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         }
                                         _configGeneratorService.generateSubscriptions(
                                                 subscriptions, comment, getUser().getEmail());
-                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                                        if(ackResponse.getDeployGatewayStatus().equals("updated")){
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                                        }else{
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.ERROR.name(), getUser().getEmail());
+                                        }
                                     }
                                 }
                             }
