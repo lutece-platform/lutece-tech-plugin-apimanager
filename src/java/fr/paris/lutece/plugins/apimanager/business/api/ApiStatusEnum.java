@@ -41,5 +41,9 @@ public enum ApiStatusEnum
     PUBLISHED,
     UNPUBLISHED,
     ARCHIVED,
-    ERROR
+    ERROR,
+    PUBLISH_ERROR,
+    DEPLOY_ERROR,
+    UNPUBLISH_ERROR,
+    UNDEPLOY_ERROR,
 }

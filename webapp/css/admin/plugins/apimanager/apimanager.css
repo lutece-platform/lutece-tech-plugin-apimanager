@@ -65,6 +65,15 @@
     color: rgb(30 64 175) !important;   /* bleu-800 */
 }
 
+.apim-plugin .card-tools .btn-view,
+.apim-plugin .result-table-container table .btn-view {
+    color: rgb(37, 235, 129) !important;   /* bleu-600 */
+}
+.apim-plugin .card-tools .btn-view:hover,
+.apim-plugin .result-table-container table .btn-view:hover{
+    color: rgb(5, 94, 34) !important;   /* bleu-800 */
+}
+
 .apim-plugin .card-tools .btn-publish,
 .apim-plugin .result-table-container table .btn-publish {
     color: rgb(37 99 235) !important;   /* bleu-600 */

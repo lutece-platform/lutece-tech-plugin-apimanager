@@ -92,6 +92,7 @@ import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAG
 public class ApiJspBean extends AbstractJspBean<String, Api> {
     // Templates
     private static final String TEMPLATE_MANAGE_APIS = "/admin/plugins/apimanager/api/manage_apis.html";
+    private static final String TEMPLATE_DISPLAY_API = "/admin/plugins/apimanager/api/display_api.html";
     private static final String TEMPLATE_CREATE_API_STEP_1 = "/admin/plugins/apimanager/api/create/step1.html";
     private static final String TEMPLATE_CREATE_API_STEP_2 = "/admin/plugins/apimanager/api/create/step2.html";
     private static final String TEMPLATE_CREATE_API_STEP_3 = "/admin/plugins/apimanager/api/create/step3.html";
@@ -169,6 +170,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String VIEW_CREATE_API_STEP_3 = "step3";
     private static final String VIEW_MODIFY_API = "modifyApi";
     private static final String VIEW_NEW_API_VERSION = "newApiVersion";
+    private static final String VIEW_DISPLAY_API = "display";
     private static final String VIEW_LINK_API = "linkApi";
 
     // Actions
@@ -918,6 +920,51 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_API));
 
         return getCreateApi(request);
+    }
+
+    /**
+     * Returns the form to update info about a api
+     *
+     * @param request The Http request
+     * @return The HTML form to update info
+     */
+    @View(VIEW_DISPLAY_API)
+    public String getDisplayApi(HttpServletRequest request) {
+        String uuid = request.getParameter(PARAMETER_ID_API);
+        if (uuid == null) {
+            return redirectView(request, VIEW_MANAGE_APIS);
+        }
+        if (_api == null || !uuid.equals(_api.getUuid())) {
+            Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
+            _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+        }
+        loadApi();
+
+
+        instances = new ArrayList<>();
+        environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+        for (Environement envir : environements) {
+            List<Instance> envInstances = InstanceService.getInstance().getEntitiesListByIds(InstanceService.getInstance().getIdInstancesListLinkedToEnvironementUuid(envir.getUuid()));
+            instances.addAll(envInstances);
+            envir.setInstances(envInstances);
+        }
+
+
+        Map<String, Object> model = getModel();
+        model.put(MARK_API, _api);
+        model.put(MARK_ENVIRONMENT_LIST, environements);
+        model.put(MARK_INSTANCE_LIST, instances);
+        model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, "");
+        model.put(PARAMETER_ACTIVE_TAB, 1);
+        model.put(PARAMETER_CURRENT_RESOURCE, 0);
+        model.put(PARAMETER_CURRENT_ENVIRONMENT_SOURCE, 0);
+        model.put(PARAMETER_CURRENT_RESOURCE_HEADER_MATCHING, 0);
+        model.put(MARK_VERB_LIST, ResourceVerbEnum.values());
+        model.put(MARK_REWRITE_URL_TYPE_LIST, ResourceRewriteUrlTypeEnum.values());
+        model.put(MARK_MATCHER_TYPE_LIST, matcherTypeList);
+        model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_MODIFY_API));
+
+        return getPage(PROPERTY_PAGE_TITLE_MANAGE_APIS, TEMPLATE_DISPLAY_API, model);
     }
 
     private String generateNewVersionNumber(String version) {

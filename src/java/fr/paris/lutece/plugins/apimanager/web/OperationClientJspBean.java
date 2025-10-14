@@ -331,13 +331,13 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
                         MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
                         if(ackResponse.getDeployOauth2Status().equals("updated")){
-                            ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                            ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                         }else{
-                            ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                            ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
                         }
                     }
                 } catch (Exception e) {
-                    ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                    ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISH_ERROR.name(), getUser().getEmail());
                 }
             });
             executor.shutdown();
@@ -387,11 +387,11 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                         if(ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
                         }else{
-                            ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                            ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
                         }
                     }
                 } catch (Exception e) {
-                    ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.ERROR.name(), getUser().getEmail());
+                    ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
                 }
             });
             executor.shutdown();

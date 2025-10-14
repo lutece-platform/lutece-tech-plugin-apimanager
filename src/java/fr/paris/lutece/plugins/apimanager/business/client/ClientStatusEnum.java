@@ -40,5 +40,9 @@ public enum ClientStatusEnum
     PUBLISHING,
     PUBLISHED,
     UNPUBLISHED,
-    ERROR
+    ERROR,
+    PUBLISH_ERROR,
+    DEPLOY_ERROR,
+    UNPUBLISH_ERROR,
+    UNDEPLOY_ERROR,
 }

@@ -437,13 +437,13 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         if(ackResponse.getDeployGatewayStatus().equals("updated")){
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                                         }else{
-                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.ERROR.name(), getUser().getEmail());
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNDEPLOY_ERROR.name(), getUser().getEmail());
                                         }
                                     }
                                 }
                             }
                         } catch (Exception e) {
-                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.ERROR.name(), getUser().getEmail());
+                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISH_ERROR.name(), getUser().getEmail());
                         }
                     });
                     executor.shutdown();
@@ -519,13 +519,13 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         if(ackResponse.getDeployGatewayStatus().equals("updated")){
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
                                         }else{
-                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.ERROR.name(), getUser().getEmail());
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
                                         }
                                     }
                                 }
                             }
                         } catch (Exception e) {
-                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.ERROR.name(), getUser().getEmail());
+                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
                         }
                     });
                     executor.shutdown();

@@ -118,6 +118,8 @@
                      <div class="card-header d-flex justify-content-between align-items-center ">
                          <div class="card-title"><b>${api.name!''}</b> - v${api.version!''}</div>
                         <div class="card-tools">
+                            <@aButton class="btn-view" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=display&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.view}' buttonIcon='view-360' hideTitle=['all']  />
+
                             <#if !api.archived>
                                 <#if api.status!='NEW'>
                                     <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageApis.jsp?view=newApiVersion&uuid=${api.uuid}' title='#i18n{apimanager.manage_apis.NewVersion}' buttonIcon='link' hideTitle=['all']  />

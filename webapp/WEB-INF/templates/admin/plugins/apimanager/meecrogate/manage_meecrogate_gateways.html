@@ -11,7 +11,11 @@
       <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
          <div class="container-fluid">
             <@box>
-            <@boxHeader title='#i18n{apimanager.create_instance.title}' />
+             <#if instance.uuid??>
+             <@boxHeader title='#i18n{apimanager.manage_meecrogates.gateway.modify_instance.title}' />
+             <#else>
+             <@boxHeader title='#i18n{apimanager.manage_meecrogates.gateway.create_instance.title}' />
+            </#if>
             <@boxBody>
             <@tform name='meecrogate' action='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp' >
             <@messages errors=errors />
