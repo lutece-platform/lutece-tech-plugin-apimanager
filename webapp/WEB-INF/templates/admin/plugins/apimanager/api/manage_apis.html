@@ -133,7 +133,13 @@
                      <div class="card-body">
                          <div class="row">
                              <div class="col">
-                                 <span>Status: <#if api.archived>ARCHIVED<#else>${api.status}</#if></span>
+                                 <div>Status:
+                                     <#if api.archived>
+                                        <span id="status-${api?index}">ARCHIVED</span>
+                                     <#else>
+                                        <span id="status-${api?index}">${api.status}</span>
+                                     </#if>
+                                 </div>
                          </div>
                      </div>
                         <div class="row">
@@ -195,3 +201,28 @@
 <script src="javascript/stepper/bs-stepper.min.js"></script>
 <script src="javascript/api/api.js"></script>
 <script src="javascript/filter/filters.js"></script>
+
+
+<script type="application/javascript">
+    function translateStatus(status){
+        switch (status) {
+            case 'ERROR': return '#i18n{apimanager.global.status.error}';
+            case 'NEW': return '#i18n{apimanager.global.status.new}';
+            case 'DRAFT': return '#i18n{apimanager.global.status.draft}';
+            case 'UNPUBLISHING': return '#i18n{apimanager.global.status.unpublishing}';
+            case 'PUBLISHING': return '#i18n{apimanager.global.status.publishing}';
+            case 'PUBLISHED': return '#i18n{apimanager.global.status.published}';
+            case 'UNPUBLISHED': return '#i18n{apimanager.global.status.unpublished}';
+            case 'ARCHIVED': return '#i18n{apimanager.global.status.archived}';
+            case 'PUBLISH_ERROR': return '#i18n{apimanager.global.status.publisherror}';
+            case 'DEPLOY_ERROR': return '#i18n{apimanager.global.status.deployerror}';
+            case 'UNPUBLISH_ERROR': return '#i18n{apimanager.global.status.unpublisherror}';
+            case 'UNDEPLOY_ERROR': return '#i18n{apimanager.global.status.undeployerror}';
+            default : return status;
+        }
+    }
+    $("[id^='status-']").each(function () {
+       $(this).html(translateStatus($(this).html()));
+    });
+
+</script>

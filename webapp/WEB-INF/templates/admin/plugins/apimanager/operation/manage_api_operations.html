@@ -119,13 +119,13 @@
                      </td>
                      <td>
                         <#if api.status == "NEW">
-                        <span class="badge badge-new"> ${api.status!''} </span>
+                        <span class="badge badge-new" id="status-${api?index}">${api.status!''}</span>
                         <#elseif api.status == "PUBLISHED">
-                        <span class="badge badge-published"> ${api.status!''} </span>
+                        <span class="badge badge-published" id="status-${api?index}">${api.status!''}</span>
                         <#elseif api.status == "ERROR">
-                        <span class="badge badge-error"> ${api.status!''} </span>
+                        <span class="badge badge-error" id="status-${api?index}">${api.status!''}</span>
                         <#else>
-                        <span class="badge"> ${api.status!''} </span>
+                        <span class="badge" id="status-${api?index}"> ${api.status!''} </span>
                         </#if>
                      </td>
                      <td>
@@ -238,4 +238,28 @@
            window.location.href= 'jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api='+selected_apis.join(',');
        }
    }
+
+
+   function translateStatus(status){
+       switch (status) {
+           case 'ERROR': return '#i18n{apimanager.global.status.error}';
+           case 'NEW': return '#i18n{apimanager.global.status.new}';
+           case 'DRAFT': return '#i18n{apimanager.global.status.draft}';
+           case 'UNPUBLISHING': return '#i18n{apimanager.global.status.unpublishing}';
+           case 'PUBLISHING': return '#i18n{apimanager.global.status.publishing}';
+           case 'PUBLISHED': return '#i18n{apimanager.global.status.published}';
+           case 'UNPUBLISHED': return '#i18n{apimanager.global.status.unpublished}';
+           case 'ARCHIVED': return '#i18n{apimanager.global.status.archived}';
+           case 'PUBLISH_ERROR': return '#i18n{apimanager.global.status.publisherror}';
+           case 'DEPLOY_ERROR': return '#i18n{apimanager.global.status.deployerror}';
+           case 'UNPUBLISH_ERROR': return '#i18n{apimanager.global.status.unpublisherror}';
+           case 'UNDEPLOY_ERROR': return '#i18n{apimanager.global.status.undeployerror}';
+           default : return status;
+       }
+   }
+   $("[id^='status-']").each(function () {
+       $(this).html(translateStatus($(this).html()));
+   });
+
 </script>
+
