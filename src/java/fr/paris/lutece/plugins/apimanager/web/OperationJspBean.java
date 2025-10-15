@@ -381,18 +381,20 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
     @Action(ACTION_REMOVE_OPERATION)
     public String doRemoveSubscription(HttpServletRequest request) {
         final String requestApiUuid = request.getParameter(PARAMETER_UUID_OPERATION);
-        List<String> apiUuids = new ArrayList<>();
+        final List<String> apiUuids = new ArrayList<>();
         if (requestApiUuid == null) {
             addError(ERROR_RESOURCE_NOT_FOUND);
             return redirectView(request, VIEW_MANAGE_OPERATIONS);
         } else {
             if (requestApiUuid.contains(",")) {
-                apiUuids = List.of(requestApiUuid.split(","));
+                apiUuids.addAll(List.of(requestApiUuid.split(",")));
             } else {
                 apiUuids.add(requestApiUuid);
             }
         }
 
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.submit(() -> {
         for (String apiUuid : apiUuids) {
             final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
@@ -400,7 +402,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
 
                 final String comment = request.getParameter(PARAMETER_COMMENT);
 
-                try {
                     List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
                     List<Subscription> resourceSubscription = new ArrayList<>();
                     for (Resource apiResource : apiResources) {
@@ -417,8 +418,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                     api.setStatus(ApiStatusEnum.UNPUBLISHING.name());
                     ApiService.getInstance().update(api, getUser().getEmail());
 
-                    ExecutorService executor = Executors.newFixedThreadPool(1);
-                    executor.submit(() -> {
                         try {
                             for (Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()) {
                                 Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
@@ -434,9 +433,9 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                                 subscriptions, comment, getUser().getEmail());
 
                                         MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
-                                        if(ackResponse.getDeployGatewayStatus().equals("updated")){
+                                        if (ackResponse.getDeployGatewayStatus().equals("updated")) {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
-                                        }else{
+                                        } else {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNDEPLOY_ERROR.name(), getUser().getEmail());
                                         }
                                     }
@@ -445,18 +444,10 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                         } catch (Exception e) {
                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISH_ERROR.name(), getUser().getEmail());
                         }
-                    });
-                    executor.shutdown();
-
-                } catch (final AppException e) {
-                    addError(ERROR_API_MANAGER_GENERATION);
-                    addError(e.getMessage());
-                    return redirectView(request, VIEW_MANAGE_OPERATIONS);
-                }
-
             }
         }
-
+        });
+        executor.shutdown();
         addInfo(INFO_API_MANAGER_DELETED, getLocale());
         return redirect(request, "ManageOperations.jsp?infoMsg=" + INFO_OPERATION_REMOVED);
     }
@@ -464,25 +455,26 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
     @Action(ACTION_GENERATE_API_MANAGER)
     public String doGenerateApiManager(final HttpServletRequest request) {
         final String requestApiUuid = request.getParameter(PARAMETER_UUID_OPERATION);
-        List<String> apiUuids = new ArrayList<>();
+        final List<String> apiUuids = new ArrayList<>();
         if (requestApiUuid == null) {
             addError(ERROR_RESOURCE_NOT_FOUND);
             return redirectView(request, VIEW_MANAGE_OPERATIONS);
         } else {
             if (requestApiUuid.contains(",")) {
-                apiUuids = List.of(requestApiUuid.split(","));
+                apiUuids.addAll(List.of(requestApiUuid.split(",")));
             } else {
                 apiUuids.add(requestApiUuid);
             }
         }
 
-        for (String apiUuid : apiUuids) {
-            final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.submit(() -> {
+            for (String apiUuid : apiUuids) {
+                final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-            if(!api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
-                final String comment = request.getParameter(PARAMETER_COMMENT);
+                if (!api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())) {
+                    final String comment = request.getParameter(PARAMETER_COMMENT);
 
-                try {
                     List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
                     List<Subscription> resourceSubscription = new ArrayList<>();
                     for (Resource apiResource : apiResources) {
@@ -500,44 +492,36 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                     api.setStatus(ApiStatusEnum.PUBLISHING.name());
                     ApiService.getInstance().update(api, getUser().getEmail());
 
-                    ExecutorService executor = Executors.newFixedThreadPool(1);
-                    executor.submit(() -> {
-                        try {
-                            for (Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()) {
-                                Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
-                                for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
-                                    Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
-                                    for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
-                                        List<Subscription> subscriptions = planSubscription.getValue();
-                                        for (Subscription sub : subscriptions) {
-                                            List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
-                                            sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
-                                        }
-                                        _configGeneratorService.generateSubscriptions(
-                                                subscriptions, comment, getUser().getEmail());
-                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
-                                        if(ackResponse.getDeployGatewayStatus().equals("updated")){
-                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
-                                        }else{
-                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                                        }
+                    try {
+                        for (Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()) {
+                            Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
+                            for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
+                                Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
+                                for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
+                                    List<Subscription> subscriptions = planSubscription.getValue();
+                                    for (Subscription sub : subscriptions) {
+                                        List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
+                                        sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
+                                    }
+                                    _configGeneratorService.generateSubscriptions(
+                                            subscriptions, comment, getUser().getEmail());
+                                    MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                                    if (ackResponse.getDeployGatewayStatus().equals("updated")) {
+                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                                    } else {
+                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
                                     }
                                 }
                             }
-                        } catch (Exception e) {
-                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
                         }
-                    });
-                    executor.shutdown();
+                    } catch (Exception e) {
+                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
+                    }
 
-                } catch (final AppException e) {
-                    addError(ERROR_API_MANAGER_GENERATION);
-                    addError(e.getMessage());
-                    return redirectView(request, VIEW_MANAGE_OPERATIONS);
                 }
             }
-        }
-
+        });
+        executor.shutdown();
         addInfo(INFO_API_MANAGER_GENERATED, getLocale());
         return redirectView(request, VIEW_MANAGE_OPERATIONS);
     }
