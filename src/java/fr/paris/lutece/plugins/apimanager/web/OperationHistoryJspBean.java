@@ -61,6 +61,7 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -118,25 +119,30 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
     public String getHistoryOperations( HttpServletRequest request )
     {
 
+
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
-            _optionOrderBy = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
-            _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-            final HashMap<String, String> criterias = new HashMap<>( _mapFilterCriteria );
-            if ( !_mapFilterCriteria.containsKey( FILTER_DISPLAY_ARCHIVED ) )
+            // if sorting request : new search with the existing filter criteria, ordered
+            // example of order by parameter : orderby=name
+            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
             {
-                criterias.put( FILTER_ARCHIVED, Boolean.FALSE.toString( ) );
-            }
-            _listIdResources = ResourceService.getInstance().getIdEntitiesList( criterias );
+                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
+                String strSortMode = getSortMode( );
 
+                _listIdResources = HistoryService.getInstance().getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
+            }
+            else
+            {
+                // reload the filter criteria and search
+                _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
+                _listIdResources = HistoryService.getInstance().getIdEntitiesList( _mapFilterCriteria );
+            }
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
         }
 
-        _historyList = HistoryService.getInstance().getEntitiesListByIds(HistoryService.getInstance().getIdEntitiesList());
-
-        Map<String, Object> model = getPaginatedListModel( request, MARK_HISTORY_LIST, _historyList.stream().map(History::getUuid).collect(Collectors.toList()), JSP_MANAGE_HISTORY );
+        Map<String, Object> model = getPaginatedListModel( request, MARK_HISTORY_LIST, _listIdResources, JSP_MANAGE_HISTORY );
 
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
@@ -163,6 +169,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
      */
     @Override
     List<History> getItemsFromIds(List<String> listIds) {
+        _historyList = getService( ).getEntitiesListByIds( listIds );
         // keep original order
         return _historyList.stream().sorted(Comparator.comparingInt(notif -> listIds.indexOf(notif.getUuid()))).collect(Collectors.toList());
     }
