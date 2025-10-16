@@ -118,7 +118,7 @@
                         </#if>
                      </td>
                      <td>
-                        <#if api.status == "NEW">
+                        <#if api.status == "NEW" || api.status == "DRAFT">
                         <span class="badge badge-new" id="status-${api?index}">${api.status!''}</span>
                         <#elseif api.status == "PUBLISHED">
                         <span class="badge badge-published" id="status-${api?index}">${api.status!''}</span>

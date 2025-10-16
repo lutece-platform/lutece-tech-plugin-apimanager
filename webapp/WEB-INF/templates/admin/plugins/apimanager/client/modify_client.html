@@ -96,7 +96,7 @@
                         <input type='text' class="form-control"  readonly value="${subscription.environement.name}"/>
                         <input type='hidden' class="form-control" name="environement_selection_${subscription?index}"  id="environement_selection_${subscription?index}" value="${subscription.environement.uuid}"/>
                         <#else>
-                        <input type='text' class="form-control"  value="-- environement --"/>
+                        <input type='text' class="form-control"  value="-- environnement --"/>
                         </#if>
                         <!-- plan -->
                         <#if subscription.plan?? && subscription.plan.uuid??>

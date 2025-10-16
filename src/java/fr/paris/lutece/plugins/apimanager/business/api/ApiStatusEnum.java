@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.apimanager.business.api;
 
 public enum ApiStatusEnum
 {
+    NEW,
     DRAFT,
     UNPUBLISHING,
     PUBLISHING,

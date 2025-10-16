@@ -129,7 +129,7 @@
                         <!-- environement -->
                         <@formGroup labelFor='environement_selection_${subscription?index}' labelKey='#i18n{apimanager.manage_clients.create.labelEnvironement}' mandatory=false>
                         <select id="environement_selection_${subscription?index}" name="environement_selection_${subscription?index}" class="form-control" onchange="updateSubscription(${subscription?index})">
-                           <option value="">-- environement --</option>
+                           <option value="">-- environnement --</option>
                            <#if environment_list?has_content>
                            <#list environment_list as environement>
                            <#if selected_environement?? && selected_environement.uuid==environement.uuid>

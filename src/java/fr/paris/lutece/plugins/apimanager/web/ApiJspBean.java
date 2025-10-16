@@ -753,7 +753,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 return redirectView(request, VIEW_CREATE_API);
             }
 
-            _api.setStatus("NEW");
+            // if no environement configured then it's a draft otherwiser it's a new api
+            _api.setStatus(
+                    _api.getEnvironementList() !=null &&
+                            _api.getEnvironementList() .size() > 0 ? ApiStatusEnum.NEW.name(): ApiStatusEnum.DRAFT.name());
 
             if (_api.getUuid() != null && !_api.getUuid().isEmpty()) {
                 addInfo(INFO_API_UPDATED, getLocale());
