@@ -88,11 +88,18 @@
                <div class="card-body">
                   <@table>
                   <tr>
-                     <th>#i18n{apimanager.manage_subscriptions.columnClient}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client'><i class='fas fa-sort'></i></a></th>
+                     <th>#i18n{apimanager.manage_subscriptions.columnStatus}</th>
                      <th>#i18n{apimanager.manage_subscriptions.columnEnvironnement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
-                     <th>#i18n{apimanager.manage_subscriptions.columnPlan}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=plan'><i class='fas fa-sort'></i></a></th>
-                     <th>#i18n{apimanager.manage_subscriptions.columnApi}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api'><i class='fas fa-sort'></i></a></th>
-                     <th>#i18n{apimanager.manage_subscriptions.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api_version'><i class='fas fa-sort'></i></a></th>
+                     <th>
+                        #i18n{apimanager.manage_subscriptions.columnClient}&nbsp;/ #i18n{apimanager.manage_subscriptions.columnPlan}
+                        <a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client'><i class='fas fa-sort'></i></a>
+                     </th>
+
+                     <th>
+                        #i18n{apimanager.manage_subscriptions.columnApi}&nbsp;/ #i18n{apimanager.manage_subscriptions.columnVersion}
+                        <a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api'><i class='fas fa-sort'></i></a>
+                     </th>
+
                      <th>#i18n{apimanager.manage_subscriptions.columnStatusClient}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=client_status'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_subscriptions.columnStatusApi}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?orderBy=api_status'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{portal.util.labelActions}</th>
@@ -101,20 +108,21 @@
                   <#list subscription_list as subscription >
                   <tr <#if subscription.archived!false>class="text-decoration-line-through" title='#i18n{apimanager.info.subscription.archived}'</#if>>
                   <td>
-                     ${subscription.client.name!''}
+                     <span>${subscription.status!''}</span>
                   </td>
                   <td>
                      <span class="badge px-2 me-1" id="env-name">${subscription.environement.name!''}</span>
                   </td>
                   <td>
-                     ${subscription.resource.plan.name!''}
+                     ${subscription.client.name!''}<br>
+                     <span class="subline">${subscription.resource.plan.name!''}</span>
                   </td>
+
                   <td>
-                     ${subscription.resource.api.name!''}
+                     ${subscription.resource.api.name!''}<br>
+                     <span class="subline">${subscription.resource.api.version!''}</span>
                   </td>
-                  <td>
-                     ${subscription.resource.api.version!''}
-                  </td>
+
                   <td>
                       <span id="status-client-${subscription?index}">${subscription.client.status!''}</span>
                   </td>
@@ -122,7 +130,7 @@
                       <span id="status-api-${subscription?index}">${subscription.api.status!''}</span>
                   </td>
                   <td>
-                     <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{apimanager.manage_subscriptions.labelUnsubscribe}' buttonIcon='trash' hideTitle=['all'] />
+                     <@aButton class="btn-delete btn-single" href='jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?action=confirmRemoveSubscription&uuid=${subscription.uuid}' title='#i18n{apimanager.manage_subscriptions.labelUnsubscribe}' buttonIcon='x' />
                   </td>
                   </tr>
                   </#list>
