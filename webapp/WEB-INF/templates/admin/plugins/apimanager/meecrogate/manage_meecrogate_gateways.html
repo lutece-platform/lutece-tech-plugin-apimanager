@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid apim-plugin">
    <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
          <a class="nav-link active" id="manage-tab" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_meecrogates.tabs.gateway.title}</a>
@@ -59,7 +59,7 @@
             <@actionButtons button1Name="action_createMeecrogate" />
             </@tform>
          </div>
-         <div id="instance-result-container">
+         <div id="instance-result-container" class="result-table-container">
             <div class="clearfix"></div>
             <@table>
             <tr>
@@ -90,8 +90,8 @@
                     </#if>
                  </td>
                <td>
-                  <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-                  <@aButton href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+                  <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?uuid=${instance.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                  <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageMeecrogates.jsp?action=confirmRemoveMeecrogate&uuid=${instance.uuid}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] />
                </td>
             </tr>
             </#list>
