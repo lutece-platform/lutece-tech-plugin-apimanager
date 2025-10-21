@@ -37,12 +37,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.meecrogate.Meecrogate;
 import fr.paris.lutece.plugins.apimanager.business.meecrogate.MeecrogateHome;
+import fr.paris.lutece.plugins.apimanager.service.utils.PasswordUtils;
 import fr.paris.lutece.plugins.apimanager.web.rest.GatewayRest;
 import fr.paris.lutece.plugins.apimanager.web.rest.dto.GitResponse;
 import fr.paris.lutece.plugins.apimanager.web.rest.dto.MeecrogateAckResponse;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -65,6 +68,7 @@ import java.util.concurrent.CompletionException;
 
 public class MeecrogateGatewayService
 {
+    private static final Logger logger = LoggerFactory.getLogger( PasswordUtils.class );
 
     private static MeecrogateGatewayService _instance = new MeecrogateGatewayService( );
 
@@ -116,6 +120,7 @@ public class MeecrogateGatewayService
             String decodedStr = new String(decoded, StandardCharsets.UTF_8);
             meecrogateAckResponse = this.uncheckedAckObjectMapper.readValue(decodedStr);
         } catch (Exception e) {
+            logger.error(e.getMessage());
           return null;
         }
         return meecrogateAckResponse;
