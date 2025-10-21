@@ -424,17 +424,18 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                 for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
                                     Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
                                     for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
-                                        String environement = planSubscription.getKey();
+                                        String environementName = null;
                                         List<Subscription> subscriptions = planSubscription.getValue();
                                         for (Subscription sub : subscriptions) {
+                                            environementName = sub.getEnvironement().getName();
                                             List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                                             sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
                                         }
                                         _configGeneratorService.deleteSubscriptions(
                                                 subscriptions, comment, getUser().getEmail());
 
-                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environement);
-                                        if (ackResponse.getDeployGatewayStatus().equals("updated")) {
+                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
+                                        if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                                         } else {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNDEPLOY_ERROR.name(), getUser().getEmail());
@@ -499,20 +500,26 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                             for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
                                 Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
                                 for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
-                                    String environement = planSubscription.getKey();
+                                    String environementName = null;
                                     List<Subscription> subscriptions = planSubscription.getValue();
                                     for (Subscription sub : subscriptions) {
+                                        environementName = sub.getEnvironement().getName();
                                         List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                                         sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
                                     }
-                                    _configGeneratorService.generateSubscriptions(
-                                            subscriptions, comment, getUser().getEmail());
-                                    MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environement);
-                                    if (ackResponse.getDeployGatewayStatus().equals("updated")) {
-                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
-                                    } else {
+                                    if(environementName != null) {
+                                        _configGeneratorService.generateSubscriptions(
+                                                subscriptions, comment, getUser().getEmail());
+                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
+                                        if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                                        } else {
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
+                                        }
+                                    }else{
                                         ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
                                     }
+
                                 }
                             }
                         }

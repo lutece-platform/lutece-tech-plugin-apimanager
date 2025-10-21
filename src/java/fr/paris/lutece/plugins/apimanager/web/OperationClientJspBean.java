@@ -330,7 +330,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                                 envir, getUser().getEmail());
 
                         MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
-                        if(ackResponse.getDeployOauth2Status().equals("updated")){
+                        if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                         }else{
                             ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
@@ -384,7 +384,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                                 envir, comment, getUser().getEmail());
 
                         MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
-                        if(ackResponse.getDeployOauth2Status().equals("updated")){
+                        if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
                         }else{
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());

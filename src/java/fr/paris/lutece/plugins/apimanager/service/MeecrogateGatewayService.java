@@ -34,25 +34,13 @@
 package fr.paris.lutece.plugins.apimanager.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.meecrogate.Meecrogate;
-import fr.paris.lutece.plugins.apimanager.business.meecrogate.MeecrogateHome;
-import fr.paris.lutece.plugins.apimanager.service.utils.PasswordUtils;
-import fr.paris.lutece.plugins.apimanager.web.rest.GatewayRest;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import fr.paris.lutece.plugins.apimanager.web.rest.dto.GitResponse;
 import fr.paris.lutece.plugins.apimanager.web.rest.dto.MeecrogateAckResponse;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.json.ErrorJsonResponse;
-import fr.paris.lutece.util.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -62,13 +50,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletionException;
 
 public class MeecrogateGatewayService
 {
-    private static final Logger logger = LoggerFactory.getLogger( PasswordUtils.class );
+    private static final Logger logger = LoggerFactory.getLogger( MeecrogateGatewayService.class );
 
     private static MeecrogateGatewayService _instance = new MeecrogateGatewayService( );
 
@@ -82,7 +68,7 @@ public class MeecrogateGatewayService
     private MeecrogateGatewayService( )
     {
         uncheckedObjectMapper = new UncheckedObjectMapper();
-        uncheckedAckObjectMapper = new UncheckedAckObjectMapper();
+        uncheckedAckObjectMapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
     }
 
