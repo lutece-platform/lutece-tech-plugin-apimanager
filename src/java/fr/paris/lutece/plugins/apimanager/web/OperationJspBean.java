@@ -424,6 +424,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                 for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
                                     Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
                                     for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
+                                        String environement = planSubscription.getKey();
                                         List<Subscription> subscriptions = planSubscription.getValue();
                                         for (Subscription sub : subscriptions) {
                                             List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
@@ -432,7 +433,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         _configGeneratorService.deleteSubscriptions(
                                                 subscriptions, comment, getUser().getEmail());
 
-                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environement);
                                         if (ackResponse.getDeployGatewayStatus().equals("updated")) {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                                         } else {
@@ -498,6 +499,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                             for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
                                 Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
                                 for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
+                                    String environement = planSubscription.getKey();
                                     List<Subscription> subscriptions = planSubscription.getValue();
                                     for (Subscription sub : subscriptions) {
                                         List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
@@ -505,7 +507,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                     }
                                     _configGeneratorService.generateSubscriptions(
                                             subscriptions, comment, getUser().getEmail());
-                                    MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                                    MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environement);
                                     if (ackResponse.getDeployGatewayStatus().equals("updated")) {
                                         ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
                                     } else {

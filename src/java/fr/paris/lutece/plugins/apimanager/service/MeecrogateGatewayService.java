@@ -93,10 +93,9 @@ public class MeecrogateGatewayService
     }
 
 
-    public MeecrogateAckResponse getStatus()
+    public MeecrogateAckResponse getStatus(String env)
     {
         MeecrogateAckResponse meecrogateAckResponse = new MeecrogateAckResponse( );
-        String env = "dev";
         URI uri = URI.create(gitlabAckUrl + "%2F" + instanceName + "%2Ejson?ref="+env);
         HttpRequest requestBuilder = HttpRequest.newBuilder()
                 .headers(

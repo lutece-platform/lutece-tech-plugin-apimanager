@@ -74,11 +74,12 @@ public class GatewayRest {
     }
 
     @GET
-    @Path( "/api/{uuidId}/status" )
+    @Path( "/api/{uuidId}/{env}/status" )
     @Produces( MediaType.APPLICATION_JSON )
-    public Response getStatus(@PathParam( "uuidId" ) String uuidId )
+    public Response getStatus(@PathParam( "uuidId" ) String uuidId, @PathParam( "env" ) String env )
     {
-        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+
+        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(env);
 
         return Response.status( Response.Status.OK )
                 .entity( ackResponse )

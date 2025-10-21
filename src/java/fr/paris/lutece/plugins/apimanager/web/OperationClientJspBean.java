@@ -329,7 +329,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                         _configGeneratorService.deleteOauth2Client(client,
                                 envir, getUser().getEmail());
 
-                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
                         if(ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                         }else{
@@ -383,7 +383,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                         _configGeneratorService.generateOauth2Client(client,
                                 envir, comment, getUser().getEmail());
 
-                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus();
+                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
                         if(ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
                         }else{
