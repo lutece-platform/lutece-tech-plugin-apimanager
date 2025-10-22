@@ -434,12 +434,13 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         _configGeneratorService.deleteSubscriptions(
                                                 subscriptions, comment, getUser().getEmail());
 
-                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
+                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
+                                       /* MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
                                         if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                                         } else {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNDEPLOY_ERROR.name(), getUser().getEmail());
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -507,6 +508,11 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                                         sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
                                     }
+
+                                    _configGeneratorService.generateSubscriptions(
+                                            subscriptions, comment, getUser().getEmail());
+                                    ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                                    /*
                                     if(environementName != null) {
                                         _configGeneratorService.generateSubscriptions(
                                                 subscriptions, comment, getUser().getEmail());
@@ -518,8 +524,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                                         }
                                     }else{
                                         ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                                    }
-
+                                    }*/
                                 }
                             }
                         }

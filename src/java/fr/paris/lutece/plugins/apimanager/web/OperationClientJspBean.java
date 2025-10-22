@@ -329,12 +329,14 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                         _configGeneratorService.deleteOauth2Client(client,
                                 envir, getUser().getEmail());
 
-                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
+                        ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
+
+                        /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
                         if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
                         }else{
                             ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                        }
+                        }*/
                     }
                 } catch (Exception e) {
                     ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISH_ERROR.name(), getUser().getEmail());
@@ -383,12 +385,14 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                         _configGeneratorService.generateOauth2Client(client,
                                 envir, comment, getUser().getEmail());
 
-                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
+                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+
+                        /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
                         if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
                         }else{
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                        }
+                        }*/
                     }
                 } catch (Exception e) {
                     ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
