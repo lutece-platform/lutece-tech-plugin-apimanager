@@ -72,6 +72,9 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
+    private static final String SQL_QUERY_SELECT_DISTINCT_ENV_FOR_API = "SELECT distinct(uuid_environement) FROM apimanager_resource WHERE uuid_api = ?";
+
+    private static final String SQL_QUERY_SELECT_DISTINCT_API_UUIDS_FOR_ENV = "SELECT distinct(uuid_api) FROM apimanager_resource WHERE uuid_environement = ?";
 
     private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE = "SELECT uuid_resource FROM apimanager_deployed WHERE uuid_instance = ?";
     private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
@@ -224,6 +227,48 @@ public final class ResourceDAO extends AbstractFilterDao implements IResourceDAO
             }
 
             return resourceList;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> getEnvForApiUuid(String apiUuid, Plugin plugin)
+    {
+        List<String> envUuidList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DISTINCT_ENV_FOR_API, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                envUuidList.add( daoUtil.getString( 1 ));
+            }
+
+            return envUuidList;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> getDistinctApiUuidsByEnv(String envUuid, Plugin plugin)
+    {
+        List<String> apiUuidList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DISTINCT_API_UUIDS_FOR_ENV, plugin ) )
+        {
+            daoUtil.setString( 1, envUuid );
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                apiUuidList.add( daoUtil.getString( 1 ));
+            }
+
+            return apiUuidList;
         }
     }
 

@@ -166,4 +166,32 @@ public class ResourceService extends AbstractService<Resource> {
         }
         return this.getEntitiesListByIds(resourceIds);
     }
+
+    /**
+     * Get EnvironementUUID for an api
+     *
+     * @param apiUuid the api UUID
+     * @return list of Environement Uuids
+     */
+    public List<String> getEnvForApiUuid(final String apiUuid) {
+        final List<String> envIds = ResourceHome.getEnvForApiUuid(apiUuid);
+        if (envIds.isEmpty()) {
+            return List.of();
+        }
+        return envIds;
+    }
+
+    /**
+     * Get API UUIDs for an environement
+     *
+     * @param envUuid the environement UUID
+     * @return list of API Uuids
+     */
+    public List<String> getDistinctApiUuidsByEnv(final String envUuid) {
+        final List<String> apiIds = ResourceHome.getDistinctApiUuidsByEnv(envUuid);
+        if (apiIds.isEmpty()) {
+            return List.of();
+        }
+        return apiIds;
+    }
 }

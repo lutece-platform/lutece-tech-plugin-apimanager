@@ -91,7 +91,7 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
             AppLogService.info( "WAIT 2 SECONDS" );
             AppLogService.info( "====================================" );
         }
-
+/*
         try
         {
             TimeUnit.SECONDS.sleep( 2 );
@@ -99,7 +99,7 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         catch( InterruptedException e )
         {
             throw new AppException( "Sleep failed", e );
-        }
+        }*/
     }
 
     @Override

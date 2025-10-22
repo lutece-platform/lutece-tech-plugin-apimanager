@@ -282,24 +282,23 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
 
 
-
-        Map<String, Object> apiModel = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
-        List<Api> apiList = ((List<Api>) apiModel.get(MARK_API_LIST));
         String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
         if (selectedEnvironementUuid != null) {
-            Environement environement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
-            if (environement != null) {
-                apiModel.put(MARK_PLAN_LIST, apiList.stream()
-                        .filter(api -> api.getResourceList()!=null &&  !api.getResourceList().isEmpty())
-                        .filter(api -> api.getResourceList().stream().anyMatch(resource -> resource.getEnvironement().getUuid().equals(environement.getUuid()))).collect(Collectors.toList()));
-            }
-            model.put(MARK_SELECTED_ENVIRONMENT_UUID, selectedEnvironementUuid);
+            _listIdApis = ResourceService.getInstance().getDistinctApiUuidsByEnv(selectedEnvironementUuid);
         }
+
+
+        Map<String, Object> apiModel = getPaginatedListModel(request, MARK_API_LIST, _listIdApis, JSP_MANAGE_APIS);
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID, selectedEnvironementUuid);
         model.putAll(apiModel);
 
         ArrayList<String> tags = new ArrayList<String>();
         for (Api apiValue : ((List<Api>) apiModel.get(MARK_API_LIST))) {
             tags.addAll(apiValue.getTags());
+            List<String> envUuidList = ResourceService.getInstance().getEnvForApiUuid(apiValue.getUuid());
+            if(envUuidList != null && !envUuidList.isEmpty()){
+                apiValue.setEnvironementList(EnvironementService.getInstance().getEntitiesListByIds(envUuidList));
+            }
         }
 
         model.put(MARK_TAG_LIST, tags.stream().distinct().collect(Collectors.toList()));

@@ -29,7 +29,7 @@
                                    <div class="form-control">
                                       <#list tag_list as tag>
                                       <#if selected_tag_list?? && selected_tag_list?seq_contains(tag)>
-                                      <span  class="badge bg-success px-2 me-1 clickable" id="tag-${tag?index}" >
+                                      <span  class="badge badge-selected px-2 me-1 clickable" id="tag-${tag?index}" >
                                       ${tag}
                                       <input type="hidden" name="selected_tag" value="${tag}">
                                       </span>
@@ -163,8 +163,8 @@
                            <div class="col">
                               <span>Environnements: </span>
 
-                              <#if api.environmentList?has_content>
-                                 <#list api.environmentList as env>
+                              <#if api.environementList?has_content>
+                                 <#list api.environementList as env>
                                     <span class="badge bg-primary px-2 me-1" id="api-env-${env?index}">
                                        ${env.name}
                                     </span>

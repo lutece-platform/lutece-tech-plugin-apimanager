@@ -68,6 +68,8 @@ public class MeecrogateGatewayService
     private MeecrogateGatewayService( )
     {
         uncheckedObjectMapper = new UncheckedObjectMapper();
+        uncheckedAckObjectMapper = new UncheckedAckObjectMapper();
+        uncheckedObjectMapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         uncheckedAckObjectMapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
         this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
     }
@@ -85,8 +87,9 @@ public class MeecrogateGatewayService
 
     public MeecrogateAckResponse getStatus(String env)
     {
+
         MeecrogateAckResponse meecrogateAckResponse = new MeecrogateAckResponse( );
-        URI uri = URI.create(gitlabAckUrl + "%2F" + instanceName + "%2Ejson?ref="+env);
+        URI uri = URI.create(gitlabAckUrl + "%2F" + instanceName + "%2Ejson?ref="+env.toLowerCase());
         HttpRequest requestBuilder = HttpRequest.newBuilder()
                 .headers(
                         "Content-Type", "application/json",
@@ -96,16 +99,22 @@ public class MeecrogateGatewayService
                 .uri(uri)
                 .build();
         try {
-            GitResponse response = HttpClient.newHttpClient()
+            HttpResponse<String> response = HttpClient.newHttpClient()
                     .sendAsync(requestBuilder, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenApply(uncheckedObjectMapper::readValue)
                     .get();
 
-            byte[] decoded = Base64.getDecoder().decode(response.getContent());
-            String decodedStr = new String(decoded, StandardCharsets.UTF_8);
-            meecrogateAckResponse = this.uncheckedAckObjectMapper.readValue(decodedStr);
-        } catch (Exception e) {
+            if(response.statusCode() == 200){
+                GitResponse gitReponse  = this.uncheckedObjectMapper.readValue(response.body(), GitResponse.class);
+
+                byte[] decoded = Base64.getDecoder().decode(gitReponse.getContent());
+                String decodedStr = new String(decoded, StandardCharsets.UTF_8);
+                meecrogateAckResponse = this.uncheckedAckObjectMapper
+                        .readValue(decodedStr, MeecrogateAckResponse.class);
+
+            }else{
+                logger.debug("unable to retrieve the acknoledgement from the gitlab repo :" + response.body());
+            }
+            } catch (Exception e) {
             logger.error(e.getMessage());
           return null;
         }

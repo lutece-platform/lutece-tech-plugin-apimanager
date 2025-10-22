@@ -47,6 +47,10 @@ import java.util.Optional;
  */
 public interface IResourceDAO extends IDAO<Resource>
 {
+    List<String> getEnvForApiUuid(String apiUuid, Plugin plugin);
+
+    List<String> getDistinctApiUuidsByEnv(String envUuid, Plugin plugin);
+
     /**
      * Link the specified Resource to the specified instance UUID.
      *

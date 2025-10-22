@@ -183,4 +183,26 @@ public final class ResourceHome
     {
         _dao.removeInstanceLinks( resource, _plugin );
     }
+
+    /**
+     * Rreturn list of environement of an api
+     *
+     * @param apiUuid
+     *            the API uuid
+     */
+    public static List<String> getEnvForApiUuid(final String apiUuid)
+    {
+        return _dao.getEnvForApiUuid( apiUuid, _plugin );
+    }
+    /**
+     * Rreturn list of api of an environement
+     *
+     * @param envUuid
+     *            the ENVIRONEMENT uuid
+     */
+    public static List<String> getDistinctApiUuidsByEnv(final String envUuid)
+    {
+        return _dao.getDistinctApiUuidsByEnv( envUuid, _plugin );
+    }
+
 }
