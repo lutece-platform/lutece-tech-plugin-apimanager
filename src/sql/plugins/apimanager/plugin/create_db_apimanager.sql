@@ -1,3 +1,25 @@
+-- Disable foreign key checks to allow dropping tables with dependencies
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS apimanager_tag;
+DROP TABLE IF EXISTS apimanager_subscription;
+DROP TABLE IF EXISTS apimanager_resource_header_matching;
+DROP TABLE IF EXISTS apimanager_deployed;
+DROP TABLE IF EXISTS apimanager_resource;
+DROP TABLE IF EXISTS apimanager_resource_rewrite_url;
+DROP TABLE IF EXISTS apimanager_plan;
+DROP TABLE IF EXISTS apimanager_plan_oauth_configuration;
+DROP TABLE IF EXISTS apimanager_meecrogate_instance;
+DROP TABLE IF EXISTS apimanager_instance;
+DROP TABLE IF EXISTS apimanager_history;
+DROP TABLE IF EXISTS apimanager_client_secret;
+DROP TABLE IF EXISTS apimanager_environement;
+DROP TABLE IF EXISTS apimanager_client;
+DROP TABLE IF EXISTS apimanager_api;
+
+-- Re-enable foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;
+
 CREATE TABLE apimanager_api
 (
     uuid           varchar(50)                  not null primary key,
@@ -73,7 +95,7 @@ CREATE TABLE apimanager_meecrogate_instance
     uuid_environement varchar(50)             null,
     type        varchar(50) default '' null,
     constraint apimanager_meecrogate_instance__environement_fk
-        foreign key (uuid_environement) references apim.apimanager_environement (uuid)
+        foreign key (uuid_environement) references apimanager_environement (uuid)
 );
 
 CREATE TABLE apimanager_plan_oauth_configuration
