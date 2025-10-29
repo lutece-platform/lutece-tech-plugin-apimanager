@@ -113,7 +113,7 @@ public class ApiService extends AbstractService<Api>
 
                 for(Resource resource : env.getResourceList()){
                     resource.setApi(entity);
-                    if(resource.getUuid() != null){
+                    if(resource.getUuid() != null && !resource.getUuid().isEmpty()){
                         ResourceService.getInstance().update(resource, user);
                     }else{
                         ResourceService.getInstance().create(resource, user);
