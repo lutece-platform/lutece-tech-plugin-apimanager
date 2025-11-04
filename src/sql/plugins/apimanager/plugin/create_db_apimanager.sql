@@ -125,8 +125,8 @@ CREATE TABLE apimanager_plan
 CREATE TABLE apimanager_resource_rewrite_url
 (
     uuid   varchar(50)            not null primary key,
-    target varchar(50) default '' not null,
-    value  varchar(50) default '' not null,
+    target varchar(255) default '' not null,
+    value  varchar(255) default '' not null,
     type   varchar(50) default '' not null
 );
 
