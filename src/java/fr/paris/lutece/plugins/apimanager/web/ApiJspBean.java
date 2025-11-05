@@ -644,7 +644,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
 
 
-        if (usecase != null && usecase.isEmpty()) {
         try {
             populateEnvironement(_api, request, getLocale());
         } catch (JsonProcessingException e) {
@@ -652,6 +651,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             return redirect(request, VIEW_CREATE_API);
         }
 
+        if (usecase != null && usecase.isEmpty()) {
             _api = (_api != null) ? _api : new Api();
 
             if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
