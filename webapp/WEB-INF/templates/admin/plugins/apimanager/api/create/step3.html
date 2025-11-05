@@ -89,7 +89,7 @@
                                        <label for="environement-${environment.uuid}-plan-${plan.uuid}-resources" class="form-label form-label" >Sélectionner les ressources du plan :</label>
                                        <select id="environement-${environment.uuid}-plan-${plan.uuid}-resources" name="environement-${environment.uuid}-plan-${plan.uuid}-resources" multiple onchange="selectionChange(this)" required class="form-control">
                                           <#list environment.resourceList as resource>
-                                          <#if resource.uuid_plan?? && resource.uuid_plan == plan.uuid >
+                                          <#if resource.plan?? && resource.plan.uuid == plan.uuid >
                                           <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.verb.name()}${resource.path}" selected>${resource.verb.name()} - ${resource.path}</option>
                                           <#else>
                                           <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.verb.name()}${resource.path}">${resource.verb.name()} - ${resource.path}</option>
@@ -129,6 +129,10 @@
    $("[name='view_step2']").insertBefore($("[name='action_step3']"));
 
 
+   // pour tous les selected appeler onchange
+   $('select[id^=environement-]').each(function(){
+       selectionChange($(this)[0]);
+   });
    function selectionChange(e){
 
        $('select[id^='+e.id+'] option').each(function(){

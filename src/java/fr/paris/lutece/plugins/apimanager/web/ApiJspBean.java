@@ -733,7 +733,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
 
         Map<String, String[]> params = request.getParameterMap();
-        if (usecase != null && usecase.isEmpty()) {
             _api = (_api != null) ? _api : new Api();
 
             try {
@@ -743,6 +742,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 return redirect(request, VIEW_CREATE_API);
             }
 
+        if (usecase != null && usecase.isEmpty()) {
             if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
                 throw new AccessDeniedException("Invalid security token");
             }
