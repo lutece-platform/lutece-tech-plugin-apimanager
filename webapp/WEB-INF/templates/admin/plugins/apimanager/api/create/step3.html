@@ -90,9 +90,9 @@
                                        <select id="environement-${environment.uuid}-plan-${plan.uuid}-resources" name="environement-${environment.uuid}-plan-${plan.uuid}-resources" multiple onchange="selectionChange(this)" required class="form-control">
                                           <#list environment.resourceList as resource>
                                           <#if resource.uuid_plan?? && resource.uuid_plan == plan.uuid >
-                                          <option value="${resource.verb.name()}|${resource.path}" id="${resource.verb.name()}${resource.path}-${plan.uuid}" selected>${resource.verb.name()} - ${resource.path}</option>
+                                          <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.verb.name()}${resource.path}" selected>${resource.verb.name()} - ${resource.path}</option>
                                           <#else>
-                                          <option value="${resource.verb.name()}|${resource.path}" id="${resource.verb.name()}${resource.path}-${plan.uuid}">${resource.verb.name()} - ${resource.path}</option>
+                                          <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.verb.name()}${resource.path}">${resource.verb.name()} - ${resource.path}</option>
                                           </#if>
                                           </#list>
                                        </select>
@@ -128,27 +128,29 @@
    stepper.to(3);
    $("[name='view_step2']").insertBefore($("[name='action_step3']"));
 
+
    function selectionChange(e){
 
        $('select[id^='+e.id+'] option').each(function(){
 
            const optId = $(this)[0].id;
-           const prefix = optId.substring(0,optId.indexOf('-') );
+           const resourceId = $(this)[0].value;
+           const envUuid= optId.replace("environement-","").substring(0,optId.indexOf('-') );
 
            if($(this).is(":selected")){
                //disable and deselect from other lists
-               $("option[id^=" + prefix + "]").each(function(){
+               $("option[id^=environement-" + envUuid + "]").each(function(){
                    const opt = $(this);
-                   if(opt[0].id !== optId){
+                   if((opt.parent()[0].id !== e.id) && (opt[0].value ===resourceId) ){
                        opt.prop("disabled", true);
                        opt.prop("selected", false);
                    }
                });
            }else if(!$(this).is(":disabled")){
                //disable and deselect from other lists
-               $("option[id^=" + prefix + "]").each(function(){
+               $("option[id^=environement-" + envUuid + "]").each(function(){
                    const opt = $(this);
-                   if(opt[0].id !== optId){
+                   if((opt.parent()[0].id !== e.id) && (opt[0].value ===resourceId) ){
                        opt.prop("disabled", false);
                        opt.prop("selected", false);
                    }
