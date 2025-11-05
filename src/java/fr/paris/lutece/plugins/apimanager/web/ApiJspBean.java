@@ -1327,13 +1327,12 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         for (Environement environement : _api.getEnvironementList()) {
 
+
             for (Resource resource : environement.getResourceList()) {
                 //get plans
                 final String plan_prefix = PARAMETER_ENVIRONEMENT_PREFIX + environement.getUuid() + PARAMETER_PLAN;
                 final Map<String, String[]> envPlanResources = request.getParameterMap().entrySet().stream().filter(stringEntry -> stringEntry.getKey().startsWith(plan_prefix))
                         .collect(Collectors.toMap(entry -> entry.getKey().replace(plan_prefix, ""), Map.Entry::getValue));
-                ;
-
                 for (String envPlanResource : envPlanResources.keySet()) {
 
                     String[] planResources = envPlanResources.get(envPlanResource);
@@ -1343,10 +1342,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                             if (currentPlan != null) {
                                 if (resource.getPlan() == null) {
                                     resource.setPlan(currentPlan);
-                                } else {
-                                    Resource currentResource = new Resource(resource);
-                                    currentResource.setPlan(currentPlan);
-                                    environement.getResourceList().add(currentResource);
                                 }
                             }
                         }
