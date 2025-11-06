@@ -1142,9 +1142,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
     protected void populateEnvironement(Object bean, HttpServletRequest request, Locale locale) throws JsonProcessingException {
 
-        _resources = new ArrayList<Resource>();
         //environement
-
         final List<String> configuredEnvironements = request.getParameterMap().entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(PARAMETER_ENVIRONEMENT_PREFIX))
                 .map(envEntry -> {
@@ -1159,6 +1157,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
         for (String environementUuid : configuredEnvironements) {
 
+            _resources = new ArrayList<Resource>();
             // Resources
             final List<Integer> resourceIndexes = request.getParameterMap().keySet().stream()
                     .filter(key -> key.startsWith(PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW))

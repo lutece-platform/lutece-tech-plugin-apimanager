@@ -71,7 +71,7 @@
                         <ul class="nav nav-tabs bg-light" id="planTabs" role="tablist">
                            <#list environment.planList as plan>
                            <li class="nav-item" role="presentation">
-                              <button class="nav-link <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active </#if><#else><#if plan?index==0>active </#if></#if>"
+                              <button class="nav-link <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active </#if><#else><#if plan?index==0>active </#if></#if><#else><#if plan?index==0>active show</#if>"
                                       id="environement-${environment.uuid}-plan-${plan.uuid}-container-link" data-bs-toggle="tab"
                                  data-bs-target="#environement-${environment.uuid}-plan-${plan.uuid}" type="button" role="tab" aria-controls="create" aria-selected="true">${plan.name}
                                <a id="delete-plan" class="icon-block icon-delete" onclick="deletePlan('${environment.uuid}','${plan?index}')"><i class="fas fa-times" style="color:black" ></i></a></button>
@@ -82,7 +82,7 @@
                         <div class="tab-content" id="planTabContent">
                            <#list environment.planList as plan>
                            <!-- plan tab content -->
-                           <div class="tab-pane container-fluid p-4 mt-4 <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active show</#if><#else><#if plan?index==0>active show</#if></#if>" id="environement-${environment.uuid}-plan-${plan.uuid}" role="tabpanel">
+                           <div class="tab-pane container-fluid p-4 mt-4 <#if current_plan_tab??><#if '${plan.uuid}'=='${current_plan_tab}'>active show</#if><#else><#if plan?index==0>active show</#if></#if><#else><#if plan?index==0>active show</#if>" id="environement-${environment.uuid}-plan-${plan.uuid}" role="tabpanel">
                               <div class="plan-resources sub-tab-content" id="plan-resources-template" style="display: block;">
                                  <div class="flex items-center space-x-4 mb-4">
                                     <div class="form-group mb-3">
