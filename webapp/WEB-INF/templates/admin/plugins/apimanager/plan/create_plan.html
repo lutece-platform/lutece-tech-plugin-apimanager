@@ -30,7 +30,7 @@
 				<div id="environnement-container" class="row gx-2 w-50 my-4">
 					<#list environment_list as environment>
 						<div class='col fw-bold'>
-							<@checkBox labelKey=environment.name id="environment_${environment.name}" name="environment_${environment.name}"  checked=true value="1"  tabIndex='10' />
+							<@checkBox labelKey=environment.name id="environment_${environment.name}" name="environment_${environment.name}"  checked=false value="0"  tabIndex='10' />
 						</div>
 					</#list>
 				</div>
