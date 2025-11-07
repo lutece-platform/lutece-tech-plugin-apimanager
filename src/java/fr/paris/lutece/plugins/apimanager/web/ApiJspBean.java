@@ -1190,6 +1190,16 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     currentResource.setInstances(new ArrayList<>());
                 }
 
+                // copy prevois plan setup
+                Environement currentEnv = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(environementUuid)).findFirst().orElse(null);
+
+                if(currentEnv != null){
+                    Resource originalResource = currentEnv.getResourceList().stream().filter(resource -> resource.getUuid().equals(currentResource.getUuid())).findFirst().orElse(null);
+                    if(originalResource != null){
+                        currentResource.setPlan(originalResource.getPlan());
+                    }
+                }
+
                 _resources.add(currentResource);
             }
 

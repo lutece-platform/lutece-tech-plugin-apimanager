@@ -31,7 +31,11 @@
 				<div id="environnement-container" class="row gx-2 w-50 my-4">
 					<#list environment_list as environment>
 						<div class='col fw-bold'>
-							<@checkBox labelKey=environment.name id="environment_${environment.name}" name="environment_${environment.name}"  checked=true value="1"  tabIndex='10' />
+                            <#if plan.availableEnvironments?seq_contains(environment.name)>
+                            <@checkBox labelKey=environment.name id="environment_${environment.name}" name="environment_${environment.name}"  checked=true value="1"  tabIndex='10' />
+                            <#else>
+                            <@checkBox labelKey=environment.name id="environment_${environment.name}" name="environment_${environment.name}"  checked=false value="1"  tabIndex='10' />
+                            </#if>
 						</div>
 					</#list>
 				</div>
