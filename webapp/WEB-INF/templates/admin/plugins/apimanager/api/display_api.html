@@ -248,7 +248,7 @@
                               <ul class="nav nav-tabs bg-light" id="planTabs" role="tablist">
                                  <#list environment.planList as plan>
                                  <li class="nav-item" role="presentation">
-                                    <button class="nav-link <#if plan?index==0>active</#if>" id="environement-${environment.uuid}-plan-${plan.uuid}-container-link" data-bs-toggle="environement-${environment.uuid}-plan-${plan.uuid}"
+                                    <button class="nav-link <#if plan?index==0>active</#if>" id="environement-${environment.uuid}-plan-${plan.uuid}-container-link" data-bs-toggle="tab"
                                        data-bs-target="#environement-${environment.uuid}-plan-${plan.uuid}" type="button" role="tab" aria-controls="create" aria-selected="true">${plan.name}</button>
                                  </li>
                                  </#list>
