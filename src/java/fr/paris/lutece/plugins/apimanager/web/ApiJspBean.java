@@ -1194,7 +1194,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 Environement currentEnv = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(environementUuid)).findFirst().orElse(null);
 
                 if(currentEnv != null){
-                    Resource originalResource = currentEnv.getResourceList().stream().filter(resource -> resource.getUuid().equals(currentResource.getUuid())).findFirst().orElse(null);
+                    Resource originalResource = currentEnv.getResourceList().stream().filter(resource ->  resource.getUuid()!=null &&  resource.getUuid().equals(currentResource.getUuid())).findFirst().orElse(null);
                     if(originalResource != null){
                         currentResource.setPlan(originalResource.getPlan());
                     }
