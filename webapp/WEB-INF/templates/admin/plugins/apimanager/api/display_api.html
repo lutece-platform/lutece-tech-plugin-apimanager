@@ -264,7 +264,7 @@
                                              <label for="environement-${environment.uuid}-plan-${plan.uuid}-resources" class="form-label form-label" >Sélectionner les ressources du plan :</label>
                                              <select disabled id="environement-${environment.uuid}-plan-${plan.uuid}-resources" name="environement-${environment.uuid}-plan-${plan.uuid}-resources" multiple required class="form-control">
                                                 <#list environment.resourceList as resource>
-                                                <#if resource.uuid??>
+                                                <#if resource.uuid?? && resource.plan?? && resource.plan.uuid ==plan.uuid>
                                                 <option value="${resource.verb.name()}|${resource.path}" id="${resource.verb.name()}${resource.path}" selected>${resource.verb.name()} - ${resource.path}</option>
                                                 </#if>
                                                 </#list>
