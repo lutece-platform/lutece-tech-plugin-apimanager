@@ -369,36 +369,33 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
         try {
 
-            List<Subscription> subscriptions = new ArrayList<>();
-            subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
-
-            List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+            final List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
             getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
             client.setStatus(ClientStatusEnum.PUBLISHING.name());
             ClientService.getInstance().update(client, getUser().getEmail());
 
-            ExecutorService executor = Executors.newFixedThreadPool(1);
-            executor.submit(() -> {
-                try {
-                    for (Environement envir : availableEnvs) {
-                        _configGeneratorService.generateOauth2Client(client,
-                                envir, comment, getUser().getEmail());
+            try (final ExecutorService executor = Executors.newFixedThreadPool(1)) {
+                executor.submit(() -> {
+                    try {
+                        for (final Environement env : availableEnvs) {
+                            _configGeneratorService.generateOauth2Client(client, env, comment, getUser().getEmail());
 
-                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
-
-                        /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
-                        if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
-                        }else{
-                            ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                        }*/
+
+                            /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
+                            if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
+                                ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                            }else{
+                                ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
+                            }*/
+                        }
+                    } catch (Exception e) {
+                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
                     }
-                } catch (Exception e) {
-                    ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
-                }
-            });
-            executor.shutdown();
+                });
+                executor.shutdown();
+            }
 
         } catch (final AppException e) {
             addError(ERROR_CLIENT_GENERATION);

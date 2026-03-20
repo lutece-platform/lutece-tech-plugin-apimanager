@@ -34,14 +34,9 @@
 
 package fr.paris.lutece.plugins.apimanager.web.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import fr.paris.lutece.plugins.apimanager.service.MeecrogateGatewayService;
-import fr.paris.lutece.plugins.apimanager.web.rest.dto.GitResponse;
 import fr.paris.lutece.plugins.apimanager.web.rest.dto.MeecrogateAckResponse;
 import fr.paris.lutece.plugins.rest.service.RestConstants;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.json.ErrorJsonResponse;
-import fr.paris.lutece.util.json.JsonUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,18 +44,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.concurrent.CompletionException;
 
 /**
  * This class provides the user interface to manage Api features ( manage, create, modify, remove )
