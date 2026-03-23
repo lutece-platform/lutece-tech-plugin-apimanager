@@ -364,7 +364,7 @@ public class PlanJspBean extends AbstractJspBean<String, Plan>
     {
         _plan = new Plan( );
         populateAll( request, getLocale( ) );
-        _plan.setStatus( PlanStatusEnum.DRAFT );
+        _plan.setStatus( PlanStatusEnum.PUBLISHED );
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_PLAN ) )
         {
