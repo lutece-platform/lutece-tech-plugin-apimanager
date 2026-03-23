@@ -47,8 +47,8 @@
 						<#if client.subscriptionList??>
 						<#list client.subscriptionList as subscription>
 						<span class="badge bg-primary px-2 me-1" id="env-${subscription?index}">
-								   ${subscription.api.name}
-								   <input type="hidden" name="environement-${subscription?index}" value="${subscription.api.name}">
+								   ${subscription.api.name}-${subscription.api.version}
+								   <input type="hidden" name="environement-${subscription?index}" value="${subscription.api.name}-${subscription.api.version}">
 								   </span>
 						</#list>
 						</#if>

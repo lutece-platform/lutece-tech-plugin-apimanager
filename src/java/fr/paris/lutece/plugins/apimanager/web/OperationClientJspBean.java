@@ -163,11 +163,13 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
         _clientList = ClientService.getInstance().getEntitiesListByIds(ClientService.getInstance().getIdEntitiesList());
 
         for (Client client : _clientList) {
+            List<Subscription> subscriptionByApi = new ArrayList<>();
             List<Subscription> currentSubscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid()));
-            for (Subscription subscription : currentSubscriptions) {
-                Resource currentResource = ResourceHome.findByPrimaryKey(subscription.getResource().getUuid()).orElse(subscription.getResource());
-                if (currentResource.getApi() != null && currentResource.getApi().getUuid() != null) {
-                    subscription.setApi(ApiHome.findByPrimaryKey(currentResource.getApi().getUuid()).orElse(subscription.getApi()));
+            Map<String, List<Subscription>> apiSubscriptions = currentSubscriptions.stream().filter(subscription -> subscription.getApi() != null).collect(Collectors.groupingBy(p -> p.getApi().getUuid()));
+            for (String subscriptionApi : apiSubscriptions.keySet()) {
+                if(apiSubscriptions.get(subscriptionApi) != null && !apiSubscriptions.get(subscriptionApi).isEmpty()){
+                    apiSubscriptions.get(subscriptionApi).get(0).setApi(ApiHome.findByPrimaryKey(subscriptionApi).orElse(apiSubscriptions.get(subscriptionApi).get(0).getApi()));
+                    subscriptionByApi.add(apiSubscriptions.get(subscriptionApi).get(0));
                 }
             }
             client.setSubscriptionList(currentSubscriptions);
@@ -369,33 +371,36 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
         try {
 
-            final List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+            List<Subscription> subscriptions = new ArrayList<>();
+            subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
+
+            List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
             getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
             client.setStatus(ClientStatusEnum.PUBLISHING.name());
             ClientService.getInstance().update(client, getUser().getEmail());
 
-            try (final ExecutorService executor = Executors.newFixedThreadPool(1)) {
-                executor.submit(() -> {
-                    try {
-                        for (final Environement env : availableEnvs) {
-                            _configGeneratorService.generateOauth2Client(client, env, comment, getUser().getEmail());
+            ExecutorService executor = Executors.newFixedThreadPool(1);
+            executor.submit(() -> {
+                try {
+                    for (Environement envir : availableEnvs) {
+                        _configGeneratorService.generateOauth2Client(client,
+                                envir, comment, getUser().getEmail());
 
+                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
+
+                        /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
+                        if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
                             ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
-
-                            /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());
-                            if(ackResponse!=null && ackResponse.getDeployOauth2Status()!=null && ackResponse.getDeployOauth2Status().equals("updated")){
-                                ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
-                            }else{
-                                ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                            }*/
-                        }
-                    } catch (Exception e) {
-                        ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
+                        }else{
+                            ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
+                        }*/
                     }
-                });
-                executor.shutdown();
-            }
+                } catch (Exception e) {
+                    ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISH_ERROR.name(), getUser().getEmail());
+                }
+            });
+            executor.shutdown();
 
         } catch (final AppException e) {
             addError(ERROR_CLIENT_GENERATION);
