@@ -74,6 +74,7 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
     private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE = "SELECT uuid_api FROM apimanager_deployed WHERE uuid_instance = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_BY_PATH = "SELECT uuid FROM apimanager_api WHERE path = ?";
     private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
             + SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE + " )";
     private static final String SQL_QUERY_LINK_INSTANCE = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
@@ -351,6 +352,22 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE, plugin ) )
         {
             daoUtil.setString( 1, instanceUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
+    }
+
+    @Override
+    public List<String> getIdApisListByPath( final String path, final Plugin plugin )
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_PATH, plugin ) )
+        {
+            daoUtil.setString( 1, path );
             daoUtil.executeQuery( );
             while ( daoUtil.next( ) )
             {

@@ -219,6 +219,14 @@ public final class ApiHome
         return _dao.getuuidsByTags(tags, _plugin );
     }
 
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getuuidsByPath( String path  )
+    {
+        return _dao.getIdApisListByPath(path, _plugin );
+    }
+
     public static List<String> getDistinctStatus() {
         return _dao.getDistinctStatus( _plugin );
     }

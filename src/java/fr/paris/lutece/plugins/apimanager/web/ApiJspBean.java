@@ -456,6 +456,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             return redirectView(request, VIEW_MANAGE_APIS);
         }
 
+        List<Api> samePathApis = getService().getEntitiesListByIds(getService().getApisByPath(_api.getPath()));
+
+        if(samePathApis != null && !samePathApis.isEmpty()){
+            this.addError("The path " + _api.getPath()+" is already used by the api " + samePathApis.get(0).getName());
+            return redirectView(request, VIEW_CREATE_API);
+        }
+
         return getCreateApiStep2(request);
     }
 

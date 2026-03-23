@@ -234,6 +234,17 @@ public class ApiService extends AbstractService<Api>
         return ApiHome.getuuidsByTags( tags );
     }
 
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getApisByPath(String path )
+    {
+        return ApiHome.getuuidsByPath( path );
+    }
+
+
     public List<String> getDistinctStatus() {
         return ApiHome.getDistinctStatus( );
     }
