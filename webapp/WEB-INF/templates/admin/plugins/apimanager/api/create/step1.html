@@ -56,7 +56,7 @@
                      <div class="col">
 
                         <@formGroup labelFor='path' labelKey='#i18n{apimanager.api.labelPath}' mandatory=true>
-                        <div class="input-group mb-3">
+                        <div class="input-group mb-3" style="margin-left: 0;margin-right: 0">
                            <@input type='text' id='path' name='path' maxlength=255 value=api.path!'' tabIndex='2' />
                            <span class="input-group-text" id="version-suffix" >/${api.version!'0.1'}</span>
                         </div>
