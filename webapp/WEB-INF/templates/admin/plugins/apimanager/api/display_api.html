@@ -29,7 +29,7 @@
                <div class="row">
                   <div class="col">
                      <@formGroup labelFor='path' labelKey='#i18n{apimanager.api.labelPath}' mandatory=true>
-                     <@input type='text' readonly=true id='path' name='path' maxlength=255 value=api.path!'' tabIndex='2' />
+                     <@input type='text' readonly=true id='path' name='path' maxlength=255 value=api.path+'/'+api.version tabIndex='2' />
                      </@formGroup>
                   </div>
                </div>
