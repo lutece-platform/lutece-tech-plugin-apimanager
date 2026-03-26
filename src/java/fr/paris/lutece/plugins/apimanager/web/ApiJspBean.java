@@ -43,6 +43,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
+import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
@@ -79,6 +80,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -192,6 +195,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private static final String INFO_API_ARCHIVED = "apimanager.info.api.archived";
     private static final String INFO_INSTANCE_LINKED = "apimanager.info.api.instanceLinked";
     private static final String INFO_LINK_REMOVED = "apimanager.info.api.linkRemoved";
+    private static final String ERROR_API_ARCHIVED = "global.status.unpublisherror";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
@@ -393,6 +397,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         _api = (_api != null) ? _api : new Api();
         _resources = (_resources != null) ? _resources : new ArrayList<Resource>();
 
+        if(_api.getPath() != null){
+            _api.setPath(_api.getPath().replace("/"+_api.getVersion(),""));
+        }
+
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
         model.put(SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance().getToken(request, ACTION_CREATE_API));
@@ -421,6 +429,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
 
         _api.setStatus("NEW");
+
+        // integration version into path
+        _api.setPath(_api.getPath()+"/"+_api.getVersion());
+
         getService().create(_api, getUser().getEmail());
         addInfo(INFO_API_CREATED, getLocale());
         resetListId();
@@ -456,10 +468,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             return redirectView(request, VIEW_MANAGE_APIS);
         }
 
-        List<Api> samePathApis = getService().getEntitiesListByIds(getService().getApisByPath(_api.getPath()));
+        List<Api> samePathApis = getService().getEntitiesListByIds(getService().getApisByPathAndVersion(_api.getPath()+"/"+_api.getVersion(), _api.getVersion()));
 
         if(samePathApis != null && !samePathApis.isEmpty()){
-            this.addError("The path " + _api.getPath()+" is already used by the api " + samePathApis.get(0).getName());
+            this.addError("The path " + _api.getPath()+"/"+_api.getVersion()+" is already used by the api " + samePathApis.get(0).getName());
             return redirectView(request, VIEW_CREATE_API);
         }
 
@@ -759,32 +771,69 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 return redirectView(request, VIEW_CREATE_API);
             }
 
-            // if no environement configured then it's a draft otherwiser it's a new api
-            _api.setStatus(
-                    _api.getEnvironementList() !=null &&
-                            _api.getEnvironementList() .size() > 0 ? ApiStatusEnum.NEW.name(): ApiStatusEnum.DRAFT.name());
+
 
             if (_api.getUuid() != null && !_api.getUuid().isEmpty()) {
                 addInfo(INFO_API_UPDATED, getLocale());
                 getService().update(_api, getUser().getEmail());
             } else {
                 addInfo(INFO_API_CREATED, getLocale());
+                // if no environement configured then it's a draft otherwiser it's a new api
+                if (_api.getEnvironementList() == null) {
+                    _api.setStatus(ApiStatusEnum.DRAFT.name());
+                }else{
+                    _api.setStatus(ApiStatusEnum.NEW.name());
+                }
                 getService().create(_api, getUser().getEmail());
-                // clone subscriptions in case of new version
-                if (_api.getEnvironementList() != null) {
-                    for (Environement environement : _api.getEnvironementList()) {
+            }
+
+
+            // clone subscriptions
+            if (_api.getEnvironementList() != null) {
+                for (Environement environement : _api.getEnvironementList()) {
+                    List<Subscription> defaultSubscriptionList = null;
+                    for (Resource resource : environement.getResourceList()) {
+                        // manage resource with subscriptions and store default values for new resources
+                        for (Subscription subscription : resource.getSubscriptionList()) {
+                            defaultSubscriptionList = resource.getSubscriptionList();
+                            subscription.setApi(_api);
+                            subscription.setResource(resource);
+                            subscription.setEnvironement(resource.getEnvironement());
+                            subscription.setPlan(resource.getPlan());
+                            SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                        }
+                    }
+
+                    //  in case there was subscriptions for other resource then we use it to setup subscription on the new resources
+                    if(defaultSubscriptionList != null){
                         for (Resource resource : environement.getResourceList()) {
-                            for (Subscription subscription : resource.getSubscriptionList()) {
-                                subscription.setApi(_api);
-                                subscription.setResource(resource);
-                                subscription.setEnvironement(resource.getEnvironement());
-                                subscription.setPlan(resource.getPlan());
-                                SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                            //  create default subscriptions for new resources
+                            if(resource.getSubscriptionList() == null || resource.getSubscriptionList().isEmpty()){
+                                for (Subscription subscription : defaultSubscriptionList) {
+                                    defaultSubscriptionList = resource.getSubscriptionList();
+                                    subscription.setApi(_api);
+                                    subscription.setResource(resource);
+                                    subscription.setEnvironement(resource.getEnvironement());
+                                    subscription.setPlan(resource.getPlan());
+                                    SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                                }
                             }
                         }
                     }
+
                 }
             }
+
+            if(_api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
+                ExecutorService executor = Executors.newFixedThreadPool(1);
+                executor.submit(() -> {
+                    getService().unpublish(List.of(_api.getUuid()), getUser().getEmail(),_configGeneratorService);
+                    getService().publish(List.of(_api.getUuid()), getUser().getEmail(), _configGeneratorService);
+                });
+                executor.shutdown();
+            }
+
+
             resetListId();
 
             return redirectView(request, VIEW_MANAGE_APIS);
@@ -820,8 +869,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         final String apiUuid = request.getParameter(PARAMETER_ID_API);
         final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
+        api.setStatus(ApiStatusEnum.ARCHIVED.name());
+        getService().update(api, getUser().getEmail());
 
-        getService().archive(apiUuid, getUser().getEmail());
         addInfo(INFO_API_ARCHIVED, getLocale());
         resetListId();
 

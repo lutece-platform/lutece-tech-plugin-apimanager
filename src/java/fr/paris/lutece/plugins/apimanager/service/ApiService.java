@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
@@ -43,9 +44,14 @@ import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
+import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
+import fr.paris.lutece.portal.service.util.AppException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,6 +59,7 @@ public class ApiService extends AbstractService<Api>
 {
 
     private static ApiService _instance;
+
 
     private ApiService( )
     {
@@ -225,6 +232,158 @@ public class ApiService extends AbstractService<Api>
 
 
     /**
+     * unpublish APIs
+     *
+     * @param apiUuids
+     *            the apis uuids
+     * @param email
+     *            the user email
+     */
+    public void unpublish(final List<String> apiUuids, String email, IConfigGeneratorService _configGeneratorService)
+    {
+
+
+            for (String apiUuid : apiUuids) {
+                final Api api = ApiHome.findByPrimaryKey(apiUuid).orElse(null);
+
+                if (api != null && api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())) {
+
+                    final String comment = "Suppression des souscriptions vers l'api "+ api.getName();
+
+                    List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
+                    List<Subscription> resourceSubscription = new ArrayList<>();
+                    for (Resource apiResource : apiResources) {
+                        resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
+                    }
+
+                    Map<String, Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
+                            .collect(
+                                    Collectors.groupingBy(o -> o.getClient().getUuid(),
+                                            Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
+                                                    (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
+
+                    addNewHistory(api.getUuid(), HistoryTypeEnum.UNPUBLISH, email, "API " + api.getName());
+                    api.setStatus(ApiStatusEnum.UNPUBLISHING.name());
+                    ApiService.getInstance().update(api, email);
+
+                    try {
+                        for (Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()) {
+                            Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
+                            for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
+                                Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
+                                for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
+                                    String environementName = null;
+                                    List<Subscription> subscriptions = planSubscription.getValue();
+                                    for (Subscription sub : subscriptions) {
+                                        environementName = sub.getEnvironement().getName();
+                                        List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
+                                        sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
+                                    }
+                                    _configGeneratorService.deleteSubscriptions(
+                                            subscriptions, comment, email);
+
+                                    ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), email);
+                                       /* MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
+                                        if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
+                                        } else {
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNDEPLOY_ERROR.name(), getUser().getEmail());
+                                        }*/
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISH_ERROR.name(), email);
+                    }
+                }
+            }
+
+
+    }
+
+
+    /**
+     * publish an API
+     *
+     * @param apiUuids
+     *            the apis uuids
+     * @param email
+     *            the user email
+     */
+    public void publish(List<String> apiUuids, String email, IConfigGeneratorService _configGeneratorService)
+    {
+
+            for (String apiUuid : apiUuids) {
+                final Api api = ApiHome.findByPrimaryKey(apiUuid).orElse(null);
+
+                if (api!=null && !api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())) {
+
+                    final String comment = "Création des souscriptions vers l'api "+ api.getName();
+
+                    List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
+                    List<Subscription> resourceSubscription = new ArrayList<>();
+                    for (Resource apiResource : apiResources) {
+                        resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
+                    }
+
+                    Map<String, Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
+                            .collect(
+                                    Collectors.groupingBy(o -> o.getClient().getUuid(),
+                                            Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
+                                                    (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
+
+
+                    if(!multipleFieldsMap.isEmpty()){
+                        addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, email, "API " + api.getName());
+                        api.setStatus(ApiStatusEnum.PUBLISHING.name());
+                        ApiService.getInstance().update(api, email);
+                    }
+
+                    try {
+                        for (Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()) {
+                            Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
+                            for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
+                                Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
+                                for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
+                                    String environementName = null;
+                                    List<Subscription> subscriptions = planSubscription.getValue();
+                                    for (Subscription sub : subscriptions) {
+                                        environementName = sub.getEnvironement().getName();
+                                        List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
+                                        sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
+                                    }
+
+                                    _configGeneratorService.generateSubscriptions(
+                                            subscriptions, comment, email);
+                                    ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), email);
+                                    /*
+                                    if(environementName != null) {
+                                        _configGeneratorService.generateSubscriptions(
+                                                subscriptions, comment, getUser().getEmail());
+                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
+                                        if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
+                                        } else {
+                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
+                                        }
+                                    }else{
+                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
+                                    }*/
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISH_ERROR.name(), email);
+                    }
+
+                }
+            }
+
+
+    }
+
+
+    /**
      * returns the TAGS of all the entities.
      *
      * @return List of tags
@@ -242,6 +401,16 @@ public class ApiService extends AbstractService<Api>
     public List<String> getApisByPath(String path )
     {
         return ApiHome.getuuidsByPath( path );
+    }
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getApisByPathAndVersion(String path, String version )
+    {
+        return ApiHome.getuuidsByPathAndVersion( path, version );
     }
 
 

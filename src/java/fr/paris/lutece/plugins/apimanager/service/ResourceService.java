@@ -61,7 +61,7 @@ public class ResourceService extends AbstractService<Resource> {
             ResourceRewriteUrlHome.create(entity.getRewriteUrl());
         }
         final String uuid = ResourceHome.create(entity).getUuid();
-
+        entity.setUuid(uuid);
         this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user, "RESOURCE " + entity.getUuid());
     }
 

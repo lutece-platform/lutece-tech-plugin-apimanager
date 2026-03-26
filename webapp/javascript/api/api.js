@@ -21,6 +21,16 @@ $(function () {
     });
 });
 
+$(function () {
+    $('#version').change(function (e) {
+            let version = $('#version').val();
+            if (version.length > 0) {
+                $('#version-suffix').text("/" + version);
+            }
+            return true;
+    });
+});
+
 
 $('#btn-search_api').css('float','right');
 
