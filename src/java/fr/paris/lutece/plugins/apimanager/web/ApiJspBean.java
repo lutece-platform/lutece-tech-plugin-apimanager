@@ -870,6 +870,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         final Api api = ApiHome.findByPrimaryKey(apiUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
         api.setStatus(ApiStatusEnum.ARCHIVED.name());
+        api.setArchived(true);
         getService().update(api, getUser().getEmail());
 
         addInfo(INFO_API_ARCHIVED, getLocale());
