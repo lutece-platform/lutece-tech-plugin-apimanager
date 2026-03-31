@@ -932,7 +932,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
             _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
-        loadApi();
+        loadApi(false);
 
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
@@ -959,7 +959,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
         _api.setVersion(generateNewVersionNumber(_api.getVersion()));
-        loadApi();
+        loadApi(true);
 
         if (_api.getEnvironementList() != null && !_api.getEnvironementList().isEmpty()) {
             for (Environement env : _api.getEnvironementList()) {
@@ -998,7 +998,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             Optional<Api> optApi = ApiHome.findByPrimaryKey(uuid);
             _api = optApi.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
-        loadApi();
+        loadApi(false);
 
 
         instances = new ArrayList<>();
@@ -1030,20 +1030,31 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
     private String generateNewVersionNumber(String version) {
         if (isNumeric(version)) {
             if (version.contains(".")) {
-                String[] numbers = version.split("\\.");
-                if (numbers.length == 2) {
-                    String decimal = numbers[1];
-                    int decimalInt = Integer.parseInt(decimal);
-                    if (decimalInt < 9) {
-                        // new minor
-                        return numbers[0] + "." + (decimalInt + 1);
-                    } else {
-                        // new major
-                        return String.valueOf(Integer.parseInt(numbers[0]) + 1) + .0;
-                    }
-                }
+                return incVersionWithDots(version);
             }
+        } else if(version.startsWith("v")) {
+            final String versionNumber = version.replace("v", "");
+            if(versionNumber.matches("^\\d+$")){
+                return "v" + (Integer.parseInt(versionNumber) + 1);
+            } else if (version.contains(".")) {
+                return incVersionWithDots(version);
+            }
+        }
+        return version + "-1";
+    }
 
+    private String incVersionWithDots(String version) {
+        String[] numbers = version.split("\\.");
+        if (numbers.length == 2) {
+            String decimal = numbers[1];
+            int decimalInt = Integer.parseInt(decimal);
+            if (decimalInt < 9) {
+                // new minor
+                return numbers[0] + "." + (decimalInt + 1);
+            } else {
+                // new major
+                return String.valueOf(Integer.parseInt(numbers[0]) + 1) + .0;
+            }
         }
         return version + "-1";
     }
@@ -1133,7 +1144,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         return redirectView(request, VIEW_MANAGE_APIS);
     }
 
-    protected void loadApi() {
+    protected void loadApi(final boolean newVersion) {
         if (_api != null && !_api.getUuid().isEmpty()) {
 
             List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(_api.getUuid());
@@ -1158,7 +1169,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     if (_api.getEnvironementList() == null) {
                         _api.setEnvironementList(new ArrayList<>());
                     }
-                    if (!_api.getEnvironementList().stream().anyMatch(environement -> environement.getUuid().equals(resourceEnv.getUuid()))) {
+                    if (_api.getEnvironementList().stream().noneMatch(environement -> environement.getUuid().equals(resourceEnv.getUuid()))) {
                         _api.getEnvironementList().add(resourceEnv);
                     }
                 }
@@ -1168,6 +1179,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             _api.setOpenapi(currentApi.getOpenapi());
             _api.setTags(currentApi.getTags());
 
+            if(newVersion){
+                _api.setStatus(ApiStatusEnum.NEW.name());
+            }
         }
 
 

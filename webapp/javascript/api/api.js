@@ -26,6 +26,7 @@ $(function () {
             let version = $('#version').val();
             if (version.length > 0) {
                 $('#version-suffix').text("/" + version);
+                $('#version-prefix').text("/" + version);
             }
             return true;
     });
