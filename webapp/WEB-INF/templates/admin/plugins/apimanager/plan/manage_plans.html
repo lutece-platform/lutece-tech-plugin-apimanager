@@ -73,9 +73,6 @@
                            <@formGroup labelFor='filter_active' >
                            <@checkBox id='filter_active' name='filter_active' value='1' labelKey='#i18n{apimanager.manage_plans.columnActive}' tabIndex='9' />
                            </@formGroup>
-                           <@formGroup labelFor='filter_trace_enabled' >
-                           <@checkBox id='filter_trace_enabled' name='filter_trace_enabled' value='1' labelKey='#i18n{apimanager.manage_plans.columnTraceEnabled}' tabIndex='11' />
-                           </@formGroup>
                            <@button type='submit' title='Search' buttonIcon='search'/>
                            </@tform>
                            </@offcanvas>
@@ -102,7 +99,6 @@
                      <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnEnvironement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=environement'><i class='fas fa-sort'></i></a></th>
-                     <th>#i18n{apimanager.manage_plans.columnTraceEnabled}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=trace_enabled'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.global.labelTags}</th>
                      <th>#i18n{portal.util.labelActions}</th>
@@ -130,13 +126,6 @@
                         <#list plan.availableEnvironments as env>
                         <span class="badge px-2 me-1" id="env-${plan?index}-${env?index}">${env}</span>
                         </#list>
-                     </td>
-                     <td>
-                        <#if plan.traceEnabled!false>
-                        <span class="badge badge-yes"> oui </span>
-                        <#else>
-                        <span class="badge badge-no"> non </span>
-                        </#if>
                      </td>
                      <td>
                         <#if plan.status.name() == "DRAFT">
