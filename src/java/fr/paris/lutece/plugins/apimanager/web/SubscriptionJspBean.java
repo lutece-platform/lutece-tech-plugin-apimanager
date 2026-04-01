@@ -36,23 +36,20 @@ package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
-import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
-import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
-import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
-import fr.paris.lutece.plugins.apimanager.service.*;
+import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
@@ -62,7 +59,16 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -205,14 +211,14 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
         model.put(MARK_CLIENT_LIST, fullSubscriptionList.stream().map(Subscription::getClient).collect(Collectors.toList()).stream()
-                .filter(distinctByKey(p -> p.getUuid()))
+                .filter(distinctByKey(Client::getUuid))
                 .collect(Collectors.toList()));
         model.put(MARK_PLAN_LIST, fullSubscriptionList.stream().map(Subscription::getPlan).collect(Collectors.toList()).stream()
-                .filter(distinctByKey(p -> p.getUuid()))
+                .filter(distinctByKey(Plan::getUuid))
                 .collect(Collectors.toList()));
 
         model.put(MARK_API_LIST, fullSubscriptionList.stream().map(Subscription::getApi).collect(Collectors.toList()).stream()
-                .filter(distinctByKey(p -> p.getUuid()))
+                .filter(distinctByKey(Api::getUuid))
                 .collect(Collectors.toList()));
 
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
@@ -380,17 +386,31 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             return redirectView( request, VIEW_CREATE_SUBSCRIPTION );
         }
 
-        // recuperation des resources a souscrire api/environement/plan
+        // récupération des resources déjà souscrites
+        List<String> idSubscriptionsByClient = SubscriptionService.getInstance().getIdSubscriptionsByClient(clientUuid);
+        List<Subscription> existingClientSubscription  = SubscriptionService.getInstance().getEntitiesListByIds(idSubscriptionsByClient);
+
+        // recuperation des resources à souscrire api/environement/plan
         List<Resource> fullResourceList = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
-        Collection<Resource> uniqueByApiAndEnvironementAndPlan = fullResourceList
+        Collection<Resource> resourceToProcess = fullResourceList
                 .stream()
                 .filter(resource -> resource.getPlan() != null)
                 .filter(resource -> resource.getPlan().getUuid().equals(planUuid) && resource.getApi().getUuid().equals(apiUuid) && resource.getEnvironement().getUuid().equals(environementUuid))
                 .collect(Collectors.toList());
-        for(Resource resource : uniqueByApiAndEnvironementAndPlan){
-            _subscription.setResource(resource);
-            getService( ).create( _subscription, getUser( ).getEmail( ) );
-        }
+
+        resourceToProcess.stream()
+                .filter(resource -> existingClientSubscription.stream()
+                        .noneMatch(subscription ->
+                                Objects.equals(subscription.getApi().getUuid(), resource.getApi().getUuid())
+                                && Objects.equals(subscription.getEnvironement().getUuid(), resource.getEnvironement().getUuid())
+                                && Objects.equals(subscription.getPlan().getUuid(), resource.getPlan().getUuid())
+                                && Objects.equals(subscription.getResource().getUuid(), resource.getUuid())
+                        )
+                )
+                .forEach(resource -> {
+                    _subscription.setResource(resource);
+                    getService( ).create( _subscription, getUser( ).getEmail( ) );
+                });
 
         resetListId( );
 

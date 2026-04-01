@@ -35,18 +35,18 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
-import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
-import fr.paris.lutece.plugins.apimanager.service.*;
+import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
-import fr.paris.lutece.plugins.apimanager.web.rest.dto.MeecrogateAckResponse;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -60,7 +60,14 @@ import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -313,10 +320,6 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
 
         try {
             final Client client = ClientHome.findByPrimaryKey(uuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
-
-            List<Subscription> subscriptions = new ArrayList<>();
-            subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
-
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
             getService().addNewHistory(client.getUuid(), HistoryTypeEnum.UNPUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
@@ -328,8 +331,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             executor.submit(() -> {
                 try {
                     for (Environement envir : availableEnvs) {
-                        _configGeneratorService.deleteOauth2Client(client,
-                                envir, getUser().getEmail());
+                        _configGeneratorService.deleteOauth2Client(client, envir, getUser().getEmail());
 
                         ClientService.getInstance().updateStatus(uuid, ClientStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
 
@@ -367,13 +369,9 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
         }
         final Client client = ClientHome.findByPrimaryKey(clientUuid).orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
 
-        final String comment = request.getParameter(PARAMETER_COMMENT);
+        final String comment = "Création du client OAuth2 "+ client.getName();
 
         try {
-
-            List<Subscription> subscriptions = new ArrayList<>();
-            subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(client.getUuid())));
-
             List<Environement> availableEnvs = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
             getService().addNewHistory(client.getUuid(), HistoryTypeEnum.PUBLISH, getUser().getEmail(), "CLIENT " + client.getName());
@@ -384,9 +382,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
             executor.submit(() -> {
                 try {
                     for (Environement envir : availableEnvs) {
-                        _configGeneratorService.generateOauth2Client(client,
-                                envir, comment, getUser().getEmail());
-
+                        _configGeneratorService.generateOauth2Client(client, envir, comment, getUser().getEmail());
                         ClientService.getInstance().updateStatus(clientUuid, ClientStatusEnum.PUBLISHED.name(), getUser().getEmail());
 
                         /*MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(envir.getName());

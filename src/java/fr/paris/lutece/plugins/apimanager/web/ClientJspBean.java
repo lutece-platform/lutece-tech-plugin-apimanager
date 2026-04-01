@@ -39,14 +39,17 @@ import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
-import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
-import fr.paris.lutece.plugins.apimanager.service.*;
+import fr.paris.lutece.plugins.apimanager.service.ApiService;
+import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
+import fr.paris.lutece.plugins.apimanager.service.PlanService;
+import fr.paris.lutece.plugins.apimanager.service.ResourceService;
+import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.plugins.apimanager.service.utils.PasswordUtils;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -66,11 +69,14 @@ import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -530,13 +536,18 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             _client = optClient.orElseThrow(() -> new AppException(ERROR_RESOURCE_NOT_FOUND));
         }
 
-        _subscriptions = new ArrayList<Subscription>();
+        _subscriptions = new ArrayList<>();
         populateSubscriptions(request);
 
         if(request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW) == null || request.getParameter(MARK_CURRENT_SUBSCRIPTION_ROW).isEmpty()){
-            _subscriptions.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByClient(uuid)));
+            List<String> idSubscriptionsByClient = SubscriptionService.getInstance().getIdSubscriptionsByClient(uuid);
+            List<Subscription> entitiesListByIds = SubscriptionService.getInstance().getEntitiesListByIds(idSubscriptionsByClient);
+            _subscriptions.addAll(entitiesListByIds);
+            _subscriptions = new ArrayList<>(_subscriptions
+                    .stream()
+                    .collect(Collectors.toMap(usr -> Set.of(usr.getResource().getApi().getUuid(), usr.getEnvironement().getUuid(), usr.getClient().getUuid(), usr.getResource().getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
+                    .values());
         }
-
 
         if (usecase != null && usecase.equals("add_subscription"))
             _subscriptions.add(new Subscription());
@@ -620,21 +631,36 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
 
             // check the current subscriptions
             List<String> currentClientSubscriptionUuids = SubscriptionService.getInstance().getIdSubscriptionsByClient(_client.getUuid());
+            List<Subscription> existingClientSubscription  = SubscriptionService.getInstance().getEntitiesListByIds(currentClientSubscriptionUuids);
+            // récupération des resources déjà souscrites
             if(!_client.getSubscriptionList().isEmpty()){
                 for (final Subscription subscription : _subscriptions) {
                     subscription.setClient(_client);
-                    List<Resource> resources = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getApi().getUuid(), subscription.getPlan().getUuid(), subscription.getEnvironement().getUuid());
-                    for(Resource resource : resources){
-                        subscription.setResource(resource);
-                        if(subscription.getUuid() != null && !subscription.getUuid().isEmpty()){
-                            SubscriptionService.getInstance().update(subscription,getUser().getEmail());
-                        }else{
-                            SubscriptionService.getInstance().create(subscription,getUser().getEmail());
-                        }
-                    }
+                    List<Resource> resourceToProcess = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getApi().getUuid(), subscription.getPlan().getUuid(), subscription.getEnvironement().getUuid());
+                    resourceToProcess.stream()
+                            .filter(resource -> existingClientSubscription.stream()
+                                    .noneMatch(sub ->
+                                            Objects.equals(sub.getApi().getUuid(), resource.getApi().getUuid())
+                                                    && Objects.equals(sub.getEnvironement().getUuid(), resource.getEnvironement().getUuid())
+                                                    && Objects.equals(sub.getPlan().getUuid(), resource.getPlan().getUuid())
+                                                    && Objects.equals(sub.getResource().getUuid(), resource.getUuid())
+                                    )
+                            )
+                            .forEach(resource -> {
+                                subscription.setResource(resource);
+                                SubscriptionService.getInstance().create( subscription, getUser( ).getEmail( ) );
+                            });
                 }
+
                 // check if some subscriptions have been deleted
-                currentClientSubscriptionUuids.removeAll(_client.getSubscriptionList().stream().map(Subscription::getUuid).collect(Collectors.toList()));
+                currentClientSubscriptionUuids = SubscriptionService.getInstance().getIdSubscriptionsByClient(_client.getUuid());
+                List<String> requestedAndCreatedUuidSubscriptions = _subscriptions.stream()
+                        .map(subscription -> ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getApi().getUuid(), subscription.getPlan().getUuid(), subscription.getEnvironement().getUuid()))
+                        .flatMap(Collection::stream)
+                        .map(resource -> SubscriptionService.getInstance().getIdSubscriptionsByResourceAndEnvironementAndClient(resource.getUuid(), resource.getEnvironement().getUuid(), _client.getUuid()))
+                        .flatMap(Collection::stream)
+                        .collect(Collectors.toList());
+                currentClientSubscriptionUuids.removeAll(requestedAndCreatedUuidSubscriptions);
                 for(String subscriptionUuid : currentClientSubscriptionUuids){
                     SubscriptionService.getInstance().delete(subscriptionUuid,getUser().getEmail());
                 }

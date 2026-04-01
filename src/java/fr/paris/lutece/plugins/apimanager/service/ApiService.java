@@ -36,7 +36,6 @@ package fr.paris.lutece.plugins.apimanager.service;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
-import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
@@ -45,15 +44,11 @@ import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
-import fr.paris.lutece.portal.service.util.AppException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ApiService extends AbstractService<Api>
 {
@@ -323,7 +318,9 @@ public class ApiService extends AbstractService<Api>
                     List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
                     List<Subscription> resourceSubscription = new ArrayList<>();
                     for (Resource apiResource : apiResources) {
-                        resourceSubscription.addAll(SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid())));
+                        List<String> idSubscriptionsByResource = SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid());
+                        List<Subscription> entitiesListByIds = SubscriptionService.getInstance().getEntitiesListByIds(idSubscriptionsByResource);
+                        resourceSubscription.addAll(entitiesListByIds);
                     }
 
                     Map<String, Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
@@ -345,16 +342,13 @@ public class ApiService extends AbstractService<Api>
                             for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
                                 Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
                                 for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
-                                    String environementName = null;
                                     List<Subscription> subscriptions = planSubscription.getValue();
                                     for (Subscription sub : subscriptions) {
-                                        environementName = sub.getEnvironement().getName();
                                         List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
                                         sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
                                     }
 
-                                    _configGeneratorService.generateSubscriptions(
-                                            subscriptions, comment, email);
+                                    _configGeneratorService.generateSubscriptions(subscriptions, comment, email);
                                     ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), email);
                                     /*
                                     if(environementName != null) {
