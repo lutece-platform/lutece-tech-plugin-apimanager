@@ -119,15 +119,14 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
     public String getHistoryOperations( HttpServletRequest request )
     {
 
-
         // new search only if in pagination mode
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null )
         {
             // if sorting request : new search with the existing filter criteria, ordered
             // example of order by parameter : orderby=name
-            if ( StringUtils.isNotBlank( (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY ) ) )
+            if ( StringUtils.isNotBlank(request.getParameter( PARAMETER_SEARCH_ORDER_BY )) )
             {
-                String strOrderByColumn = (String) request.getParameter( PARAMETER_SEARCH_ORDER_BY );
+                String strOrderByColumn = request.getParameter( PARAMETER_SEARCH_ORDER_BY );
                 String strSortMode = getSortMode( );
 
                 _listIdResources = HistoryService.getInstance().getIdEntitiesList( _mapFilterCriteria, strOrderByColumn, strSortMode );
@@ -136,7 +135,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
             {
                 // reload the filter criteria and search
                 _mapFilterCriteria = (HashMap<String, String>) getFilterCriteriaFromRequest( request );
-                _listIdResources = HistoryService.getInstance().getIdEntitiesList( _mapFilterCriteria );
+                _listIdResources = HistoryService.getInstance().getIdEntitiesList( _mapFilterCriteria, "date", SORT_ATTRIBUTES_DESC );
             }
             // set CurrentPageIndex of Paginator to null in aim of displays the first page of results
             resetCurrentPageIndexOfPaginator( );
@@ -170,8 +169,7 @@ public class OperationHistoryJspBean extends AbstractJspBean<String, History>
     @Override
     List<History> getItemsFromIds(List<String> listIds) {
         _historyList = getService( ).getEntitiesListByIds( listIds );
-        // keep original order
-        return _historyList.stream().sorted(Comparator.comparingInt(notif -> listIds.indexOf(notif.getUuid()))).collect(Collectors.toList());
+        return _historyList;
     }
 
     @Override
