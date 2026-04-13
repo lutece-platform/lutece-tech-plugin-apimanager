@@ -63,6 +63,7 @@ function clone(envUuid){
 
 
 function deleteEnvironement(envUuid){
+    $("#removeEnvModal-"+envUuid).modal("hide");
     $("#create_usecase").val("delete_environment");
     $("#current_environement_tab").val(envUuid);
     $("#environement-"+envUuid+"-resource-container").remove();

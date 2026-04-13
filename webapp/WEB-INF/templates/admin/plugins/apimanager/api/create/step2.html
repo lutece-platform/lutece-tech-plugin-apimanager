@@ -77,8 +77,7 @@
                      <li class="nav-item" role="presentation">
                         <button class="nav-link text-dark <#if '${environment.uuid}'=='${current_environement_tab}'>active</#if>" id="environement-${environment.uuid}-resource-container-link"
                            data-bs-toggle="tab" data-bs-target="#environement-${environment.uuid}-resource-container"
-                           type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}
-                        <a id="delete-environement" class="icon-block icon-delete" onclick="deleteEnvironement('${environment.uuid}')"><i class="fas fa-times" style="color:black" ></i></a></button>
+                           type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}</button>
                      </li>
                      </#list>
                   </ul>
@@ -87,6 +86,28 @@
                      <#list api.environementList as environment>
                      <div class="tab-pane container-fluid mt-4 text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
                         <button type="button" class="btn btn-success mb-4" id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
+                        <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#removeEnvModal-${environment.uuid}">
+                           #i18n{apimanager.api.deleteEnv}
+                        </button>
+                        <!-- modal for this environement -->
+                        <div class="modal fade" id="removeEnvModal-${environment.uuid}" tabindex="-1" aria-labelledby="removeEnvModalLabel-${environment.uuid}" aria-hidden="true">
+                           <div class="modal-dialog">
+                              <div class="modal-content">
+                                 <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">#i18n{apimanager.message.title.confirmRemoveEnvironement}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                 </div>
+                                 <div class="modal-body">
+                                    #i18n{apimanager.message.confirmRemoveEnvironement}
+                                 </div>
+                                 <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">#i18n{apimanager.global.button.close}</button>
+                                    <button type="button" class="btn btn-primary" onclick="deleteEnvironement('${environment.uuid}')" >#i18n{apimanager.global.button.confirm}</button>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- end of modal for this environement -->
                         <div id="resource-container" class="col py-2 accordion">
                            <#list environment.resourceList as resource>
                            <#if resource.subscriptionList??>
@@ -271,6 +292,7 @@
       </div>
    </div>
 </div>
+
 <link href="css/admin/plugins/stepper/bs-stepper.min.css" rel="stylesheet">
 <script src="javascript/stepper/bs-stepper.min.js"></script>
 <script src="javascript/api/api.js"></script>
