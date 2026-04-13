@@ -179,7 +179,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                     subscriptionByApi.add(apiSubscriptions.get(subscriptionApi).get(0));
                 }
             }
-            client.setSubscriptionList(currentSubscriptions);
+            client.setSubscriptionList(subscriptionByApi);
         }
 
         Map<String, Object> model = getPaginatedListModel(request, MARK_CLIENT_LIST, _clientList.stream().map(Client::getUuid).collect(Collectors.toList()), JSP_MANAGE_OPERATIONS);
