@@ -704,10 +704,15 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         String selectedEnvironementUuid = request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB);
         String selectedPlanIndex = request.getParameter(PARAMETER_CURRENT_PLAN_TAB);
         String selectedPlanUuid = request.getParameter(PARAMETER_PREFIX_SELECTED_PLAN + selectedEnvironementUuid);
+
+
+        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
+
         if (usecase != null && usecase.equals("add_plan")) {
             Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
-            Plan currentPlan = PlanHome.findByPrimaryKey(selectedPlanUuid).orElse(null);
+            Plan currentPlan = plans.stream().filter(plan -> plan.getUuid().equals(selectedPlanUuid)).findFirst().orElse(null);
             if (currentEnvironement != null && currentPlan != null) {
+                currentPlan.getAvailableEnvironments().removeIf(availableEnv -> availableEnv.contains(currentEnvironement.getName()));
                 currentEnvironement.getPlanList().add(currentPlan);
             }
         }
@@ -715,8 +720,19 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             Environement currentEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getUuid().equals(selectedEnvironementUuid)).findFirst().orElse(null);
 
             if (selectedPlanIndex != null && currentEnvironement != null) {
-                currentEnvironement.getPlanList().remove(Integer.parseInt(selectedPlanIndex));
+                Plan removedPlan = currentEnvironement.getPlanList().remove(Integer.parseInt(selectedPlanIndex));
+                if(removedPlan != null){
+                    Plan currentPlan = plans.stream().filter(plan -> plan.getUuid().equals(removedPlan.getUuid())).findFirst().orElse(null);
+                    if(currentPlan != null){
+                        currentPlan.getAvailableEnvironments().add(currentEnvironement.getName());
+                    }
+                }
             }
+        }
+
+        // filter already select plan in environement
+        for(Environement env : _api.getEnvironementList()){
+            env.getPlanList().forEach(plan -> plans.removeIf(plan1 -> plan1.getAvailableEnvironments().contains(env.getName()) && plan1.getName().equals(plan.getName())));
         }
 
 
@@ -724,7 +740,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         model.put(MARK_API, _api);
         model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB) != null ? request.getParameter(PARAMETER_CURRENT_ENVIRONMENT_TAB) : 0);
 
-        List<Plan> plans = PlanService.getInstance().getEntitiesListByIds(PlanService.getInstance().getIdEntitiesList());
         model.put(MARK_PLAN_LIST, plans);
         String defaultIndex = "0";
         Environement defaultEnvironement = _api.getEnvironementList().stream().filter(environement -> environement.getPlanList() != null && !environement.getPlanList().isEmpty()).findFirst().orElse(null);
