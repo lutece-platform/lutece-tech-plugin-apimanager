@@ -126,12 +126,14 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
     private static final String ACTION_REMOVE_OPERATION = "removeOperation";
     private static final String ACTION_CONFIRM_REMOVE_OPERATION = "confirmRemoveOperation";
     private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
+    private static final String ACTION_UPDATE_API_MANAGER = "updateApiManager";
 
     // Infos
     private static final String INFO_OPERATION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.removed";
     private static final String INFO_API_MANAGER_DELETED = "apimanager.info.subscription.api.manager.unpublished";
     private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
+    private static final String INFO_API_MANAGER_UPDATED = "apimanager.info.subscription.api.manager.updated";
 
 
     // Errors
@@ -197,8 +199,16 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                         }
                     }
                 }
+                //check if there is a desynchronize with api definition
+                if(api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
+                    if(subscriptions.stream().anyMatch(subscription -> subscription.getStatus()!=null && subscription.getStatus().equals(ApiStatusEnum.NEW.name()))){
+                        api.setStatus(ApiStatusEnum.DESYNCHRONIZED.name());
+                    }
+                }
             }
             api.setSubscriberList(new ArrayList<>(subscribers.values()));
+
+
         }
 
         String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
@@ -427,6 +437,33 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
         executor.shutdown();
 
         addInfo(INFO_API_MANAGER_GENERATED, getLocale());
+        return redirectView(request, VIEW_MANAGE_OPERATIONS);
+    }
+
+
+
+    @Action(ACTION_UPDATE_API_MANAGER)
+    public String doUpdateApiManager(final HttpServletRequest request) {
+        final String requestApiUuid = request.getParameter(PARAMETER_UUID_OPERATION);
+        final List<String> apiUuids = new ArrayList<>();
+        if (requestApiUuid == null) {
+            addError(ERROR_RESOURCE_NOT_FOUND);
+            return redirectView(request, VIEW_MANAGE_OPERATIONS);
+        } else {
+            if (requestApiUuid.contains(",")) {
+                apiUuids.addAll(List.of(requestApiUuid.split(",")));
+            } else {
+                apiUuids.add(requestApiUuid);
+            }
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.submit(() -> {
+            getService().unpublish(apiUuids, getUser().getEmail(), _configGeneratorService);
+            getService().publish(apiUuids, getUser().getEmail(), _configGeneratorService);
+        });
+        executor.shutdown();
+
+        addInfo(INFO_API_MANAGER_UPDATED, getLocale());
         return redirectView(request, VIEW_MANAGE_OPERATIONS);
     }
 

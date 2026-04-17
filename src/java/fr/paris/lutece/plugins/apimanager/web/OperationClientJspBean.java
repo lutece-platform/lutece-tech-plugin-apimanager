@@ -35,6 +35,7 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientStatusEnum;
@@ -125,14 +126,17 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
     private static final String ACTION_REMOVE_OPERATION = "removeOperation";
     private static final String ACTION_CONFIRM_REMOVE_OPERATION = "confirmRemoveOperation";
     private static final String ACTION_GENERATE_CLIENT = "generateClient";
+    private static final String ACTION_UPDATE_CLIENT = "updateClient";
 
     // Infos
     private static final String INFO_OPERATION_REMOVED = "apimanager.info.subscription.client.manager.unpublished";
     private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.client.manager.published";
+    private static final String INFO_API_MANAGER_UPDATED = "apimanager.info.subscription.client.manager.updated";
 
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
     private static final String ERROR_CLIENT_GENERATION = "Error publishing Client";
+    private static final String ERROR_CLIENT_UPDATE = "Error updating Client";
 
     // Session variable to store working values
     private Subscription _subscription;
@@ -179,6 +183,7 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
                     subscriptionByApi.add(apiSubscriptions.get(subscriptionApi).get(0));
                 }
             }
+
             client.setSubscriptionList(subscriptionByApi);
         }
 
@@ -407,5 +412,8 @@ public class OperationClientJspBean extends AbstractJspBean<String, Client> {
         addInfo(INFO_API_MANAGER_GENERATED, getLocale());
         return redirectView(request, VIEW_MANAGE_CLIENT_OPERATIONS);
     }
+
+
+
 
 }

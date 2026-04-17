@@ -31,18 +31,13 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.apimanager.business.api;
+package fr.paris.lutece.plugins.apimanager.business.subscription;
 
-public enum ApiStatusEnum
+public enum SubscriptionStatusEnum
 {
     NEW,
-    DRAFT,
-    UNPUBLISHING,
-    PUBLISHING,
     PUBLISHED,
     UNPUBLISHED,
-    ARCHIVED,
-    DESYNCHRONIZED,
     ERROR,
     PUBLISH_ERROR,
     DEPLOY_ERROR,

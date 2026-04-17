@@ -35,11 +35,13 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionStatusEnum;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
 import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
@@ -374,6 +376,7 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         _subscription.getEnvironement().setUuid(environementUuid);
         _subscription.setPlan( new Plan( ) );
         _subscription.getPlan().setUuid(planUuid);
+        _subscription.setStatus(SubscriptionStatusEnum.NEW.name());
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_SUBSCRIPTION ) )
         {

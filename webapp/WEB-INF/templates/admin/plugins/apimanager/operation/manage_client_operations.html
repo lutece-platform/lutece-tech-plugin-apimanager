@@ -58,6 +58,8 @@
                             <span class="badge badge-new" id="status-${client?index}">${client.status!''}</span>
                             <#elseif client.status == "PUBLISHED">
                             <span class="badge badge-published" id="status-${client?index}">${client.status!''}</span>
+							<#elseif client.status == "DESYNCHRONIZED">
+							<span class="badge badge-published" id="status-${client?index}">${client.status!''}</span>
                             <#elseif client.status == "ERROR">
                             <span class="badge badge-error" id="status-${client?index}">${client.status!''}</span>
                             <#else>
@@ -66,8 +68,8 @@
 						</td>
 						<td>
 
-                            <#if client.status?? && client.status!='PUBLISHING'>
-                                <#if client.status?? && client.status=='PUBLISHED'>
+                            <#if client.status?? && client.status!='PUBLISHING' >
+                                <#if client.status?? && (client.status=='PUBLISHED')>
                                     <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
                                 <#else>
                                     <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=generateClient&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
@@ -130,6 +132,7 @@
         switch (status) {
             case 'ERROR': return '#i18n{apimanager.global.status.error}';
             case 'NEW': return '#i18n{apimanager.global.status.new}';
+			case 'DESYNCHRONIZED': return '#i18n{apimanager.global.status.desynchronized}';
             case 'DRAFT': return '#i18n{apimanager.global.status.draft}';
             case 'UNPUBLISHING': return '#i18n{apimanager.global.status.unpublishing}';
             case 'PUBLISHING': return '#i18n{apimanager.global.status.publishing}';

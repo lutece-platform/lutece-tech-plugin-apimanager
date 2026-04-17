@@ -43,6 +43,7 @@ import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionStatusEnum;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 
 import java.util.ArrayList;
@@ -278,6 +279,11 @@ public class ApiService extends AbstractService<Api>
                                             subscriptions, comment, email);
 
                                     ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), email);
+
+                                    for (Subscription sub : subscriptions) {
+                                        sub.setStatus(SubscriptionStatusEnum.UNPUBLISHED.name());
+                                        SubscriptionService.getInstance().update(sub,email);
+                                    }
                                        /* MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
                                         if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
                                             ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.UNPUBLISHED.name(), getUser().getEmail());
@@ -350,6 +356,11 @@ public class ApiService extends AbstractService<Api>
 
                                     _configGeneratorService.generateSubscriptions(subscriptions, comment, email);
                                     ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), email);
+
+                                    for (Subscription sub : subscriptions) {
+                                        sub.setStatus(SubscriptionStatusEnum.PUBLISHED.name());
+                                        SubscriptionService.getInstance().update(sub,email);
+                                    }
                                     /*
                                     if(environementName != null) {
                                         _configGeneratorService.generateSubscriptions(

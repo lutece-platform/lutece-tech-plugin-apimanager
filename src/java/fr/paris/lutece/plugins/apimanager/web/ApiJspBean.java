@@ -53,6 +53,7 @@ import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.*;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionStatusEnum;
 import fr.paris.lutece.plugins.apimanager.service.*;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
@@ -791,6 +792,34 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             if (_api.getUuid() != null && !_api.getUuid().isEmpty()) {
                 addInfo(INFO_API_UPDATED, getLocale());
                 getService().update(_api, getUser().getEmail());
+
+                // update subscriptions
+                if (_api.getEnvironementList() != null) {
+                    for (Environement environement : _api.getEnvironementList()) {
+                        List<Subscription> defaultSubscriptionList = null;
+                        Resource defaultResource = environement.getResourceList().stream().filter(resource -> !resource.getSubscriptionList().isEmpty()).findFirst().orElse(null);
+                        if(defaultResource != null){
+                            defaultSubscriptionList = defaultResource.getSubscriptionList();
+                        }
+                        //  in case there was subscriptions for other resource then we use it to setup subscription on the new resources
+                        if(defaultSubscriptionList != null){
+                            for (Resource resource : environement.getResourceList()) {
+                                //  create default subscriptions for new resources
+                                if(resource.getSubscriptionList() == null || resource.getSubscriptionList().isEmpty()){
+                                    for (Subscription subscription : defaultSubscriptionList) {
+                                        subscription.setApi(_api);
+                                        subscription.setResource(resource);
+                                        subscription.setEnvironement(resource.getEnvironement());
+                                        subscription.setPlan(resource.getPlan());
+                                        subscription.setStatus(SubscriptionStatusEnum.NEW.name());
+                                        SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
             } else {
                 addInfo(INFO_API_CREATED, getLocale());
                 // if no environement configured then it's a draft otherwiser it's a new api
@@ -800,55 +829,46 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     _api.setStatus(ApiStatusEnum.NEW.name());
                 }
                 getService().create(_api, getUser().getEmail());
-            }
 
-
-            // clone subscriptions
-            if (_api.getEnvironementList() != null) {
-                for (Environement environement : _api.getEnvironementList()) {
-                    List<Subscription> defaultSubscriptionList = null;
-                    for (Resource resource : environement.getResourceList()) {
-                        // manage resource with subscriptions and store default values for new resources
-                        for (Subscription subscription : resource.getSubscriptionList()) {
-                            defaultSubscriptionList = resource.getSubscriptionList();
-                            subscription.setApi(_api);
-                            subscription.setResource(resource);
-                            subscription.setEnvironement(resource.getEnvironement());
-                            subscription.setPlan(resource.getPlan());
-                            SubscriptionService.getInstance().create(subscription, getUser().getEmail());
-                        }
-                    }
-
-                    //  in case there was subscriptions for other resource then we use it to setup subscription on the new resources
-                    if(defaultSubscriptionList != null){
+                // clone subscriptions
+                if (_api.getEnvironementList() != null) {
+                    for (Environement environement : _api.getEnvironementList()) {
+                        List<Subscription> defaultSubscriptionList = null;
                         for (Resource resource : environement.getResourceList()) {
-                            //  create default subscriptions for new resources
-                            if(resource.getSubscriptionList() == null || resource.getSubscriptionList().isEmpty()){
-                                for (Subscription subscription : defaultSubscriptionList) {
-                                    defaultSubscriptionList = resource.getSubscriptionList();
-                                    subscription.setApi(_api);
-                                    subscription.setResource(resource);
-                                    subscription.setEnvironement(resource.getEnvironement());
-                                    subscription.setPlan(resource.getPlan());
-                                    SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                            // manage resource with subscriptions and store default values for new resources
+                            for (Subscription subscription : resource.getSubscriptionList()) {
+                                defaultSubscriptionList = resource.getSubscriptionList();
+                                subscription.setApi(_api);
+                                subscription.setResource(resource);
+                                subscription.setEnvironement(resource.getEnvironement());
+                                subscription.setPlan(resource.getPlan());
+                                subscription.setStatus(SubscriptionStatusEnum.NEW.name());
+                                SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                            }
+                        }
+
+                        //  in case there was subscriptions for other resource then we use it to setup subscription on the new resources
+                        if(defaultSubscriptionList != null){
+                            for (Resource resource : environement.getResourceList()) {
+                                //  create default subscriptions for new resources
+                                if(resource.getSubscriptionList() == null || resource.getSubscriptionList().isEmpty()){
+                                    for (Subscription subscription : defaultSubscriptionList) {
+                                        subscription.setApi(_api);
+                                        subscription.setResource(resource);
+                                        subscription.setEnvironement(resource.getEnvironement());
+                                        subscription.setPlan(resource.getPlan());
+                                        subscription.setStatus(SubscriptionStatusEnum.NEW.name());
+                                        SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                                    }
                                 }
                             }
                         }
+
                     }
-
                 }
+
+
             }
-
-            if(_api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
-                ExecutorService executor = Executors.newFixedThreadPool(1);
-                executor.submit(() -> {
-                    getService().unpublish(List.of(_api.getUuid()), getUser().getEmail(),_configGeneratorService);
-                    getService().publish(List.of(_api.getUuid()), getUser().getEmail(), _configGeneratorService);
-                });
-                executor.shutdown();
-            }
-
-
             resetListId();
 
             return redirectView(request, VIEW_MANAGE_APIS);
