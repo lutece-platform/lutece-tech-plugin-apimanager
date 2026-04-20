@@ -35,15 +35,13 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
-import fr.paris.lutece.plugins.apimanager.business.client.Client;
-import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
-import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
-import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
+import fr.paris.lutece.plugins.apimanager.business.client.*;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionStatusEnum;
 import fr.paris.lutece.plugins.apimanager.service.ApiService;
 import fr.paris.lutece.plugins.apimanager.service.ClientService;
 import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
@@ -438,7 +436,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                 return getCreateClient(request);
             }
 
-            _client.setStatus("NEW");
+            _client.setStatus(ClientStatusEnum.NEW.name());
             getService().create(_client, getUser().getEmail());
 
             if(!_client.getSubscriptionList().isEmpty()){
@@ -447,6 +445,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                     List<Resource> resources = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getApi().getUuid(), subscription.getPlan().getUuid(), subscription.getEnvironement().getUuid());
                     for(Resource resource : resources){
                         subscription.setResource(resource);
+                        subscription.setStatus(SubscriptionStatusEnum.NEW.name());
                         SubscriptionService.getInstance().create(subscription,getUser().getEmail());
                     }
                 }
@@ -648,6 +647,7 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                             )
                             .forEach(resource -> {
                                 subscription.setResource(resource);
+                                subscription.setStatus(SubscriptionStatusEnum.NEW.name());
                                 SubscriptionService.getInstance().create( subscription, getUser( ).getEmail( ) );
                             });
                 }

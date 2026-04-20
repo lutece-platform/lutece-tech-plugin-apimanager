@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.apimanager.business.client;
 
 public enum ClientStatusEnum
 {
+    NEW,
     DRAFT,
     UNPUBLISHING,
     PUBLISHING,

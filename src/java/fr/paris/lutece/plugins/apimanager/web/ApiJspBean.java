@@ -797,9 +797,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 if (_api.getEnvironementList() != null) {
                     for (Environement environement : _api.getEnvironementList()) {
                         List<Subscription> defaultSubscriptionList = null;
-                        Resource defaultResource = environement.getResourceList().stream().filter(resource -> !resource.getSubscriptionList().isEmpty()).findFirst().orElse(null);
-                        if(defaultResource != null){
-                            defaultSubscriptionList = defaultResource.getSubscriptionList();
+                        List<String> existingSubscriptionIds = SubscriptionService.getInstance().getIdSubscriptionsByApi(_api.getUuid());
+                        List<Subscription> existingSubscriptions = SubscriptionService.getInstance().getEntitiesListByIds(existingSubscriptionIds);
+                        if(existingSubscriptions != null){
+                            defaultSubscriptionList = existingSubscriptions.stream().filter(subscription -> subscription.getEnvironement().getUuid().equals(environement.getUuid())).collect(Collectors.toList());
                         }
                         //  in case there was subscriptions for other resource then we use it to setup subscription on the new resources
                         if(defaultSubscriptionList != null){
