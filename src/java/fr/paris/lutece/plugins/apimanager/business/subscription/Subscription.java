@@ -191,7 +191,6 @@ public class Subscription implements Serializable
         _api = api;
     }
 
-
     /**
      * Returns the Status
      *
