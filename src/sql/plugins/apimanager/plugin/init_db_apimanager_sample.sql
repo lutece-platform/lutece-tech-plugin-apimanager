@@ -20,11 +20,11 @@ values  ('1df5eee8-038b-4f12-86fc-dba73352ddcf', 'REC', null),
 
 insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,uuid_environement)
 values  ('1', 'meecrogate oauth2 server 01 - test', 'http://mg-oauth2-server-01:8080/oauth2', 'mg-oauth2-server-01','ID','1df5eee8-038b-4f12-86fc-dba73352ddcf');
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,'1df5eee8-038b-4f12-86fc-dba73352ddcf')
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,uuid_environement)
 values  ('2', 'meecrogate oauth2 server 02 - test', 'http://mg-oauth2-server-02:8080/oauth2', 'mg-oauth2-server-02','ID','1df5eee8-038b-4f12-86fc-dba73352ddcf');
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,'1df5eee8-038b-4f12-86fc-dba73352ddcf')
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,uuid_environement)
 values  ('3', 'meecrogate gateway 01 - test', 'http://mg-gateway-01:8080/gateway', 'mg-gateway-01','GATEWAY','1df5eee8-038b-4f12-86fc-dba73352ddcf');
-insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,'1df5eee8-038b-4f12-86fc-dba73352ddcf')
+insert into apimanager_meecrogate_instance (uuid, description, base_url, name,type,uuid_environement)
 values  ('4', 'meecrogate gateway 02 - test', 'http://mg-gateway-02:8080/gateway', 'mg-gateway-02','GATEWAY','1df5eee8-038b-4f12-86fc-dba73352ddcf');
 
 -- insert into apimanager_plan (uuid, name, description, active, version,  oauth_enabled, uuid_oauth_configuration, rate_limiting_enabled, rate_limiting_template, client_http_template, status, environnement_list)
