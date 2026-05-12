@@ -1049,6 +1049,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         Map<String, Object> model = getModel();
         model.put(MARK_API, _api);
         model.put(MARK_ENVIRONMENT_LIST, environements);
+        model.put(MARK_HEADER_MATCHING_TYPE_LIST, headerMatchingTypeList);
         model.put(MARK_INSTANCE_LIST, instances);
         model.put(PARAMETER_CURRENT_ENVIRONMENT_TAB, "");
         model.put(PARAMETER_ACTIVE_TAB, 1);
