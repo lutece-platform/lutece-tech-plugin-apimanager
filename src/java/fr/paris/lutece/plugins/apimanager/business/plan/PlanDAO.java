@@ -65,6 +65,7 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
+    private static final String SQL_QUERY_SELECT_BY_ENVIRONEMENT_NAME = SQL_QUERY_SELECTALL + " WHERE environnement_list LIKE ";
 
     /**
      * Constructor
@@ -245,6 +246,27 @@ public final class PlanDAO extends AbstractFilterDao implements IPlanDAO
             while ( daoUtil.next( ) )
             {
                 planList.addItem( daoUtil.getString( 1 ), daoUtil.getString( 2 ) );
+            }
+
+            return planList;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<Plan> selectEntitiesByEnvironement(Plugin plugin, String environementName)
+    {
+        List<Plan> planList = new ArrayList<>( );
+        String stmt = SQL_QUERY_SELECT_BY_ENVIRONEMENT_NAME + "%"+environementName+"%";
+        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
+        {
+            daoUtil.executeQuery( );
+
+            while ( daoUtil.next( ) )
+            {
+                planList.add( loadFromDaoUtil( daoUtil,plugin ) );
             }
 
             return planList;

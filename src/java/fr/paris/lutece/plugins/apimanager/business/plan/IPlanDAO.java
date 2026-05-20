@@ -46,4 +46,5 @@ import java.util.Optional;
  */
 public interface IPlanDAO extends IDAO<Plan>
 {
+    List<Plan> selectEntitiesByEnvironement(Plugin plugin, String environementName);
 }

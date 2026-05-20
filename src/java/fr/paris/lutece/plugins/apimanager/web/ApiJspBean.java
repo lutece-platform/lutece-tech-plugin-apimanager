@@ -515,6 +515,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             String selectedEnvironementUuid = request.getParameter(PARAMETER_SELECTED_ENVIRONMENT);
             Environement currentEnvironement = EnvironementHome.findByPrimaryKey(selectedEnvironementUuid).orElse(null);
             if (currentEnvironement != null) {
+                //currentEnvironement.setPlanList(PlanService.getInstance().selectEntitiesByEnvironement(currentEnvironement.getName()));
                 currentEnvironement.setResourceList(new ArrayList<>());
                 if (_api.getEnvironementList() == null) {
                     _api.setEnvironementList(new ArrayList<>());
@@ -732,9 +733,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
 
         // filter already select plan in environement
-        for(Environement env : _api.getEnvironementList()){
+      /*  for(Environement env : _api.getEnvironementList()){
             env.getPlanList().forEach(plan -> plans.removeIf(plan1 -> plan1.getAvailableEnvironments().contains(env.getName()) && plan1.getName().equals(plan.getName())));
-        }
+        }*/
 
 
         Map<String, Object> model = getModel();

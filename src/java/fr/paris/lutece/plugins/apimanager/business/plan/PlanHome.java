@@ -169,4 +169,12 @@ public final class PlanHome
         return _dao.getuuidsByTags(tags, _plugin );
     }
 
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<Plan>  selectEntitiesByEnvironement( String envName )
+    {
+        return _dao.selectEntitiesByEnvironement( _plugin, envName );
+    }
+
 }

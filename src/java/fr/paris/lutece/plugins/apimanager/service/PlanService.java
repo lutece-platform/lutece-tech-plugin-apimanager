@@ -123,4 +123,9 @@ public class PlanService extends AbstractService<Plan>
         return PlanHome.getuuidsByTags( tags );
     }
 
+    public List<Plan> selectEntitiesByEnvironement(String envName )
+    {
+        return PlanHome.selectEntitiesByEnvironement( envName );
+    }
+
 }
