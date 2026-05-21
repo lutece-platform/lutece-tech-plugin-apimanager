@@ -41,6 +41,7 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is the business class for the object Client
@@ -247,6 +248,25 @@ public class Client extends AbstractTagBean implements Serializable
     public List<Subscription> getSubscriptionList( )
     {
         return _subscriptionList;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ){
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ){
+            return false;
+        }
+        Client that = ( Client ) o;
+        return Objects.equals( _strUuid, that._strUuid );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( _strUuid );
     }
 
 }

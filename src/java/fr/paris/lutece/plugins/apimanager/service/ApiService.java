@@ -313,76 +313,51 @@ public class ApiService extends AbstractService<Api>
      */
     public void publish(List<String> apiUuids, String email, IConfigGeneratorService _configGeneratorService)
     {
-
-            for (String apiUuid : apiUuids) {
-                final Api api = ApiHome.findByPrimaryKey(apiUuid).orElse(null);
-
-                if (api!=null && !api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())) {
-
-                    final String comment = "Création des souscriptions vers l'api "+ api.getName();
-
-                    List<Resource> apiResources = ResourceService.getInstance().getResourcesByApiUuid(apiUuid);
-                    List<Subscription> resourceSubscription = new ArrayList<>();
-                    for (Resource apiResource : apiResources) {
-                        List<String> idSubscriptionsByResource = SubscriptionService.getInstance().getIdSubscriptionsByResource(apiResource.getUuid());
-                        List<Subscription> entitiesListByIds = SubscriptionService.getInstance().getEntitiesListByIds(idSubscriptionsByResource);
-                        resourceSubscription.addAll(entitiesListByIds);
-                    }
-
-                    Map<String, Map<String, Map<String, List<Subscription>>>> multipleFieldsMap = resourceSubscription.stream()
-                            .collect(
-                                    Collectors.groupingBy(o -> o.getClient().getUuid(),
-                                            Collectors.groupingBy(o -> o.getResource().getEnvironement().getUuid(),
-                                                    (Collectors.groupingBy(o -> o.getResource().getPlan().getUuid())))));
-
-
-                    if(!multipleFieldsMap.isEmpty()){
-                        addNewHistory(api.getUuid(), HistoryTypeEnum.PUBLISH, email, "API " + api.getName());
-                        api.setStatus(ApiStatusEnum.PUBLISHING.name());
-                        ApiService.getInstance().update(api, email);
-                    }
-
-                    try {
-                        for (Map.Entry<String, Map<String, Map<String, List<Subscription>>>> clientSubscriptionByEnvironementAndPlan : multipleFieldsMap.entrySet()) {
-                            Map<String, Map<String, List<Subscription>>> clientEnvironements = clientSubscriptionByEnvironementAndPlan.getValue();
-                            for (Map.Entry<String, Map<String, List<Subscription>>> environementSubscription : clientEnvironements.entrySet()) {
-                                Map<String, List<Subscription>> clientPlans = environementSubscription.getValue();
-                                for (Map.Entry<String, List<Subscription>> planSubscription : clientPlans.entrySet()) {
-                                    List<Subscription> subscriptions = planSubscription.getValue();
-                                    for (Subscription sub : subscriptions) {
-                                        List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid(sub.getResource().getUuid());
-                                        sub.getResource().setInstances(InstanceHome.getInstancesListByIds(instanceIds));
-                                    }
-
-                                    _configGeneratorService.generateSubscriptions(subscriptions, comment, email);
-                                    ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), email);
-
-                                    for (Subscription sub : subscriptions) {
-                                        sub.setStatus(SubscriptionStatusEnum.PUBLISHED.name());
-                                        SubscriptionService.getInstance().update(sub,email);
-                                    }
-                                    /*
-                                    if(environementName != null) {
-                                        _configGeneratorService.generateSubscriptions(
-                                                subscriptions, comment, getUser().getEmail());
-                                        MeecrogateAckResponse ackResponse = MeecrogateGatewayService.getInstance().getStatus(environementName);
-                                        if (ackResponse!=null && ackResponse.getDeployGatewayStatus() != null && ackResponse.getDeployGatewayStatus().equals("updated")) {
-                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISHED.name(), getUser().getEmail());
-                                        } else {
-                                            ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                                        }
-                                    }else{
-                                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.DEPLOY_ERROR.name(), getUser().getEmail());
-                                    }*/
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        ApiService.getInstance().updateStatus(apiUuid, ApiStatusEnum.PUBLISH_ERROR.name(), email);
-                    }
-
-                }
+        for ( final String apiUuid : apiUuids )
+        {
+            final Api api = ApiHome.findByPrimaryKey( apiUuid ).orElse( null );
+            if ( api == null || api.getStatus().equals( ApiStatusEnum.PUBLISHED.name() ) )
+            {
+                continue;
             }
+
+            final List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid( apiUuid );
+            final List<Subscription> subscriptions = resources.stream()
+                    .flatMap( r -> {
+                        final List<String> ids = SubscriptionService.getInstance().getIdSubscriptionsByResource( r.getUuid() );
+                        return SubscriptionService.getInstance().getEntitiesListByIds( ids ).stream();
+                    } )
+                    .collect( Collectors.toList() );
+
+            if ( subscriptions.isEmpty() )
+            {
+                continue;
+            }
+
+            subscriptions.forEach( sub -> {
+                final List<String> instanceIds = InstanceHome.getIdInstancesListLinkedToResourceUuid( sub.getResource().getUuid() );
+                sub.getResource().setInstances( InstanceHome.getInstancesListByIds( instanceIds ) );
+            } );
+
+            addNewHistory( api.getUuid(), HistoryTypeEnum.PUBLISH, email, "API " + api.getName() );
+            api.setStatus( ApiStatusEnum.PUBLISHING.name() );
+            ApiService.getInstance().update( api, email );
+
+            try
+            {
+                final String comment = "Création des souscriptions vers l'api " + api.getName();
+                _configGeneratorService.generateSubscriptions( subscriptions, comment, email );
+                ApiService.getInstance().updateStatus( apiUuid, ApiStatusEnum.PUBLISHED.name(), email );
+                subscriptions.forEach( sub -> {
+                    sub.setStatus( SubscriptionStatusEnum.PUBLISHED.name() );
+                    SubscriptionService.getInstance().update( sub, email );
+                } );
+            }
+            catch ( final Exception e )
+            {
+                ApiService.getInstance().updateStatus( apiUuid, ApiStatusEnum.PUBLISH_ERROR.name(), email );
+            }
+        }
 
 
     }
