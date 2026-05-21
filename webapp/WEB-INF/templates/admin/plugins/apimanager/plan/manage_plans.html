@@ -99,7 +99,7 @@
                      <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnEnvironement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=environement'><i class='fas fa-sort'></i></a></th>
-                     <th>#i18n{apimanager.manage_plans.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>
+                     <!--<th>#i18n{apimanager.manage_plans.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>-->
                      <th>#i18n{apimanager.global.labelTags}</th>
                      <th>#i18n{portal.util.labelActions}</th>
                   </tr>
@@ -127,7 +127,7 @@
                         <span class="badge px-2 me-1" id="env-${plan?index}-${env?index}">${env}</span>
                         </#list>
                      </td>
-                     <td>
+                     <!--<td>
                         <#if plan.status.name() == "DRAFT">
                         <span class="badge badge-draft" id="status-${plan?index}">${plan.status.name()!}</span>
                         <#elseif plan.status.name() == "PUBLISHED">
@@ -135,7 +135,7 @@
                         <#elseif plan.status.name() == "UNPUBLISHED">
                         <span class="badge badge-unpublished" id="status-${plan?index}">${plan.status.name()!}</span>
                         </#if>
-                     </td>
+                     </td>-->
                      <td>
                         <#list plan.tags as tag>
                         <span class="badge bg-primary px-2 me-1" id="tag-${plan?index}-${tag?index}">${tag}</span>

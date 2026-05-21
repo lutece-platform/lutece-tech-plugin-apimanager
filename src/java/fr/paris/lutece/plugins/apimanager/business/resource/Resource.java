@@ -100,6 +100,7 @@ public class Resource implements Serializable
         this.setPath(resource.getPath());
         this.setVerb(resource.getVerb());
         this.setName(resource.getName());
+        this.setRequestTimeout(resource.getRequestTimeout());
         this.setStatus(resource.getStatus());
         this.setEnvironement(resource.getEnvironement());
         this.setApi(resource.getApi());

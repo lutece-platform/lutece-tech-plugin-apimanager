@@ -56,7 +56,7 @@
                      <h2 class="accordion-header">
                         <button class="accordion-button" style="background-color: #b9daff !important" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${environment?index}" aria-expanded="true" aria-controls="collapseOne">${environment.name}</button>
                      </h2>
-                     <div id="collapse${environment?index}" class="col accordion-collapse collapse <#if current_environement_tab?? && '${current_environement_tab}' == '0'>show<#else><#if '${environment.uuid}'=='${current_environement_tab}'>show</#if> </#if> ">
+                     <div id="collapse${environment?index}" class="col accordion-collapse <#if current_environement_tab?? && '${current_environement_tab}' == '0'>show<#else><#if '${environment.uuid}'=='${current_environement_tab}'>show</#if> </#if> ">
                         <div class="my-4 p-6 card " id="plan" data-index="0">
                            <div class="flex items-center space-x-4 mb-4">
                               <@formGroup labelFor='plan-environement-${environment.uuid}' labelKey='#i18n{apimanager.plan.addLabel}' mandatory=true>
@@ -138,9 +138,9 @@
                                              <select id="environement-${environment.uuid}-plan-${plan.uuid}-resources" name="environement-${environment.uuid}-plan-${plan.uuid}-resources" multiple onchange="selectionChange(this)" required class="form-select" data-placeholder="Choose anything" >
                                                 <#list environment.resourceList as resource>
                                                 <#if resource.plan?? && resource.plan.uuid == plan.uuid >
-                                                <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.verb.name()}${resource.path}" selected>${resource.verb.name()} - ${resource.path}</option>
+                                                <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.name}-${resource.verb.name()}${resource.path}" selected>${resource.name} - ${resource.verb.name()} - ${resource.path}</option>
                                                 <#else>
-                                                <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.verb.name()}${resource.path}">${resource.verb.name()} - ${resource.path}</option>
+                                                <option value="${resource.verb.name()}|${resource.path}" id="environement-${environment.uuid}-plan-${plan.uuid}-${resource.name}-${resource.verb.name()}${resource.path}">${resource.name} - ${resource.verb.name()} - ${resource.path}</option>
                                                 </#if>
                                                 </#list>
                                              </select>
@@ -199,13 +199,12 @@
       $('select[id^='+$(this)[0].id+'] option').each(function() {
          const optId = $(this)[0].id;
          const resourceId = $(this)[0].value;
-         const envUuid = optId.replace("environement-", "").substring(0, optId.indexOf('-'));
+         const envUuid= optId.replace("environement-","").substring(0,optId.replace("environement-","").indexOf('-plan') );
 
          if ($(this).is(":selected")) {
             //disable and deselect from other lists
             $("option[id^=environement-" + envUuid + "]").each(function () {
                const opt = $(this);
-               console.log(opt.parent()[0].id +"!=="+ selectId+" && "+ opt[0].value +" ==="+ resourceId);
 
                if ((opt.parent()[0].id !== selectId) && (opt[0].value === resourceId)) {
                   opt.prop("disabled", true);
@@ -217,18 +216,20 @@
 
    function selectionChange(e){
 
+      console.log("selection change");
       // parcours l'ensemble des option de ce plan dans cet environement
        $('select[id^='+e.id+'] option').each(function(){
 
            const optId = $(this)[0].id;
            const resourceId = $(this)[0].value;
-           const envUuid= optId.replace("environement-","").substring(0,optId.indexOf('-') );
+           const envUuid= optId.replace("environement-","").substring(0,optId.replace("environement-","").indexOf('-plan') );
 
            // si l'option est selectionné
            if($(this).is(":selected")){
                //on la disable dans tous les autres plan de cet environement
                $("option[id^=environement-" + envUuid + "]").each(function(){
                    const opt = $(this);
+
                    if((opt.parent()[0].id !== e.id) && (opt[0].value ===resourceId) ){
                        opt.prop("disabled", true);
                        opt.prop("selected", false);
