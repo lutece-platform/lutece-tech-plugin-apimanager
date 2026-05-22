@@ -79,6 +79,7 @@ public class Api extends AbstractTagBean implements Serializable
 
 
     private List<Environement> _environementList;
+    private List<Environement> _subscribedEnvironementList;
 
 
     private List<Plan> _planList;
@@ -170,6 +171,26 @@ public class Api extends AbstractTagBean implements Serializable
         _environementList = environementList;
     }
 
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Environement> getSubscribedEnvironementList( )
+    {
+        return _subscribedEnvironementList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param environementList
+     *            The Description
+     */
+    public void setSubscribedEnvironementList( List<Environement> environementList )
+    {
+        _subscribedEnvironementList = environementList;
+    }
 
     /**
      * Returns the Description

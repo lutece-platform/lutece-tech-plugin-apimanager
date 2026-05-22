@@ -162,6 +162,18 @@ public final class SubscriptionHome
     /**
      * Load the data of all the avant objects and returns them as a list
      *
+     * @param envUuid
+     *            uuid of the environment
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<Subscription> getIdSubscriptionsByApiAndEnv( final String apiUuid, final String envUuid )
+    {
+        return _dao.getIdSubscriptionsByApiAndEnv( apiUuid, envUuid, _plugin );
+    }
+
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     *
      *            liste of ids
      * @return the list which contains the data of all the avant objects
      */

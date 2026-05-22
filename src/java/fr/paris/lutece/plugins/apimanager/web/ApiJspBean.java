@@ -41,6 +41,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
+import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
@@ -80,6 +81,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -796,26 +798,40 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
                 // update subscriptions
                 if (_api.getEnvironementList() != null) {
-                    for (Environement environement : _api.getEnvironementList()) {
-                        List<Subscription> defaultSubscriptionList = null;
-                        List<String> existingSubscriptionIds = SubscriptionService.getInstance().getIdSubscriptionsByApi(_api.getUuid());
-                        List<Subscription> existingSubscriptions = SubscriptionService.getInstance().getEntitiesListByIds(existingSubscriptionIds);
-                        if(existingSubscriptions != null){
-                            defaultSubscriptionList = existingSubscriptions.stream().filter(subscription -> subscription.getEnvironement().getUuid().equals(environement.getUuid())).collect(Collectors.toList());
-                        }
-                        //  in case there was subscriptions for other resource then we use it to setup subscription on the new resources
-                        if(defaultSubscriptionList != null){
-                            for (Resource resource : environement.getResourceList()) {
-                                //  create default subscriptions for new resources
-                                if(resource.getSubscriptionList() == null || resource.getSubscriptionList().isEmpty()){
-                                    for (Subscription subscription : defaultSubscriptionList) {
-                                        subscription.setApi(_api);
-                                        subscription.setResource(resource);
-                                        subscription.setEnvironement(resource.getEnvironement());
-                                        subscription.setPlan(resource.getPlan());
-                                        subscription.setStatus(SubscriptionStatusEnum.NEW.name());
-                                        SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                    for (final Environement environement : _api.getEnvironementList()) {
+                        // Check if some subscription exists for the API and Environment
+                        final List<Subscription> existingSubscriptions = SubscriptionHome.getIdSubscriptionsByApiAndEnv(_api.getUuid(), environement.getUuid());
+                        if(!existingSubscriptions.isEmpty()){
+                            // Get all subscribed clients
+                            final List<Client> clients = existingSubscriptions.stream().map(Subscription::getClient).distinct().collect(Collectors.toList());
+
+                            // Check if resource is in one or more subscription(s)
+                            for (final Resource resource : environement.getResourceList()) {
+                                if(this.validateResource(resource)){
+                                    final List<Subscription> existingResourceSubscriptions = existingSubscriptions.stream()
+                                            .filter(subscription -> Objects.equals(subscription.getResource().getUuid(), resource.getUuid()))
+                                            .collect(Collectors.toList());
+
+                                    // If none, create it (if the resource is well configured)
+                                    if(existingResourceSubscriptions.isEmpty()){
+                                        clients.forEach(client -> {
+                                            final Subscription subscription = new Subscription();
+                                            subscription.setApi(_api);
+                                            subscription.setResource(resource);
+                                            subscription.setEnvironement(resource.getEnvironement());
+                                            subscription.setPlan(resource.getPlan());
+                                            subscription.setClient(client);
+                                            subscription.setStatus(SubscriptionStatusEnum.NEW.name());
+                                            SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                                        });
+                                    } else {
+                                        existingResourceSubscriptions.forEach(subscription -> {
+                                            subscription.setResource(resource);
+                                            SubscriptionService.getInstance().update(subscription, getUser().getEmail());
+                                        });
                                     }
+                                } else {
+                                    //TODO do something here or in a previous step to ensure that resources are correctly configured
                                 }
                             }
                         }
@@ -1480,5 +1496,14 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
             templateNameList.add(templateName);
         }
         model.put(MARK_PLAN_TEMPLATE_NAMES, templateNameList);
+    }
+
+    /**
+     * Validate id a resource is consistent for a susbscription
+     * @param resource the resource to be validated
+     * @return true if consistent, false otherwise
+     */
+    private boolean validateResource(final Resource resource) {
+        return resource != null && resource.getApi() != null && resource.getPlan() != null && resource.getEnvironement() != null;
     }
 }

@@ -98,8 +98,8 @@
                         ${api.description!''}
                      </td>
                      <td>
-                        <#if api.environementList??>
-                        <#list api.environementList as env>
+                        <#if api.subscribedEnvironementList??>
+                        <#list api.subscribedEnvironementList as env>
                         <span class="badge px-2 me-1" id="env-${env?index}">
                         ${env.name}
                         <input type="hidden" name="environement-${env?index}" value="${env.name}">

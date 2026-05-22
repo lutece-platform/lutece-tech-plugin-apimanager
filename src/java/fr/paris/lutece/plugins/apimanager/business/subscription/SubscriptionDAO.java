@@ -35,11 +35,8 @@
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
-import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -83,6 +80,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     private static final String SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ID = "SELECT uuid FROM apimanager_subscription " +
             "WHERE uuid_resource in (select uuid from apimanager_resource " +
             "WHERE uuid_api=?)";
+
+    private static final String SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ENV = SQL_QUERY_SELECTALL +
+            " WHERE uuid_resource in (select uuid from apimanager_resource" +
+            " WHERE uuid_api=?) AND uuid_environement = ?";
 
     private static final String FILTER_CLIENT = "client";
     private static final String FILTER_API = "api";
@@ -273,6 +274,26 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             }
         }
         return idApiList;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<Subscription> getIdSubscriptionsByApiAndEnv(final String apiUuid, final String envUuid, final Plugin plugin)
+    {
+        final List<Subscription> subscriptions = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ENV, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.setString( 2, envUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                subscriptions.add( this.loadFromDaoUtil( daoUtil ) );
+            }
+        }
+        return subscriptions;
     }
 
     @Override

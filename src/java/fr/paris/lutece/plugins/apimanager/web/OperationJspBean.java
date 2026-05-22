@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
@@ -184,9 +185,20 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
 
         for (Api api : _apiList) {
             Map<String, Client> subscribers = new HashMap<>();
+            Map<String, Environement> subscribedEnvs = new HashMap<>();
             List<Resource> resources = ResourceService.getInstance().getResourcesByApiUuid(api.getUuid());
-            api.setEnvironementList(resources.stream().filter(resource -> resource.getEnvironement() != null && resource.getEnvironement().getUuid() != null).map(resource -> resource.getEnvironement()).filter(distinctByKey(env -> env.getUuid())).collect(Collectors.toList()));
-            api.setPlantList(resources.stream().filter(resource -> resource.getPlan() != null && resource.getPlan().getUuid() != null).map(resource -> resource.getPlan()).filter(distinctByKey(plan -> plan.getUuid())).collect(Collectors.toList()));
+            api.setEnvironementList(
+                    resources.stream().filter(resource -> resource.getEnvironement() != null && resource.getEnvironement().getUuid() != null)
+                            .map(Resource::getEnvironement)
+                            .filter(distinctByKey(Environement::getUuid))
+                            .collect(Collectors.toList())
+            );
+            api.setPlantList(
+                    resources.stream().filter(resource -> resource.getPlan() != null && resource.getPlan().getUuid() != null)
+                            .map(Resource::getPlan)
+                            .filter(distinctByKey(Plan::getUuid))
+                            .collect(Collectors.toList())
+            );
             api.setResourceList(resources);
             for (Resource resource : resources) {
                 List<Subscription> subscriptions = SubscriptionService.getInstance().getEntitiesListByIds(SubscriptionService.getInstance().getIdSubscriptionsByResource(resource.getUuid()));
@@ -198,6 +210,12 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                             subscribers.put(subscription.getClient().getUuid(), currentClient);
                         }
                     }
+                    if(subscription.getEnvironement() != null && subscription.getEnvironement().getUuid() != null) {
+                        Environement environement  = EnvironementHome.findByPrimaryKey(subscription.getEnvironement().getUuid()).orElse(null);
+                        if(environement!=null && !subscribedEnvs.containsKey(environement.getUuid())) {
+                            subscribedEnvs.put(subscription.getEnvironement().getUuid(), environement);
+                        }
+                    }
                 }
                 //check if there is a desynchronize with api definition
                 if(api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
@@ -207,8 +225,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                 }
             }
             api.setSubscriberList(new ArrayList<>(subscribers.values()));
-
-
+            api.setSubscribedEnvironementList(new ArrayList<>(subscribedEnvs.values()));
         }
 
         String selectedEnvironementUuid = _mapFilterCriteria.get("uuid_environement");
