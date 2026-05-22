@@ -110,10 +110,10 @@
                      <td>
                         <#if api.subscriberList??>
                         <#list api.subscriberList as subscriber>
-                        <span class="badge px-2 me-1" id="subscriber-${subscriber?index}">
+                        <a href="#" data-bs-toggle="tooltip" data-bs-title="<#list subscriber.subscriptionList as sub>${sub.environement.name}<#sep>,</#list>"><span class="badge px-2 me-1" id="subscriber-${subscriber?index}">
                         ${subscriber.name}
                         <input type="hidden" name="subscriber-${subscriber?index}" value="${subscriber.name}">
-                        </span>
+                        </span></a>
                         </#list>
                         </#if>
                      </td>

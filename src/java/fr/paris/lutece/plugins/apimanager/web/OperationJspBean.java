@@ -206,9 +206,20 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                 for (Subscription subscription : subscriptions) {
                     if (subscription.getClient() != null && subscription.getClient().getUuid() != null) {
                         Client currentClient = ClientHome.findByPrimaryKey(subscription.getClient().getUuid()).orElse(null);
-                        if (currentClient != null && !subscribers.containsKey(currentClient.getUuid())) {
-                            subscribers.put(subscription.getClient().getUuid(), currentClient);
+                        if(currentClient != null){
+                            // we add the subscriber add one subscription to a resource per environement
+                            // in order to have the api/environement info in the frontend
+                            if (!subscribers.containsKey(currentClient.getUuid())) {
+                                currentClient.getSubscriptionList().add(subscription);
+                                subscribers.put(subscription.getClient().getUuid(), currentClient);
+                            }else{
+                                if(subscribers.get(subscription.getClient().getUuid()).getSubscriptionList().stream()
+                                        .noneMatch(subscription1 -> subscription1.getEnvironement().getUuid().equals(subscription.getEnvironement().getUuid()))){
+                                    subscribers.get(subscription.getClient().getUuid()).getSubscriptionList().add(subscription);
+                                }
+                            }
                         }
+
                     }
                     if(subscription.getEnvironement() != null && subscription.getEnvironement().getUuid() != null) {
                         Environement environement  = EnvironementHome.findByPrimaryKey(subscription.getEnvironement().getUuid()).orElse(null);
