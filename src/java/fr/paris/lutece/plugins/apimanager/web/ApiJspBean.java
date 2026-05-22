@@ -1357,15 +1357,10 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     .collect(Collectors.toMap(entry -> entry.getKey().replace(Subscriptionprefix, ""), Map.Entry::getValue));
             String[] archived = subscriptionParams.get("archived");
             String[] uuid_client = subscriptionParams.get("uuid_client");
-            String[] trace_enabled = subscriptionParams.get("trace_enabled");
 
             if (!subscriptionParams.isEmpty()) {
                 Subscription subscription = new Subscription();
 
-
-                if (trace_enabled != null && trace_enabled.length > 0) {
-                    subscription.setTraceEnabled(Boolean.parseBoolean(trace_enabled[0]));
-                }
                 if (uuid_client != null && uuid_client.length > 0) {
                     subscription.setClient(ClientService.getInstance().getClientById(uuid_client[0], null).orElse(null));
                 }

@@ -43,9 +43,6 @@
                     </#if>
                 </div>
          </@formGroup>
-         <@formGroup labelFor='trace_enabled' labelKey='#i18n{apimanager.client.labelTraceEnabled}' mandatory=true>
-         <@checkBox id="trace_enabled" name="trace_enabled"  value="1" checked=client.traceEnabled!false tabIndex='5' />
-         </@formGroup>
          <!-- Button trigger secret modal
             <@button buttonIcon='arrow-right' title='#i18n{apimanager.client.button.generate.secrets}' showTitle=true params='data-toggle="modal" data-target="#client-secrets"' />
             <@modal id='client-secrets' size='xl'>

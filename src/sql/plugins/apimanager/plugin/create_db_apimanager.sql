@@ -42,7 +42,6 @@ CREATE TABLE apimanager_client
     client_id     varchar(50) default '' null,
     code_app      varchar(50) default '' null,
     status      varchar(50) default '' null,
-    trace_enabled smallint               null,
     archived      tinyint(1)  default 0  not null
 );
 
@@ -177,7 +176,6 @@ CREATE TABLE apimanager_subscription
     uuid              varchar(50)            not null primary key,
     uuid_client       varchar(50)            null,
     uuid_resource     varchar(50)            null,
-    trace_enabled     smallint               null,
     archived          tinyint(1)  default 0  not null,
     status            varchar(50) default '' null,
     uuid_environement varchar(50)            null,

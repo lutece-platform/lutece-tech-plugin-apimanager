@@ -63,8 +63,6 @@ public class Client extends AbstractTagBean implements Serializable
     @Size( max = 50, message = "#i18n{apimanager.validation.client.CodeApp.size}" )
     private String _strCodeApp;
 
-    private boolean _bTraceEnabled;
-
     private boolean _bArchived;
 
     private String _strStatus;
@@ -177,27 +175,6 @@ public class Client extends AbstractTagBean implements Serializable
     public void setCodeApp( String strCodeApp )
     {
         _strCodeApp = strCodeApp;
-    }
-
-    /**
-     * Returns the TraceEnabled
-     * 
-     * @return The TraceEnabled
-     */
-    public boolean getTraceEnabled( )
-    {
-        return _bTraceEnabled;
-    }
-
-    /**
-     * Sets the TraceEnabled
-     * 
-     * @param bTraceEnabled
-     *            The TraceEnabled
-     */
-    public void setTraceEnabled( boolean bTraceEnabled )
-    {
-        _bTraceEnabled = bTraceEnabled;
     }
 
     /**

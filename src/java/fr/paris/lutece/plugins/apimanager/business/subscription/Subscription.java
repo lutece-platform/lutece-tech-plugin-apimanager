@@ -60,8 +60,6 @@ public class Subscription implements Serializable
     private Api _api;
     private Environement _environement;
 
-    private boolean _bTraceEnabled;
-
     private boolean _bArchived;
 
     /**
@@ -210,28 +208,6 @@ public class Subscription implements Serializable
     public void setStatus( String strStatus )
     {
         _strStatus = strStatus;
-    }
-
-
-    /**
-     * Returns the TraceEnabled
-     * 
-     * @return The TraceEnabled
-     */
-    public boolean getTraceEnabled( )
-    {
-        return _bTraceEnabled;
-    }
-
-    /**
-     * Sets the TraceEnabled
-     * 
-     * @param bTraceEnabled
-     *            The TraceEnabled
-     */
-    public void setTraceEnabled( boolean bTraceEnabled )
-    {
-        _bTraceEnabled = bTraceEnabled;
     }
 
     /**

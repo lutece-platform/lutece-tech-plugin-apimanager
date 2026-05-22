@@ -61,11 +61,11 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     // Constants
     private static final String TABLE_NAME = "apimanager_subscription";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_resource, uuid_environement, trace_enabled, archived, status ) VALUES ( ?, ?, ?, ?, ?, ? , ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_resource, uuid_environement, archived, status ) VALUES ( ?, ?, ?, ?, ?, ? , ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, uuid_environement = ?, trace_enabled = ?, archived = ?, status = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, uuid_environement = ?, archived = ?, status = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, uuid_environement , trace_enabled, archived, status FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, uuid_environement , archived, status FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
     private static final String SQL_QUERY_SELECT_DISTINCT_STATUS = "SELECT distinct(status) FROM apimanager_subscription";
@@ -115,7 +115,6 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getEnvironement( ) != null ? subscription.getEnvironement( ).getUuid( ) : null );
-            daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
             daoUtil.setString( nIndex, subscription.getStatus( ) );
 
@@ -172,7 +171,6 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
             daoUtil.setString( nIndex++, subscription.getEnvironement( ).getUuid() );
-            daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
             daoUtil.setString( nIndex++, subscription.getStatus( ) );
             daoUtil.setString( nIndex, subscription.getUuid( ) );
@@ -361,7 +359,6 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         Resource resource = ResourceHome.findByPrimaryKey(daoUtil.getString(nIndex++)).orElse(null);
         subscription.setResource(resource);
         subscription.setEnvironement(EnvironementHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );
         subscription.setStatus( daoUtil.getString( nIndex ) );
         if(resource != null){

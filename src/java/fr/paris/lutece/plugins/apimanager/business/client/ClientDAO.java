@@ -58,11 +58,11 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_client";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_client ( uuid, name, client_id, code_app, trace_enabled, archived, status  ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_client ( uuid, name, client_id, code_app, archived, status  ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_client WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_client SET name = ?, client_id = ?, code_app = ?, trace_enabled = ?, archived = ? , status = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_client SET name = ?, client_id = ?, code_app = ?, archived = ? , status = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, client_id, code_app, trace_enabled, archived, status FROM apimanager_client";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, client_id, code_app, archived, status FROM apimanager_client";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_client";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
@@ -93,7 +93,6 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
             daoUtil.setString( nIndex++, client.getName( ) );
             daoUtil.setString( nIndex++, client.getClientId( ) );
             daoUtil.setString( nIndex++, client.getCodeApp( ) );
-            daoUtil.setBoolean( nIndex++, client.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, client.getArchived( ) );
             daoUtil.setString( nIndex++, client.getStatus( ) );
 
@@ -152,7 +151,6 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
             daoUtil.setString( nIndex++, client.getName( ) );
             daoUtil.setString( nIndex++, client.getClientId( ) );
             daoUtil.setString( nIndex++, client.getCodeApp( ) );
-            daoUtil.setBoolean( nIndex++, client.getTraceEnabled( ) );
             daoUtil.setBoolean( nIndex++, client.getArchived( ) );
             daoUtil.setString( nIndex++, client.getStatus( ) );
             daoUtil.setString( nIndex, client.getUuid( ) );
@@ -300,7 +298,6 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
         client.setName( daoUtil.getString( nIndex++ ) );
         client.setClientId( daoUtil.getString( nIndex++ ) );
         client.setCodeApp( daoUtil.getString( nIndex++ ) );
-        client.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
         client.setArchived( daoUtil.getBoolean( nIndex++ ) );
         client.setStatus( daoUtil.getString( nIndex ) );
         client.setTags( this.selectTags( uuid, plugin ) );
