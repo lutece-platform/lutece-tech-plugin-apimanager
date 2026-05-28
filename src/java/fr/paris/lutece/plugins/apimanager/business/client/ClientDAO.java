@@ -58,7 +58,7 @@ public final class ClientDAO extends AbstractFilterDao implements IClientDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_client";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_client ( uuid, name, client_id, code_app, archived, status  ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_client ( uuid, name, client_id, code_app, archived, status  ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_client WHERE uuid = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_client SET name = ?, client_id = ?, code_app = ?, archived = ? , status = ? WHERE uuid = ?";
 
