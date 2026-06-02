@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset apimanager:init_core_apimanager.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 INSERT INTO core_feature_group(id_feature_group,feature_group_description,feature_group_label,feature_group_order,feature_group_icon) VALUES
 ('APIM','apimanager.features.group.apim.description','apimanager.features.group.apim.label',8,'ti ti-files');
 

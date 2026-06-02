@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset apimanager:create_db_apimanager.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 -- Disable foreign key checks to allow dropping tables with dependencies
 SET FOREIGN_KEY_CHECKS = 0;
 
