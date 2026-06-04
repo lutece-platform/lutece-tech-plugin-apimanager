@@ -35,6 +35,7 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.*;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
@@ -77,6 +78,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGECLIENTS;
 
@@ -451,6 +453,18 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
                 }
             }
 
+            // check api status and update to desynchronised if needed
+            List<String> apiUuids = _client.getSubscriptionList().stream().map(subscription -> subscription.getApi().getUuid()).distinct().collect(Collectors.toList());
+
+            List<Api> apis = ApiService.getInstance().getEntitiesListByIds(apiUuids);
+            for(Api api : apis){
+                //check if there is a desynchronize with api definition
+                if(api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
+                    api.setStatus(ApiStatusEnum.DESYNCHRONIZED.name());
+                    ApiService.getInstance().update(api,getUser().getEmail());
+                }
+            }
+
             addInfo(INFO_CLIENT_CREATED, getLocale());
             resetListId();
 
@@ -668,6 +682,18 @@ public class ClientJspBean extends AbstractJspBean<String, Client> {
             }else{
                 for(String subscriptionUuid : currentClientSubscriptionUuids){
                     SubscriptionService.getInstance().delete(subscriptionUuid,getUser().getEmail());
+                }
+            }
+
+            // check api status and update to desynchronised if needed
+            List<String> apiUuids = _client.getSubscriptionList().stream().map(subscription -> subscription.getApi().getUuid()).distinct().collect(Collectors.toList());
+
+            List<Api> apis = ApiService.getInstance().getEntitiesListByIds(apiUuids);
+            for(Api api : apis){
+                //check if there is a desynchronize with api definition
+                if(api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
+                    api.setStatus(ApiStatusEnum.DESYNCHRONIZED.name());
+                    ApiService.getInstance().update(api,getUser().getEmail());
                 }
             }
 
