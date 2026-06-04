@@ -44,13 +44,9 @@ import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfiguration;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.resource.*;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
@@ -74,20 +70,9 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGEAPIS;
 
@@ -1289,7 +1274,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                     .filter(key -> key.startsWith(PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW))
                     .map(key -> key.replace(PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW, ""))
                     .map(key -> Integer.parseInt(key.substring(0, key.indexOf('-')))).distinct().collect(Collectors.toList());
-
+            Collections.sort(resourceIndexes);
             for (final int index : resourceIndexes) {
                 Resource currentResource = new Resource();
                 final String prefix = PARAMETER_ENVIRONEMENT_PREFIX + environementUuid + PARAMETER_RESOURCE_ROW + index + "-";
