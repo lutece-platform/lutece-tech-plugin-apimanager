@@ -760,9 +760,20 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
 
             try {
                 populatePlan(_api, request, getLocale());
+                // check if all resource have a plan
+
+                for (Environement environement : _api.getEnvironementList()) {
+                    for (Resource resource : environement.getResourceList()) {
+                        if(resource.getPlan() == null){
+                            this.addError("The resource " + resource.getName() + " - " + resource.getPath() + " is missing a plan");
+                            return getCreateApiStep3(request);
+                        }
+                    }
+                }
+
             } catch (JsonProcessingException e) {
                 this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
-                return redirect(request, VIEW_CREATE_API);
+                return getCreateApiStep3(request);
             }
 
         if (usecase != null && usecase.isEmpty()) {
@@ -1465,6 +1476,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
         }
 
     }
+
 
     private void addPlanTemplateNamesToModel(final Map<String, Object> model) {
         final List<String> templateNameList = new ArrayList<>();
