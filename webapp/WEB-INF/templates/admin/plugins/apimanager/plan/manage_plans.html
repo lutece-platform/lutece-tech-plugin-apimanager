@@ -96,7 +96,6 @@
                   <tr>
                      <th>#i18n{apimanager.manage_plans.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
-                     <th>#i18n{apimanager.manage_plans.columnActive}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=active'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnVersion}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=version'><i class='fas fa-sort'></i></a></th>
                      <th>#i18n{apimanager.manage_plans.columnEnvironement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=environement'><i class='fas fa-sort'></i></a></th>
                      <!--<th>#i18n{apimanager.manage_plans.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManagePlans.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>-->
@@ -111,13 +110,6 @@
                      </td>
                      <td>
                         ${plan.description!''}
-                     </td>
-                     <td>
-                        <#if plan.active!false>
-                        <span class="badge badge-yes"> oui </span>
-                        <#else>
-                        <span class="badge badge-no"> non </span>
-                        </#if>
                      </td>
                      <td>
                         ${plan.version!''}
