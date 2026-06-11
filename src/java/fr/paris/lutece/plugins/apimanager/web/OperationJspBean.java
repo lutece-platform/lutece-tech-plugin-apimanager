@@ -486,7 +486,7 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
         }
         ExecutorService executor = Executors.newFixedThreadPool(1);
         executor.submit(() -> {
-            getService().unpublish(apiUuids, getUser().getEmail(), _configGeneratorService);
+            //getService().unpublish(apiUuids, getUser().getEmail(), _configGeneratorService);
             getService().publish(apiUuids, getUser().getEmail(), _configGeneratorService);
         });
         executor.shutdown();
