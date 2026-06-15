@@ -38,7 +38,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.util.ReferenceList;
@@ -62,21 +61,28 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_api";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_api ( uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_api WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, active = ?, in_maintenance = ?, wait = ?, openapi = ?, archived = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_api SET name = ?, description = ?, path = ?, active = ?, in_maintenance = ?, wait = ?, openapi = ?, archived = ?, version= ?, status= ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE_STATUS = "UPDATE apimanager_api SET status= ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, path, active, in_maintenance, wait, openapi, archived FROM apimanager_api";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, name, description, path, active, in_maintenance, wait, openapi, archived, version, status  FROM apimanager_api";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_api";
+    private static final String SQL_QUERY_SELECT_DISTINCT_STATUS = "SELECT distinct(status) FROM apimanager_api";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
     private static final String SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE = "SELECT uuid_api FROM apimanager_deployed WHERE uuid_instance = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_BY_PATH = "SELECT uuid FROM apimanager_api WHERE path = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_BY_PATH_AND_VERSION = "SELECT uuid FROM apimanager_api WHERE path = ? and version = ?";
     private static final String SQL_QUERY_SELECTALL_ID_NOT_LINKED_TO_INSTANCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid NOT IN ( "
             + SQL_QUERY_SELECTALL_ID_LINKED_TO_INSTANCE + " )";
     private static final String SQL_QUERY_LINK_INSTANCE = "INSERT INTO apimanager_deployed (uuid, uuid_api, uuid_instance) VALUES ( ?, ?, ? )";
     private static final String SQL_QUERY_DELETE_LINKS = "DELETE FROM apimanager_deployed WHERE uuid_api = ?";
+
+
+
 
     private final ObjectMapper objectMapper = new ObjectMapper( );
 
@@ -105,9 +111,11 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.setString( nIndex++, api.getPath( ) );
             daoUtil.setBoolean( nIndex++, api.getActive( ) );
             daoUtil.setBoolean( nIndex++, api.isInMaintenance( ) );
-            daoUtil.setInt( nIndex++, api.getWait( ) );
+            daoUtil.setInt( nIndex++, api.getWait( ) != null? api.getWait( ) : 0 );
             daoUtil.setString( nIndex++, objectMapper.writeValueAsString( api.getOpenapi( ) ) );
             daoUtil.setBoolean( nIndex++, api.getArchived( ) );
+            daoUtil.setString( nIndex++, api.getVersion( ) );
+            daoUtil.setString( nIndex, api.getStatus( ) );
 
             daoUtil.executeUpdate( );
             api.setUuid( uuid );
@@ -181,6 +189,8 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.setInt( nIndex++, api.getWait( ) );
             daoUtil.setString( nIndex++, objectMapper.writeValueAsString( api.getOpenapi( ) ) );
             daoUtil.setBoolean( nIndex++, api.getArchived( ) );
+            daoUtil.setString( nIndex++, api.getVersion( ) );
+            daoUtil.setString( nIndex++, api.getStatus( ) );
             daoUtil.setString( nIndex, api.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -353,6 +363,39 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
     }
 
     @Override
+    public List<String> getIdApisListByPath( final String path, final Plugin plugin )
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_PATH, plugin ) )
+        {
+            daoUtil.setString( 1, path );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
+    }
+
+    @Override
+    public List<String> getIdApisListByPathAndVersion( final String path, final String version, final Plugin plugin )
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_PATH_AND_VERSION, plugin ) )
+        {
+            daoUtil.setString( 1, path );
+            daoUtil.setString( 2, version );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
+    }
+
+    @Override
     public void linkInstance( final Api api, final String instanceUuid, final Plugin plugin )
     {
         try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_LINK_INSTANCE, Statement.NO_GENERATED_KEYS, plugin ) )
@@ -366,6 +409,34 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             daoUtil.executeUpdate( );
         }
     }
+
+    @Override
+    public void updateStatus( final String apiUuid, final String status, final Plugin plugin )
+    {
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_STATUS, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setString( nIndex++, status );
+            daoUtil.setString( nIndex, apiUuid );
+
+            daoUtil.executeUpdate( );
+        }
+    }
+
+    @Override
+    public List<String> getDistinctStatus(Plugin plugin) {
+        final List<String> status = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DISTINCT_STATUS, plugin ) )
+        {
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                status.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return status;
+    }
+
 
     private Api loadFromDaoUtil( DAOUtil daoUtil, Plugin plugin ) throws JsonProcessingException
     {
@@ -389,6 +460,8 @@ public final class ApiDAO extends AbstractFilterDao implements IApiDAO
             } ) );
         }
         api.setArchived( daoUtil.getBoolean( nIndex++ ) );
+        api.setVersion( daoUtil.getString( nIndex++ ) );
+        api.setStatus( daoUtil.getString( nIndex++ ) );
         api.setTags( this.selectTags( uuid, plugin ) );
 
         return api;

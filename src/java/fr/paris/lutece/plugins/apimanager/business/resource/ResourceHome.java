@@ -34,6 +34,7 @@
 
 package fr.paris.lutece.plugins.apimanager.business.resource;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -156,6 +157,52 @@ public final class ResourceHome
     public static List<Resource> getResourcesListByIds( List<String> listIds )
     {
         return _dao.selectEntitiesListByIds( _plugin, listIds );
+    }
+
+
+    /**
+     * Link the specified Resource to the specified instance UUID.
+     *
+     * @param resource
+     *            the Resource
+     * @param instanceUuid
+     *            the instance UUID
+     */
+    public static void linkInstance(final Resource resource, final String instanceUuid )
+    {
+        _dao.linkInstance( resource, instanceUuid, _plugin );
+    }
+
+    /**
+     * Remove the link the specified Resource with instances
+     *
+     * @param resource
+     *            the Resource
+     */
+    public static void removeInstanceLinks(final Resource resource)
+    {
+        _dao.removeInstanceLinks( resource, _plugin );
+    }
+
+    /**
+     * Rreturn list of environement of an api
+     *
+     * @param apiUuid
+     *            the API uuid
+     */
+    public static List<String> getEnvForApiUuid(final String apiUuid)
+    {
+        return _dao.getEnvForApiUuid( apiUuid, _plugin );
+    }
+    /**
+     * Rreturn list of api of an environement
+     *
+     * @param envUuid
+     *            the ENVIRONEMENT uuid
+     */
+    public static List<String> getDistinctApiUuidsByEnv(final String envUuid)
+    {
+        return _dao.getDistinctApiUuidsByEnv( envUuid, _plugin );
     }
 
 }

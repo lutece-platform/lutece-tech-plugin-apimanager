@@ -34,10 +34,12 @@
 
 package fr.paris.lutece.plugins.apimanager.web;
 
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.service.AbstractService;
+import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -88,6 +90,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
 
     // Search
     private static final String FILTER_ATTRIBUTES_PREFIX = "filter_";
+    private static final String[] FILTER_ATTRIBUTES_TO_EXCLUDE_IN_RETURNED_LIST = new String[]{"uuid_environement","uuid_plan","uuid_client","uuid_api"};
     protected static final String SORT_ATTRIBUTES_ASC = " ASC ";
     protected static final String SORT_ATTRIBUTES_DESC = " DESC ";
 
@@ -97,8 +100,7 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
     private String _strSortMode = "";
 
     // Property enums
-    protected static final List<String> environmentList = Arrays
-            .asList( AppPropertiesService.getProperty( "apimanager.instance.environment.values" ).split( "," ) );
+    protected static final List<Environement> environmentList = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
 
     /**
      * Return a model that contains the list and paginator infos
@@ -204,6 +206,16 @@ public abstract class AbstractJspBean<S, T> extends MVCAdminJspBean
         model.put( PARAMETER_MAP_FILTER_CRITERIA, mapFilterCriteria );
     }
 
+
+    /**
+     * get _strSortMode At each sort request, the sort mode switches (ASC to DESC and vice versa)
+     */
+    protected String[] getExcludedSearchParameters( )
+    {
+        return
+                FILTER_ATTRIBUTES_TO_EXCLUDE_IN_RETURNED_LIST;
+
+    }
     /**
      * get _strSortMode At each sort request, the sort mode switches (ASC to DESC and vice versa)
      */

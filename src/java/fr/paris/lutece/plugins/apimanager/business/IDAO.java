@@ -130,4 +130,7 @@ public interface IDAO<T>
      * @return The list which contains the data of all the avant objects
      */
     List<T> selectEntitiesListByIds( Plugin plugin, List<String> listIds );
+
+    List<String> getAvailableTags(List<String> listIds, Plugin plugin);
+    List<String> getuuidsByTags(List<String> tags, Plugin plugin);
 }

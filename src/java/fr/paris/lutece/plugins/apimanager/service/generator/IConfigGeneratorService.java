@@ -34,9 +34,8 @@
 package fr.paris.lutece.plugins.apimanager.service.generator;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
-import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
-import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.portal.service.util.AppException;
 
 import java.util.List;
@@ -46,13 +45,11 @@ public interface IConfigGeneratorService
 
     String BEAN_NAME = "apimanager.configGeneratorService";
 
-    void generateOauth2Client( final Client client, final String environment, final String comment, final String user ) throws AppException;
+    void generateOauth2Client(final Client client, final Environement environment, final String comment, final String user ) throws AppException;
 
-    void generateApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
-            final String environment, final String comment, final String user ) throws AppException;
+    void generateSubscriptions(final List<Subscription> subscriptions, final String comment, final String user ) throws AppException;
 
-    void deleteOauth2Client( final Client client, final String environment, final String user ) throws AppException;
+    void deleteOauth2Client( final Client client, final Environement environment, final String user ) throws AppException;
 
-    void deleteApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
-            final String environment, final String user ) throws AppException;
+    void deleteSubscriptions( final List<Subscription> subscriptions, final String comment, final String user ) throws AppException;
 }

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.history.History;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.portal.service.plugin.Plugin;
@@ -93,6 +94,8 @@ public abstract class AbstractFilterDao
     private final static String UUID_REF_COLUMN = "uuid_ref";
     private final static String VALUE_COLUMN = "value";
 
+    private static final String SQL_QUERY_SELECTALL_TAGS = "SELECT  distinct(value) FROM apimanager_tag WHERE uuid_ref IN (  ";
+    private static final String SQL_QUERY_SELECTALL_UUIDS_BY_TAGS = "SELECT  distinct(uuid_ref) FROM apimanager_tag WHERE value IN (  ";
     /**
      * Preparation of filterStatement
      * 
@@ -386,4 +389,62 @@ public abstract class AbstractFilterDao
         this.deleteTags( uuidRef, plugin );
         this.insertTags( uuidRef, tags, plugin );
     }
+
+    public List<String> getAvailableTags( List<String> listIds, Plugin plugin) {
+
+        List<String> tagList = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+
+        if (!listIds.isEmpty()) {
+            for (int i = 0; i < listIds.size(); i++) {
+                builder.append("?,");
+            }
+
+            String placeHolders = builder.deleteCharAt(builder.length() - 1).toString();
+            String stmt = SQL_QUERY_SELECTALL_TAGS + placeHolders + ")";
+
+            try (DAOUtil daoUtil = new DAOUtil(stmt, plugin)) {
+                int index = 1;
+                for (String id : listIds) {
+                    daoUtil.setString(index++, id);
+                }
+
+                daoUtil.executeQuery();
+                while (daoUtil.next()) {
+                    tagList.add(daoUtil.getString(1));
+                }
+            }
+        }
+        return tagList;
+    }
+
+
+    public List<String> getuuidsByTags( List<String> tags, Plugin plugin) {
+
+        List<String> tagList = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+
+        if (!tags.isEmpty()) {
+            for (int i = 0; i < tags.size(); i++) {
+                builder.append("?,");
+            }
+
+            String placeHolders = builder.deleteCharAt(builder.length() - 1).toString();
+            String stmt = SQL_QUERY_SELECTALL_UUIDS_BY_TAGS + placeHolders + ")";
+
+            try (DAOUtil daoUtil = new DAOUtil(stmt, plugin)) {
+                int index = 1;
+                for (String id : tags) {
+                    daoUtil.setString(index++, id);
+                }
+
+                daoUtil.executeQuery();
+                while (daoUtil.next()) {
+                    tagList.add(daoUtil.getString(1));
+                }
+            }
+        }
+        return tagList;
+    }
+
 }

@@ -1,0 +1,154 @@
+<div class="apim-plugin container-fluid">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="manage-api" href="jsp/admin/plugins/apimanager/ManageOperations.jsp" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_operations.api.tab.name}</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="manage-client"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.client.tab.name}</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="history" href="jsp/admin/plugins/apimanager/HistoryOperations.jsp"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.history.tab.name}</a>
+        </li>
+    </ul>
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+
+        <@box>
+		<@boxBody>
+    	<@messages infos=infos warnings=warnings errors=errors />
+
+	<div id="subscription-result-container" class="result-table-container">
+		<div class="clearfix"></div>
+		<div class="card">
+			<div class="card-body">
+				<@table>
+					<tr>
+						<th>#i18n{apimanager.manage_clients.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+						<th>#i18n{apimanager.manage_clients.columnClientId}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?orderBy=clientId'><i class='fas fa-sort'></i></a></th>
+						<th>#i18n{apimanager.manage_clients.columnCodeApp}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?orderBy=code_app'><i class='fas fa-sort'></i></a></th>
+						<th>#i18n{apimanager.manage_clients.columnSubscribers}</th>
+						<th>#i18n{apimanager.manage_clients.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>
+					   <th>#i18n{portal.util.labelActions}</th>
+					</tr>
+					<@tableHeadBodySeparator />
+					<#list client_list as client >
+					<tr >
+
+						<td>
+							${client.name!''}
+						</td>
+						<td>
+							${client.clientId!''}
+						</td>
+						<td>
+							${client.codeApp!''}
+						</td>
+						<td>
+						<#if client.subscriptionList??>
+						<#list client.subscriptionList as subscription>
+						<span class="badge bg-primary px-2 me-1" id="env-${subscription?index}">
+								   ${subscription.api.name}-${subscription.api.version}/${subscription.plan.name}/${subscription.environement.name}
+								   <input type="hidden" name="environement-${subscription?index}" value="${subscription.api.name}-${subscription.api.version}/${subscription.plan.name}/${subscription.environement.name}">
+								   </span>
+						</#list>
+						</#if>
+						</td>
+						<td>
+                            <#if client.status == "NEW">
+                            <span class="badge badge-new" id="status-${client?index}">${client.status!''}</span>
+                            <#elseif client.status == "PUBLISHED">
+                            <span class="badge badge-published" id="status-${client?index}">${client.status!''}</span>
+							<#elseif client.status == "DESYNCHRONIZED">
+							<span class="badge badge-published" id="status-${client?index}">${client.status!''}</span>
+                            <#elseif client.status == "ERROR">
+                            <span class="badge badge-error" id="status-${client?index}">${client.status!''}</span>
+                            <#else>
+                            <span class="badge"> ${client.status!''} </span>
+                            </#if>
+						</td>
+						<td>
+
+                            <#if client.status?? && client.status!='PUBLISHING' >
+                                <#if client.status?? && (client.status=='PUBLISHED')>
+                                    <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=removeOperation&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
+                                <#else>
+                                    <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageClientOperations.jsp?action=generateClient&uuid=${client.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
+                                </#if>
+                            </#if>
+						</td>
+					</tr>
+					</#list>
+				</@table>
+			</div>
+		</div>
+		<@paginationAdmin paginator=paginator combo=1 />
+	</div>
+  </@boxBody>
+</@box>
+
+
+</div>
+<div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+
+</div>
+</div>
+</div>
+
+
+<style>
+	.loader {
+		width: 22px;
+		--b: 8px;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		padding: 1px;
+		background: conic-gradient(#0000 10%, #000000) content-box;
+		-webkit-mask:
+				repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+				radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+		-webkit-mask-composite: destination-in;
+		mask-composite: intersect;
+		animation:l4 1s infinite steps(10);
+	}
+	@keyframes l4 {to{transform: rotate(1turn)}}
+</style>
+<script type="application/javascript">
+	$(function() {
+		$('.generate-subscription-form').each(function() {
+			$(this).removeClass("d-flex");
+		});
+		$('.form-control-plaintext').each(function() {
+			$(this).removeClass('form-control');
+		});
+	});
+	function loadAndSubmit(idButton) {
+		$('#' + idButton).attr('disabled', 'disabled');
+		$('#' + idButton).html('<div class="loader"></div>');
+		$('#' + idButton).closest('form').submit();
+	}
+
+
+    function translateStatus(status){
+        switch (status) {
+            case 'ERROR': return '#i18n{apimanager.global.status.error}';
+            case 'NEW': return '#i18n{apimanager.global.status.new}';
+			case 'DESYNCHRONIZED': return '#i18n{apimanager.global.status.desynchronized}';
+            case 'DRAFT': return '#i18n{apimanager.global.status.draft}';
+            case 'UNPUBLISHING': return '#i18n{apimanager.global.status.unpublishing}';
+            case 'PUBLISHING': return '#i18n{apimanager.global.status.publishing}';
+            case 'PUBLISHED': return '#i18n{apimanager.global.status.published}';
+            case 'UNPUBLISHED': return '#i18n{apimanager.global.status.unpublished}';
+            case 'ARCHIVED': return '#i18n{apimanager.global.status.archived}';
+            case 'PUBLISH_ERROR': return '#i18n{apimanager.global.status.publisherror}';
+            case 'DEPLOY_ERROR': return '#i18n{apimanager.global.status.deployerror}';
+            case 'UNPUBLISH_ERROR': return '#i18n{apimanager.global.status.unpublisherror}';
+            case 'UNDEPLOY_ERROR': return '#i18n{apimanager.global.status.undeployerror}';
+            default : return status;
+        }
+    }
+    $("[id^='status-']").each(function () {
+        $(this).html(translateStatus($(this).html()));
+    });
+
+</script>
+

@@ -33,11 +33,13 @@
  */
 package fr.paris.lutece.plugins.apimanager.service;
 
+import fr.paris.lutece.plugins.apimanager.business.api.ApiHome;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecret;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientSecretHome;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 
 import java.util.List;
 import java.util.Map;
@@ -63,19 +65,28 @@ public class ClientService extends AbstractService<Client>
     @Override
     public void create( final Client entity, final String user )
     {
-        final String uuid = ClientHome.create( entity ).getUuid( );
+        final Client client = ClientHome.create( entity );
+        final String uuid = client.getUuid( );
         entity.getSecretList( ).forEach( clientSecret -> {
-            clientSecret.setUuidClient( uuid );
+            clientSecret.setClient( client );
             ClientSecretHome.create( clientSecret );
         } );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "CLIENT "+entity.getName( ) );
     }
 
     @Override
     public void update( final Client entity, final String user )
     {
         ClientHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user, "CLIENT "+entity.getName( ) );
+    }
+
+
+    public void updateStatus( final String clientUuid, final String status, final String user )
+    {
+        ClientHome.updateStatus(clientUuid,status);
+        Client client = ClientHome.findByPrimaryKey(clientUuid).orElse(null);
+        this.addNewHistory( clientUuid, HistoryTypeEnum.UPDATE, user, "CLIENT "+(client != null ? client.getName():clientUuid) );
     }
 
     /**
@@ -127,7 +138,28 @@ public class ClientService extends AbstractService<Client>
         ClientHome.findByPrimaryKey( uuid ).ifPresent( client -> {
             client.setArchived( true );
             ClientHome.update( client );
-            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "CLIENT "+client.getName( ) );
         } );
+    }
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getAvailableTags(List<String> listIds )
+    {
+        return ClientHome.getAvailableTags( listIds );
+    }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getClientsByTags(List<String> tags )
+    {
+        return ClientHome.getuuidsByTags( tags );
     }
 }

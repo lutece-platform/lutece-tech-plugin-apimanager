@@ -34,86 +34,164 @@
 package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
-import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
-import fr.paris.lutece.plugins.apimanager.business.resource.ResourceRewriteUrlHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class ResourceService extends AbstractService<Resource>
-{
+public class ResourceService extends AbstractService<Resource> {
 
     private static ResourceService _instance;
 
-    private ResourceService( )
-    {
+    private ResourceService() {
     }
 
-    public static ResourceService getInstance( )
-    {
-        if ( _instance == null )
-        {
-            _instance = new ResourceService( );
+    public static ResourceService getInstance() {
+        if (_instance == null) {
+            _instance = new ResourceService();
         }
         return _instance;
     }
 
     @Override
-    public void create( final Resource entity, final String user )
-    {
-        Optional.ofNullable( entity.getRewriteUrl( ) ).ifPresent( ResourceRewriteUrlHome::create );
-        final String uuid = ResourceHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+    public void create(final Resource entity, final String user) {
+        if(entity.getRewriteUrl() != null){
+            ResourceRewriteUrlHome.create(entity.getRewriteUrl());
+        }
+        final String uuid = ResourceHome.create(entity).getUuid();
+        entity.setUuid(uuid);
+        this.addNewHistory(uuid, HistoryTypeEnum.CREATE, user, "RESOURCE " + entity.getUuid());
     }
 
     @Override
-    public void update( final Resource entity, final String user )
-    {
-        Optional.ofNullable( entity.getRewriteUrl( ) ).ifPresent( ResourceRewriteUrlHome::update );
-        ResourceHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+    public void update(final Resource entity, final String user) {
+        if(entity.getRewriteUrl() != null){
+            if(entity.getRewriteUrl().getUuid() != null){
+                ResourceRewriteUrlHome.update(entity.getRewriteUrl());
+            }else{
+                ResourceRewriteUrlHome.create(entity.getRewriteUrl());
+            }
+        }
+        ResourceHome.update(entity);
+        this.addNewHistory(entity.getUuid(), HistoryTypeEnum.UPDATE, user, "RESOURCE "+ entity.getName());
     }
 
     @Override
-    public void delete( final String uuid, final String user )
-    {
-        ResourceHome.findByPrimaryKey( uuid ).ifPresent( resource -> {
-            ResourceHome.remove( uuid );
+    public void delete(final String uuid, final String user) {
+        ResourceHome.findByPrimaryKey(uuid).ifPresent(resource -> {
+            ResourceHome.remove(uuid);
 
-            Optional.ofNullable( resource.getRewriteUrl( ) ).ifPresent( ru -> ResourceRewriteUrlHome.remove( ru.getUuid( ) ) );
+            Optional.ofNullable(resource.getRewriteUrl()).ifPresent(ru -> ResourceRewriteUrlHome.remove(ru.getUuid()));
 
-            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
-        } );
+
+            // Delete header matching
+            ResourceHeaderMatchingHome.getIdResourceHeaderMatchingsList(Map.of("uuid_resource", uuid), null, null).forEach(ResourceHeaderMatchingHome::remove);
+
+            this.addNewHistory(uuid, HistoryTypeEnum.DELETE, user, "RESOURCE "+ resource.getName());
+        });
     }
 
     @Override
-    public List<String> getIdEntitiesList( final Map<String, String> mapFilterCriteria, final String columnToOrder, final String orderBy )
-    {
-        return ResourceHome.getIdResourcesList( mapFilterCriteria, columnToOrder, orderBy );
+    public List<String> getIdEntitiesList(final Map<String, String> mapFilterCriteria, final String columnToOrder, final String orderBy) {
+        return ResourceHome.getIdResourcesList(mapFilterCriteria, columnToOrder, orderBy);
     }
 
     @Override
-    public List<Resource> getEntitiesListByIds( final List<String> listIds )
-    {
-        return ResourceHome.getResourcesListByIds( listIds );
+    public List<Resource> getEntitiesListByIds(final List<String> listIds) {
+        return ResourceHome.getResourcesListByIds(listIds);
     }
 
     /**
      * Get Resources by plan UUID
-     * 
-     * @param planUuid
-     *            the plan UUID
+     *
+     * @param planUuid the plan UUID
      * @return list of Resource
      */
-    public List<Resource> getResourcesByPlanUuid( final String planUuid )
-    {
-        final List<String> resourceIds = this.getIdEntitiesList( Map.of( "uuid_plan", planUuid ) );
-        if ( resourceIds.isEmpty( ) )
-        {
-            return List.of( );
+    public List<Resource> getResourcesByPlanUuid(final String planUuid) {
+        final List<String> resourceIds = this.getIdEntitiesList(Map.of("uuid_plan", planUuid));
+        if (resourceIds.isEmpty()) {
+            return List.of();
         }
-        return this.getEntitiesListByIds( resourceIds );
+        return this.getEntitiesListByIds(resourceIds);
+    }
+
+    /**
+     * Get Resources by plan UUID
+     *
+     * @param envUuid the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByEnvironementUuid(final String envUuid) {
+        final List<String> resourceIds = this.getIdEntitiesList(Map.of("uuid_environement", envUuid));
+        if (resourceIds.isEmpty()) {
+            return List.of();
+        }
+        return this.getEntitiesListByIds(resourceIds);
+    }
+
+    /**
+     * Get Resources by plan UUID
+     *
+     * @param planUuid the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByAPIUiidPlanUuidEnvironementUUID(final String apiUuid, final String planUuid, final String environementUuid) {
+        Map<String, String> args = new HashMap<>();
+        if (planUuid != null)
+            args.put("uuid_plan", planUuid);
+        if (apiUuid != null)
+            args.put("uuid_api", apiUuid);
+        if (environementUuid != null)
+            args.put("uuid_environement", environementUuid);
+        final List<String> resourceIds = this.getIdEntitiesList(args);
+
+        if (resourceIds.isEmpty()) {
+            return List.of();
+        }
+        return this.getEntitiesListByIds(resourceIds);
+    }
+
+    /**
+     * Get Resources by plan UUID
+     *
+     * @param apiUuid the plan UUID
+     * @return list of Resource
+     */
+    public List<Resource> getResourcesByApiUuid(final String apiUuid) {
+        final List<String> resourceIds = this.getIdEntitiesList(Map.of("uuid_api", apiUuid));
+        if (resourceIds.isEmpty()) {
+            return List.of();
+        }
+        return this.getEntitiesListByIds(resourceIds);
+    }
+
+    /**
+     * Get EnvironementUUID for an api
+     *
+     * @param apiUuid the api UUID
+     * @return list of Environement Uuids
+     */
+    public List<String> getEnvForApiUuid(final String apiUuid) {
+        final List<String> envIds = ResourceHome.getEnvForApiUuid(apiUuid);
+        if (envIds.isEmpty()) {
+            return List.of();
+        }
+        return envIds;
+    }
+
+    /**
+     * Get API UUIDs for an environement
+     *
+     * @param envUuid the environement UUID
+     * @return list of API Uuids
+     */
+    public List<String> getDistinctApiUuidsByEnv(final String envUuid) {
+        final List<String> apiIds = ResourceHome.getDistinctApiUuidsByEnv(envUuid);
+        if (apiIds.isEmpty()) {
+            return List.of();
+        }
+        return apiIds;
     }
 }

@@ -59,14 +59,14 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     // Constants
     private static final String TABLE_NAME = "apimanager_history";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_history ( uuid, uuid_ref, date, type, user ) VALUES ( ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_history ( uuid, uuid_ref, date, type, user, action ) VALUES ( ?, ?, ?, ?, ?,? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_history WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_history SET uuid_ref = ?, date = ?, type = ?, user = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_history SET uuid_ref = ?, date = ?, type = ?, user = ?, action = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_ref, date, type, user FROM apimanager_history";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_ref, date, type, user, action FROM apimanager_history";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_history";
 
-    private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
+    private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN ( %ids ) ORDER BY FIELD( uuid, %ids )";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
     private static final String SQL_QUERY_SELECTALL_BY_UUID_REF = SQL_QUERY_SELECTALL + " WHERE uuid_ref = ? ";
@@ -95,6 +95,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
             daoUtil.setTimestamp( nIndex++, history.getDate( ) );
             daoUtil.setString( nIndex++, history.getType( ).name( ) );
             daoUtil.setString( nIndex++, history.getUser( ) );
+            daoUtil.setString( nIndex, history.getAction( ) );
 
             daoUtil.executeUpdate( );
             history.setUuid( uuid );
@@ -150,6 +151,7 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
             daoUtil.setTimestamp( nIndex++, history.getDate( ) );
             daoUtil.setString( nIndex++, history.getType( ).name( ) );
             daoUtil.setString( nIndex++, history.getUser( ) );
+            daoUtil.setString( nIndex++, history.getAction( ) );
             daoUtil.setString( nIndex, history.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -237,28 +239,15 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
     @Override
     public List<History> selectEntitiesListByIds( Plugin plugin, List<String> listIds )
     {
-        List<History> historyList = new ArrayList<>( );
-
-        StringBuilder builder = new StringBuilder( );
+        final List<History> historyList = new ArrayList<>( );
 
         if ( !listIds.isEmpty( ) )
         {
-            for ( int i = 0; i < listIds.size( ); i++ )
+            final String placeHolders = "'" + String.join("','", listIds) + "'";
+            final String stmt = SQL_QUERY_SELECTALL_BY_IDS.replaceAll("%ids", placeHolders);
+
+            try ( final DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
             {
-                builder.append( "?," );
-            }
-
-            String placeHolders = builder.deleteCharAt( builder.length( ) - 1 ).toString( );
-            String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-
-            try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
-            {
-                int index = 1;
-                for ( String id : listIds )
-                {
-                    daoUtil.setString( index++, id );
-                }
-
                 daoUtil.executeQuery( );
                 while ( daoUtil.next( ) )
                 {
@@ -303,7 +292,8 @@ public final class HistoryDAO extends AbstractFilterDao implements IHistoryDAO
         history.setDate( daoUtil.getTimestamp( nIndex++ ) );
         final String typeStr = daoUtil.getString( nIndex++ );
         history.setType( typeStr != null ? HistoryTypeEnum.valueOf( typeStr ) : null );
-        history.setUser( daoUtil.getString( nIndex ) );
+        history.setUser( daoUtil.getString( nIndex++ ) );
+        history.setAction( daoUtil.getString( nIndex ) );
 
         return history;
     }

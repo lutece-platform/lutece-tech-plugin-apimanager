@@ -159,4 +159,67 @@ public final class SubscriptionHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     *
+     * @param envUuid
+     *            uuid of the environment
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<Subscription> getIdSubscriptionsByApiAndEnv( final String apiUuid, final String envUuid )
+    {
+        return _dao.getIdSubscriptionsByApiAndEnv( apiUuid, envUuid, _plugin );
+    }
+
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     *
+     *            liste of ids
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<String> getIdSubscriptionsByResourceAndEnvironementAndClient( String resourceUuid, String environementUuid,String clientUuid)
+    {
+        return _dao.getIdSubscriptionsByResourceAndEnvironementAndClient( resourceUuid, environementUuid, clientUuid, _plugin  );
+    }
+
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     *
+     *            liste of ids
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<String> getIdSubscriptionsByResource( String resourceUuid)
+    {
+        return _dao.getIdSubscriptionsByResource( resourceUuid, _plugin  );
+    }
+
+
+    /**
+     * Load the uuid of all the avant objects that are NOT linked to the specified instance UUID, and returns them as a list
+     *
+     * @param instanceUuid
+     *            the instance uuid
+     * @return the list which contains the uuid of all the avant objects
+     */
+    public static List<String> getIdSubscriptionsByApi( String instanceUuid )
+    {
+        return _dao.getIdSubscriptionsByApi( instanceUuid, _plugin );
+    }
+
+
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     *
+     *            liste of ids
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<String> getIdSubscriptionsByClient( String clientUuid)
+    {
+        return _dao.getIdSubscriptionsByClient( clientUuid, _plugin  );
+    }
+
+
+    public static List<String> getDistinctStatus() {
+        return _dao.getDistinctStatus( _plugin  );
+    }
 }

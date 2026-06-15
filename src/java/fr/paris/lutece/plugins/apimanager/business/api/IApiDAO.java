@@ -46,6 +46,7 @@ import java.util.Optional;
  */
 public interface IApiDAO extends IDAO<Api>
 {
+
     /**
      * Load the uuid of all the APIs that are NOT linked to the specified instance UUID, and returns them as a list
      * 
@@ -73,4 +74,9 @@ public interface IApiDAO extends IDAO<Api>
      *            the instance UUID
      */
     void linkInstance( Api api, String instanceUuid, Plugin plugin );
+    void updateStatus( String apiUuid,String status, Plugin plugin );
+    List<String> getIdApisListByPath(String path, Plugin plugin);
+    List<String> getIdApisListByPathAndVersion(String path, String version, Plugin plugin);
+
+    List<String> getDistinctStatus(Plugin plugin);
 }

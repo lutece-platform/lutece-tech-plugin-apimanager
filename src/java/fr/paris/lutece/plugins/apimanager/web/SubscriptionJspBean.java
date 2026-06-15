@@ -35,15 +35,15 @@
 package fr.paris.lutece.plugins.apimanager.web;
 
 import fr.paris.lutece.plugins.apimanager.business.api.Api;
+import fr.paris.lutece.plugins.apimanager.business.api.ApiStatusEnum;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
-import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
-import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanStatusEnum;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
-import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionHome;
-import fr.paris.lutece.plugins.apimanager.service.InstanceService;
-import fr.paris.lutece.plugins.apimanager.service.PlanService;
+import fr.paris.lutece.plugins.apimanager.business.subscription.SubscriptionStatusEnum;
+import fr.paris.lutece.plugins.apimanager.service.ClientService;
+import fr.paris.lutece.plugins.apimanager.service.EnvironementService;
 import fr.paris.lutece.plugins.apimanager.service.ResourceService;
 import fr.paris.lutece.plugins.apimanager.service.SubscriptionService;
 import fr.paris.lutece.plugins.apimanager.service.generator.IConfigGeneratorService;
@@ -52,7 +52,6 @@ import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
@@ -63,11 +62,18 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static fr.paris.lutece.plugins.apimanager.web.right.Constants.RIGHT_MANAGESUBSCRIPTIONS;
@@ -80,17 +86,18 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 {
 
     // Templates
-    private static final String TEMPLATE_MANAGE_SUBSCRIPTIONS = "/admin/plugins/apimanager/manage_subscriptions.html";
-    private static final String TEMPLATE_CREATE_SUBSCRIPTION = "/admin/plugins/apimanager/create_subscription.html";
+    private static final String TEMPLATE_MANAGE_SUBSCRIPTIONS = "/admin/plugins/apimanager/subscription/manage_subscriptions.html";
+    private static final String TEMPLATE_CREATE_SUBSCRIPTION = "/admin/plugins/apimanager/subscription/create_subscription.html";
 
     // Parameters
     private static final String PARAMETER_ID_SUBSCRIPTION = "uuid";
-    private static final String PARAMETER_ID_CLIENT = "uuid_client";
-    private static final String PARAMETER_ID_PLAN = "uuid_plan";
     private static final String PARAMETER_VIEW_FROM_CLIENT = "view_from_client";
-    private static final String PARAMETER_ENVIRONNEMENT = "environnement";
-    private static final String PARAMETER_COMMENT = "comment";
-    private static final String PARAMETER_UUID_SUBSCRIPTION = "uuid_subscription";
+    private static final String PARAMETER_UUID_APPLICATION = "uuid_application";
+    private static final String PARAMETER_UUID_ENVIRONEMENT = "uuid_environement";
+    private static final String PARAMETER_UUID_CLIENT = "uuid_client";
+    private static final String PARAMETER_STATUS = "status";
+    private static final String PARAMETER_UUID_API = "uuid_api";
+    private static final String PARAMETER_UUID_PLAN = "uuid_plan";
 
     // Filters
     private static final String FILTER_DISPLAY_ARCHIVED = "display_archived";
@@ -102,18 +109,22 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
 
     // Markers
     private static final String MARK_SUBSCRIPTION_LIST = "subscription_list";
+    private static final String MARK_CLIENT_LIST = "client_list";
     private static final String MARK_SUBSCRIPTION = "subscription";
     private static final String MARK_SHOW_GENERATE_BUTTON = "show_generate_button";
     private static final String MARK_ENVIRONMENT_LIST = "environment_list";
+    private static final String MARK_API_LIST = "api_list";
+    private static final String MARK_PLAN_LIST = "plan_list";
     private static final String MARK_VIEW_FROM_CLIENT = "view_from_client";
+    private static final String MARK_SELECTED_ENVIRONMENT_UUID = "selected_environment_uuid";
+    private static final String MARK_SELECTED_UUID_API = "selected_uuid_api";
+    private static final String MARK_SELECTED_UUID_PLAN = "selected_uuid_plan";
+    private static final String MARK_SELECTED_UUID_CLIENT = "selected_uuid_client";
 
     private static final String JSP_MANAGE_SUBSCRIPTIONS = "jsp/admin/plugins/apimanager/ManageSubscriptions.jsp";
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_SUBSCRIPTION = "apimanager.message.confirmRemoveSubscription";
-
-    // Validations
-    private static final String VALIDATION_ATTRIBUTES_PREFIX = "apimanager.model.entity.subscription.attribute.";
 
     // Views
     private static final String VIEW_MANAGE_SUBSCRIPTIONS = "manageSubscriptions";
@@ -123,16 +134,11 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     private static final String ACTION_CREATE_SUBSCRIPTION = "createSubscription";
     private static final String ACTION_REMOVE_SUBSCRIPTION = "removeSubscription";
     private static final String ACTION_CONFIRM_REMOVE_SUBSCRIPTION = "confirmRemoveSubscription";
-    private static final String ACTION_GENERATE_API_MANAGER = "generateApiManager";
 
     // Infos
     private static final String INFO_SUBSCRIPTION_CREATED = "apimanager.info.subscription.created";
     private static final String INFO_SUBSCRIPTION_REMOVED = "apimanager.info.subscription.removed";
-    private static final String INFO_API_MANAGER_GENERATED = "apimanager.info.subscription.api.manager.published";
 
-    // Errors
-    private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_API_MANAGER_GENERATION = "Error publishing API manager";
 
     // Session variable to store working values
     private Subscription _subscription;
@@ -170,17 +176,65 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             resetCurrentPageIndexOfPaginator( );
         }
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, _listIdSubscriptions, JSP_MANAGE_SUBSCRIPTIONS );
 
+        // recuperation des souscription a chaque resource pour reduire a api/environement
+        List<Subscription> fullSubscriptionList = getService().getEntitiesListByIds(_listIdSubscriptions);
+        String selectedEnvironementUuid = _mapFilterCriteria.get(PARAMETER_UUID_ENVIRONEMENT);
+        String selectedPlanUuid = _mapFilterCriteria.get(PARAMETER_UUID_PLAN);
+        String selectedApiUuid = _mapFilterCriteria.get(PARAMETER_UUID_API);
+        if(selectedEnvironementUuid != null){
+            fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getEnvironement().getUuid().equals(selectedEnvironementUuid)).collect(Collectors.toList());
+        }
+        if(selectedPlanUuid != null){
+            fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getPlan().getUuid().equals(selectedPlanUuid)).collect(Collectors.toList());
+        }
+        if(selectedApiUuid != null){
+            fullSubscriptionList = fullSubscriptionList.stream().filter(subscription -> subscription.getResource().getApi().getUuid().equals(selectedApiUuid)).collect(Collectors.toList());
+        }
+
+        Collection<Subscription> uniqueByApiAndEnvironement = fullSubscriptionList
+                .stream()
+                .collect(Collectors.toMap(usr -> Set.of(usr.getResource().getApi().getUuid(), usr.getEnvironement().getUuid(), usr.getClient().getUuid(), usr.getResource().getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
+                .values();
+
+
+        Map<String, Object> model = getPaginatedListModel( request, MARK_SUBSCRIPTION_LIST, uniqueByApiAndEnvironement.stream().map(Subscription::getUuid).collect(Collectors.toList()), JSP_MANAGE_SUBSCRIPTIONS );
+
+        model.put(MARK_SELECTED_ENVIRONMENT_UUID,_mapFilterCriteria.get(PARAMETER_UUID_ENVIRONEMENT));
+        model.put(MARK_SELECTED_UUID_PLAN, _mapFilterCriteria.get(PARAMETER_UUID_PLAN));
+        model.put(MARK_SELECTED_UUID_API, _mapFilterCriteria.get(PARAMETER_UUID_API));
+        model.put(MARK_SELECTED_UUID_CLIENT, _mapFilterCriteria.get(PARAMETER_UUID_CLIENT));
+
+        //exlude some filters from the returned list
+        for(String exclusion: getExcludedSearchParameters()){
+            _mapFilterCriteria.remove(exclusion);
+        }
         addSearchParameters( model, _mapFilterCriteria ); // allow the persistence of search values in inputs search bar inputs
         model.put( MARK_SHOW_GENERATE_BUTTON, ( _configGeneratorService != null ) );
         model.put( MARK_ENVIRONMENT_LIST, environmentList );
+        model.put(MARK_CLIENT_LIST, fullSubscriptionList.stream().map(Subscription::getClient).collect(Collectors.toList()).stream()
+                .filter(distinctByKey(Client::getUuid))
+                .collect(Collectors.toList()));
+        model.put(MARK_PLAN_LIST, fullSubscriptionList.stream().map(Subscription::getPlan).collect(Collectors.toList()).stream()
+                .filter(distinctByKey(Plan::getUuid))
+                .collect(Collectors.toList()));
+
+        model.put(MARK_API_LIST, fullSubscriptionList.stream().map(Subscription::getApi).collect(Collectors.toList()).stream()
+                .filter(distinctByKey(Api::getUuid))
+                .collect(Collectors.toList()));
+
         model.put( MARK_VIEW_FROM_CLIENT, Boolean.parseBoolean( Optional.ofNullable( request.getParameter( PARAMETER_VIEW_FROM_CLIENT ) ).orElse( "false" ) ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_SUBSCRIPTIONS, TEMPLATE_MANAGE_SUBSCRIPTIONS, model );
 
     }
 
+    public static <T> Predicate<T> distinctByKey(
+            Function<? super T, ?> keyExtractor) {
+
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
     /**
      * Get Items from Ids list
      * 
@@ -198,17 +252,17 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
             return listSubscription.stream( ).sorted( comparator ).collect( Collectors.toList( ) );
         }
 
-        if ( "plan".equals( _optionOrderBy ) )
+        if ( "resource".equals( _optionOrderBy ) )
         {
-            comparator = Comparator.comparing( Subscription::getPlan, Comparator.comparing( Plan::getName ) );
+            comparator = Comparator.comparing( Subscription::getResource, Comparator.comparing( Resource::getName ) );
         }
         if ( "environment".equals( _optionOrderBy ) )
         {
-            comparator = Comparator.comparing( Subscription::getEnvironnement );
+            comparator = Comparator.comparing( Subscription::getEnvironement, Comparator.comparing( Environement::getUuid ) );
         }
         if ( "api".equals( _optionOrderBy ) )
         {
-            comparator = Comparator.comparing( sub -> sub.getPlan( ).getApi( ), Comparator.comparing( Api::getName ) );
+            comparator = Comparator.comparing( sub -> sub.getResource().getApi(), Comparator.comparing( Api::getName ) );
         }
         if ( "client".equals( _optionOrderBy ) )
         {
@@ -253,14 +307,47 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     public String getCreateSubscription( HttpServletRequest request )
     {
         _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
-        final Client client = ClientHome.findByPrimaryKey( request.getParameter( PARAMETER_ID_CLIENT ) )
-                .orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-        _subscription.setClient( client );
-        _subscription.setPlan( new Plan( ) );
+        _subscription.setClient( new Client( ) );
+        _subscription.setResource( new Resource( ) );
 
+        String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
+        String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
+        String apiUuid = request.getParameter(PARAMETER_UUID_API);
+        String planUuid = request.getParameter(PARAMETER_UUID_PLAN);
         Map<String, Object> model = getModel( );
+        model.put(PARAMETER_UUID_APPLICATION,clientUuid );
+        model.put(PARAMETER_UUID_ENVIRONEMENT,environementUuid );
+        model.put(PARAMETER_UUID_API,apiUuid );
+        model.put(PARAMETER_UUID_PLAN,planUuid );
         model.put( MARK_SUBSCRIPTION, _subscription );
-        model.put( MARK_ENVIRONMENT_LIST, environmentList );
+        List<Environement> environements = EnvironementService.getInstance().getEntitiesListByIds(EnvironementService.getInstance().getIdEntitiesList());
+        model.put( MARK_ENVIRONMENT_LIST, environements );
+        model.put(MARK_CLIENT_LIST, ClientService.getInstance().getEntitiesListByIds(ClientService.getInstance().getIdEntitiesList()));
+
+        if(clientUuid!=null && environementUuid!=null){
+            List<Resource> resources = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
+            List<Resource> environementResources = resources.stream()
+                    .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) ).collect(Collectors.toList());
+            Collection<Resource> uniqueByApi = environementResources
+                    .stream()
+                    .filter(resource -> resource.getApi() != null && !resource.getApi().getArchived())
+                    .collect(Collectors.toMap(usr -> Set.of(usr.getApi().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
+                    .values();
+            model.put( MARK_API_LIST, uniqueByApi.stream().map(resource -> resource.getApi()).collect(Collectors.toList()) );
+            if(apiUuid!=null){
+                List<Resource> environementAndApiResources = resources.stream()
+                        .filter(resource -> resource.getApi() != null)
+                        .filter(resource -> resource.getEnvironement().getUuid().equals( environementUuid ) && resource.getApi().getUuid().equals(apiUuid) ).collect(Collectors.toList());
+                Collection<Resource> uniqueByPlan = environementAndApiResources
+                        .stream()
+                        .filter(resource -> resource.getPlan() != null)
+                        .collect(Collectors.toMap(usr -> Set.of(usr.getPlan().getUuid()), Function.identity(), (usr1, usr2) -> usr1))
+                        .values();
+                model.put( MARK_PLAN_LIST, uniqueByPlan.stream().map(resource -> resource.getPlan()).collect(Collectors.toList()) );
+            }
+        }
+
+
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_SUBSCRIPTION ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_SUBSCRIPTION, TEMPLATE_CREATE_SUBSCRIPTION, model );
@@ -277,8 +364,19 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     @Action( ACTION_CREATE_SUBSCRIPTION )
     public String doCreateSubscription( HttpServletRequest request ) throws AccessDeniedException
     {
-        populate( _subscription, request, getLocale( ) );
-        _subscription.getPlan( ).setUuid( request.getParameter( PARAMETER_ID_PLAN ) );
+        String clientUuid = request.getParameter(PARAMETER_UUID_APPLICATION);
+        String environementUuid = request.getParameter(PARAMETER_UUID_ENVIRONEMENT);
+        String apiUuid = request.getParameter(PARAMETER_UUID_API);
+        String planUuid = request.getParameter(PARAMETER_UUID_PLAN);
+        
+        _subscription = ( _subscription != null ) ? _subscription : new Subscription( );
+        _subscription.setClient( new Client( ) );
+        _subscription.getClient().setUuid(clientUuid);
+        _subscription.setEnvironement( new Environement( ) );
+        _subscription.getEnvironement().setUuid(environementUuid);
+        _subscription.setPlan( new Plan( ) );
+        _subscription.getPlan().setUuid(planUuid);
+        _subscription.setStatus(SubscriptionStatusEnum.NEW.name());
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_SUBSCRIPTION ) )
         {
@@ -286,16 +384,40 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
         }
 
         // Check constraints
-        if ( !validateBean( _subscription, VALIDATION_ATTRIBUTES_PREFIX ) )
+        if ( clientUuid == null || environementUuid == null || apiUuid == null || planUuid == null )
         {
             return redirectView( request, VIEW_CREATE_SUBSCRIPTION );
         }
 
-        getService( ).create( _subscription, getUser( ).getEmail( ) );
+        // récupération des resources déjà souscrites
+        List<String> idSubscriptionsByClient = SubscriptionService.getInstance().getIdSubscriptionsByClient(clientUuid);
+        List<Subscription> existingClientSubscription  = SubscriptionService.getInstance().getEntitiesListByIds(idSubscriptionsByClient);
+
+        // recuperation des resources à souscrire api/environement/plan
+        List<Resource> fullResourceList = ResourceService.getInstance().getEntitiesListByIds(ResourceService.getInstance().getIdEntitiesList());
+        Collection<Resource> resourceToProcess = fullResourceList
+                .stream()
+                .filter(resource -> resource.getPlan() != null)
+                .filter(resource -> resource.getPlan().getUuid().equals(planUuid) && resource.getApi().getUuid().equals(apiUuid) && resource.getEnvironement().getUuid().equals(environementUuid))
+                .collect(Collectors.toList());
+
+        resourceToProcess.stream()
+                .filter(resource -> existingClientSubscription.stream()
+                        .noneMatch(subscription ->
+                                Objects.equals(subscription.getApi().getUuid(), resource.getApi().getUuid())
+                                && Objects.equals(subscription.getEnvironement().getUuid(), resource.getEnvironement().getUuid())
+                                && Objects.equals(subscription.getPlan().getUuid(), resource.getPlan().getUuid())
+                                && Objects.equals(subscription.getResource().getUuid(), resource.getUuid())
+                        )
+                )
+                .forEach(resource -> {
+                    _subscription.setResource(resource);
+                    getService( ).create( _subscription, getUser( ).getEmail( ) );
+                });
 
         resetListId( );
 
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_CREATED );
+        return redirect( request, "ManageSubscriptions.jsp?infoMsg=" + INFO_SUBSCRIPTION_CREATED );
     }
 
     /**
@@ -328,51 +450,21 @@ public class SubscriptionJspBean extends AbstractJspBean<String, Subscription>
     public String doRemoveSubscription( HttpServletRequest request )
     {
         String uuid = request.getParameter( PARAMETER_ID_SUBSCRIPTION );
+        Subscription subscription = getService().getEntitiesListByIds(Collections.singletonList(uuid)).stream().findFirst().orElse(null);
+        List<Resource> resources = ResourceService.getInstance().getResourcesByAPIUiidPlanUuidEnvironementUUID(subscription.getResource().getApi().getUuid(),subscription.getResource().getPlan().getUuid(),subscription.getResource().getEnvironement().getUuid());
 
-        getService( ).delete( uuid, getUser( ).getEmail( ) );
+        List<String> clientResourceSubscriptionIds = null;
+        for(Resource resource : resources){
+            clientResourceSubscriptionIds = getService().getIdSubscriptionsByResourceAndEnvironementAndClient(resource.getUuid(), resource.getEnvironement().getUuid(),subscription.getClient().getUuid());
+            for (String clientResourceSubscriptionId : clientResourceSubscriptionIds)
+                getService( ).delete( clientResourceSubscriptionId, getUser( ).getEmail( ) );
+        }
 
         addInfo( INFO_SUBSCRIPTION_REMOVED, getLocale( ) );
         resetListId( );
 
-        return redirect( request, "ManageClients.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED );
+        return redirect( request, "ManageSubscriptions.jsp?infoMsg=" + INFO_SUBSCRIPTION_REMOVED );
     }
 
-    @Action( ACTION_GENERATE_API_MANAGER )
-    public String doGenerateApiManager( final HttpServletRequest request )
-    {
-        final String uuid = request.getParameter( PARAMETER_UUID_SUBSCRIPTION );
-        if ( uuid == null )
-        {
-            addError( ERROR_RESOURCE_NOT_FOUND );
-            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-        }
-        final Subscription subscription = SubscriptionHome.findByPrimaryKey( uuid ).orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
-
-        final String env = request.getParameter( PARAMETER_ENVIRONNEMENT );
-        final String comment = request.getParameter( PARAMETER_COMMENT );
-
-        try
-        {
-            final Plan plan = subscription.getPlan( );
-            _configGeneratorService.generateApiManager( subscription.getClient( ), plan,
-                    ResourceService.getInstance( ).getResourcesByPlanUuid( plan.getUuid( ) ),
-                    InstanceService.getInstance( )
-                            .getEntitiesListByIds( InstanceService.getInstance( ).getIdInstancesListLinkedToApiUuid( plan.getApi( ).getUuid( ) ) ).stream( )
-                            .filter( instance -> env.equals( instance.getEnvironnement( ) ) ).collect( Collectors.toList( ) ),
-                    env, comment, getUser( ).getEmail( ) );
-            getService( ).addNewHistory( subscription.getUuid( ), HistoryTypeEnum.GENERATE, getUser( ).getEmail( ) );
-            plan.setStatus( PlanStatusEnum.PUBLISHED );
-            PlanService.getInstance( ).update( plan, getUser( ).getEmail( ) );
-        }
-        catch( final AppException e )
-        {
-            addError( ERROR_API_MANAGER_GENERATION );
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-        }
-
-        addInfo( INFO_API_MANAGER_GENERATED, getLocale( ) );
-        return redirectView( request, VIEW_MANAGE_SUBSCRIPTIONS );
-    }
 
 }

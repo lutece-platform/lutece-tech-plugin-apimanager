@@ -1,0 +1,302 @@
+<div class="container-fluid">
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <a class="nav-link " id="manage-tab" href="jsp/admin/plugins/apimanager/ManageApis.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_apis.viewApi}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link active" id="create-tab" role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_apis.createApi}</a>
+      </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+      </div>
+      <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+         <@box>
+         <@boxHeader title='#i18n{apimanager.create_api.title}' />
+         <@boxBody>
+         <div class="bs-stepper" id="stepper">
+            <div class="bs-stepper-header" role="tablist">
+               <!-- your steps here -->
+               <div class="step" data-target="#logins-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="logins-part" id="logins-part-trigger">
+                  <span class="bs-stepper-circle">1</span>
+                  <span class="bs-stepper-label">Information de base</span>
+                  </button>
+               </div>
+               <div class="line"></div>
+               <div class="step" data-target="#information-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="information-part" id="information-part-trigger">
+                  <span class="bs-stepper-circle">2</span>
+                  <span class="bs-stepper-label">Ressources</span>
+                  </button>
+               </div>
+               <div class="line"></div>
+               <div class="step" data-target="#plan-part">
+                  <button type="button" class="step-trigger" role="tab" aria-controls="plan-part" id="plan-part-trigger">
+                  <span class="bs-stepper-circle">3</span>
+                  <span class="bs-stepper-label">Plans</span>
+                  </button>
+               </div>
+            </div>
+            <div class="bs-stepper-content">
+               <@tform name='step2' id='step2' method='post' action='jsp/admin/plugins/apimanager/ManageApis.jsp?action=step2'>
+               <@messages errors=errors />
+               <@input type="hidden" value="${token}" name="token" />
+               <@input type="hidden" value="${current_environement_tab}" id="current_environement_tab" name="current_environement_tab" />
+               <@input type="hidden" value="${current_source_environement}" id="current_source_environement" name="current_source_environement" />
+               <@input type="hidden" value="${current_resource}" id="current_resource" name="current_resource" />
+               <@input type="hidden" value="${current_header_matching}" id="current_header_matching" name="current_header_matching" />
+               <@input type="hidden" value="" id="create_usecase" name="create_usecase" />
+               <!-- your steps content here -->
+               <div id="logins-part" role="tabpanel" aria-labelledby="logins-part-trigger" class="content auto-height">
+               </div>
+               <div id="information-part" class="content auto-height" role="tabpanel" aria-labelledby="information-part-trigger">
+                  <@formGroup labelFor='apiEnvironnement' labelKey='#i18n{apimanager.api.resource.labelEnvironement}' mandatory=false>
+                  <div class="d-flex align-items-center gap-2 mb-5">
+                     <select id="apiEnvironnement" name="environement" class="form-control w-auto">
+                        <#list environment_list as environment>
+                        <option value="${environment.uuid}">${environment.name}</option>
+                        </#list>
+                     </select>
+                     <button type="button" class="btn btn-success" id="addEnvBtn" onclick="addEnvironement()">Ajouter</button>
+                     <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Cloner
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                           <#list api.environementList as environment>
+                           <li><a onclick="clone('${environment.uuid}')" class="dropdown-item">${environment.name}</a></li>
+                           </#list>
+                        </ul>
+                     </div>
+                  </div>
+                  </@formGroup>
+                  <label class="form-label">Gérer les ressources par environnement</label>
+                  <!-- Nav tabs -->
+                  <ul class="nav nav-tabs bg-light" id="myTabs" role="tablist">
+                     <#list api.environementList as environment>
+                     <li class="nav-item" role="presentation">
+                        <button class="nav-link text-dark <#if '${environment.uuid}'=='${current_environement_tab}'>active</#if>" id="environement-${environment.uuid}-resource-container-link"
+                           data-bs-toggle="tab" data-bs-target="#environement-${environment.uuid}-resource-container"
+                           type="button" role="tab" aria-controls="manage" aria-selected="false">${environment.name}</button>
+                     </li>
+                     </#list>
+                  </ul>
+                  <!-- Tab panes -->
+                  <div class="tab-content " id="tabContent">
+                     <#list api.environementList as environment>
+                     <div class="tab-pane container-fluid mt-4 text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
+                        <button type="button" class="btn btn-success mb-4" id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
+                        <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#removeEnvModal-${environment.uuid}">
+                           #i18n{apimanager.api.deleteEnv}
+                        </button>
+                        <!-- modal for this environement -->
+                        <div class="modal fade" id="removeEnvModal-${environment.uuid}" tabindex="-1" aria-labelledby="removeEnvModalLabel-${environment.uuid}" aria-hidden="true">
+                           <div class="modal-dialog">
+                              <div class="modal-content">
+                                 <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">#i18n{apimanager.message.title.confirmRemoveEnvironement}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                 </div>
+                                 <div class="modal-body">
+                                    #i18n{apimanager.message.confirmRemoveEnvironement}
+                                 </div>
+                                 <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">#i18n{apimanager.global.button.close}</button>
+                                    <button type="button" class="btn btn-primary" onclick="deleteEnvironement('${environment.uuid}')" >#i18n{apimanager.global.button.confirm}</button>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- end of modal for this environement -->
+                        <div id="resource-container" class="col py-2 accordion">
+                           <#list environment.resourceList as resource>
+                           <#if resource.subscriptionList??>
+                           <!-- duplicate the subscription in case of new version -->
+                           <#list resource.subscriptionList as subscription>
+                           <@input type="hidden" value=subscription.archived?string('1', '0')
+                           id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-archived"
+                           name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-archived" />
+                           <@input type="hidden" value=subscription.client.uuid!''
+                           id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_client"
+                           name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_client" />
+                           <@input type="hidden" value=subscription.traceEnabled?string('1', '0')
+                           id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-trace_enabled"
+                           name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-trace_enabled" />
+                           </#list>
+                           </#if>
+                           <div id="environement-${environment.uuid}-resource-row-${resource?index}" class="row resource-row accordion-item" data-index="${resource?index}">
+                              <h2 class="accordion-header">
+                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${resource?index}" aria-expanded="true" aria-controls="collapseOne">
+                                     <#if resource.name?? && resource.name !=''>${resource.name}<#if resource.verb !=''> - ${resource.verb}</#if><#if resource.path !=''> - ${resource.path}</#if><#else>Resource ${resource?index}</#if>
+                                 </button>
+                              </h2>
+                              <div id="collapse${resource?index}" class="col accordion-collapse collapse <#if '${resource?index}'=='${current_resource}'>show</#if> ">
+                                 <div class="clearfix"></div>
+                                 <div class="row ">
+                                    <div class="col">
+                                       <div class="card accordion-body">
+                                          <div class="card-header d-flex justify-content-between align-items-center">
+                                             <div class="card-tools">
+                                             </div>
+                                             <div class="card-body">
+                                                <#if api.uuid??>
+                                                <@input type="hidden" id="environement-${environment.uuid}-resource-row-${resource?index}-uuid" value=resource.uuid!''
+                                                name="environement-${environment.uuid}-resource-row-${resource?index}-uuid" />
+                                                </#if>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-name' labelKey='#i18n{apimanager.resource.labelName}' mandatory=true>
+                                                <div class="d-none" id="suggested-name-prefix"></div>
+                                                <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-name'
+                                                name='environement-${environment.uuid}-resource-row-${resource?index}-name' maxlength=100 value=resource.name!'' tabIndex='${resource?index}1' />
+                                                <small class="form-text text-muted">#i18n{apimanager.resource.labelName.help}</small>
+                                                </@formGroup>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-path' labelKey='#i18n{apimanager.resource.labelPath}' mandatory=true>
+                                                <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-path'
+                                                name='environement-${environment.uuid}-resource-row-${resource?index}-path' maxlength=255 value=resource.path!'' tabIndex='${resource?index}2' />
+                                                </@formGroup>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-verb_name' labelKey='#i18n{apimanager.resource.labelVerb}' mandatory=true>
+                                                <select id="environement-${environment.uuid}-resource-row-${resource?index}-verb_name" name="environement-${environment.uuid}-resource-row-${resource?index}-verb_name" class="form-control">
+                                                   <#list verb_list as verb>
+                                                   <#if resource.verb?? && resource.verb.name()==verb.name()>
+                                                   <option value="${verb.name()}" selected>${verb.name()}</option>
+                                                   <#else>
+                                                   <option value="${verb.name()}">${verb.name()}</option>
+                                                   </#if>
+                                                   </#list>
+                                                </select>
+                                                </@formGroup>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-matcher_type' labelKey='#i18n{apimanager.resource.labelMatcherType}' mandatory=true>
+                                                <select id="environement-${environment.uuid}-resource-row-${resource?index}-matcher_type"
+                                                   name="environement-${environment.uuid}-resource-row-${resource?index}-matcher_type" class="form-control">
+                                                   <#list matcher_type_list as matcherType>
+                                                   <#if resource.matcherType?? && resource.matcherType==matcherType>
+                                                   <option value="${matcherType}" selected>${matcherType}</option>
+                                                   <#else>
+                                                   <option value="${matcherType}">${matcherType}</option>
+                                                   </#if>
+                                                   </#list>
+                                                </select>
+                                                </@formGroup>
+                                                <!-- REWRITE URL -->
+                                                <div class="col-xl-12 py-2">
+                                                   <h2><i class="ti ti-reload"></i> Rewrite URL</h2>
+                                                   <div id="rewrite-url-container" class="row gx-2">
+                                                      <@input type="hidden" value=resource.rewriteUrl.uuid!'' id="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_uuid"
+                                                      name="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_uuid" />
+                                                      <@formGroup class='col-3' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' labelKey='#i18n{apimanager.resource.labelRewriteUrlValue}' mandatory=true>
+                                                      <div class="input-group mb-3" style="margin-left: 0;margin-right: 0">
+                                                      <span class="input-group-text" id="version-prefix" >${api.path!''}/${api.version!''}/</span>
+                                                      <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value'
+                                                      name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_value' value=resource.rewriteUrl.value!'' tabIndex='${resource?index}3' />
+                                                      </div>
+                                                      </@formGroup>
+                                                      <@formGroup class='col-3' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target' labelKey='#i18n{apimanager.resource.labelRewriteUrlTarget}' mandatory=true>
+                                                      <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target'
+                                                      name='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_target' value=resource.rewriteUrl.target!'' tabIndex='${resource?index}4' />
+                                                      </@formGroup>
+                                                      <@formGroup class='col-6' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_type_name' labelKey='#i18n{apimanager.resource.labelRewriteUrlType}' mandatory=true>
+                                                      <select id="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_type_name" name="environement-${environment.uuid}-resource-row-${resource?index}-rewrite_url_type_name" class="form-control">
+                                                         <#list rewrite_url_type_list as type>
+                                                         <#if (resource.rewriteUrl.type)?? && resource.rewriteUrl.type.name()==type.name()>
+                                                         <option value="${type.name()}" selected>${type.name()} - ${type.description}</option>
+                                                         <#else>
+                                                         <option value="${type.name()}">${type.name()} - ${type.description}</option>
+                                                         </#if>
+                                                         </#list>
+                                                      </select>
+                                                      </@formGroup>
+                                                   </div>
+                                                </div>
+                                                <!-- HEADER MATCHING -->
+                                                <div id="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-container" class="col-xl-12 py-2">
+                                                   <h2><i class="ti ti-checkbox"></i> Header Matching
+                                                      <button type="button" class="btn btn-primary" id="environement-${environment.uuid}-resource-row-${resource?index}-add-header-matching"
+                                                         name="environement-${environment.uuid}-resource-row-${resource?index}-add-header-matching"
+                                                         onclick="newHeaderMatching('${environment.uuid}','${resource?index}')">+</button>
+                                                   </h2>
+                                                   <#list resource.headerMatchings as headerMatching>
+                                                   <div id="header-matching-row-0" class="row gx-2 header-matching-row " data-index="0">
+                                                      <@input type="hidden" value=headerMatching.uuid!'' id="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-uuid"
+                                                      name="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-uuid" />
+                                                      <@formGroup class='col' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-name' labelKey='#i18n{apimanager.planheadermatching.labelName}' mandatory=true >
+                                                      <@input type='text' value=headerMatching.name!'' id='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-name'
+                                                      name='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-name'  maxlength=50  mandatory=true />
+                                                      </@formGroup>
+                                                      <@formGroup class='col' labelFor='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-value' labelKey='#i18n{apimanager.planheadermatching.labelValue}' >
+                                                      <@input type='text' value=headerMatching.value!'' id='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-value'
+                                                      name='environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-value'  maxlength=255  mandatory=true />
+                                                      </@formGroup>
+                                                      <@formGroup class='col' labelFor='header_matching_0_type' labelKey='#i18n{apimanager.planheadermatching.labelType}' mandatory=true >
+                                                      <select id="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-type"
+                                                         name="environement-${environment.uuid}-resource-row-${resource?index}-header-matching-${headerMatching?index}-type" class="form-control" >
+                                                         <#list header_matching_type_list as type>
+                                                         <#if headerMatching.type?? && headerMatching.type==type>
+                                                         <option value="${type}" selected>${type}</option>
+                                                         <#else>
+                                                         <option value="${type}">${type}</option>
+                                                         </#if>
+                                                         </#list>
+                                                      </select>
+                                                      </@formGroup>
+                                                      <div class="mb-3 col-1 align-content-end">
+                                                         <button class="btn btn-light" type="button" id="delete-resource-row-${resource?index}-header_matching_${headerMatching?index}"
+                                                            onclick="removeResourceHeaderMatching('${environment.uuid}',${resource?index},${headerMatching?index})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+                                                      </div>
+                                                   </div>
+                                                   </#list>
+                                                </div>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-request_timeout' labelKey='#i18n{apimanager.plan.labelRequestTimeout}' mandatory=false>
+                                                <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-request_timeout' name='environement-${environment.uuid}-resource-row-${resource?index}-request_timeout' value=resource.requestTimeout!'' tabIndex='${resource?index}5' />
+                                                </@formGroup>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' >
+                                                <@checkBox id='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' name='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' value='1' labelKey='#i18n{apimanager.resource.columnTraceEnabled}' tabIndex='${resource?index}6' />
+                                                </@formGroup>
+                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-instances' labelKey='#i18n{apimanager.resource.labelInstance}' mandatory=true>
+                                                <select required multiple id="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" name="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" class="form-control instances">
+                                                   <#list instance_list as instance>
+                                                   <#if instance.environement.uuid == environment.uuid>
+                                                   <#if resource.instanceUuids?seqContains(instance.uuid)>
+                                                   <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}" selected>${instance.name}</option>
+                                                   <#else>
+                                                   <option value="${instance.uuid}" id="${instance.environement.name}-${instance.uuid}">${instance.name}</option>
+                                                   </#if>
+                                                   </#if>
+                                                   </#list>
+                                                </select>
+                                                </@formGroup>
+                                                <div class="mb-3 col-1 align-content-end">
+                                                   <button class="btn btn-danger" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})">Supprimer la ressource</button>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           </#list>
+                        </div>
+                     </div>
+                     </#list>
+                  </div>
+                  <div class="stepper-actions">
+                     <@actionButtons button2Name="view_createApi" button1Name="action_step2" i18nValue2Key="apimanager.manage_apis.previous" i18nValue1Key="apimanager.manage_apis.next" icon2="previous" icon1="next" />
+                  </div>
+               </div>
+               <div id="plan-part" class="content auto-height"  aria-labelledby="plan-part-trigger">
+               </div>
+               </@tform>
+            </div>
+         </div>
+         </@boxBody>
+         </@box>
+      </div>
+   </div>
+</div>
+
+<link href="css/admin/plugins/stepper/bs-stepper.min.css" rel="stylesheet">
+<script src="javascript/stepper/bs-stepper.min.js"></script>
+<script src="javascript/api/api.js"></script>
+<script type="text/javascript">
+   stepper.to(2);
+   $("[name='view_createApi']").insertBefore($("[name='action_step2']"));
+</script>

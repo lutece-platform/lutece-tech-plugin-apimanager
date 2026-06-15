@@ -36,7 +36,10 @@ package fr.paris.lutece.plugins.apimanager.web.right;
 public class Constants
 {
     public static final String RIGHT_MANAGEAPIS = "APIMANAGER_API_MANAGEMENT";
+    public static final String RIGHT_MANAGEPLANS = "APIMANAGER_PLAN_MANAGEMENT";
     public static final String RIGHT_MANAGECLIENTS = "APIMANAGER_CLIENT_MANAGEMENT";
     public static final String RIGHT_MANAGEINSTANCES = "APIMANAGER_INSTANCE_MANAGEMENT";
     public static final String RIGHT_MANAGESUBSCRIPTIONS = "APIMANAGER_SUBSCRIPTION_MANAGEMENT";
+    public static final String RIGHT_MANAGEOPERATIONS = "APIMANAGER_OPERATION_MANAGEMENT";
+    public static final String RIGHT_MANAGEMEECROGATES = "APIMANAGER_MEECROGATE_MANAGEMENT";
 }

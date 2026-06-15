@@ -1,0 +1,193 @@
+<div class="apim-plugin container-fluid">
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <a class="nav-link active" id="manage-tab" role="tab" aria-controls="manage" aria-selected="false">#i18n{apimanager.manage_clients.viewClients}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link" id="create-tab" href="jsp/admin/plugins/apimanager/ManageClients.jsp?view=createClient"  role="tab" aria-controls="create" aria-selected="true">#i18n{apimanager.manage_clients.createClient}</a>
+      </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade show active" id="manage" role="tabpanel" aria-labelledby="manage-tab">
+         <@box>
+         <@boxBody>
+         <@messages infos=infos warnings=warnings errors=errors />
+         <div id="client-search-container">
+            <div class="card">
+               <div class="card-body d-flex justify-content-between align-items-center">
+                  <div class="container-fluid">
+                     <div class="row">
+                        <div class="col-sm">
+                           <div id="filter-tags-container">
+                              <label class="form-label form-label ">
+                              #i18n{apimanager.global.filter.labelTag}
+                              </label>
+                              <#if tag_list?has_content>
+                              <div class="form-group mb-3">
+                                 <div class="form-control">
+                                    <#list tag_list as tag>
+                                    <#if selected_tag_list?? && selected_tag_list?seq_contains(tag)>
+                                    <span  class="badge badge-selected px-2 me-1 clickable" id="tag-${tag?index}" >
+                                    ${tag}
+                                    <input type="hidden" name="selected_tag" value="${tag}">
+                                    </span>
+                                    <#else>
+                                    <span class="badge bg-primary px-2 me-1 clickable" id="tag-${tag?index}">
+                                    ${tag}
+                                    <input type="hidden"  name="selectable_tag" value="${tag}">
+                                    </span>
+                                    </#if>
+                                    </#list>
+                                 </div>
+                              </div>
+                              </#if>
+                           </div>
+                        </div>
+                        <div class="col-sm">
+                           <@offcanvas id='search_client' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
+                           <@tform id='client_search_form' name='client_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageClients.jsp' >
+                           <@messages errors=errors />
+                           <@formGroup labelFor='filter_name' labelKey='#i18n{apimanager.manage_clients.columnName}'>
+                           <@input type='text' id='filter_name' name='filter_name'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnName}' value=mapFilterCriteria["name"]!'' tabIndex='1' />
+                           </@formGroup>
+                           <@formGroup labelFor='filter_client_id' labelKey='#i18n{apimanager.manage_clients.columnClientId}'>
+                           <@input type='text' id='filter_client_id' name='filter_client_id'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnClientId}' value=mapFilterCriteria["client_id"]!'' tabIndex='2' />
+                           </@formGroup>
+                           <@formGroup labelFor='filter_code_app' labelKey='#i18n{apimanager.manage_clients.columnCodeApp}'>
+                           <@input type='text' id='filter_code_app' name='filter_code_app'  maxlength=50  placeHolder='#i18n{apimanager.manage_clients.columnCodeApp}' value=mapFilterCriteria["code_app"]!'' tabIndex='4' />
+                           </@formGroup>
+                           <@formGroup labelFor='filter_tag' labelKey='#i18n{apimanager.global.labelTags}'>
+                           <@input type='text' id='filter_tag' name='filter_tag'  maxlength=50  placeHolder='#i18n{apimanager.global.labelTags}' value=mapFilterCriteria["tag"]!'' tabIndex='4' />
+                           </@formGroup>
+                           <@formGroup labelFor='filter_display_archived' >
+                           <@checkBox id='filter_display_archived' name='filter_display_archived' value='1' labelKey='#i18n{apimanager.global.filter.display.archived}' tabIndex='6' />
+                           </@formGroup>
+                           <@button type='submit' title='Search' buttonIcon='search'/>
+                           </@tform>
+                           </@offcanvas>
+                           <#list mapFilterCriteria?keys as key>
+                           <#if mapFilterCriteria[key]!="">
+                           <span class="badge bg-primary px-2" >
+                           ${key} <a href='jsp/admin/plugins/apimanager/ManageClients.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
+                           </span>
+                           </#if>
+                           </#list>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id="client-result-container" class="result-cards-container">
+            <div class="clearfix"></div>
+            <div class="card">
+               <div class="card-body">
+                  <div class="row row-cols-1 row-cols-md-3 g-3">
+                     <#list client_list as client>
+                     <div class="col">
+                        <div class="card">
+                           <div class="card-header d-flex justify-content-between align-items-center">
+                              <div class="card-title">${client.name!''}</div>
+                              <div class="card-tools">
+                                 <@aButton class="btn-secret" href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=generateNewSecrets&uuid=${client.uuid}' title='#i18n{apimanager.client.button.generate.new.secrets}' buttonIcon='key' hideTitle=['all']  />
+                                 <@aButton class="btn-edit" href='jsp/admin/plugins/apimanager/ManageClients.jsp?view=modifyClient&uuid=${client.uuid}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+                                 <@aButton class="btn-archive" href='jsp/admin/plugins/apimanager/ManageClients.jsp?action=confirmArchiveClient&uuid=${client.uuid}' title='#i18n{apimanager.global.button.archive}' buttonIcon='archive' hideTitle=['all'] />
+                              </div>
+                           </div>
+                           <div class="card-body">
+                              <div class="row">
+                                 <span>ID: ${client.clientId!''}</span>
+                              </div>
+                              <div class="row">
+                                 <div class="col">
+                                    <span>Tags:</span>
+                                    <#list client.tags as tag>
+                                    <span class="badge bg-primary px-2 me-1" id="client-tag-${tag?index}">
+                                    ${tag}
+                                    </span>
+                                    </#list>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     </#list>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <@paginationAdmin paginator=paginator combo=1 />
+         </@boxBody>
+         </@box>
+      </div>
+   </div>
+</div>
+<style>
+   .loader {
+   width: 22px;
+   --b: 8px;
+   aspect-ratio: 1;
+   border-radius: 50%;
+   padding: 1px;
+   background: conic-gradient(#0000 10%, #000000) content-box;
+   -webkit-mask:
+   repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+   radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+   -webkit-mask-composite: destination-in;
+   mask-composite: intersect;
+   animation:l4 1s infinite steps(10);
+   }
+   @keyframes l4 {to{transform: rotate(1turn)}}
+</style>
+<script type="text/javascript">
+   $(function() {
+   	$('.generate-client-form').each(function() {
+   		$(this).removeClass("d-flex");
+   	});
+   });
+   function loadAndSubmit(idButton) {
+   	$('#' + idButton).attr('disabled', 'disabled');
+   	$('#' + idButton).html('<div class="loader"></div>');
+   	$('#' + idButton).closest('form').submit();
+   }
+
+
+   $('input[name="selectable_tag"]').each(function () {
+       $(this).parent().click(function() {
+           const inputChild= $(this).find('input[name="selectable_tag"]');
+           updateSearch(inputChild);
+       } );
+   });
+
+   $('input[name="selected_tag"]').each(function () {
+       intputElement = $(this);
+       intputElement.parent().click(function() {
+           intputElement.attr('name','selectable_tag');
+           updateSearch();
+       } );
+   });
+
+   $('#btn-search_client').css('float','right');
+
+   function updateSearch(tagElement){
+
+       const selected_tags=[];
+       if(tagElement){
+           if( tagElement.attr('name')=== 'selectable_tag'){
+               tagElement.attr('name','selected_tag');
+           }
+       }
+
+        $('input[name="selected_tag"]').each(function(){
+                    selected_tags.push($(this).val());
+                 });
+
+        let destination = 'jsp/admin/plugins/apimanager/ManageClients.jsp'
+        if(selected_tags.length > 0){
+            destination = destination+'?selected_tags='+selected_tags.join(",") ;
+        }
+
+       window.location.href = destination ;
+
+   }
+</script>

@@ -66,29 +66,41 @@ public interface IInstanceDAO extends IDAO<Instance>
      *            the plugin
      * @return the list which contains the uuid of all the instances
      */
-    List<String> getIdInstancesListLinkedToApiUuid( String apiUuid, Plugin plugin );
+    List<String> getIdInstancesListLinkedToResourceUuid( String apiUuid, Plugin plugin );
 
     /**
-     * Link the specified instance to the specified API UUID.
+     * Load the uuid of all instances that are linked to the specified ENV UUID, and returns them as a list
+     *
+     * @param envUuid
+     *            the API uuid
+     * @param plugin
+     *            the plugin
+     * @return the list which contains the uuid of all the instances
+     */
+    List<String> getIdInstancesListLinkedToEnvUuid( String envUuid, Plugin plugin );
+
+    /**
+     * Link the specified instance to the specified Resource UUID.
      * 
      * @param instance
      *            the instance
-     * @param apiUuid
-     *            the API UUID
+     * @param resourceUuid
+     *            the Resource UUID
      * @param plugin
      *            the plugin
      */
-    void linkApi( Instance instance, String apiUuid, Plugin plugin );
+    void linkResource( Instance instance, String resourceUuid, Plugin plugin );
 
     /**
      * Deletes the link between the specified instance and the specified API UUID.
      * 
      * @param instance
      *            the instance
-     * @param apiUuid
-     *            the API UUID
+     * @param resourceUuid
+     *            the Resource UUID
      * @param plugin
      *            the plugin
      */
-    void deleteLinkApi( Instance instance, String apiUuid, Plugin plugin );
+    void deleteLinkResource( Instance instance, String resourceUuid, Plugin plugin );
+
 }

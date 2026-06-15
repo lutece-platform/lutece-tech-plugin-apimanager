@@ -34,9 +34,15 @@
 package fr.paris.lutece.plugins.apimanager.business.api;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,6 +59,8 @@ public class Api extends AbstractTagBean implements Serializable
     private String _strName;
 
     private String _strDescription;
+    private String _strVersion;
+    private String _strStatus;
 
     @Size( max = 255, message = "#i18n{apimanager.validation.api.Path.size}" )
     private String _strPath;
@@ -66,6 +74,17 @@ public class Api extends AbstractTagBean implements Serializable
     private Map<String, Object> _openapi;
 
     private boolean _bArchived;
+
+    private List<Resource> _resourceList;
+
+
+    private List<Environement> _environementList;
+    private List<Environement> _subscribedEnvironementList;
+
+
+    private List<Plan> _planList;
+    private List<Client> _subscriberList;
+    private List<Subscription> _subscriptionList;
 
     /**
      * Returns the Uuid
@@ -128,6 +147,153 @@ public class Api extends AbstractTagBean implements Serializable
     public void setDescription( String strDescription )
     {
         _strDescription = strDescription;
+    }
+
+
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Environement> getEnvironementList( )
+    {
+        return _environementList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param environementList
+     *            The Description
+     */
+    public void setEnvironementList( List<Environement> environementList )
+    {
+        _environementList = environementList;
+    }
+
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Environement> getSubscribedEnvironementList( )
+    {
+        return _subscribedEnvironementList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param environementList
+     *            The Description
+     */
+    public void setSubscribedEnvironementList( List<Environement> environementList )
+    {
+        _subscribedEnvironementList = environementList;
+    }
+
+    /**
+     * Returns the Description
+     *
+     * @return The Description
+     */
+    public List<Plan> getPlanList( )
+    {
+        return _planList;
+    }
+
+    /**
+     * Sets the Description
+     *
+     * @param planList
+     *            The Description
+     */
+    public void setPlantList( List<Plan> planList )
+    {
+        _planList = planList;
+    }
+
+
+    /**
+     * Returns the Subscriber
+     *
+     * @return The Subscriber
+     */
+    public List<Client> getSubscriberList( )
+    {
+        return _subscriberList;
+    }
+
+    /**
+     * Sets the Subscriber
+     *
+     * @param subscriberList
+     *            The Subscriber
+     */
+    public void setSubscriberList( List<Client> subscriberList ){this._subscriberList = subscriberList;}
+
+
+
+    /**
+     * Returns the Subscription
+     *
+     * @return The Subscription
+     */
+    public List<Subscription> getSubscriptionList( )
+    {
+        return _subscriptionList;
+    }
+
+    /**
+     * Sets the Subscription
+     *
+     * @param subscriptionList
+     *            The Description
+     */
+    public void setSubscriptionList( List<Subscription> subscriptionList ){this._subscriptionList =subscriptionList;}
+
+
+
+    /**
+     * Returns the Version
+     *
+     * @return The Version
+     */
+    public String getVersion( )
+    {
+        return _strVersion;
+    }
+
+    /**
+     * Sets the Version
+     *
+     * @param strVersion
+     *            The Version
+     */
+    public void setVersion( String strVersion )
+    {
+        _strVersion = strVersion;
+    }
+
+    /**
+     * Returns the Status
+     *
+     * @return The Status
+     */
+    public String getStatus( )
+    {
+        return _strStatus;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param strStatus
+     *            The Status
+     */
+    public void setStatus( String strStatus )
+    {
+        _strStatus = strStatus;
     }
 
     /**
@@ -256,4 +422,11 @@ public class Api extends AbstractTagBean implements Serializable
         _bArchived = bArchived;
     }
 
+    public List<Resource> getResourceList() {
+        return _resourceList;
+    }
+
+    public void setResourceList(List<Resource> _resourceList) {
+        this._resourceList = _resourceList;
+    }
 }

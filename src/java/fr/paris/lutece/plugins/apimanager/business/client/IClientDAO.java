@@ -36,14 +36,11 @@ package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.util.ReferenceList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * IClientDAO Interface
  */
 public interface IClientDAO extends IDAO<Client>
 {
+    void updateStatus( String clientUuid,String status, Plugin plugin );
 }

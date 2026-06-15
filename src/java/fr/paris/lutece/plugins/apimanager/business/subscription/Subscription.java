@@ -33,8 +33,11 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
+import fr.paris.lutece.plugins.apimanager.business.api.Api;
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
 
 import java.io.Serializable;
 
@@ -49,12 +52,13 @@ public class Subscription implements Serializable
     private String _strUuid;
 
     private Client _client;
+    private String _strStatus;
+
+    private Resource _resource;
 
     private Plan _plan;
-
-    private String _strEnvironnement;
-
-    private boolean _bTraceEnabled;
+    private Api _api;
+    private Environement _environement;
 
     private boolean _bArchived;
 
@@ -101,8 +105,51 @@ public class Subscription implements Serializable
     }
 
     /**
-     * Returns the Plan
+     * Returns the Resource
      * 
+     * @return The Resource
+     */
+    public Resource getResource( )
+    {
+        return _resource;
+    }
+
+    /**
+     * Sets the Create new scratch file from selection
+     * 
+     * @param resource
+     *            The Resource
+     */
+    public void setResource( Resource resource )
+    {
+        _resource = resource;
+    }
+
+    /**
+     * Returns the Environnement
+     *
+     * @return The Environnement
+     */
+    public Environement getEnvironement( )
+    {
+        return _environement;
+    }
+
+    /**
+     * Sets the Environnement
+     *
+     * @param environnement
+     *            The Environnement
+     */
+    public void setEnvironement( final Environement environnement )
+    {
+        _environement = environnement;
+    }
+
+
+    /**
+     * Returns the Plan
+     *
      * @return The Plan
      */
     public Plan getPlan( )
@@ -112,7 +159,7 @@ public class Subscription implements Serializable
 
     /**
      * Sets the Plan
-     * 
+     *
      * @param plan
      *            The Plan
      */
@@ -122,45 +169,45 @@ public class Subscription implements Serializable
     }
 
     /**
-     * Returns the Environnement
+     * Returns the Api
      *
-     * @return The Environnement
+     * @return The Api
      */
-    public String getEnvironnement( )
+    public Api getApi( )
     {
-        return _strEnvironnement;
+        return _api;
     }
 
     /**
-     * Sets the Environnement
+     * Sets the Api
      *
-     * @param strEnvironnement
-     *            The Environnement
+     * @param api
+     *            The Api
      */
-    public void setEnvironnement( final String strEnvironnement )
+    public void setApi( Api api )
     {
-        _strEnvironnement = strEnvironnement;
+        _api = api;
     }
 
     /**
-     * Returns the TraceEnabled
-     * 
-     * @return The TraceEnabled
+     * Returns the Status
+     *
+     * @return The Status
      */
-    public boolean getTraceEnabled( )
+    public String getStatus( )
     {
-        return _bTraceEnabled;
+        return _strStatus;
     }
 
     /**
-     * Sets the TraceEnabled
-     * 
-     * @param bTraceEnabled
-     *            The TraceEnabled
+     * Sets the Status
+     *
+     * @param strStatus
+     *            The Status
      */
-    public void setTraceEnabled( boolean bTraceEnabled )
+    public void setStatus( String strStatus )
     {
-        _bTraceEnabled = bTraceEnabled;
+        _strStatus = strStatus;
     }
 
     /**

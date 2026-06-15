@@ -34,8 +34,8 @@
 package fr.paris.lutece.plugins.apimanager.service;
 
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
+import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatchingHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
 import fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationHome;
 
@@ -68,7 +68,7 @@ public class PlanService extends AbstractService<Plan>
 
         final String uuid = PlanHome.create( entity ).getUuid( );
 
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "PLAN " + entity.getName( ) );
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PlanService extends AbstractService<Plan>
         Optional.ofNullable( entity.getOauthConfiguration( ) ).ifPresent( PlanOauthConfigurationHome::update );
 
         PlanHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user,  "PLAN " + entity.getName( ) );
     }
 
     @Override
@@ -88,8 +88,6 @@ public class PlanService extends AbstractService<Plan>
             ResourceService.getInstance( ).getIdEntitiesList( Map.of( "uuid_plan", uuid ) )
                     .forEach( resourceId -> ResourceService.getInstance( ).delete( resourceId, user ) );
 
-            // Delete header matching
-            PlanHeaderMatchingHome.getIdPlanHeaderMatchingsList( Map.of( "uuid_plan", uuid ), null, null ).forEach( PlanHeaderMatchingHome::remove );
 
             // Delete plan
             PlanHome.remove( uuid );
@@ -97,7 +95,7 @@ public class PlanService extends AbstractService<Plan>
             // Delete plan config objects
             Optional.ofNullable( plan.getOauthConfiguration( ) ).ifPresent( oac -> PlanOauthConfigurationHome.remove( oac.getUuid( ) ) );
 
-            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user,  "PLAN " + plan.getName( )  );
         } );
 
     }
@@ -113,4 +111,21 @@ public class PlanService extends AbstractService<Plan>
     {
         return PlanHome.getPlansListByIds( listIds );
     }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getPlansByTags(List<String> tags )
+    {
+        return PlanHome.getuuidsByTags( tags );
+    }
+
+    public List<Plan> selectEntitiesByEnvironement(String envName )
+    {
+        return PlanHome.selectEntitiesByEnvironement( envName );
+    }
+
 }

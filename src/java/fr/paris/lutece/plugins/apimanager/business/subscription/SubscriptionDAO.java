@@ -35,9 +35,10 @@
 package fr.paris.lutece.plugins.apimanager.business.subscription;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.plugins.apimanager.business.client.ClientHome;
-import fr.paris.lutece.plugins.apimanager.business.plan.PlanHome;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
@@ -60,19 +61,33 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     // Constants
     private static final String TABLE_NAME = "apimanager_subscription";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_plan, environnement, trace_enabled, archived ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO apimanager_subscription ( uuid, uuid_client, uuid_resource, uuid_environement, archived, status ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM apimanager_subscription WHERE uuid = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_plan = ?, environnement = ?, trace_enabled = ?, archived = ? WHERE uuid = ?";
+    private static final String SQL_QUERY_UPDATE = "UPDATE apimanager_subscription SET uuid_client = ?, uuid_resource = ?, uuid_environement = ?, archived = ?, status = ? WHERE uuid = ?";
 
-    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_plan, environnement, trace_enabled, archived FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECTALL = "SELECT uuid, uuid_client, uuid_resource, uuid_environement , archived, status FROM apimanager_subscription";
+
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT uuid FROM apimanager_subscription";
+    private static final String SQL_QUERY_SELECT_DISTINCT_STATUS = "SELECT distinct(status) FROM apimanager_subscription";
 
     private static final String SQL_QUERY_SELECTALL_BY_IDS = SQL_QUERY_SELECTALL + " WHERE uuid IN (  ";
     private static final String SQL_QUERY_SELECT_BY_ID = SQL_QUERY_SELECTALL + " WHERE uuid = ?";
 
+    private static final String SQL_QUERY_SELECTALL_ID_BY_API_AND_ENVIRONEMENT = SQL_QUERY_SELECTALL_ID + " WHERE uuid_resource = ? AND uuid_environement = ? AND uuid_client = ?";
+    private static final String SQL_QUERY_SELECTALL_ID_BY_RESOURCE = SQL_QUERY_SELECTALL_ID + " WHERE uuid_resource = ? ";
+    private static final String SQL_QUERY_SELECTALL_ID_BY_CLIENT = SQL_QUERY_SELECTALL_ID + " WHERE uuid_client = ? ";
+
+    private static final String SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ID = "SELECT uuid FROM apimanager_subscription " +
+            "WHERE uuid_resource in (select uuid from apimanager_resource " +
+            "WHERE uuid_api=?)";
+
+    private static final String SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ENV = SQL_QUERY_SELECTALL +
+            " WHERE uuid_resource in (select uuid from apimanager_resource" +
+            " WHERE uuid_api=?) AND uuid_environement = ?";
+
     private static final String FILTER_CLIENT = "client";
     private static final String FILTER_API = "api";
-    private static final String FILTER_PLAN = "plan";
+    private static final String FILTER_PLAN = "resource";
 
     /**
      * Constructor
@@ -80,11 +95,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
     public SubscriptionDAO( )
     {
         initMapSql( Subscription.class ); // Maps with name and type of each databases column associated to the business class attributes
-        _mapSql.remove( "plan" );
+        _mapSql.remove( "resource" );
         _mapSql.remove( "client" );
-        _mapSql.remove( "api" );
         _mapSql.put( "uuid_client", "String" );
-        _mapSql.put( "uuid_plan", "String" );
+        _mapSql.put( "uuid_resource", "String" );
     }
 
     /**
@@ -99,10 +113,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
-            daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
+            daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, subscription.getEnvironement( ) != null ? subscription.getEnvironement( ).getUuid( ) : null );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
+            daoUtil.setString( nIndex, subscription.getStatus( ) );
 
             daoUtil.executeUpdate( );
             subscription.setUuid( uuid );
@@ -155,10 +169,10 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
             int nIndex = 1;
 
             daoUtil.setString( nIndex++, subscription.getClient( ) != null ? subscription.getClient( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getPlan( ) != null ? subscription.getPlan( ).getUuid( ) : null );
-            daoUtil.setString( nIndex++, subscription.getEnvironnement( ) );
-            daoUtil.setBoolean( nIndex++, subscription.getTraceEnabled( ) );
+            daoUtil.setString( nIndex++, subscription.getResource( ) != null ? subscription.getResource( ).getUuid( ) : null );
+            daoUtil.setString( nIndex++, subscription.getEnvironement( ).getUuid() );
             daoUtil.setBoolean( nIndex++, subscription.getArchived( ) );
+            daoUtil.setString( nIndex++, subscription.getStatus( ) );
             daoUtil.setString( nIndex, subscription.getUuid( ) );
 
             daoUtil.executeUpdate( );
@@ -240,6 +254,61 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         }
     }
 
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<String> getIdSubscriptionsByApi(final String apiUuid, final Plugin plugin)
+    {
+        final List<String> idApiList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ID, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idApiList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idApiList;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<Subscription> getIdSubscriptionsByApiAndEnv(final String apiUuid, final String envUuid, final Plugin plugin)
+    {
+        final List<Subscription> subscriptions = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_SUBSCRIPTIONS_BY_API_ENV, plugin ) )
+        {
+            daoUtil.setString( 1, apiUuid );
+            daoUtil.setString( 2, envUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                subscriptions.add( this.loadFromDaoUtil( daoUtil ) );
+            }
+        }
+        return subscriptions;
+    }
+
+    @Override
+    public List<String> getDistinctStatus(Plugin plugin) {
+
+        final List<String> status = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DISTINCT_STATUS, plugin ) )
+        {
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                status.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return status;
+    }
+
     /**
      * {@inheritDoc }
      */
@@ -287,11 +356,15 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
 
         subscription.setUuid( daoUtil.getString( nIndex++ ) );
         subscription.setClient( ClientHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        subscription.setPlan( PlanHome.findByPrimaryKey( daoUtil.getString( nIndex++ ) ).orElse( null ) );
-        subscription.setEnvironnement( daoUtil.getString( nIndex++ ) );
-        subscription.setTraceEnabled( daoUtil.getBoolean( nIndex++ ) );
+        Resource resource = ResourceHome.findByPrimaryKey(daoUtil.getString(nIndex++)).orElse(null);
+        subscription.setResource(resource);
+        subscription.setEnvironement(EnvironementHome.findByPrimaryKey(daoUtil.getString( nIndex++ ) ).orElse( null ) );
         subscription.setArchived( daoUtil.getBoolean( nIndex++ ) );
-
+        subscription.setStatus( daoUtil.getString( nIndex ) );
+        if(resource != null){
+            subscription.setApi(resource.getApi());
+            subscription.setPlan(resource.getPlan());
+        }
         return subscription;
     }
 
@@ -326,4 +399,55 @@ public final class SubscriptionDAO extends AbstractFilterDao implements ISubscri
         }
         return whereClauses + additionalClauses.toString( );
     }
+
+    @Override
+    public List<String> getIdSubscriptionsByResourceAndEnvironementAndClient(String resourceUuid, String environementUuid, String clientUuid,Plugin plugin) {
+
+        final List<String> idSubscriptionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_API_AND_ENVIRONEMENT, plugin ) )
+        {
+            daoUtil.setString( 1, resourceUuid );
+            daoUtil.setString( 2, environementUuid );
+            daoUtil.setString( 3 , clientUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idSubscriptionList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idSubscriptionList;
+    }
+
+    @Override
+    public List<String> getIdSubscriptionsByResource(String resourceUuid, Plugin plugin) {
+
+        final List<String> idSubscriptionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_RESOURCE, plugin ) )
+        {
+            daoUtil.setString( 1, resourceUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idSubscriptionList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idSubscriptionList;
+    }
+
+    @Override
+    public List<String> getIdSubscriptionsByClient(String clientUuid, Plugin plugin) {
+
+        final List<String> idSubscriptionList = new ArrayList<>( );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID_BY_CLIENT, plugin ) )
+        {
+            daoUtil.setString( 1, clientUuid );
+            daoUtil.executeQuery( );
+            while ( daoUtil.next( ) )
+            {
+                idSubscriptionList.add( daoUtil.getString( 1 ) );
+            }
+        }
+        return idSubscriptionList;
+    }
+
 }

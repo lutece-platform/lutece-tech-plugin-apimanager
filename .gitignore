@@ -2,3 +2,4 @@
 *.iml
 *.idea
 .sdkmanrc
+.DS_Store

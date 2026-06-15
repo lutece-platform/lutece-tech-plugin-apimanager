@@ -34,6 +34,7 @@
 package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractFilterDao;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
@@ -48,9 +49,9 @@ public class ClientSecretDAO extends AbstractFilterDao implements IClientSecretD
     // Constants
     private static final String TABLE_NAME = "apimanager_client_secret";
 
-    private static final String SQL_QUERY_INSERT = "INSERT INTO " + TABLE_NAME + " ( uuid, uuid_client, environnement, secret ) VALUES ( ?, ?, ?, ? ) ";
-    private static final String SQL_QUERY_SELECT_BY_CLIENT_ID_AND_ENV = "SELECT uuid, uuid_client, environnement, secret FROM " + TABLE_NAME
-            + " WHERE uuid_client = ? AND environnement = ? ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO " + TABLE_NAME + " ( uuid, uuid_client, uuid_environnement, secret ) VALUES ( ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECT_BY_CLIENT_ID_AND_ENV = "SELECT uuid, uuid_client, uuid_environnement, secret FROM " + TABLE_NAME
+            + " WHERE uuid_client = ? AND uuid_environnement = ? ";
     private static final String SQL_QUERY_DELETE_BY_CLIENT_ID = "DELETE FROM " + TABLE_NAME + " WHERE uuid_client = ? ";
 
     /**
@@ -69,8 +70,8 @@ public class ClientSecretDAO extends AbstractFilterDao implements IClientSecretD
             int nIndex = 1;
             final String uuid = UUID.randomUUID( ).toString( );
             daoUtil.setString( nIndex++, uuid );
-            daoUtil.setString( nIndex++, clientSecret.getUuidClient( ) );
-            daoUtil.setString( nIndex++, clientSecret.getEnvironnement( ) );
+            daoUtil.setString( nIndex++, clientSecret.getClient( ).getUuid() );
+            daoUtil.setString( nIndex++, clientSecret.getEnvironnement( ).getUuid() );
             daoUtil.setString( nIndex, clientSecret.getSecret( ) ); // TODO HASHER LE SECRET
 
             daoUtil.executeUpdate( );
@@ -112,8 +113,8 @@ public class ClientSecretDAO extends AbstractFilterDao implements IClientSecretD
         int nIndex = 1;
 
         clientSecret.setUuid( daoUtil.getString( nIndex++ ) );
-        clientSecret.setUuidClient( daoUtil.getString( nIndex++ ) );
-        clientSecret.setEnvironnement( daoUtil.getString( nIndex++ ) );
+        clientSecret.setClient(ClientHome.findByPrimaryKey(daoUtil.getString( nIndex++ )).orElse(null) );
+        clientSecret.setEnvironnement(EnvironementHome.findByPrimaryKey(daoUtil.getString( nIndex++ )).orElse(null) );
         clientSecret.setSecret( daoUtil.getString( nIndex++ ) );
 
         return clientSecret;

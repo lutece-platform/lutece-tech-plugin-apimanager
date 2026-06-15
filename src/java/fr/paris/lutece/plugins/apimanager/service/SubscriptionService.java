@@ -62,21 +62,23 @@ public class SubscriptionService extends AbstractService<Subscription>
     public void create( final Subscription entity, final String user )
     {
         final String uuid = SubscriptionHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user,
+                (entity.getApi() !=null && entity.getClient()!=null? "SOUSCRIPTION "+ (entity.getApi() != null? entity.getApi().getName(): "") + " par " +(entity.getClient() != null? entity.getClient().getName(): ""):"") );
     }
 
     @Override
     public void update( final Subscription entity, final String user )
     {
         SubscriptionHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user,
+                (entity.getApi() !=null && entity.getClient()!=null? "SOUSCRIPTION "+ (entity.getApi() != null? entity.getApi().getName(): "") + " par " +(entity.getClient() != null? entity.getClient().getName(): ""):"") );
     }
 
     @Override
     public void delete( final String uuid, final String user )
     {
         SubscriptionHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, "SOUSCRIPTION " + uuid );
     }
 
     @Override
@@ -91,12 +93,38 @@ public class SubscriptionService extends AbstractService<Subscription>
         return SubscriptionHome.getSubscriptionsListByIds( listIds );
     }
 
+    public List<String> getIdSubscriptionsByResourceAndEnvironementAndClient(final String resourceUuid, final String environementUuid, final String clientUuid)
+    {
+        return SubscriptionHome.getIdSubscriptionsByResourceAndEnvironementAndClient( resourceUuid, environementUuid,clientUuid );
+    }
+
+    public List<String> getIdSubscriptionsByResource(final String resourceUuid)
+    {
+        return SubscriptionHome.getIdSubscriptionsByResource( resourceUuid);
+    }
+
+    public List<String> getIdSubscriptionsByClient(final String clientUuid)
+    {
+        return SubscriptionHome.getIdSubscriptionsByClient( clientUuid);
+    }
+
+
+    public List<String> getIdSubscriptionsByApi(final String apiUuid)
+    {
+        return SubscriptionHome.getIdSubscriptionsByApi( apiUuid);
+    }
+
+
     public void archive( final String uuid, final String user )
     {
         SubscriptionHome.findByPrimaryKey( uuid ).ifPresent( subscription -> {
             subscription.setArchived( true );
             SubscriptionHome.update( subscription );
-            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user );
+            this.addNewHistory( uuid, HistoryTypeEnum.ARCHIVE, user, "" );
         } );
+    }
+
+    public List<String> getDistinctStatus() {
+        return SubscriptionHome.getDistinctStatus( );
     }
 }

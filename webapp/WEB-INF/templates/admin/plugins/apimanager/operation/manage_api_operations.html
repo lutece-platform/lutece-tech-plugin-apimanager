@@ -1,0 +1,271 @@
+<div class="apim-plugin container-fluid">
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+         <a class="nav-link active " id="manage-api" role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_operations.api.tab.name}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link" id="manage-client" href="jsp/admin/plugins/apimanager/ManageClientOperations.jsp"   role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.client.tab.name}</a>
+      </li>
+      <li class="nav-item" role="presentation">
+         <a class="nav-link" id="history" href="jsp/admin/plugins/apimanager/HistoryOperations.jsp"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.history.tab.name}</a>
+      </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade " id="manage" role="tabpanel" aria-labelledby="manage-tab"></div>
+      <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+         <@box>
+         <@boxBody>
+         <@messages infos=infos warnings=warnings errors=errors />
+         <div id="subscription-search-container">
+            <div class="card">
+               <div class="card-body d-flex justify-content-between align-items-center">
+                  <div class="container-fluid">
+                     <div class="row">
+                        <div class="col-sm">
+                           <@formGroup labelFor='environnement' labelKey='#i18n{apimanager.global.filter.labelEnvironnement}' mandatory=false>
+                           <select id="filter_environement" name="filter_environement" class="form-control" >
+                              <option value="">-- environnements --</option>
+                              <#list environment_list as environment>
+                              <#if ((selected_environment_uuid!'')!="") && environment.uuid == selected_environment_uuid>
+                              <option value="${environment.uuid}" selected>${environment.name}</option>
+                              <#else>
+                              <option value="${environment.uuid}">${environment.name}</option>
+                              </#if>
+                              </#list>
+                           </select>
+                           </@formGroup>
+                        </div>
+                        <div class="col-sm">
+                           <@offcanvas id='search_operation' title='Search' position='end' btnTitle='Search' btnIcon='search me-1'>
+                           <@tform id='operation_search_form' name='operation_search_form' class='border-bottom pb-3' method='get' action='jsp/admin/plugins/apimanager/ManageOperations.jsp' >
+                           <@messages errors=errors />
+                           <@formGroup labelFor='filter_name' labelKey='#i18n{apimanager.manage_plans.columnName}'>
+                           <@input type='text' id='filter_name' name='filter_name'  maxlength=50  placeHolder='#i18n{apimanager.manage_plans.columnName}' value=mapFilterCriteria["name"]!'' tabIndex='1' />
+                           </@formGroup>
+                           <@formGroup labelFor='filter_description' labelKey='#i18n{apimanager.manage_plans.columnDescription}'>
+                           <@input type='text' id='filter_description' name='filter_description'   placeHolder='#i18n{apimanager.manage_plans.columnDescription}' value=mapFilterCriteria["description"]!'' tabIndex='2' />
+                           </@formGroup>
+                           <@button type='submit' title='Search' buttonIcon='search'/>
+                           </@tform>
+                           </@offcanvas>
+                           <#list mapFilterCriteria?keys as key>
+                           <#if mapFilterCriteria[key]!="">
+                           <span class="badge bg-primary px-2" >
+                           ${key} <a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?clean_filter=1<#list mapFilterCriteria?keys as x><#if "${x}"!="${key}">&filter_${x}=${mapFilterCriteria["${x}"]} </#if></#list>' class='icon-block'><i class='fas fa-times-circle' style="color:white" ></i></a>
+                           </span>
+                           </#if>
+                           </#list>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div>
+            <div>
+               <div class="card-body d-flex align-items-center">
+                  <button type="button" id="publish-all-button" class="btn btn-success" onclick="publishAll()">#i18n{apimanager.manage_apis.button.publish.all}</button>
+                  <button type="button" id="unpublish-all-button" class="btn btn-danger" onclick="unpublishAll()">#i18n{apimanager.manage_apis.button.unpublish.all}</button>
+               </div>
+            </div>
+         </div>
+         <div id="subscription-result-container" class="result-table-container">
+            <div class="clearfix"></div>
+            <div class="card">
+               <div class="card-body">
+                  <@table>
+                  <tr>
+                     <th class="select-column"></th>
+                     <th>#i18n{apimanager.manage_apis.columnName}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=name'><i class='fas fa-sort'></i></a></th>
+                     <th>#i18n{apimanager.manage_apis.columnDescription}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=description'><i class='fas fa-sort'></i></a></th>
+                     <th>#i18n{apimanager.manage_apis.columnEnvironement}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=environnement'><i class='fas fa-sort'></i></a></th>
+                     <th>#i18n{apimanager.manage_apis.columnSubscribers}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=subscribers'><i class='fas fa-sort'></i></a></th>
+                     <th>#i18n{apimanager.manage_apis.columnStatus}&nbsp;<a href='jsp/admin/plugins/apimanager/ManageOperations.jsp?orderBy=status'><i class='fas fa-sort'></i></a></th>
+                     <th>#i18n{portal.util.labelActions}</th>
+                  </tr>
+                  <@tableHeadBodySeparator />
+                  <#list api_list as api >
+                  <tr >
+                     <td>
+                        <div class="form-check">
+                           <input class="form-check-input" type="checkbox" value="${api.uuid!''}" id="select_api-${api.uuid!''}" name="select_api-${api.uuid!''}">
+                        </div>
+                     </td>
+                     <td>
+                        ${api.name!''} - ${api.version!''}
+                     </td>
+                     <td>
+                        ${api.description!''}
+                     </td>
+                     <td>
+                        <#if api.subscribedEnvironementList??>
+                        <#list api.subscribedEnvironementList as env>
+                        <span class="badge px-2 me-1" id="env-${env?index}">
+                        ${env.name}
+                        <input type="hidden" name="environement-${env?index}" value="${env.name}">
+                        </span>
+                        </#list>
+                        </#if>
+                     </td>
+                     <td>
+                        <#if api.subscriberList??>
+                        <#list api.subscriberList as subscriber>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-title="<#list subscriber.subscriptionList as sub>${sub.environement.name}<#sep>,</#list>"><span class="badge px-2 me-1" id="subscriber-${subscriber?index}">
+                        ${subscriber.name}
+                        <input type="hidden" name="subscriber-${subscriber?index}" value="${subscriber.name}">
+                        </span></a>
+                        </#list>
+                        </#if>
+                     </td>
+                     <td>
+                        <#if api.status == "NEW" || api.status == "DRAFT">
+                        <span class="badge badge-new" id="status-${api?index}">${api.status!''}</span>
+                        <#elseif api.status == "PUBLISHED">
+                        <span class="badge badge-published" id="status-${api?index}">${api.status!''}</span>
+                        <#elseif api.status == "ERROR">
+                        <span class="badge badge-error" id="status-${api?index}">${api.status!''}</span>
+                        <#elseif api.status == "DESYNCHRONIZED">
+                        <span class="badge badge-published" id="status-${api?index}">${api.status!''}</span>
+                        <#else>
+                        <span class="badge" id="status-${api?index}"> ${api.status!''} </span>
+                        </#if>
+                     </td>
+                     <td>
+                        <#if api.status?? && api.status!='PUBLISHING'>
+                           <#if api.status=='PUBLISHED' || api.status=='DESYNCHRONIZED' || api.archived>
+                              <@aButton class="btn-delete" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.unpublishLabel}' buttonIcon='trash' hideTitle=['all']  />
+                           <#elseif api.status!='PUBLISHING' && api.status!='UNPUBLISHING' && api.status!='DESYNCHRONIZED' >
+                              <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='upload' hideTitle=['all']  />
+                           </#if>
+                           <#if api.status=='DESYNCHRONIZED'>
+                              <@aButton class="btn-publish" href='jsp/admin/plugins/apimanager/ManageOperations.jsp?action=updateApiManager&uuid_api=${api.uuid}' title='#i18n{apimanager.manage_operations.button.publishLabel}' buttonIcon='reload' hideTitle=['all']  />
+                           </#if>
+                        </#if>
+                     </td>
+                  </tr>
+                  </#list>
+                  </@table>
+               </div>
+            </div>
+            <@paginationAdmin paginator=paginator combo=1 />
+         </div>
+         </@boxBody>
+         </@box>
+      </div>
+   </div>
+</div>
+<script type="text/javascript">
+   $(function() {
+   	$('.form-control-plaintext').each(function() {
+   		$(this).removeClass('form-control');
+   	});
+   });
+   function updatePlanFields(planUuid, planName, planEnvs) {
+   	$('#uuid_plan').val(planUuid);
+   	$('#plan_name').val(planName);
+   	$('#environnement').empty();
+   	$('button[data-bs-dismiss]').click();
+   	let envList = planEnvs.split(',');
+   	envList.forEach((env) => {
+   		$('#environnement').append($('<option>', {
+   			value: env,
+   			text: env
+   		}));
+   	});
+   }
+
+
+      function updateSubscription(){
+
+          const selectedApplication = $("#application_selection").val();
+          const selectedEnvironement = $("#environement_selection").val();
+          const selectedApi = $("#api_selection").val();
+          const selectedPlan = $("#plan_selection").val();
+          const endpoint = 'jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription';
+          window.location.href= endpoint+
+              (selectedApplication?'&uuid_application='+selectedApplication:'')+
+              (selectedEnvironement?'&uuid_environement='+selectedEnvironement:'')+
+              (selectedApi?'&uuid_api='+selectedApi:'')+
+          (selectedPlan?'&uuid_plan='+selectedPlan:'');
+      }
+
+
+   $( "#filter_environement" ).on( "change", function() {
+       updateSearch();
+   } );
+
+   $('#btn-search_operation').css('float','right');
+
+
+   function updateSearch(tagElement){
+
+       const selectedEnvironement =$('#filter_environement').find(":selected").val();
+       const selected_tags=[];
+       if(tagElement){
+           if( tagElement.attr('name')=== 'selectable_tag'){
+               tagElement.attr('name','selected_tag');
+           }
+       }
+
+       $('input[name="selected_tag"]').each(function(){
+           selected_tags.push($(this).val());
+       });
+
+       let destination = 'jsp/admin/plugins/apimanager/ManageOperations.jsp'
+
+       if(selectedEnvironement){
+           destination = destination+'?filter_uuid_environement='+selectedEnvironement ;
+       }
+
+       window.location.href = destination ;
+
+   }
+
+   function publishAll(){
+       const selected_apis=[];
+       $('input[name^="select_api-"]').each(function(){
+           if($(this).is(":checked")){
+               selected_apis.push($(this).val());
+           }
+       });
+       if(selected_apis.length > 0){
+           window.location.href= 'jsp/admin/plugins/apimanager/ManageOperations.jsp?action=generateApiManager&uuid_api='+selected_apis.join(',');
+       }
+   }
+   function unpublishAll(){
+       const selected_apis=[];
+       $('input[name^="select_api-"]').each(function(){
+           if($(this).is(":checked")){
+               selected_apis.push($(this).val());
+           }
+       });
+       if(selected_apis.length > 0){
+           window.location.href= 'jsp/admin/plugins/apimanager/ManageOperations.jsp?action=removeOperation&uuid_api='+selected_apis.join(',');
+       }
+   }
+
+
+   function translateStatus(status){
+       switch (status) {
+           case 'ERROR': return '#i18n{apimanager.global.status.error}';
+           case 'NEW': return '#i18n{apimanager.global.status.new}';
+           case 'DRAFT': return '#i18n{apimanager.global.status.draft}';
+           case 'DESYNCHRONIZED': return '#i18n{apimanager.global.status.desynchronized}';
+           case 'UNPUBLISHING': return '#i18n{apimanager.global.status.unpublishing}';
+           case 'PUBLISHING': return '#i18n{apimanager.global.status.publishing}';
+           case 'PUBLISHED': return '#i18n{apimanager.global.status.published}';
+           case 'UNPUBLISHED': return '#i18n{apimanager.global.status.unpublished}';
+           case 'ARCHIVED': return '#i18n{apimanager.global.status.archived}';
+           case 'PUBLISH_ERROR': return '#i18n{apimanager.global.status.publisherror}';
+           case 'DEPLOY_ERROR': return '#i18n{apimanager.global.status.deployerror}';
+           case 'UNPUBLISH_ERROR': return '#i18n{apimanager.global.status.unpublisherror}';
+           case 'UNDEPLOY_ERROR': return '#i18n{apimanager.global.status.undeployerror}';
+           default : return status;
+       }
+   }
+   $("[id^='status-']").each(function () {
+       $(this).html(translateStatus($(this).html()));
+   });
+
+</script>
+

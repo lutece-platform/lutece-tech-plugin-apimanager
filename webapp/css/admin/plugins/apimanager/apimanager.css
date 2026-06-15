@@ -2,3 +2,229 @@
     height:100% !important;
     max-height:100% !important;
 }
+
+.auto-height{
+    height: auto !important;
+    max-height: fit-content !important;
+}
+
+.display-content{
+    display: contents !important;
+}
+
+.clickable{
+    cursor: pointer;
+}
+.min-width-150{
+    min-width: 150px;
+}
+
+.page-header{
+    display: none !important;
+}
+
+.apim-plugin .card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    margin-bottom: 1.5rem;
+    padding: .9rem;
+}
+
+/*------------------- Results sections: cards and tables---------------------*/
+
+.apim-plugin .result-cards-container, .apim-plugin .result-container {
+    margin-bottom: 1.5em;
+}
+
+.apim-plugin .result-cards-container .card {
+    margin-bottom: 0.2em;
+    height: 100%;
+}
+
+.apim-plugin .result-cards-container .card .card-title{
+    font-weight: 600;
+}
+
+.apim-plugin .card-tools .btn,
+.apim-plugin .card-tools .btn:hover,
+.apim-plugin .result-table-container table .btn,
+.apim-plugin .result-table-container table .btn:hover {
+    background-color: transparent !important;
+    border: none !important;
+    font-size: 1.4em !important;
+    padding: 0.1em !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.apim-plugin .result-table-container table .btn.btn-single,
+.apim-plugin .result-table-container table .btn.btn-single:hover {
+    background-color: transparent !important;
+    border: 1px solid !important;
+    font-size: 1em !important;
+    padding: 5px 15px 5px 10px !important;
+}
+
+.apim-plugin .card-tools .btn-edit,
+.apim-plugin .result-table-container table .btn-edit {
+    color: rgb(37 99 235) !important;   /* bleu-600 */
+}
+.apim-plugin .card-tools .btn-edit:hover,
+.apim-plugin .result-table-container table .btn-edit:hover{
+    color: rgb(30 64 175) !important;   /* bleu-800 */
+}
+
+.apim-plugin .card-tools .btn-view,
+.apim-plugin .result-table-container table .btn-view {
+    color: rgb(37, 235, 129) !important;   /* bleu-600 */
+}
+.apim-plugin .card-tools .btn-view:hover,
+.apim-plugin .result-table-container table .btn-view:hover{
+    color: rgb(5, 94, 34) !important;   /* bleu-800 */
+}
+
+.apim-plugin .card-tools .btn-publish,
+.apim-plugin .result-table-container table .btn-publish {
+    color: rgb(37 99 235) !important;   /* bleu-600 */
+}
+.apim-plugin .card-tools .btn-publish:hover,
+.apim-plugin .result-table-container table .btn-publish:hover{
+    color: rgb(30 64 175) !important;   /* bleu-800 */
+}
+
+/* Bouton supprimer (rouge) */
+.apim-plugin .card-tools .btn-delete,
+.apim-plugin .result-table-container table .btn-delete {
+    color: rgb(220 38 38) !important;   /* rouge-600 */
+}
+.apim-plugin .card-tools .btn-delete:hover,
+.apim-plugin .result-table-container table .btn-delete:hover {
+    color: rgb(153 27 27) !important;   /* rouge-800 */
+}
+
+/* Bouton archiver (rouge, comme delete) */
+.apim-plugin .card-tools .btn-archive,
+.apim-plugin .result-table-container table .btn-archive {
+    color: rgb(220 38 38) !important;
+}
+.apim-plugin .card-tools .btn-archive:hover,
+.apim-plugin .result-table-container table .btn-archive:hover {
+    color: rgb(153 27 27) !important;
+}
+
+/* Bouton secret (vert) */
+.apim-plugin .card-tools .btn-secret {
+    color: rgb(22 163 74) !important;   /* vert-600 */
+}
+.apim-plugin .card-tools .btn-secret:hover {
+    color: rgb(20 83 45) !important;    /* vert-800 */
+}
+
+
+/*------------------- Badges ---------------------*/
+
+.apim-plugin .badge {
+    background-color: #dbeafe !important;
+    color: #1d4ed8;
+    padding: 0.25rem 0.75rem;
+    margin: 0.2em 0;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.apim-plugin .badge.badge-yes {
+    background-color: rgb(220 252 231) !important;
+    color: rgb(22 101 52);
+}
+
+.apim-plugin .badge.badge-no {
+    background-color: rgb(254 226 226) !important;
+    color: rgb(153 27 27);
+}
+
+.apim-plugin .badge.badge-published {
+    background-color: rgb(220 252 231) !important;
+    color: rgb(22 101 52);
+}
+
+.apim-plugin .badge.badge-error {
+    background-color: rgb(255, 31, 31) !important;
+    color: rgb(255, 255, 255);
+}
+
+.apim-plugin .badge.badge-unpublished {
+    background-color: rgb(254 226 226) !important;
+    color: rgb(153 27 27);
+}
+
+.apim-plugin .badge.badge-draft {
+    background-color: #e2e8f0 !important;
+    color: #475569;
+}
+
+.apim-plugin .badge.badge-new {
+    background-color: #e2e8f0 !important;
+    color: #475569;
+}
+
+.apim-plugin .badge.badge-create {
+    background-color: rgb(220 252 231) !important;
+    color: rgb(22 101 52);
+}
+
+.apim-plugin .badge.badge-update {
+    background-color: rgb(254 249 195) !important;
+    color: rgb(133 77 14);
+}
+
+.apim-plugin .badge.badge-delete {
+    background-color: rgb(254 226 226) !important;
+    color: rgb(153 27 27);
+}
+
+
+.apim-plugin .badge.badge-selected {
+    background-color: rgb(0, 30, 147) !important;
+    color: rgb(255, 255, 255);
+}
+
+
+/* delete: css pour la démo du stepper de création d'APIs, à refactorer / supprimer */
+.stepper-actions {
+    margin-top: 3em;
+}
+
+
+form#step1 {
+    max-width: 800px;
+    margin-top: 3em;
+}
+
+form#step1 button{
+    margin-top: 3em;
+}
+
+.blurry{
+    opacity: 0.6;
+}
+
+.icon-delete:hover{
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.dropdown-item{
+    cursor: pointer;
+}
+
+.select-column{
+    min-width: 10px;
+    width: 10px;
+}
+
+table .subline {
+    font-size: 0.8em;
+    color: rgb(107 114 128);
+}

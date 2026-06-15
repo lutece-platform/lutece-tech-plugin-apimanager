@@ -39,5 +39,7 @@ public enum HistoryTypeEnum
     UPDATE,
     DELETE,
     ARCHIVE,
+    PUBLISH,
+    UNPUBLISH,
     GENERATE
 }

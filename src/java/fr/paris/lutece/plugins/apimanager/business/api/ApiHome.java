@@ -90,6 +90,20 @@ public final class ApiHome
     }
 
     /**
+     * Update of the status of api which is specified in parameter
+     *
+     * @param apiUuid
+     * @param status
+     *            The instance of the Api which contains the data to store
+     * @return The instance of the api which has been updated
+     */
+    public static void updateStatus( String apiUuid, String status )
+    {
+        _dao.updateStatus( apiUuid,status, _plugin );
+
+    }
+
+    /**
      * Remove the api whose identifier is specified in parameter
      * 
      * @param nKey
@@ -197,4 +211,31 @@ public final class ApiHome
         _dao.linkInstance( api, instanceUuid, _plugin );
     }
 
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getuuidsByTags( List<String> tags  )
+    {
+        return _dao.getuuidsByTags(tags, _plugin );
+    }
+
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getuuidsByPath( String path  )
+    {
+        return _dao.getIdApisListByPath(path, _plugin );
+    }
+
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getuuidsByPathAndVersion( String path, String version )
+    {
+        return _dao.getIdApisListByPathAndVersion(path,version,  _plugin );
+    }
+
+    public static List<String> getDistinctStatus() {
+        return _dao.getDistinctStatus( _plugin );
+    }
 }

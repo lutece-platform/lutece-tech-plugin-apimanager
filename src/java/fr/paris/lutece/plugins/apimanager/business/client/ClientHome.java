@@ -34,7 +34,6 @@
 
 package fr.paris.lutece.plugins.apimanager.business.client;
 
-import fr.paris.lutece.plugins.apimanager.business.IDAO;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
@@ -86,6 +85,21 @@ public final class ClientHome
         _dao.store( client, _plugin );
 
         return client;
+    }
+
+
+    /**
+     * Update of the status of api which is specified in parameter
+     *
+     * @param clientUuid
+     * @param status
+     *            The instance of the Api which contains the data to store
+     * @return The instance of the api which has been updated
+     */
+    public static void updateStatus( String clientUuid, String status )
+    {
+        _dao.updateStatus( clientUuid,status, _plugin );
+
     }
 
     /**
@@ -159,4 +173,15 @@ public final class ClientHome
         return _dao.selectEntitiesListByIds( _plugin, listIds );
     }
 
+    public static List<String> getAvailableTags(List<String> listIds) {
+        return _dao.getAvailableTags( listIds, _plugin );
+    }
+
+    /**
+     * Get the available tags among all instances
+     */
+    public static List<String>  getuuidsByTags( List<String> tags  )
+    {
+        return _dao.getuuidsByTags(tags, _plugin );
+    }
 }

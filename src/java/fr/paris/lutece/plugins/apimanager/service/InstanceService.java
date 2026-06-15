@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.apimanager.service;
 import fr.paris.lutece.plugins.apimanager.business.history.HistoryTypeEnum;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.instance.InstanceHome;
+import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.resource.ResourceHome;
 
 import java.util.List;
 import java.util.Map;
@@ -62,21 +64,22 @@ public class InstanceService extends AbstractService<Instance>
     public void create( final Instance entity, final String user )
     {
         final String uuid = InstanceHome.create( entity ).getUuid( );
-        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.CREATE, user, "INSTANCE " + entity.getName() );
     }
 
     @Override
     public void update( final Instance entity, final String user )
     {
         InstanceHome.update( entity );
-        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user );
+        this.addNewHistory( entity.getUuid( ), HistoryTypeEnum.UPDATE, user,  "INSTANCE " + entity.getName() );
     }
 
     @Override
     public void delete( final String uuid, final String user )
     {
+        Instance instance = InstanceHome.findByPrimaryKey(uuid).orElse(null);
         InstanceHome.remove( uuid );
-        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user );
+        this.addNewHistory( uuid, HistoryTypeEnum.DELETE, user, (instance!=null?instance.getName():uuid) );
     }
 
     @Override
@@ -102,34 +105,46 @@ public class InstanceService extends AbstractService<Instance>
     {
         return InstanceHome.getIdInstancesListNotLinkedToApiUuid( apiUuid );
     }
-
     /**
      * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
-     * 
+     *
      * @param apiUuid
      *            the API uuid
      * @return the list which contains the uuid of all the instances
      */
-    public List<String> getIdInstancesListLinkedToApiUuid( final String apiUuid )
+    public List<String> getIdInstancesListLinkedToResourceUuid( final String apiUuid )
     {
-        return InstanceHome.getIdInstancesListLinkedToApiUuid( apiUuid );
+        return InstanceHome.getIdInstancesListLinkedToResourceUuid( apiUuid );
     }
 
     /**
-     * Link the specified instance to the specified API UUID.
+     * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
+     * 
+     * @param envUuid
+     *            the API uuid
+     * @return the list which contains the uuid of all the instances
+     */
+    public List<String> getIdInstancesListLinkedToEnvironementUuid( final String envUuid )
+    {
+        return InstanceHome.getIdInstancesListLinkedToEnvironementUuid( envUuid );
+    }
+
+    /**
+     * Link the specified instance to the specified Resource UUID.
      * 
      * @param instance
      *            the instance
-     * @param apiUuid
+     * @param resourceUuid
      *            the API UUID
      * @param user
      *            the user
      */
-    public void linkApi( final Instance instance, final String apiUuid, final String user )
+    public void linkResource( final Instance instance, final String resourceUuid, final String user )
     {
-        InstanceHome.linkApi( instance, apiUuid );
-        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
-        this.addNewHistory( apiUuid, HistoryTypeEnum.UPDATE, user );
+        InstanceHome.linkResource( instance, resourceUuid );
+        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user,"INSTANCE " + instance.getName() );
+        Resource resource = ResourceHome.findByPrimaryKey(resourceUuid).orElse(null);
+        this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user, "API " + (resource.getApi()!=null?resource.getApi().getName( ):resourceUuid) );
     }
 
     /**
@@ -137,15 +152,38 @@ public class InstanceService extends AbstractService<Instance>
      * 
      * @param instance
      *            the instance
-     * @param apiUuid
-     *            the API UUID
+     * @param resourceUuid
+     *            the Resource UUID
      * @param user
      *            the user
      */
-    public void deleteLinkApi( final Instance instance, final String apiUuid, final String user )
+    public void deleteLinkResource( final Instance instance, final String resourceUuid, final String user )
     {
-        InstanceHome.deleteLinkApi( instance, apiUuid );
-        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user );
-        this.addNewHistory( apiUuid, HistoryTypeEnum.UPDATE, user );
+        InstanceHome.deleteLinkResource( instance, resourceUuid );
+        this.addNewHistory( instance.getUuid( ), HistoryTypeEnum.UPDATE, user ,"INSTANCE " + instance.getName() );
+        Resource resource = ResourceHome.findByPrimaryKey(resourceUuid).orElse(null);
+        this.addNewHistory( resourceUuid, HistoryTypeEnum.UPDATE, user, "API " + (resource.getApi()!=null?resource.getApi().getName( ):resourceUuid)  );
+    }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getAvailableTags(List<String> listIds )
+    {
+        return InstanceHome.getAvailableTags( listIds );
+    }
+
+
+    /**
+     * returns the TAGS of all the entities.
+     *
+     * @return List of tags
+     */
+    public List<String> getInstancesByTags(List<String> tags )
+    {
+        return InstanceHome.getuuidsByTags( tags );
     }
 }

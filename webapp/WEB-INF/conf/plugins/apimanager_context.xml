@@ -13,8 +13,11 @@
     <bean id="apimanager.apiDAO" class="fr.paris.lutece.plugins.apimanager.business.api.ApiDAO" />
     <bean id="apimanager.instanceDAO" class="fr.paris.lutece.plugins.apimanager.business.instance.InstanceDAO" />
     <bean id="apimanager.historyDAO" class="fr.paris.lutece.plugins.apimanager.business.history.HistoryDAO" />
-    <bean id="apimanager.planHeaderMatchingDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanHeaderMatchingDAO" />
+    <bean id="apimanager.environementDAO" class="fr.paris.lutece.plugins.apimanager.business.environement.EnvironementDAO" />
+    <bean id="apimanager.resourceHeaderMatchingDAO" class="fr.paris.lutece.plugins.apimanager.business.resource.ResourceHeaderMatchingDAO" />
     <bean id="apimanager.planOauthConfigurationDAO" class="fr.paris.lutece.plugins.apimanager.business.plan.PlanOauthConfigurationDAO" />
+    <bean id="apimanager.meecrogateDAO" class="fr.paris.lutece.plugins.apimanager.business.meecrogate.MeecrogateDAO" />
+    <bean id="apimanager.gatewayRest" class="fr.paris.lutece.plugins.apimanager.web.rest.GatewayRest" />
 
     <bean id="apimanager.configGeneratorService" class="fr.paris.lutece.plugins.apimanager.service.generator.MockConfigGeneratorService" />
 

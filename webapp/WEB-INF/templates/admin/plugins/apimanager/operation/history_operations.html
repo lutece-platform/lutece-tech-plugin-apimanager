@@ -1,0 +1,103 @@
+<div class="apim-plugin container-fluid">
+   <ul class="nav nav-tabs" id="myTab" role="tablist">
+       <li class="nav-item" role="presentation">
+           <a class="nav-link " id="manage-api" href="jsp/admin/plugins/apimanager/ManageOperations.jsp"  role="tab" aria-controls="manage" aria-selected="true">#i18n{apimanager.manage_operations.api.tab.name}</a>
+       </li>
+       <li class="nav-item" role="presentation">
+           <a class="nav-link" id="manage-client" href="jsp/admin/plugins/apimanager/ManageClientOperations.jsp"   role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.client.tab.name}</a>
+       </li>
+       <li class="nav-item" role="presentation">
+           <a class="nav-link active" id="history"  role="tab" aria-controls="create" aria-selected="false">#i18n{apimanager.manage_operations.history.tab.name}</a>
+       </li>
+   </ul>
+   <div class="tab-content mt-3" id="myTabContent">
+      <div class="tab-pane fade " id="manage" role="tabpanel" aria-labelledby="manage-tab"></div>
+      <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
+        <@box>
+	    <@boxBody>
+        <@messages infos=infos warnings=warnings errors=errors />
+
+
+	<div id="subscription-result-container" class="result-table-container">
+		<div class="clearfix"></div>
+        <div class="card">
+            <div class="card-body">
+                <@table>
+                    <tr>
+                        <th>#i18n{apimanager.manage_operations.columnDate}&nbsp;<a href='jsp/admin/plugins/apimanager/HistoryOperations.jsp?orderBy=date'><i class='fas fa-sort'></i></a></th>
+                        <th>#i18n{apimanager.manage_operations.columnType}&nbsp;<a href='jsp/admin/plugins/apimanager/HistoryOperations.jsp?orderBy=type'><i class='fas fa-sort'></i></a></th>
+                        <th>#i18n{apimanager.manage_operations.columnUser}&nbsp;<a href='jsp/admin/plugins/apimanager/HistoryOperations.jsp?orderBy=user'><i class='fas fa-sort'></i></a></th>
+                       <th>#i18n{portal.util.labelActions}</th>
+                    </tr>
+                    <@tableHeadBodySeparator />
+                    <#list history_list as history >
+                    <tr >
+
+                        <td>
+                            ${history.date?string["dd/MM/yyyy HH:mm:ss"]!''}
+                        </td>
+                        <td>
+                            <#if history.type.name() == "CREATE">
+                            <span class="badge badge-create"> ${history.type.name()!} </span>
+                            <#elseif history.type.name() == "UPDATE">
+                            <span class="badge badge-update"> ${history.type.name()!} </span>
+                            <#elseif history.type.name() == "DELETE" || history.type.name() == "ARCHIVE">
+                            <span class="badge badge-delete"> ${history.type.name()!} </span>
+                            <#else>
+                            <span class="badge bg-info"> ${history.type.name()!} </span>
+                        </#if>
+                        </td>
+                        <td>
+                            ${history.user!''}
+                        </td>
+                        <td>
+                            ${history.action!''}
+                        </td>
+                    </tr>
+                    </#list>
+                </@table>
+            </div>
+        </div>
+        <@paginationAdmin paginator=paginator combo=1 />
+	</div>
+  </@boxBody>
+</@box>
+
+   </div>
+</div>
+</div>
+<script type="text/javascript">
+   $(function() {
+   	$('.form-control-plaintext').each(function() {
+   		$(this).removeClass('form-control');
+   	});
+   });
+   function updatePlanFields(planUuid, planName, planEnvs) {
+   	$('#uuid_plan').val(planUuid);
+   	$('#plan_name').val(planName);
+   	$('#environnement').empty();
+   	$('button[data-bs-dismiss]').click();
+   	let envList = planEnvs.split(',');
+   	envList.forEach((env) => {
+   		$('#environnement').append($('<option>', {
+   			value: env,
+   			text: env
+   		}));
+   	});
+   }
+
+
+      function updateSubscription(){
+
+          const selectedApplication = $("#application_selection").val();
+          const selectedEnvironement = $("#environement_selection").val();
+          const selectedApi = $("#api_selection").val();
+          const selectedPlan = $("#plan_selection").val();
+          const endpoint = 'jsp/admin/plugins/apimanager/ManageSubscriptions.jsp?view=createSubscription';
+          window.location.href= endpoint+
+              (selectedApplication?'&uuid_application='+selectedApplication:'')+
+              (selectedEnvironement?'&uuid_environement='+selectedEnvironement:'')+
+              (selectedApi?'&uuid_api='+selectedApi:'')+
+          (selectedPlan?'&uuid_plan='+selectedPlan:'');
+      }
+</script>

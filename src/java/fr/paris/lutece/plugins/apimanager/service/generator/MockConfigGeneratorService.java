@@ -34,9 +34,11 @@
 package fr.paris.lutece.plugins.apimanager.service.generator;
 
 import fr.paris.lutece.plugins.apimanager.business.client.Client;
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
 import fr.paris.lutece.plugins.apimanager.business.instance.Instance;
 import fr.paris.lutece.plugins.apimanager.business.plan.Plan;
 import fr.paris.lutece.plugins.apimanager.business.resource.Resource;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 public class MockConfigGeneratorService implements IConfigGeneratorService
 {
     @Override
-    public void generateOauth2Client( final Client client, final String environment, final String comment, final String user ) throws AppException
+    public void generateOauth2Client( final Client client, final Environement environment, final String comment, final String user ) throws AppException
     {
         AppLogService.info( "====================================" );
         AppLogService.info( "MOCK => generateOauth2Client called." );
@@ -73,22 +75,23 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
     }
 
     @Override
-    public void generateApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
-            final String environment, final String comment, final String user ) throws AppException
+    public void generateSubscriptions(final List<Subscription> subscriptions, final String comment, final String user ) throws AppException
     {
-        AppLogService.info( "====================================" );
-        AppLogService.info( "MOCK => generateApiManager called." );
-        AppLogService.info( "client : " + client.getUuid( ) );
-        AppLogService.info( "plan : " + plan.getUuid( ) );
-        AppLogService.info( "planResources : " + planResources.stream( ).map( Resource::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
-        AppLogService.info( "planApiInstances : " + planApiInstances.stream( ).map( Instance::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
-        AppLogService.info( "environment : " + environment );
-        AppLogService.info( "comment : " + comment );
-        AppLogService.info( "user : " + user );
-        AppLogService.info( "====================================" );
-        AppLogService.info( "WAIT 2 SECONDS" );
-        AppLogService.info( "====================================" );
-
+        for(Subscription subscription: subscriptions){
+            AppLogService.info( "====================================" );
+            AppLogService.info( "MOCK => generateApiManager called." );
+            AppLogService.info( "client : " + subscription.getClient().getUuid( ) );
+            AppLogService.info( "plan : " + subscription.getResource().getPlan().getName( ) + " => " + subscription.getResource().getPlan().getUuid( ));
+            AppLogService.info( "resource : " + subscription.getResource().getName() + " => " + subscription.getResource().getUuid( ) );
+            AppLogService.info( "instances : " + subscription.getResource().getInstances().stream( ).map( Instance::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
+            AppLogService.info( "environment : " + subscription.getEnvironement().getName() + " => " + subscription.getEnvironement().getUuid( ) );
+            AppLogService.info( "comment : " + comment );
+            AppLogService.info( "user : " + user );
+            AppLogService.info( "====================================" );
+            AppLogService.info( "WAIT 2 SECONDS" );
+            AppLogService.info( "====================================" );
+        }
+/*
         try
         {
             TimeUnit.SECONDS.sleep( 2 );
@@ -96,17 +99,16 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
         catch( InterruptedException e )
         {
             throw new AppException( "Sleep failed", e );
-        }
-        throw new AppException( "Mock exception happened : you should see this on screen" );
+        }*/
     }
 
     @Override
-    public void deleteOauth2Client( final Client client, final String environment, final String user ) throws AppException
+    public void deleteOauth2Client(final Client client, final Environement environment, final String user ) throws AppException
     {
         AppLogService.info( "====================================" );
         AppLogService.info( "MOCK => deleteOauth2Client called." );
         AppLogService.info( "client : " + client.getUuid( ) );
-        AppLogService.info( "environment : " + environment );
+        AppLogService.info( "environment : " + environment.getUuid() );
         AppLogService.info( "user : " + user );
         AppLogService.info( "====================================" );
         AppLogService.info( "WAIT 2 SECONDS" );
@@ -124,20 +126,21 @@ public class MockConfigGeneratorService implements IConfigGeneratorService
     }
 
     @Override
-    public void deleteApiManager( final Client client, final Plan plan, final List<Resource> planResources, final List<Instance> planApiInstances,
-            final String environment, final String user ) throws AppException
+    public void deleteSubscriptions( final List<Subscription> subscriptions, final String comment, final String user ) throws AppException
     {
-        AppLogService.info( "====================================" );
-        AppLogService.info( "MOCK => deleteApiManager called." );
-        AppLogService.info( "client : " + client.getUuid( ) );
-        AppLogService.info( "plan : " + plan.getUuid( ) );
-        AppLogService.info( "planResources : " + planResources.stream( ).map( Resource::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
-        AppLogService.info( "planApiInstances : " + planApiInstances.stream( ).map( Instance::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
-        AppLogService.info( "environment : " + environment );
-        AppLogService.info( "user : " + user );
-        AppLogService.info( "====================================" );
-        AppLogService.info( "WAIT 2 SECONDS" );
-        AppLogService.info( "====================================" );
+        for(Subscription subscription: subscriptions) {
+            AppLogService.info("====================================");
+            AppLogService.info("MOCK => deleteApiManager called.");
+            AppLogService.info("client : " + subscription.getClient().getUuid());
+            AppLogService.info("plan : " + subscription.getPlan().getUuid());
+            AppLogService.info("planResources : " + subscription.getResource().getName() + " => " + subscription.getResource().getUuid( ) );
+            AppLogService.info("planApiInstances : " + subscription.getResource().getInstances().stream( ).map( Instance::getUuid ).collect( Collectors.joining( " | ", "[", "]" ) ) );
+            AppLogService.info("environment : " + subscription.getEnvironement().getName() + " => " + subscription.getEnvironement().getUuid( ) );
+            AppLogService.info("user : " + user);
+            AppLogService.info("====================================");
+            AppLogService.info("WAIT 2 SECONDS");
+            AppLogService.info("====================================");
+        }
 
         // try
         // {

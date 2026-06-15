@@ -33,6 +33,9 @@
  */
 package fr.paris.lutece.plugins.apimanager.business.client;
 
+import fr.paris.lutece.plugins.apimanager.business.environement.Environement;
+import fr.paris.lutece.plugins.apimanager.business.environement.EnvironementHome;
+
 import java.io.Serializable;
 
 public class ClientSecret implements Serializable
@@ -40,8 +43,8 @@ public class ClientSecret implements Serializable
     private static final long serialVersionUID = 1L;
 
     private String _strUuid;
-    private String _strUuidClient;
-    private String _strEnvironnement;
+    private Client _client;
+    private Environement _environnement;
     private String _strSecret;
 
     /**
@@ -66,24 +69,24 @@ public class ClientSecret implements Serializable
     }
 
     /**
-     * get the client uuid
+     * get the client
      * 
      * @return the client uuid
      */
-    public String getUuidClient( )
+    public Client getClient( )
     {
-        return _strUuidClient;
+        return _client;
     }
 
     /**
-     * set the client uuid
+     * set the client
      * 
-     * @param strUuidClient
+     * @param client
      *            the client uuid
      */
-    public void setUuidClient( final String strUuidClient )
+    public void setClient( final Client client )
     {
-        _strUuidClient = strUuidClient;
+        _client = client;
     }
 
     /**
@@ -91,20 +94,20 @@ public class ClientSecret implements Serializable
      * 
      * @return the environnement
      */
-    public String getEnvironnement( )
+    public Environement getEnvironnement( )
     {
-        return _strEnvironnement;
+        return _environnement;
     }
 
     /**
      * set the environnement
      * 
-     * @param strEnvironnement
+     * @param environnement
      *            the environnement
      */
-    public void setEnvironnement( final String strEnvironnement )
+    public void setEnvironnement( final Environement environnement )
     {
-        _strEnvironnement = strEnvironnement;
+        _environnement = environnement;
     }
 
     /**

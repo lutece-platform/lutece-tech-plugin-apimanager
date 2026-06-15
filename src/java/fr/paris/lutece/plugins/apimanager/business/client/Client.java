@@ -34,12 +34,14 @@
 package fr.paris.lutece.plugins.apimanager.business.client;
 
 import fr.paris.lutece.plugins.apimanager.business.AbstractTagBean;
+import fr.paris.lutece.plugins.apimanager.business.subscription.Subscription;
 
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is the business class for the object Client
@@ -61,11 +63,12 @@ public class Client extends AbstractTagBean implements Serializable
     @Size( max = 50, message = "#i18n{apimanager.validation.client.CodeApp.size}" )
     private String _strCodeApp;
 
-    private boolean _bTraceEnabled;
-
     private boolean _bArchived;
 
+    private String _strStatus;
+
     private List<ClientSecret> _secretList = new ArrayList<>( );
+    private List<Subscription> _subscriptionList = new ArrayList<>( );
 
     /**
      * Returns the Uuid
@@ -108,6 +111,29 @@ public class Client extends AbstractTagBean implements Serializable
     {
         _strName = strName;
     }
+
+
+    /**
+     * Returns the Status
+     *
+     * @return The Status
+     */
+    public String getStatus( )
+    {
+        return _strStatus;
+    }
+
+    /**
+     * Sets the Status
+     *
+     * @param status
+     *            The Status
+     */
+    public void setStatus( String status )
+    {
+        _strStatus = status;
+    }
+
 
     /**
      * Returns the ClientId
@@ -152,27 +178,6 @@ public class Client extends AbstractTagBean implements Serializable
     }
 
     /**
-     * Returns the TraceEnabled
-     * 
-     * @return The TraceEnabled
-     */
-    public boolean getTraceEnabled( )
-    {
-        return _bTraceEnabled;
-    }
-
-    /**
-     * Sets the TraceEnabled
-     * 
-     * @param bTraceEnabled
-     *            The TraceEnabled
-     */
-    public void setTraceEnabled( boolean bTraceEnabled )
-    {
-        _bTraceEnabled = bTraceEnabled;
-    }
-
-    /**
      * get the archived flag
      * 
      * @return the archived flag
@@ -213,4 +218,32 @@ public class Client extends AbstractTagBean implements Serializable
     {
         _secretList = secretList;
     }
+
+    public void setSubscriptionList(List<Subscription> subscriptions) {
+        _subscriptionList = subscriptions;
+    }
+    public List<Subscription> getSubscriptionList( )
+    {
+        return _subscriptionList;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ){
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() ){
+            return false;
+        }
+        Client that = ( Client ) o;
+        return Objects.equals( _strUuid, that._strUuid );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( _strUuid );
+    }
+
 }

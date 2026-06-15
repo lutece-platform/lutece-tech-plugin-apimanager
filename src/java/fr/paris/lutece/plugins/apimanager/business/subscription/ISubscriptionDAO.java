@@ -46,4 +46,22 @@ import java.util.Optional;
  */
 public interface ISubscriptionDAO extends IDAO<Subscription>
 {
+
+    /**
+     * Load the uuid of all instances that are linked to the specified API UUID, and returns them as a list
+     *
+     * @param apiUuid
+     *            the API uuid
+     * @param plugin
+     *            the plugin
+     * @return the list which contains the uuid of all the instances
+     */
+    List<String> getIdSubscriptionsByResourceAndEnvironementAndClient( String resourceUuid, String environementUuid,String clientUuid, Plugin plugin );
+    List<String> getIdSubscriptionsByResource( String resourceUuid, Plugin plugin );
+    List<String> getIdSubscriptionsByClient( String clientUuid, Plugin plugin );
+
+    List<String> getIdSubscriptionsByApi(String apiUuid, Plugin plugin);
+    List<Subscription> getIdSubscriptionsByApiAndEnv(final String apiUuid, final String envUuid, final Plugin plugin);
+
+    List<String> getDistinctStatus(Plugin plugin);
 }
