@@ -228,12 +228,6 @@ public class OperationJspBean extends AbstractJspBean<String, Api> {
                         }
                     }
                 }
-                //check if there is a desynchronize with api definition
-                if(api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
-                    if(subscriptions.stream().anyMatch(subscription -> subscription.getStatus()!=null && subscription.getStatus().equals(ApiStatusEnum.NEW.name()))){
-                        api.setStatus(ApiStatusEnum.DESYNCHRONIZED.name());
-                    }
-                }
             }
             api.setSubscriberList(new ArrayList<>(subscribers.values()));
             api.setSubscribedEnvironementList(new ArrayList<>(subscribedEnvs.values()));

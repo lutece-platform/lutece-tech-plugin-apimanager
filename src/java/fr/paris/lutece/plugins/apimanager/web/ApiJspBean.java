@@ -71,6 +71,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -753,28 +754,27 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
      */
     @Action(ACTION_CREATE_API_STEP_3)
     public String doCreateApiStep3(HttpServletRequest request) throws AccessDeniedException {
-        String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
+        final String usecase = request.getParameter(PARAMETER_CREATE_USECASE);
 
-        Map<String, String[]> params = request.getParameterMap();
-            _api = (_api != null) ? _api : new Api();
+        _api = (_api != null) ? _api : new Api();
 
-            try {
-                populatePlan(_api, request, getLocale());
-                // check if all resource have a plan
+        try {
+            populatePlan(_api, request, getLocale());
+            // check if all resource have a plan
 
-                for (Environement environement : _api.getEnvironementList()) {
-                    for (Resource resource : environement.getResourceList()) {
-                        if(resource.getPlan() == null){
-                            this.addError("The resource " + resource.getName() + " - " + resource.getPath() + " is missing a plan");
-                            return getCreateApiStep3(request);
-                        }
+            for (Environement environement : _api.getEnvironementList()) {
+                for (Resource resource : environement.getResourceList()) {
+                    if(resource.getPlan() == null){
+                        this.addError("The resource " + resource.getName() + " - " + resource.getPath() + " is missing a plan");
+                        return getCreateApiStep3(request);
                     }
                 }
-
-            } catch (JsonProcessingException e) {
-                this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
-                return getCreateApiStep3(request);
             }
+
+        } catch (JsonProcessingException e) {
+            this.addError("Error while parsing the openapi file. Please select a valid JSON file.");
+            return getCreateApiStep3(request);
+        }
 
         if (usecase != null && usecase.isEmpty()) {
             if (!SecurityTokenService.getInstance().validate(request, ACTION_CREATE_API)) {
@@ -786,12 +786,9 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                 return redirectView(request, VIEW_CREATE_API);
             }
 
-
-
             if (_api.getUuid() != null && !_api.getUuid().isEmpty()) {
-                addInfo(INFO_API_UPDATED, getLocale());
-                getService().update(_api, getUser().getEmail());
-
+                this.getService().update(_api, getUser().getEmail());
+                final AtomicBoolean changed = new AtomicBoolean(false);
                 // update subscriptions
                 if (_api.getEnvironementList() != null) {
                     for (final Environement environement : _api.getEnvironementList()) {
@@ -804,6 +801,7 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                             // Check if resource is in one or more subscription(s)
                             for (final Resource resource : environement.getResourceList()) {
                                 if(this.validateResource(resource)){
+                                    resource.setApi(_api);
                                     final List<Subscription> existingResourceSubscriptions = existingSubscriptions.stream()
                                             .filter(subscription -> Objects.equals(subscription.getResource().getUuid(), resource.getUuid()))
                                             .collect(Collectors.toList());
@@ -819,11 +817,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                                             subscription.setClient(client);
                                             subscription.setStatus(SubscriptionStatusEnum.NEW.name());
                                             SubscriptionService.getInstance().create(subscription, getUser().getEmail());
+                                            changed.set(true);
                                         });
                                     } else {
                                         existingResourceSubscriptions.forEach(subscription -> {
                                             subscription.setResource(resource);
                                             SubscriptionService.getInstance().update(subscription, getUser().getEmail());
+                                            changed.set(true);
                                         });
                                     }
                                 } else {
@@ -833,6 +833,13 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
                         }
                     }
                 }
+
+                //check if there is a desynchronize with api definition
+                if(changed.get() && _api.getStatus().equals(ApiStatusEnum.PUBLISHED.name())){
+                    _api.setStatus(ApiStatusEnum.DESYNCHRONIZED.name());
+                    this.getService().update(_api, getUser().getEmail());
+                }
+                addInfo(INFO_API_UPDATED, getLocale());
 
             } else {
                 addInfo(INFO_API_CREATED, getLocale());
@@ -1496,6 +1503,6 @@ public class ApiJspBean extends AbstractJspBean<String, Api> {
      * @return true if consistent, false otherwise
      */
     private boolean validateResource(final Resource resource) {
-        return resource != null && resource.getApi() != null && resource.getPlan() != null && resource.getEnvironement() != null;
+        return resource != null && resource.getPlan() != null && resource.getEnvironement() != null;
     }
 }
