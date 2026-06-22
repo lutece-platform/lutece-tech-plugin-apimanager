@@ -86,9 +86,18 @@
                      <#list api.environementList as environment>
                      <div class="tab-pane container-fluid mt-4 text-success <#if '${environment.uuid}'=='${current_environement_tab}'>active show</#if>" id="environement-${environment.uuid}-resource-container" role="tabpanel" aria-labelledby="environement-${environment.uuid}-resource-container-link">
                         <button type="button" class="btn btn-success mb-4" id="environement-${environment.uuid}-resource-add-resource" name="environement-${environment.uuid}-resource-add-resource" onclick="newResource('${environment.uuid}')">Ajouter une resource</button>
-                        <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#removeEnvModal-${environment.uuid}">
-                           #i18n{apimanager.api.deleteEnv}
-                        </button>
+
+                        <#if api.status?? && api.status=='PUBLISHED'>
+                           <a data-toggle="tooltip" data-placement="top" title="Créer une nouvelle version de l'api pour supprimer un environement">
+                              <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#removeEnvModal-${environment.uuid}" disabled>
+                                 #i18n{apimanager.api.deleteEnv}
+                              </button>
+                           </a>
+                        <#else>
+                           <button type="button" class="btn btn-danger mb-4" data-bs-toggle="modal" data-bs-target="#removeEnvModal-${environment.uuid}">
+                              #i18n{apimanager.api.deleteEnv}
+                           </button>
+                        </#if>
                         <!-- modal for this environement -->
                         <div class="modal fade" id="removeEnvModal-${environment.uuid}" tabindex="-1" aria-labelledby="removeEnvModalLabel-${environment.uuid}" aria-hidden="true">
                            <div class="modal-dialog">
@@ -264,7 +273,13 @@
                                                 </select>
                                                 </@formGroup>
                                                 <div class="mb-3 col-1 align-content-end">
-                                                   <button class="btn btn-danger" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})">Supprimer la ressource</button>
+                                                   <#if api.status?? && api.status=='PUBLISHED'>
+                                                      <a  data-toggle="tooltip" data-placement="top" title="Créer une nouvelle version de l'api pour supprimer une resource">
+                                                      <button class="btn btn-danger" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})" disabled >Supprimer la ressource</button>
+                                                      </a>
+                                                   <#else>
+                                                      <button class="btn btn-danger" type="button" id="delete-resource-row-${resource?index}" onclick="removeResource('${environment.uuid}',${resource?index})">Supprimer la ressource</button>
+                                                   </#if>
                                                 </div>
                                              </div>
                                           </div>
