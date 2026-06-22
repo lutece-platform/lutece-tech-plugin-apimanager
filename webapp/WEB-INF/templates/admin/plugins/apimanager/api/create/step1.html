@@ -74,7 +74,11 @@
                      <div class="col">
                         <#if api.version??>
                         <@formGroup labelFor='version' labelKey='#i18n{apimanager.api.versionName}' mandatory=true>
-                        <@input type='text' id='version' name='version' maxlength=255 value=api.version readonly=api.status=='PUBLISHED' tabIndex='4'  />
+                           <#if api.status??>
+                              <@input type='text' id='version' name='version' maxlength=255 value=api.version readonly=api.status=='PUBLISHED' tabIndex='4'  />
+                           <#else>
+                              <@input type='text' id='version' name='version' maxlength=255 value=api.version tabIndex='4'  />
+                           </#if>
                         </@formGroup>
                         <#else>
                         <@formGroup labelFor='version' labelKey='#i18n{apimanager.api.versionName}' mandatory=true>
