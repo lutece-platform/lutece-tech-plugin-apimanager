@@ -128,7 +128,7 @@
                            <@input type="hidden" value=subscription.client.uuid!''
                            id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_client"
                            name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-uuid_client" />
-                           <@input type="hidden" value=subscription.traceEnabled?string('1', '0')
+                           <@input type="hidden" value=(subscription.traceEnabled!false)?string('1', '0')
                            id="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-trace_enabled"
                            name="environement-${environment.uuid}-resource-row-${resource?index}-subscription-row-${subscription?index}-trace_enabled" />
                            </#list>
