@@ -256,9 +256,18 @@
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-request_timeout' labelKey='#i18n{apimanager.plan.labelRequestTimeout}' mandatory=false>
                                                 <@input type='text' id='environement-${environment.uuid}-resource-row-${resource?index}-request_timeout' name='environement-${environment.uuid}-resource-row-${resource?index}-request_timeout' value=resource.requestTimeout!'' tabIndex='${resource?index}5' />
                                                 </@formGroup>
-                                                <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' >
-                                                <@checkBox id='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' name='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' value='1' labelKey='#i18n{apimanager.resource.columnTraceEnabled}' tabIndex='${resource?index}6' />
-                                                </@formGroup>
+
+
+                                                <#if resource.traceEnabled?? && resource.traceEnabled>
+                                                    <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' >
+                                                        <@checkBox id='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' name='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' labelKey='#i18n{apimanager.resource.columnTraceEnabled}' tabIndex='${resource?index}6' checked=true />
+                                                    </@formGroup>
+                                                <#else>
+                                                    <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' >
+                                                        <@checkBox id='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' name='environement-${environment.uuid}-resource-row-${resource?index}-trace_enabled' labelKey='#i18n{apimanager.resource.columnTraceEnabled}' tabIndex='${resource?index}6'  checked=false />
+                                                    </@formGroup>
+                                                </#if>
+
                                                 <@formGroup labelFor='environement-${environment.uuid}-resource-row-${resource?index}-instances' labelKey='#i18n{apimanager.resource.labelInstance}' mandatory=true>
                                                 <select required multiple id="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" name="environement-${environment.uuid}-resource-row-${resource?index}-uuid_instances" class="form-control instances">
                                                    <#list instance_list as instance>
